@@ -6,9 +6,8 @@
  * New code should import directly from '@lucky/shared/contracts/*'
  */
 
-import path from "node:path"
 import { getCoreConfig } from "@core/core-config/coreConfig"
-import type { DEFAULT_RUNTIME_CONFIG, RuntimeConfig } from "@lucky/shared/contracts/config"
+import type { RuntimeConfig } from "@lucky/shared/contracts/config"
 import type { EvolutionSettings } from "@lucky/shared/contracts/evolution"
 import { createEvolutionSettings } from "@lucky/shared/contracts/evolution"
 import type { EvaluationInput } from "@lucky/shared/contracts/ingestion"

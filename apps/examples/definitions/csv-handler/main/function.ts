@@ -22,9 +22,9 @@ export async function getCsvColumns(
     const handler = new CsvHandler(workflowFile, contextStore)
     const columns = await handler.getColumns()
 
-    return Tools.createSuccess("saveFileLegacy", columns)
+    return Tools.createSuccess("todoWrite", columns)
   } catch (error) {
-    return Tools.createFailure("saveFileLegacy", {
+    return Tools.createFailure("todoWrite", {
       location: "getCsvColumns",
       error: error instanceof Error ? error.message : "unknown error",
     })
@@ -43,9 +43,9 @@ export async function extractCsvData(
     const handler = new CsvHandler(workflowFile, contextStore)
     const data = await handler.extractData(options)
 
-    return Tools.createSuccess("saveFileLegacy", data)
+    return Tools.createSuccess("todoWrite", data)
   } catch (error) {
-    return Tools.createFailure("saveFileLegacy", {
+    return Tools.createFailure("todoWrite", {
       location: "extractCsvData",
       error: error instanceof Error ? error.message : "unknown error",
     })
@@ -70,9 +70,9 @@ export async function getCsvStats(
     const handler = new CsvHandler(workflowFile, contextStore)
     const stats = await handler.getStats()
 
-    return Tools.createSuccess("saveFileLegacy", stats)
+    return Tools.createSuccess("todoWrite", stats)
   } catch (error) {
-    return Tools.createFailure("saveFileLegacy", {
+    return Tools.createFailure("todoWrite", {
       location: "getCsvStats",
       error: error instanceof Error ? error.message : "unknown error",
     })

@@ -21,6 +21,15 @@ const MAX_CONNECTION_ATTEMPTS = 3
  * Only attempts connection once to avoid repeated failures.
  */
 function createRedisClient(): Redis | null {
+  // Check if Redis is explicitly disabled
+  const redisEnabled = process.env.REDIS_ENABLED !== "false"
+
+  if (!redisEnabled) {
+    console.log("[Redis] Explicitly disabled via REDIS_ENABLED=false, using in-memory fallback")
+    connectionFailed = true
+    return null
+  }
+
   const host = process.env.REDIS_HOST
   const port = Number.parseInt(process.env.REDIS_PORT || "6379", 10)
   const password = process.env.REDIS_PASSWORD

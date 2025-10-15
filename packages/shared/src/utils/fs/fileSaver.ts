@@ -38,23 +38,3 @@ export function saveInLoc<T = any>(filePath: string, data: T): void {
 
   fs.writeFileSync(fullPath, toWrite)
 }
-
-/**
- * @deprecated Use saveInLoc directly
- * Legacy wrapper that returns a CodeToolResult
- */
-export async function saveFileInLoc(
-  filePath: string,
-  data: string,
-): Promise<{ success: boolean; tool: string; output: { success: boolean; data: string }; error: null }> {
-  saveInLoc(filePath, data)
-  return {
-    success: true,
-    tool: "saveFileLegacy",
-    output: {
-      success: true,
-      data: data,
-    },
-    error: null,
-  }
-}

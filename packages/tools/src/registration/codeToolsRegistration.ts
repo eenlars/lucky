@@ -4,7 +4,7 @@
  * This file provides types and utility functions for organizing code tools into logical toolkits.
  * Each toolkit contains related tools that work together to accomplish specific tasks.
  *
- * Actual toolkit registration happens in examples/definitions/registry.ts
+ * Actual toolkit registration happens in examples/definitions/registry-grouped.ts
  * This structure matches MCP registration for consistency.
  */
 

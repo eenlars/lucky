@@ -169,30 +169,6 @@ src/runtime/
 
 ## 📋 Tool Registration System
 
-### Tool Metadata (`/src/runtime/tools.ts`)
-
-**Central registry** of all tool descriptions:
-
-```typescript
-export const TOOLS = {
-  mcp: {
-    tavily: "Search the web",
-    filesystem: "Save and load files",
-    firecrawl: "Extract structured data from websites",
-    proxy: "Proxy requests to a specific URL",
-  },
-  code: {
-    expectedOutputHandler: "Handle LLM requests with expected output validation",
-    searchGoogleMaps: "Search Google Maps for business information",
-    saveFileLegacy: "Save any data to a file at specified path",
-    verifyLocation: "Get geographic coordinates using Mapbox",
-    csvReader: "Extract column data from CSV files with pagination",
-    contextHandler: "Store/retrieve workflow or node-scoped data",
-    // ... 20+ other tools
-  },
-} as const
-```
-
 ### Type Generation (`/src/core/tools/tool.types.ts`)
 
 **Automatic TypeScript types** generated from tool registry:

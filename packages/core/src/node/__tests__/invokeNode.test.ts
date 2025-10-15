@@ -332,7 +332,7 @@ describe("invokeAgent", () => {
       systemPrompt: "You have access to tools. Use them if needed.",
       modelName: getDefaultModels().nano,
       mcpTools: [],
-      codeTools: ["saveFileLegacy", "readFileLegacy"],
+      codeTools: ["todoRead", "todoWrite"],
       handOffs: ["next-node", "end"],
       memory: {},
     }
