@@ -55,7 +55,13 @@ export {
 
 // MCP - Model Context Protocol client
 export { getMCPTools, type MCPToolInfo } from "./mcp/getMCPTools"
-export { MCPClientManager, type MCPClientConfig, type MCPConfig } from "./mcp/mcp"
+export {
+  clearMCPClientCache,
+  clearWorkflowMCPClientCache,
+  getMCPStatus,
+  logMCPStatus,
+  setupMCPForNode,
+} from "./mcp/setup"
 
 // Registration - Tool registration and startup
 export {
