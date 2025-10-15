@@ -47,7 +47,7 @@ interface ModelPreferencesState {
 function filterDeletedProviders(preferences: UserModelPreferences): UserModelPreferences {
   return {
     ...preferences,
-    providers: preferences.providers.filter(p => !p.deleted),
+    providers: preferences.providers.filter(p => p.isEnabled),
   }
 }
 
@@ -238,7 +238,6 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
               ? {
                   ...p,
                   enabledModels: p.enabledModels.filter(m => m !== modelId),
-                  removedModels: [...(p.removedModels || []), modelId],
                 }
               : p,
           ),

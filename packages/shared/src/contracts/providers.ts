@@ -120,9 +120,6 @@ export const userProviderSettingsSchema = z.object({
       lastUpdated: z.string().datetime(),
     })
     .optional(),
-  // Deletion tracking
-  deleted: z.boolean().optional(), // When true, indicates provider should be removed
-  removedModels: z.array(modelIdSchema).optional(), // Models explicitly removed from preferences
 })
 
 export type UserProviderSettings = z.infer<typeof userProviderSettingsSchema>
