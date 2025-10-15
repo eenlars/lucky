@@ -109,24 +109,28 @@ export function InvocationsTable({
           <span>Status</span>
           <SortIcon field="status" sortField={sortField} sortOrder={sortOrder} />
         </button>
-        <button
-          type="button"
-          onClick={() => onSort("accuracy")}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
-        >
-          <span>Accuracy</span>
-          <SortIcon field="accuracy" sortField={sortField} sortOrder={sortOrder} />
+        <div className="flex items-center gap-1 w-20 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => onSort("accuracy")}
+            className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
+          >
+            <span>Accuracy</span>
+            <SortIcon field="accuracy" sortField={sortField} sortOrder={sortOrder} />
+          </button>
           <HelpTooltip content={helpContent.accuracy} />
-        </button>
-        <button
-          type="button"
-          onClick={() => onSort("fitness")}
-          className="flex items-center gap-1 w-20 flex-shrink-0 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
-        >
-          <span>Fitness</span>
-          <SortIcon field="fitness" sortField={sortField} sortOrder={sortOrder} />
+        </div>
+        <div className="flex items-center gap-1 w-20 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => onSort("fitness")}
+            className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0"
+          >
+            <span>Fitness</span>
+            <SortIcon field="fitness" sortField={sortField} sortOrder={sortOrder} />
+          </button>
           <HelpTooltip content={helpContent.fitness} />
-        </button>
+        </div>
         <button
           type="button"
           onClick={() => onSort("usd_cost")}

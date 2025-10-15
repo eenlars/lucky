@@ -302,7 +302,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
             p.provider === provider
               ? {
                   ...p,
-                  deleted: true,
+                  isEnabled: false,
                   enabledModels: [],
                 }
               : p,
