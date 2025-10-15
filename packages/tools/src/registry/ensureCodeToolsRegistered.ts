@@ -1,10 +1,8 @@
 import { isNir } from "@lucky/shared"
 
-import { registerAllTools } from "../registration/startup"
-import { codeToolRegistry } from "./CodeToolRegistry"
+import { printValidationResult, validateToolkitRegistration } from "../registration/validation"
+import { type CodeToolRegistry, codeToolRegistry } from "./CodeToolRegistry"
 import type { CodeToolName } from "./types"
-
-let registrationPromise: Promise<void> | null = null
 
 /**
  * Ensures that code toolkits are registered before a node initializes them.
@@ -14,10 +12,12 @@ let registrationPromise: Promise<void> | null = null
  * toolkits. If registration fails we surface a descriptive error so
  * callers can address the misconfiguration instead of silently hanging.
  */
-export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Promise<void> {
+export async function ensureCodeToolsRegistered(
+  toolNames: CodeToolName[],
+  registry: CodeToolRegistry = codeToolRegistry,
+): Promise<void> {
   if (isNir(toolNames)) return
-
-  const { initialized, totalTools } = codeToolRegistry.getStats()
+  const { initialized, totalTools } = registry.getStats()
   if (initialized && totalTools > 0) return
 
   if (totalTools > 0) {
@@ -26,24 +26,24 @@ export async function ensureCodeToolsRegistered(toolNames: CodeToolName[]): Prom
     return
   }
 
-  if (registrationPromise) {
-    await registrationPromise
-    return
-  }
-
-  registrationPromise = (async () => {
-    try {
-      const { TOOL_TOOLKITS } = await import("@examples/definitions/registry-grouped")
-
-      await registerAllTools(TOOL_TOOLKITS, {
-        validate: true,
-        throwOnError: true,
-      })
-    } catch (error) {
-      const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
-      throw new Error(`Failed to auto-register code tools. Reason: ${reason}`)
-    }
-  })()
-
-  await registrationPromise
+  await registry.ensureDefaultTools(
+    async () => {
+      try {
+        const { TOOL_TOOLKITS } = await import("@examples/definitions/registry-grouped")
+        return TOOL_TOOLKITS.toolkits
+      } catch (error) {
+        const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
+        throw new Error(`Failed to load default code tools. Reason: ${reason}`)
+      }
+    },
+    {
+      validate: toolkits => {
+        const result = validateToolkitRegistration(toolkits)
+        printValidationResult("Code", result)
+        if (!result.valid) {
+          throw new Error("Code toolkit validation failed")
+        }
+      },
+    },
+  )
 }

@@ -1,4 +1,4 @@
-import { DataQuality, type LocationData } from "@lucky/tools/schemas/location.types"
+import { DataQuality, type LocationData } from "@lucky/shared"
 
 // utility function to assess location data quality
 export function assessDataQuality(data: LocationData): DataQuality {

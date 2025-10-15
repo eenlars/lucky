@@ -156,11 +156,11 @@ packages/tools/
 ### Registering Specific Toolkits
 
 ```typescript
-import { registerToolkits } from "@lucky/tools"
-import { TOOL_TOOLKITS } from "@lucky/examples/definitions/registry-grouped"
+import { registerToolGroups } from "@lucky/tools"
+import { TOOL_GROUPS } from "@examples/definitions/registry-grouped"
 
 // Register only CSV and todo tools
-await registerToolkits(TOOL_TOOLKITS, "csv", "todo")
+await registerToolGroups(TOOL_GROUPS, ["csv", "todo"])
 ```
 
 ### Validation

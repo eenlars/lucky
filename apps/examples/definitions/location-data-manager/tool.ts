@@ -1,6 +1,6 @@
 import { isNir } from "@lucky/shared"
+import { locationDataSchema } from "@lucky/shared"
 import { defineTool } from "@lucky/tools"
-import { locationDataSchema } from "@lucky/tools/schemas/location.types"
 import { z } from "zod"
 import { getLocationData, insertLocationData, removeLocationData, updateLocationData } from "./api"
 

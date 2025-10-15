@@ -5,7 +5,7 @@
  * Call this once at application startup before using any tools.
  */
 
-import { codeToolRegistry } from "../registry/CodeToolRegistry"
+import { type CodeToolRegistry, codeToolRegistry } from "../registry/CodeToolRegistry"
 import type { ToolkitRegistry } from "./codeToolsRegistration"
 import { printValidationResult, validateToolkitRegistration } from "./validation"
 
@@ -15,6 +15,7 @@ import { printValidationResult, validateToolkitRegistration } from "./validation
 export async function registerAllTools(
   toolkitRegistry: ToolkitRegistry,
   options?: { validate?: boolean; throwOnError?: boolean },
+  registry: CodeToolRegistry = codeToolRegistry,
 ): Promise<void> {
   const { validate = true, throwOnError = true } = options ?? {}
 
@@ -32,10 +33,10 @@ export async function registerAllTools(
   const allTools = toolkitRegistry.toolkits.flatMap(toolkit => toolkit.tools.map(t => t.toolFunc))
 
   // Register them with the registry
-  codeToolRegistry.registerMany(allTools)
+  registry.registerMany(allTools)
 
   // Mark registry as initialized
-  await codeToolRegistry.initialize()
+  await registry.initialize()
 
   console.log(`✅ Registered ${allTools.length} tools across ${toolkitRegistry.toolkits.length} toolkits`)
 }
@@ -43,12 +44,38 @@ export async function registerAllTools(
 /**
  * Register tools from specific toolkits only
  */
-export async function registerToolkits(toolkitRegistry: ToolkitRegistry, ...toolkitNames: string[]): Promise<void> {
-  const selectedToolkits = toolkitRegistry.toolkits.filter(t => toolkitNames.includes(t.toolkitName))
+export async function registerToolkits(
+  toolkitRegistry: ToolkitRegistry,
+  toolkitNames: readonly string[],
+  options?: { registry?: CodeToolRegistry; validate?: boolean; throwOnError?: boolean },
+): Promise<void> {
+  const registry = options?.registry ?? codeToolRegistry
+  const { validate = true, throwOnError = true } = options ?? {}
+
+  const uniqueToolkitNames = [...new Set(toolkitNames)]
+  if (uniqueToolkitNames.length !== toolkitNames.length) {
+    console.warn("registerToolkits: duplicate toolkit names detected; using first occurrence only")
+  }
+
+  const missing = uniqueToolkitNames.filter(name => !toolkitRegistry.toolkits.some(t => t.toolkitName === name))
+  if (missing.length > 0) {
+    throw new Error(`No matching toolkits found for: ${missing.join(", ")}`)
+  }
+
+  const selectedToolkits = uniqueToolkitNames.map(name => toolkitRegistry.toolkits.find(t => t.toolkitName === name)!)
   const tools = selectedToolkits.flatMap(toolkit => toolkit.tools.map(t => t.toolFunc))
 
-  codeToolRegistry.registerMany(tools)
-  await codeToolRegistry.initialize()
+  if (validate) {
+    const result = validateToolkitRegistration(selectedToolkits)
+    printValidationResult("Code", result)
+
+    if (!result.valid && throwOnError) {
+      throw new Error("Tool registration validation failed. See errors above.")
+    }
+  }
+
+  registry.registerMany(tools)
+  await registry.initialize()
 
   console.log(`✅ Registered ${tools.length} tools from toolkits: ${toolkitNames.join(", ")}`)
 }
