@@ -7,7 +7,6 @@ export default defineConfig([
     entry: {
       index: "src/index.ts",
       client: "src/client.ts",
-      env: "src/env.ts",
       "env-models": "src/env-models.ts",
       "supabase-credentials.client": "src/supabase-credentials.client.ts",
       "contracts/agent": "src/contracts/agent.ts",
@@ -17,7 +16,6 @@ export default defineConfig([
       "contracts/invoke": "src/contracts/invoke.ts",
       "contracts/messages": "src/contracts/messages.ts",
       "contracts/providers": "src/contracts/providers.ts",
-      "contracts/runtime": "src/contracts/runtime.ts",
       "contracts/tools": "src/contracts/tools.ts",
       "contracts/workflow": "src/contracts/workflow.ts",
       "contracts/fixtures": "src/contracts/fixtures.ts",

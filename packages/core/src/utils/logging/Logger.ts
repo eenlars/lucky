@@ -4,21 +4,6 @@
 
 import type { Loggable, TypeSafeLogger } from "./types"
 
-/**
- * @deprecated Use TypeSafeLogger for new code. Maintained for backward compatibility.
- */
-export interface Logger {
-  log: (...args: Loggable[]) => Promise<void>
-  onlyIf: (decider: boolean, ...args: Loggable[]) => Promise<undefined | null>
-  info: (...args: Loggable[]) => Promise<void>
-  warn: (...args: Loggable[]) => Promise<void>
-  error: (...args: Loggable[]) => Promise<void>
-  debug: (...args: Loggable[]) => Promise<void>
-  trace: (...args: Loggable[]) => Promise<void>
-  logAndSave: (fileName: string, ...args: Loggable[]) => Promise<void>
-  finalizeWorkflowLog: () => Promise<string | null>
-}
-
 export const lgg: TypeSafeLogger = {
   log: async <T extends Loggable[]>(...args: T) => console.log(...args),
   onlyIf: async <T extends Loggable[]>(decider: boolean, ...args: T) => {

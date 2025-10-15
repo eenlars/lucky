@@ -9,8 +9,6 @@ import { type Models, type ModelsConfig, type ProviderConfig, createModels } fro
 import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 
-let _modelsInstance: Models | null = null
-
 /**
  * Build provider configuration from core config and environment.
  * Only configures ENABLED providers that have API keys available.
@@ -112,12 +110,4 @@ export async function getModelsInstance(): Promise<Models> {
   }
 
   return createModels(modelsConfig)
-}
-
-/**
- * Reset the singleton instance (useful for testing or config changes).
- * @deprecated No longer uses singleton pattern - kept for backward compatibility
- */
-export function resetModelsInstance(): void {
-  _modelsInstance = null
 }

@@ -67,11 +67,6 @@
       "import": "./dist/contracts/providers.js",
       "ts": "./src/contracts/providers.ts"
     },
-    "./contracts/runtime": {
-      "types": "./dist/contracts/runtime.d.ts",
-      "import": "./dist/contracts/runtime.js",
-      "ts": "./src/contracts/runtime.ts"
-    },
     "./contracts/tools": {
       "types": "./dist/contracts/tools.d.ts",
       "import": "./dist/contracts/tools.js",
@@ -100,11 +95,6 @@
       "types": "./dist/client.d.ts",
       "import": "./dist/client.js",
       "ts": "./src/client.ts"
-    },
-    "./env": {
-      "types": "./dist/env.d.ts",
-      "import": "./dist/env.js",
-      "ts": "./src/env.ts"
     },
     "./env-models": {
       "types": "./dist/env-models.d.ts",

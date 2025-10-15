@@ -83,8 +83,6 @@ export const TOOL_CONFIG = {
     "serpAPI",
     "playwright",
     "browserAutomation",
-    "readFileLegacy",
-    "saveFileLegacy",
     // "expectedOutputHandler",
     "proxy",
     "filesystem",

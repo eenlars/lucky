@@ -403,7 +403,7 @@ describe("InvocationPipeline", () => {
     })
 
     it("handles tool strategy selection with prepare step strategy", async () => {
-      const toolManager = new ToolManager("test", [], ["jsExecutor", "saveFileLegacy"], "v1")
+      const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
@@ -413,7 +413,7 @@ describe("InvocationPipeline", () => {
 
   describe("execute()", () => {
     it("executes successfully with experimental multi-step loop", async () => {
-      const toolManager = new ToolManager("test", [], ["jsExecutor", "saveFileLegacy"], "v1")
+      const toolManager = new ToolManager("test", [], ["jsExecutor"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()
@@ -429,7 +429,7 @@ describe("InvocationPipeline", () => {
     })
 
     it("multi-step loop executes tool strategy and terminates properly", async () => {
-      const toolManager = new ToolManager("test", [], ["jsExecutor", "saveFileLegacy"], "v1")
+      const toolManager = new ToolManager("test", [], ["jsExecutor", "todoWrite"], "v1")
       const pipeline = new InvocationPipeline(baseContext, toolManager)
 
       await pipeline.prepare()

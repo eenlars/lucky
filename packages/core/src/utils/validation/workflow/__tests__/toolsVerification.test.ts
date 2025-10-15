@@ -18,7 +18,7 @@ vi.mock("@examples/settings/constants", () => ({
       uniqueToolSetsPerAgent: true,
       maxToolsPerAgent: 3,
       defaultTools: new Set(["urlToMarkdown", "csvReader"]),
-      inactive: new Set(["readFileLegacy"]),
+      inactive: new Set(["todoRead"]),
     },
     models: {
       inactive: new Set(["inactive-model"]),
@@ -30,8 +30,7 @@ vi.mock("@examples/settings/constants", () => ({
 vi.mock("@core/tools/tool.types", () => ({
   ALL_ACTIVE_TOOL_NAMES: [
     "searchGoogleMaps",
-    "saveFileLegacy",
-    "readFileLegacy",
+    "todoRead",
     "verifyLocation",
     "locationDataManager",
     "locationDataInfo",
@@ -66,7 +65,7 @@ vi.mock("@core/tools/tool.types", () => ({
     "playwright",
     "serpAPI",
   ],
-  INACTIVE_TOOLS: new Set(["readFileLegacy", "deprecatedTool"]),
+  INACTIVE_TOOLS: new Set(["todoRead", "deprecatedTool"]),
 }))
 
 const applyToolOverrides = (overrides: Partial<CoreToolsConfig>) => {
@@ -112,7 +111,7 @@ const wrongExample: WorkflowConfig = {
       systemPrompt: "",
       modelName: getDefaultModels().nano,
       mcpTools: [],
-      codeTools: ["saveFileLegacy"],
+      codeTools: ["todoWrite"],
       handOffs: ["end"],
     },
     {
@@ -257,7 +256,7 @@ describe("verifyToolsUnique", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["readFileLegacy"],
+          codeTools: ["todoRead"],
           handOffs: ["node2"],
         },
         {
@@ -343,7 +342,7 @@ describe("verifyAllToolsAreActive", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["readFileLegacy"], // This is in INACTIVE_TOOLS
+          codeTools: ["playwright" as any], // This is in INACTIVE_TOOLS
           handOffs: ["end"],
         },
       ],
@@ -352,7 +351,7 @@ describe("verifyAllToolsAreActive", () => {
     const errors = await verifyAllToolsAreActive(inactiveToolWorkflow)
     expect(errors.length).toBeGreaterThan(0)
     expect(errors[0]).toContain("inactive tools")
-    expect(errors[0]).toContain("readFileLegacy")
+    expect(errors[0]).toContain("playwright")
     expect(errors[0]).toContain("node1")
   })
 
@@ -440,7 +439,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["readFileLegacy"],
+          codeTools: ["todoRead"],
           handOffs: ["node2"],
         },
         {
@@ -449,7 +448,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["readFileLegacy"],
+          codeTools: ["todoRead"],
           handOffs: ["end"],
         },
       ],
@@ -472,7 +471,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["readFileLegacy", "readFileLegacy"], // Duplicate
+          codeTools: ["todoRead", "todoRead"], // Duplicate
           handOffs: ["end"],
         },
       ],
@@ -525,7 +524,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["readFileLegacy"],
+          codeTools: ["todoRead"],
           handOffs: ["node2"],
         },
         {
@@ -534,7 +533,7 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["readFileLegacy"],
+          codeTools: ["todoRead"],
           handOffs: ["end"],
         },
       ],
@@ -579,14 +578,7 @@ describe("verifyMaxToolsPerAgent", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: [
-            "readFileLegacy",
-            "saveFileLegacy",
-            "searchGoogleMaps",
-            "verifyLocation",
-            "urlToMarkdown",
-            "csvReader",
-          ], // 6 tools, limit is 3 + 2 defaultTools = 5
+          codeTools: ["todoRead", "todoWrite", "searchGoogleMaps", "verifyLocation", "urlToMarkdown", "csvReader"], // 6 tools, limit is 3 + 2 defaultTools = 5
           handOffs: ["end"],
         },
       ],
@@ -609,7 +601,7 @@ describe("verifyMaxToolsPerAgent", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: ["tavily"],
-          codeTools: ["readFileLegacy", "saveFileLegacy"],
+          codeTools: ["todoRead", "todoWrite"],
           handOffs: ["end"],
         },
       ],

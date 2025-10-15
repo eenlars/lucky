@@ -26,10 +26,6 @@ export const TOOLS = {
   code: {
     searchGoogleMaps:
       "Search Google Maps for business information. Supports 'auto' mode (detects single/multiple results), 'multiple' mode (for listings), and 'url' mode (direct URL). Returns up to 120 results with business details, hours, contact info. you can filter by hostname (e.g. albertheijn.nl, ...), you can only use hostname.tld (two parts). CANNOT: interact with map elements, click buttons, or handle pages requiring authentication.",
-    saveFileLegacy:
-      "Save any data to a file at specified path, creates directories if needed. LIMITS: restricted to accessible filesystem paths, overwrites existing files without warning, no append mode",
-    readFileLegacy:
-      "Read and return file contents as string. LIMITS: entire file loaded into memory, not suitable for binary files or files >10MB, returns error if file doesn't exist",
     verifyLocation:
       "Geocode a list of addresses to get coordinates, place name, and context using Mapbox. Best with complete addresses. LIMITS: may return multiple results for ambiguous queries, less accurate with partial addresses",
     locationDataManager:
@@ -101,8 +97,6 @@ export const DEFAULT_INACTIVE_TOOLS: AllToolNames[] = [
   "serpAPI",
   "playwright",
   "browserAutomation",
-  "readFileLegacy",
-  "saveFileLegacy",
   "proxy",
   "filesystem",
   "csvReader",
