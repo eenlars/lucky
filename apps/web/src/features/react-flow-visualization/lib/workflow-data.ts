@@ -1,3 +1,4 @@
+import { validateAndResolveModel } from "@/lib/models/model-fallback"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { UserModelPreferences } from "@lucky/shared"
 import { type AppEdge, createEdge } from "../components/edges/edges"
@@ -32,7 +33,6 @@ export const initialSetupConfig = (
     // Validate and resolve model against user preferences
     let resolvedModelName = node.modelName
     if (userPreferences) {
-      const { validateAndResolveModel } = require("@/lib/models/model-fallback")
       const { modelId, wasFallback } = validateAndResolveModel(node.modelName, userPreferences)
       resolvedModelName = modelId
 
