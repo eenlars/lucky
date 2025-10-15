@@ -130,14 +130,14 @@ async function main() {
   }
 
   // Generate all schema types
-  let anyGenerated = false
+  let allSucceeded = true
   for (const schema of schemas) {
     const ok = await generateSchemaTypes(schema.name, schema.filename, tempDir)
-    anyGenerated = anyGenerated || ok
+    allSucceeded = allSucceeded && ok
   }
 
-  // Stamp only if at least one generation succeeded
-  if (anyGenerated) {
+  // Stamp only if all schemas succeeded
+  if (allSucceeded) {
     try {
       writeFileSync(stampFile, new Date().toISOString(), "utf-8")
     } catch {}
