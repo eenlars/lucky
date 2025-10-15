@@ -342,7 +342,7 @@ describe("verifyAllToolsAreActive", () => {
           systemPrompt: "test",
           modelName: getDefaultModels().medium,
           mcpTools: [],
-          codeTools: ["todoRead"], // This is in INACTIVE_TOOLS
+          codeTools: ["playwright" as any], // This is in INACTIVE_TOOLS
           handOffs: ["end"],
         },
       ],
@@ -351,7 +351,7 @@ describe("verifyAllToolsAreActive", () => {
     const errors = await verifyAllToolsAreActive(inactiveToolWorkflow)
     expect(errors.length).toBeGreaterThan(0)
     expect(errors[0]).toContain("inactive tools")
-    expect(errors[0]).toContain("todoRead")
+    expect(errors[0]).toContain("playwright")
     expect(errors[0]).toContain("node1")
   })
 
