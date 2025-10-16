@@ -90,7 +90,7 @@ export default function HomePage() {
           onSendMessage={handleSendMessage}
           placeholder="Ask me anything about workflows..."
           useSimulation={useSimulation}
-          modelName={useSimulation ? undefined : "openrouter#anthropic/claude-3.5-sonnet"}
+          modelName={useSimulation ? undefined : "openai#gpt-5-nano"}
           nodeId="home-chat"
           systemPrompt="You are a helpful AI assistant for workflow automation. Be concise and clear."
         />

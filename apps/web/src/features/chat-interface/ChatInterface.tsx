@@ -2,6 +2,7 @@
  * ChatInterface Component
  *
  * Minimal chat interface with clean message bubbles
+ * Supports both simulation mode and real AI mode
  */
 
 "use client"
@@ -9,37 +10,43 @@
 import { cn } from "@/lib/utils"
 import { useCallback, useState } from "react"
 import { ChatInput } from "./components/ChatInput/ChatInput"
+import { ChatInterfaceReal } from "./ChatInterfaceReal"
 import { MessagesArea } from "./components/MessagesArea"
 import { useChat } from "./hooks/useChat"
 import type { ChatInterfaceProps } from "./types/types"
 
-export function ChatInterface({
-  initialMessages = [],
-  placeholder = "Ask me anything about workflows...",
-  onSendMessage,
-  onMessageSent,
-  onError,
-  showTimestamps = true,
-  enableMessageActions = true,
-  enableMarkdown = false,
-  enableCodeHighlighting = false,
-  maxHeight,
-  className,
-  useSimulation = true,
-  modelName,
-  nodeId,
-  systemPrompt,
-}: ChatInterfaceProps) {
-  // Chat state
+export function ChatInterface(props: ChatInterfaceProps) {
+  const {
+    initialMessages = [],
+    placeholder = "Ask me anything about workflows...",
+    onSendMessage,
+    onMessageSent,
+    onError,
+    showTimestamps = true,
+    enableMessageActions = true,
+    enableMarkdown = false,
+    enableCodeHighlighting = false,
+    maxHeight,
+    className,
+    useSimulation = true,
+    modelName,
+    nodeId,
+    systemPrompt,
+  } = props
+
+  // Use real AI mode with Provider pattern
+  if (!useSimulation && modelName && nodeId) {
+    return <ChatInterfaceReal {...props} />
+  }
+
+  // Simulation mode - use custom hook
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { messages, isTyping, error, isLoading, sendMessage, retryMessage, deleteMessage } = useChat({
     initialMessages,
     onSendMessage,
     onMessageReceived: onMessageSent,
     onError,
-    useSimulation,
-    modelName,
-    nodeId,
-    systemPrompt,
+    useSimulation: true,
   })
 
   // Input state
