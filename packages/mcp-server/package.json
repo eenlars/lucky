@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^17.2.2",
-    "fastmcp": "^1.0.3",
+    "fastmcp": "^3.20.0",
     "typescript": "^5.9.2",
     "zod": "^4.1.5"
   },
