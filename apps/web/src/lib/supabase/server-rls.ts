@@ -26,11 +26,17 @@ export async function createRLSClient() {
     )
   }
 
+  // Get Clerk session token (may be null for bearer token auth)
+  const clerkToken = await (await auth()).getToken()
+  console.log("[RLS] Creating RLS client with Clerk token:", clerkToken ? "present" : "MISSING")
+
   return createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
     // Get Clerk session token and pass it to Supabase
     // This allows RLS policies to identify the current user via iam.current_user_id()
     async accessToken() {
-      return (await auth()).getToken()
+      const token = await (await auth()).getToken()
+      console.log("[RLS] Access token for query:", token ? `${token.slice(0, 20)}...` : "null")
+      return token
     },
   })
 }

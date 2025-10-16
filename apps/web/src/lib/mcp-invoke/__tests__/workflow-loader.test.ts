@@ -42,7 +42,7 @@ describe("loadWorkflowConfig", () => {
 
       mockCreateRLSClient.mockResolvedValue(mockSupabase)
 
-      const result = await loadWorkflowConfig("wf_ver_abc123", "workflow_version")
+      const result = await loadWorkflowConfig("wf_ver_abc123", undefined, "workflow_version")
 
       expect(result.success).toBe(true)
       expect(result.config).toBeDefined()
@@ -70,7 +70,7 @@ describe("loadWorkflowConfig", () => {
 
       mockCreateRLSClient.mockResolvedValue(mockSupabase)
 
-      const result = await loadWorkflowConfig("wf_ver_nonexistent", "workflow_version")
+      const result = await loadWorkflowConfig("wf_ver_nonexistent", undefined, "workflow_version")
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
@@ -78,7 +78,7 @@ describe("loadWorkflowConfig", () => {
     })
 
     it("enforces workflow_version mode - rejects wf_* ID", async () => {
-      const result = await loadWorkflowConfig("wf_parent_123", "workflow_version")
+      const result = await loadWorkflowConfig("wf_parent_123", undefined, "workflow_version")
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
@@ -122,7 +122,7 @@ describe("loadWorkflowConfig", () => {
 
       mockCreateRLSClient.mockResolvedValue(mockSupabase)
 
-      const result = await loadWorkflowConfig("wf_parent_123", "workflow_parent")
+      const result = await loadWorkflowConfig("wf_parent_123", undefined, "workflow_parent")
 
       expect(result.success).toBe(true)
       expect(result.config?.entryNodeId).toBe("new")
@@ -142,7 +142,7 @@ describe("loadWorkflowConfig", () => {
 
       mockCreateRLSClient.mockResolvedValue(mockSupabase)
 
-      const result = await loadWorkflowConfig("wf_nonexistent", "workflow_parent")
+      const result = await loadWorkflowConfig("wf_nonexistent", undefined, "workflow_parent")
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
@@ -164,14 +164,14 @@ describe("loadWorkflowConfig", () => {
 
       mockCreateRLSClient.mockResolvedValue(mockSupabase)
 
-      const result = await loadWorkflowConfig("wf_empty", "workflow_parent")
+      const result = await loadWorkflowConfig("wf_empty", undefined, "workflow_parent")
 
       expect(result.success).toBe(false)
       expect(result.error?.message).toContain("No versions found")
     })
 
     it("enforces workflow_parent mode - rejects wf_ver_* ID", async () => {
-      const result = await loadWorkflowConfig("wf_ver_abc123", "workflow_parent")
+      const result = await loadWorkflowConfig("wf_ver_abc123", undefined, "workflow_parent")
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)

@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     // Load workflow configuration to get input schema
     // For session auth users, return demo workflow if not found (better onboarding UX)
     // TODO: think if we really want to auto-run demo workflow for session auth users
-    const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id, undefined, {
+    const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id, principal, undefined, {
       returnDemoOnNotFound: principal.auth_method === "session",
     })
     if (!workflowLoadResult.success) {
@@ -102,13 +102,17 @@ export async function POST(req: NextRequest) {
       coreInvocationInput = {
         evalInput: invocationInput.evalInput,
         dslConfig: config,
+        validation: 'none', // Skip validation for demo workflows (already validated)
       }
     } else if (workflowLoadResult.resolvedWorkflowVersionId) {
       coreInvocationInput.workflowVersionId = workflowLoadResult.resolvedWorkflowVersionId
     }
 
-    // Create secret resolver for this user
-    const secrets = createSecretResolver(principal.clerk_id)
+    // Use 'none' validation by default for immediate execution (workflows are validated on save)
+    coreInvocationInput.validation = 'none'
+
+    // Create context-aware secret resolver for this user
+    const secrets = createSecretResolver(principal.clerk_id, principal)
 
     // Extract required provider keys from workflow config
     const requiredProviderKeys = getRequiredProviderKeys(config, "v1/invoke")

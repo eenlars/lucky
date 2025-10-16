@@ -128,6 +128,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      validate_bearer_token: {
+        Args: { p_secret_hash: string }
+        Returns: {
+          clerk_id: string
+          scopes: Json
+          secret_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

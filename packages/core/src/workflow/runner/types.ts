@@ -78,6 +78,14 @@ export interface RunResult {
 }
 
 /**
+ * Workflow validation method before execution
+ * - 'strict': Full validation with Zod + custom checks
+ * - 'ai': AI-powered repair and enhancement (slower, costs money)
+ * - 'none': Skip validation entirely (fastest, use for pre-validated workflows)
+ */
+export type ValidationMethod = 'strict' | 'ai' | 'none'
+
+/**
  * Union of supported ways to invoke a workflow.
  * Provide `evalInput` and exactly one of:
  * - workflowVersionId: load config from database by version id
@@ -90,6 +98,8 @@ export type InvocationInput = {
   onProgress?: WorkflowEventHandler
   /** Optional abort signal for graceful cancellation */
   abortSignal?: AbortSignal
+  /** Validation method before execution (default: 'strict') */
+  validation?: ValidationMethod
 } & (
   | { workflowVersionId: string; filename?: never; dslConfig?: never }
   | { filename: string; workflowVersionId?: never; dslConfig?: never }
