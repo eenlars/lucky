@@ -7,6 +7,20 @@ import { z } from "zod"
 
 dotenv.config({ debug: false, quiet: true })
 
+// Suppress all console output in stdio mode to prevent JSON-RPC corruption
+if (
+  process.env.CLOUD_SERVICE !== "true" &&
+  process.env.SSE_LOCAL !== "true" &&
+  process.env.HTTP_STREAMABLE_SERVER !== "true"
+) {
+  const noop = () => {}
+  console.log = noop
+  console.info = noop
+  console.warn = noop
+  console.debug = noop
+  // Keep console.error for critical errors only
+}
+
 interface SessionData {
   luckyApiKey?: string
   [key: string]: unknown
@@ -55,11 +69,8 @@ const server = new FastMCP<SessionData>({
       }
       return { luckyApiKey: apiKey }
     }
-    // For self-hosted instances, API key is optional if LUCKY_API_URL is provided
-    if (!process.env.LUCKY_API_KEY && !process.env.LUCKY_API_URL) {
-      console.error("Either LUCKY_API_KEY or LUCKY_API_URL must be provided")
-      process.exit(1)
-    }
+    // For self-hosted/stdio mode, API key is optional
+    // LUCKY_API_URL will be checked when tools are invoked
     return { luckyApiKey: process.env.LUCKY_API_KEY }
   },
   // Lightweight health endpoint for LB checks
@@ -175,17 +186,26 @@ List all workflows available to the authenticated user.
     })
 
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("Invalid API key. Please check your MCP configuration.")
+      let errorDetails = response.statusText
+      try {
+        const errorBody = await response.text()
+        errorDetails = errorBody || response.statusText
+      } catch {
+        // If we can't read the body, use statusText
       }
-      throw new Error(`Failed to list workflows: ${response.statusText}`)
+
+      if (response.status === 401) {
+        throw new Error(`Invalid API key. Please check your MCP configuration. Details: ${errorDetails}`)
+      }
+      throw new Error(`Failed to list workflows (${response.status}): ${errorDetails}`)
     }
 
     let workflows: unknown
+    const rawBody = await response.text()
     try {
-      workflows = await response.json()
-    } catch {
-      throw new Error(`Backend returned invalid JSON response (status ${response.status})`)
+      workflows = JSON.parse(rawBody)
+    } catch (parseError) {
+      throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
     return asText(workflows)
@@ -230,7 +250,7 @@ Execute a workflow with provided input data.
   `,
   parameters: z.object({
     workflow_id: z.string().describe("Workflow identifier from lucky_list_workflows"),
-    input: z.unknown().describe("Input data matching the workflow's inputSchema"),
+    input: z.unknown().describe("Input data matching the workflow's inputSchema (can be any JSON value)"),
     options: z
       .object({
         timeoutMs: z.number().max(600000).optional().describe("Max execution time in milliseconds"),
@@ -278,17 +298,26 @@ Execute a workflow with provided input data.
     })
 
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("Invalid API key. Please check your MCP configuration.")
+      let errorDetails = response.statusText
+      try {
+        const errorBody = await response.text()
+        errorDetails = errorBody || response.statusText
+      } catch {
+        // If we can't read the body, use statusText
       }
-      throw new Error(`Failed to invoke workflow: ${response.statusText}`)
+
+      if (response.status === 401) {
+        throw new Error(`Invalid API key. Please check your MCP configuration. Details: ${errorDetails}`)
+      }
+      throw new Error(`Failed to invoke workflow (${response.status}): ${errorDetails}`)
     }
 
     let rpcResponse: JsonRpcResponse
+    const rawBody = await response.text()
     try {
-      rpcResponse = (await response.json()) as JsonRpcResponse
-    } catch {
-      throw new Error(`Backend returned invalid JSON response (status ${response.status})`)
+      rpcResponse = JSON.parse(rawBody) as JsonRpcResponse
+    } catch (parseError) {
+      throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
     // Check for JSON-RPC error
@@ -361,20 +390,29 @@ Check the status of a workflow execution.
     })
 
     if (!response.ok) {
+      let errorDetails = response.statusText
+      try {
+        const errorBody = await response.text()
+        errorDetails = errorBody || response.statusText
+      } catch {
+        // If we can't read the body, use statusText
+      }
+
       if (response.status === 401) {
-        throw new Error("Invalid API key. Please check your MCP configuration.")
+        throw new Error(`Invalid API key. Please check your MCP configuration. Details: ${errorDetails}`)
       }
       if (response.status === 404) {
-        throw new Error(`Workflow execution not found: ${invocation_id}`)
+        throw new Error(`Workflow execution not found: ${invocation_id}. Details: ${errorDetails}`)
       }
-      throw new Error(`Failed to check status: ${response.statusText}`)
+      throw new Error(`Failed to check status (${response.status}): ${errorDetails}`)
     }
 
     let status: unknown
+    const rawBody = await response.text()
     try {
-      status = await response.json()
-    } catch {
-      throw new Error(`Backend returned invalid JSON response (status ${response.status})`)
+      status = JSON.parse(rawBody)
+    } catch (parseError) {
+      throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
     return asText(status)
@@ -421,20 +459,29 @@ Cancel a running workflow execution.
     })
 
     if (!response.ok) {
+      let errorDetails = response.statusText
+      try {
+        const errorBody = await response.text()
+        errorDetails = errorBody || response.statusText
+      } catch {
+        // If we can't read the body, use statusText
+      }
+
       if (response.status === 401) {
-        throw new Error("Invalid API key. Please check your MCP configuration.")
+        throw new Error(`Invalid API key. Please check your MCP configuration. Details: ${errorDetails}`)
       }
       if (response.status === 404) {
-        throw new Error(`Workflow execution not found: ${invocation_id}`)
+        throw new Error(`Workflow execution not found: ${invocation_id}. Details: ${errorDetails}`)
       }
-      throw new Error(`Failed to cancel workflow: ${response.statusText}`)
+      throw new Error(`Failed to cancel workflow (${response.status}): ${errorDetails}`)
     }
 
     let result: unknown
+    const rawBody = await response.text()
     try {
-      result = await response.json()
-    } catch {
-      throw new Error(`Backend returned invalid JSON response (status ${response.status})`)
+      result = JSON.parse(rawBody)
+    } catch (parseError) {
+      throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
     return asText(result)

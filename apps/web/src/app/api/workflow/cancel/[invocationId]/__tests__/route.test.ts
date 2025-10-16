@@ -1,33 +1,37 @@
 import { NextRequest } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock dependencies
-const mockAuthenticateRequest = vi.fn()
-const mockGetWorkflowState = vi.fn()
-const mockSetWorkflowState = vi.fn()
-const mockPublishCancellation = vi.fn()
-const mockActiveWorkflows = new Map()
-const mockLogException = vi.fn()
-
+// Mock dependencies - must be defined before vi.mock calls
 vi.mock("@/lib/auth/principal", () => ({
-  authenticateRequest: mockAuthenticateRequest,
+  authenticateRequest: vi.fn(),
 }))
 
 vi.mock("@/lib/redis/workflow-state", () => ({
-  getWorkflowState: mockGetWorkflowState,
-  setWorkflowState: mockSetWorkflowState,
-  publishCancellation: mockPublishCancellation,
+  getWorkflowState: vi.fn(),
+  setWorkflowState: vi.fn(),
+  publishCancellation: vi.fn(),
 }))
 
 vi.mock("@/lib/workflow/active-workflows", () => ({
-  activeWorkflows: mockActiveWorkflows,
+  activeWorkflows: new Map(),
 }))
 
 vi.mock("@/lib/error-logger", () => ({
-  logException: mockLogException,
+  logException: vi.fn(),
 }))
 
+import { authenticateRequest } from "@/lib/auth/principal"
+import { logException } from "@/lib/error-logger"
+import { getWorkflowState, publishCancellation, setWorkflowState } from "@/lib/redis/workflow-state"
+import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import { POST } from "../route"
+
+const mockAuthenticateRequest = vi.mocked(authenticateRequest)
+const mockGetWorkflowState = vi.mocked(getWorkflowState)
+const mockSetWorkflowState = vi.mocked(setWorkflowState)
+const mockPublishCancellation = vi.mocked(publishCancellation)
+const mockLogException = vi.mocked(logException)
+const mockActiveWorkflows = activeWorkflows as Map<string, any>
 
 describe("POST /api/workflow/cancel/[invocationId]", () => {
   beforeEach(() => {
@@ -53,8 +57,8 @@ describe("POST /api/workflow/cancel/[invocationId]", () => {
     })
 
     mockGetWorkflowState.mockResolvedValue(null)
-    mockSetWorkflowState.mockResolvedValue(undefined)
-    mockPublishCancellation.mockResolvedValue(undefined)
+    mockSetWorkflowState.mockResolvedValue()
+    mockPublishCancellation.mockResolvedValue(true)
 
     const request = new NextRequest(`http://localhost/api/workflow/cancel/${invocationId}`, {
       method: "POST",
@@ -97,6 +101,9 @@ describe("POST /api/workflow/cancel/[invocationId]", () => {
     mockGetWorkflowState.mockResolvedValue({
       state: "cancelled",
       cancelRequestedAt: 1234567890,
+      createdAt: Date.now(),
+      desired: "cancelled",
+      startedAt: Date.now(),
     })
 
     const request = new NextRequest(`http://localhost/api/workflow/cancel/${invocationId}`, {
@@ -119,6 +126,9 @@ describe("POST /api/workflow/cancel/[invocationId]", () => {
     mockGetWorkflowState.mockResolvedValue({
       state: "cancelling",
       cancelRequestedAt: 1234567890,
+      createdAt: Date.now(),
+      desired: "cancelling",
+      startedAt: Date.now(),
     })
 
     const request = new NextRequest(`http://localhost/api/workflow/cancel/${invocationId}`, {
