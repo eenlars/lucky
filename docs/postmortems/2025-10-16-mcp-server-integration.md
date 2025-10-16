@@ -213,7 +213,7 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 
 # Timeline
 
-**2025-10-16 13:00**: User reports JSON-RPC error in Claude Desktop logs
+**2025-10-16 13:00**: User reports JSON-RPC error in MCP logs
 **2025-10-16 13:15**: Issue #1 identified (console output), fix applied
 **2025-10-16 13:30**: Server connects but tools not visible
 **2025-10-16 13:45**: Issue #2 identified (empty schemas), Zod v4 incompatibility discovered
@@ -221,10 +221,14 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 **2025-10-16 14:15**: Upgraded FastMCP to v3.20.0, schemas now complete
 **2025-10-16 14:30**: Server crashes on startup
 **2025-10-16 14:45**: Issue #3 identified (process.exit in authenticate), fix applied
-**2025-10-16 15:00**: All tests passing, manual verification in Claude Desktop successful
+**2025-10-16 15:00**: All tests passing, manual verification successful
+**2025-10-16 15:30**: Workflow invocation fails with "Bad Request"
+**2025-10-16 15:35**: Enhanced error logging to capture response details
+**2025-10-16 15:40**: Issue #4 identified (input serialized as string), fix applied
+**2025-10-16 15:45**: All issues resolved, workflows executing successfully
 
-**Total time**: 2 hours
-**Commits**: 4 (3 fixes + 1 documentation)
+**Total time**: 2.75 hours
+**Commits**: 7 (6 fixes + 1 documentation)
 
 ---
 
@@ -251,9 +255,53 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 
 ---
 
+## Issue #4: Input Parameter Serialized as String (2025-10-16)
+
+**Context**: After fixing Issues #1-3, tools were callable but `lucky_run_workflow` failed with validation error: `Input validation failed: data must be object`.
+
+**Root Cause**: The `input` parameter was defined as `z.unknown()`, which allowed any type. The MCP client interpreted this as "string is acceptable" and serialized the input object as a JSON string instead of passing it as an object.
+
+**What happened**:
+- User invoked workflow with input: `{"question": "What is the capital of France?"}`
+- MCP request sent: `input: "{\"question\": \"What is the capital of France?\"}"`
+- Lucky API received a string instead of an object
+- Validation failed: "data must be object"
+
+**Why it happened**:
+- Zod `z.unknown()` accepts any type (string, number, object, etc.)
+- FastMCP converts this to JSON Schema with no `type` constraint
+- The MCP client chooses string serialization for untyped parameters
+- The Lucky API's JSON-RPC endpoint expects `input` to be an object, not a string
+
+**Investigation path**:
+1. Enhanced error logging revealed full validation error with path and type info
+2. Error showed: `"path": "", "message": "must be object", "params": {"type": "object"}`
+3. Empty path indicated root-level validation failure
+4. MCP request inspection showed input was being passed as a string
+
+**Solution**: Changed input schema to explicitly require object type:
+```typescript
+// Before (accepts any type):
+input: z.unknown().describe("Input data matching the workflow's inputSchema")
+
+// After (enforces object type):
+input: z.object({}).passthrough().describe("Input data matching the workflow's inputSchema (must be a JSON object)")
+```
+
+The `.passthrough()` allows any additional properties while enforcing the base type is an object.
+
+**Result**: MCP client now passes input as a proper JSON object, and workflow invocations succeed.
+
+**Verification**: Workflow execution completes successfully with proper object input.
+
+---
+
 # Commits
 
 - `7b3c0278` - fix(mcp): upgrade FastMCP to v3.20.0 for Zod v4 compatibility
 - `77d24607` - fix(mcp): remove process.exit in authenticate for stdio mode
 - `f7810963` - docs(mcp): document authenticate process.exit fix in completion report
 - `9bfeb006` - docs(mcp): add final status summary to Phase 3 completion report
+- `71ce3745` - docs(mcp): add comprehensive postmortem for MCP server integration issues
+- `7a427aad` - fix(mcp): add detailed error logging for API failures
+- `858ce7cd` - fix(mcp): change input parameter type from unknown to object
