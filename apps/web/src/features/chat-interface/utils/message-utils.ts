@@ -13,11 +13,7 @@ type MessageRole = "user" | "assistant" | "system"
 // Message Creation
 // ============================================================================
 
-export function createMessage(
-  content: string,
-  role: MessageRole = "user",
-  overrides?: Partial<UIMessage>,
-): UIMessage {
+export function createMessage(content: string, role: MessageRole = "user", overrides?: Partial<UIMessage>): UIMessage {
   return {
     id: generateMessageId(),
     role,
@@ -160,10 +156,8 @@ export function groupMessagesByDate(messages: UIMessage[]): MessageGroup[] {
     messages: messages.sort((a, b) => {
       const aMetadata = a.metadata as any
       const bMetadata = b.metadata as any
-      const aTime =
-        aMetadata?.timestamp instanceof Date ? aMetadata.timestamp : new Date(aMetadata?.timestamp || 0)
-      const bTime =
-        bMetadata?.timestamp instanceof Date ? bMetadata.timestamp : new Date(bMetadata?.timestamp || 0)
+      const aTime = aMetadata?.timestamp instanceof Date ? aMetadata.timestamp : new Date(aMetadata?.timestamp || 0)
+      const bTime = bMetadata?.timestamp instanceof Date ? bMetadata.timestamp : new Date(bMetadata?.timestamp || 0)
       return aTime.getTime() - bTime.getTime()
     }),
   }))

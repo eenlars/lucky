@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils"
 import { Provider, useChat, useChatActions } from "@ai-sdk-tools/store"
 import { DefaultChatTransport } from "ai"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ChatInput } from "./components/ChatInput/ChatInput"
 import type { ChatInterfaceProps } from "./ChatInterfaceSimulation"
+import { ChatInput } from "./components/ChatInput/ChatInput"
 import { EmptyResponseError } from "./components/EmptyResponseError"
 import { MessagesArea } from "./components/MessagesArea"
 import { copyToClipboard } from "./utils/message-utils"
@@ -34,12 +34,7 @@ function ChatInterfaceRealInner({
   modelName,
   systemPrompt,
 }: ChatInterfaceRealInnerProps) {
-  const {
-    messages,
-    sendMessage,
-    status,
-    error,
-  } = useChat({
+  const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/agent/chat",
       body: {
@@ -58,10 +53,7 @@ function ChatInterfaceRealInner({
   // Check if last message is empty assistant response
   const lastMessage = messages[messages.length - 1]
   const showEmptyResponseWarning =
-    !isLoading &&
-    lastMessage &&
-    lastMessage.role === "assistant" &&
-    getMessageText(lastMessage).trim().length === 0
+    !isLoading && lastMessage && lastMessage.role === "assistant" && getMessageText(lastMessage).trim().length === 0
 
   // Notify parent when new assistant messages arrive
   useEffect(() => {

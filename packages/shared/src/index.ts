@@ -186,6 +186,16 @@ export {
   type Principal,
 } from "./contracts/execution"
 
+// Agent event types
+export type {
+  AgentEvent,
+  AgentStartEvent,
+  AgentEndEvent,
+  AgentErrorEvent,
+  AgentToolStartEvent,
+  AgentToolEndEvent,
+} from "./types/agentEvents"
+
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe
 // Access them via:
