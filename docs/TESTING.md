@@ -197,11 +197,15 @@ The `@repo/test-config` package provides shared Vitest configuration:
 Each package can have a thin `vitest.config.ts` for running tests inside the package directory:
 
 ```typescript
-import { baseConfig } from "@repo/test-config/vitest.base"
+import { defineConfig } from "vitest/config"
+import tsconfigPaths from "vite-tsconfig-paths"
 
-export default baseConfig({
+export default defineConfig({
+  plugins: [tsconfigPaths({ projects: ["../../tsconfig.paths.json"] })],
   test: {
-    include: ["packages/core/src/**/*.test.{ts,tsx}"],
+    globals: true,
+    include: ["src/**/*.test.{ts,tsx}", "src/**/*.spec.test.{ts,tsx}"],
+    environment: "node",
   },
 })
 ```

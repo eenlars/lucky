@@ -1,16 +1,19 @@
+import { loadEnv } from "vite"
+import tsconfigPaths from "vite-tsconfig-paths"
 /**
  * Root Vitest config with multi-project workspace
  */
 import { defineConfig } from "vitest/config"
-import tsconfigPaths from "vite-tsconfig-paths"
 
 const sharedPlugins = [tsconfigPaths({ projects: ["./tsconfig.paths.json"] })]
+const env = loadEnv("test", process.cwd(), "")
 
 export default defineConfig({
   plugins: sharedPlugins,
   test: {
     globals: true,
     setupFiles: ["./packages/test-config/src/setup.global.ts"],
+    env,
     projects: [
       {
         plugins: sharedPlugins,

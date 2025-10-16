@@ -33,7 +33,7 @@ export function openaiHandlers(options: OpenAIHandlerOptions = {}) {
       return HttpResponse.json({
         id: "chatcmpl-test",
         object: "chat.completion",
-        created: Date.now(),
+        created: Math.floor(Date.now() / 1000),
         model: "gpt-4",
         choices: [
           {

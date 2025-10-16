@@ -27,7 +27,7 @@
     "iterative": "rm -rf .core-data && bun run src/main.ts --mode=iterative",
     "clean": "bun run scripts/cleanup.ts",
     "test": "bunx vitest",
-    "test:unit": "bunx vitest run",
+    "test:unit": "bunx vitest run src/**/*.test.{ts,tsx}",
     "test:core": "bunx vitest",
     "test:integration": "bunx vitest run src/**/*.spec.test.{ts,tsx}",
     "coverage": "bunx vitest run --coverage",

@@ -1,8 +1,8 @@
-import { configDefaults, defineConfig } from "vitest/config"
+import { configDefaults, defineConfig, mergeConfig } from "vitest/config"
 import { tsPathsFor } from "./plugins"
 
 export function baseConfig(overrides: Parameters<typeof defineConfig>[0] = {}) {
-  return defineConfig({
+  const baseSettings = defineConfig({
     plugins: [
       // Read both root paths and app tsconfig for "@/*"
       tsPathsFor("./tsconfig.paths.json", "./apps/web/tsconfig.json"),
@@ -37,6 +37,7 @@ export function baseConfig(overrides: Parameters<typeof defineConfig>[0] = {}) {
       // Avoid brittle watch in CI
       watch: !process.env.CI,
     },
-    ...overrides,
   })
+
+  return mergeConfig(baseSettings, overrides)
 }

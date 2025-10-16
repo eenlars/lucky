@@ -38,12 +38,12 @@ Migration to a clear, organized testing infrastructure following the specificati
 ## Test Organization
 
 ```
-packages/*/src/**/*.test.ts          → pkg-unit
-packages/*/src/**/*.spec.test.ts     → pkg-int
-apps/web/src/**/*.test.{ts,tsx}      → app-unit
-apps/web/src/**/*.spec.test.{ts,tsx} → app-int
-tests/integration/**                 → xrepo
-tests/e2e-essential/**               → e2e
+packages/*/src/**/*.test.{ts,tsx}          → pkg-unit
+packages/*/src/**/*.spec.test.{ts,tsx}     → pkg-int
+apps/web/src/**/*.test.{ts,tsx}            → app-unit
+apps/web/src/**/*.spec.test.{ts,tsx}       → app-int
+tests/integration/**/*.test.{ts,tsx}       → xrepo
+tests/e2e-essential/**/*.test.{ts,tsx}     → e2e
 ```
 
 ## Running Tests
