@@ -201,10 +201,10 @@ List all workflows available to the authenticated user.
     }
 
     let workflows: unknown
+    const rawBody = await response.text()
     try {
-      workflows = await response.json()
+      workflows = JSON.parse(rawBody)
     } catch (parseError) {
-      const rawBody = await response.text()
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
@@ -250,10 +250,7 @@ Execute a workflow with provided input data.
   `,
   parameters: z.object({
     workflow_id: z.string().describe("Workflow identifier from lucky_list_workflows"),
-    input: z
-      .object({})
-      .passthrough()
-      .describe("Input data matching the workflow's inputSchema (must be a JSON object)"),
+    input: z.unknown().describe("Input data matching the workflow's inputSchema (can be any JSON value)"),
     options: z
       .object({
         timeoutMs: z.number().max(600000).optional().describe("Max execution time in milliseconds"),
@@ -316,10 +313,10 @@ Execute a workflow with provided input data.
     }
 
     let rpcResponse: JsonRpcResponse
+    const rawBody = await response.text()
     try {
-      rpcResponse = (await response.json()) as JsonRpcResponse
+      rpcResponse = JSON.parse(rawBody) as JsonRpcResponse
     } catch (parseError) {
-      const rawBody = await response.text()
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
@@ -411,10 +408,10 @@ Check the status of a workflow execution.
     }
 
     let status: unknown
+    const rawBody = await response.text()
     try {
-      status = await response.json()
+      status = JSON.parse(rawBody)
     } catch (parseError) {
-      const rawBody = await response.text()
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
@@ -480,10 +477,10 @@ Cancel a running workflow execution.
     }
 
     let result: unknown
+    const rawBody = await response.text()
     try {
-      result = await response.json()
+      result = JSON.parse(rawBody)
     } catch (parseError) {
-      const rawBody = await response.text()
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
