@@ -15,7 +15,7 @@
 
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
-import { createModels } from "@lucky/@lucky/models"
+import { createModels } from "@lucky/models"
 import { generateText } from "ai"
 
 // Get current directory for config paths

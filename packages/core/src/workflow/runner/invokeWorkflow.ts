@@ -16,7 +16,6 @@ import { getCoreConfig } from "@core/core-config/coreConfig"
 import { WorkflowConfigurationError, WorkflowExecutionError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
@@ -111,12 +110,8 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       )
     }
 
-    // Initialize spending tracker if enabled
-    if (getCoreConfig().limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(getCoreConfig().limits.maxCostUsdPerRun)
-    }
-
     // Strictly validate before creating workflow
+    // Note: SpendingTracker is now per-context and auto-initialized on first access via getSpendingTracker()
     await verifyWorkflowConfigStrict(config)
 
     // Create workflow

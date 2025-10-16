@@ -25,14 +25,12 @@ import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsag
 import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { getCurrentProvider } from "@core/utils/spending/provider"
+import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 import { isNir } from "@lucky/shared"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
 import { getFallbackModel, shouldUseModelFallback, trackTimeoutForModel } from "../fallbacks"
 import type { TResponse, TextRequest } from "../types"
-
-const spending = SpendingTracker.getInstance()
 
 /**
  * Executes AI requests for pure text generation.
@@ -95,7 +93,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
       const usd = calculateUsageCost(gen?.usage, modelName)
       if (opts.saveOutputs && gen) await saveResultOutput(gen)
-      spending.addCost(usd)
+      getSpendingTracker().addCost(usd)
       return gen
     }
 

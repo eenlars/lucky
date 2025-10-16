@@ -154,20 +154,6 @@ export class ModelsFacade {
         timestamp: Date.now(),
       }
 
-      // Log selection
-      this.logger.logSelection({
-        modelId: selection.modelId,
-        provider: selection.provider,
-        priceVersion: selection.priceVersion,
-        reason,
-        intent,
-        options,
-        durationMs: Date.now() - startTime,
-        userId: options.userId,
-        requestId: options.requestId,
-        metadata: options.metadata,
-      })
-
       return selection
     } catch (error) {
       // Log error

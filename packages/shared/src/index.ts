@@ -92,6 +92,8 @@ export {
   providerKeyMappingSchema,
   providerNameSchema,
   providerSettingsSchema,
+  // Alias: clarify this is UI/status provider config shape (not the enum)
+  providerConfigSchema as providerStatusConfigSchema,
   providerStatusSchema,
   userModelPreferencesSchema,
   userProviderSettingsSchema,
@@ -105,6 +107,8 @@ export type {
   ProviderKeyMapping,
   ProviderSettings,
   ProviderStatus,
+  // Alias: clarify meaning at import sites
+  ProviderConfig as ProviderStatusConfig,
   UserModelPreferences,
   UserProviderSettings,
 } from "./contracts/providers"
@@ -175,6 +179,12 @@ export type {
   UpsertErrorParams,
   UpsertErrorResult,
 } from "./types/app-functions.types"
+
+// Execution contracts
+export {
+  ZPrincipal,
+  type Principal,
+} from "./contracts/execution"
 
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)
 // They are NOT exported here to keep this browser-safe

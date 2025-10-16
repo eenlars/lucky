@@ -24,12 +24,10 @@ import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsag
 import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
 import { getFallbackModel, shouldUseModelFallback } from "../fallbacks"
 import type { TResponse, ToolRequest } from "../types"
-
-const spending = SpendingTracker.getInstance()
 
 /**
  * Executes AI requests involving tool calling and function execution.
@@ -81,7 +79,7 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
     // TODO: implement tool usage budgeting and alerts
     const usd = calculateUsageCost(gen.usage, modelName)
     if (opts.saveOutputs) await saveResultOutput(gen)
-    spending.addCost(usd)
+    getSpendingTracker().addCost(usd)
 
     // TODO: add tool execution result validation
     // TODO: implement tool result post-processing and formatting

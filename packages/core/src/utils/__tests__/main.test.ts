@@ -111,6 +111,13 @@ vi.mock("@core/utils/spending/SpendingTracker", () => ({
       trackCost: vi.fn(),
       getTotalCost: vi.fn().mockReturnValue(0.1),
     }),
+    create: vi.fn().mockReturnValue({
+      initialize: vi.fn(),
+      trackCost: vi.fn(),
+      getTotalCost: vi.fn().mockReturnValue(0.1),
+      canMakeRequest: () => true,
+      addCost: vi.fn(),
+    }),
   },
 }))
 

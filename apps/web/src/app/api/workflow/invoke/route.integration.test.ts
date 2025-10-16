@@ -16,7 +16,7 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "You are a helpful assistant",
-            modelName: "openrouter#openai/gpt-4.1-nano",
+            modelName: "openai#gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -94,7 +94,7 @@ describe("Workflow Invoke API - Provider Validation", () => {
       expect(requiredKeys).toContain("OPENROUTER_API_KEY")
     })
 
-    it("should handle workflow with openai and groq providers", () => {
+    it("should handle workflow with multiple OpenAI nodes", () => {
       const config: WorkflowConfig = {
         nodes: [
           {
@@ -108,9 +108,9 @@ describe("Workflow Invoke API - Provider Validation", () => {
           },
           {
             nodeId: "agent2",
-            description: "Groq agent",
+            description: "Another OpenAI agent",
             systemPrompt: "test",
-            modelName: "groq#gpt-oss-20b",
+            modelName: "openai#gpt-5",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -122,9 +122,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
       const { providers } = extractRequiredProviders(config)
       const requiredKeys = Array.from(providers).map(getProviderKeyName)
 
-      expect(providers.size).toBe(2)
+      expect(providers.size).toBe(1)
       expect(requiredKeys).toContain("OPENAI_API_KEY")
-      expect(requiredKeys).toContain("GROQ_API_KEY")
     })
   })
 

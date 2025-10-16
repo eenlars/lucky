@@ -1,6 +1,9 @@
-import { requireAuth } from "@/lib/api-auth"
+import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
+import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import { createRLSClient } from "@/lib/supabase/server-rls"
+import { withExecutionContext } from "@lucky/core/context/executionContext"
+import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import { getFacade } from "@lucky/models"
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
@@ -113,9 +116,11 @@ export async function POST(request: NextRequest) {
 
   try {
     // Require authentication
-    const authResult = await requireAuth()
+    const authResult = await requireAuthWithApiKey(request)
     if (authResult instanceof NextResponse) return authResult
-    const clerkId = authResult
+    const principal = authResult
+    const clerkId = principal.clerk_id
+    const secrets = createSecretResolver(clerkId)
 
     // Parse request body with error handling
     let body: unknown
@@ -141,8 +146,7 @@ export async function POST(request: NextRequest) {
     const { messages, nodeId, modelName, systemPrompt } = validationResult.data
 
     // TODO: Add authorization check - verify user owns this nodeId
-    // const userId = authResult // Get user ID from auth
-    // const hasAccess = await verifyNodeAccess(userId, nodeId)
+    // const hasAccess = await verifyNodeAccess(principal.clerk_id, nodeId)
     // if (!hasAccess) {
     //   return NextResponse.json({ error: "Unauthorized access to this agent" }, { status: 403 })
     // }
@@ -155,10 +159,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Model name is required", field: "modelName" }, { status: 400 })
     }
 
-    // Get models facade
-    const models = getFacade()
-
-    // Fetch user's enabled models to use as allowlist
+    // Fetch user's enabled models to use as allowlist and gather required provider keys
     const supabase = await createRLSClient()
     const { data: providerSettings } = await supabase
       .schema("app")
@@ -167,92 +168,97 @@ export async function POST(request: NextRequest) {
       .eq("clerk_id", clerkId)
       .eq("is_enabled", true)
 
-    // Build allowlist from user's enabled models
     const allowlist: string[] = []
+    const providerIds = new Set<string>()
     if (providerSettings) {
       for (const row of providerSettings) {
         const enabledModels = (row.enabled_models as string[]) || []
         allowlist.push(...enabledModels)
+        if (typeof row.provider === "string" && row.provider.length > 0) {
+          providerIds.add(row.provider)
+        }
       }
     }
 
-    console.log("[Agent Chat] User allowlist:", allowlist)
+    const requiredProviderKeys = Array.from(providerIds).map(provider => getProviderKeyName(provider))
 
-    // Select and get AI SDK compatible model with allowlist constraint
-    let modelSelection: Awaited<ReturnType<typeof models.resolve>>
-    let model: Awaited<ReturnType<typeof models.getModel>>
-    try {
-      // Pass allowlist to constrain model selection to user's enabled models
-      modelSelection = await models.resolve(modelName, {
-        allowlist: allowlist.length > 0 ? allowlist : undefined,
-        userId: clerkId,
+    const providerApiKeys =
+      requiredProviderKeys.length > 0 ? await secrets.getAll(requiredProviderKeys, "environment-variables") : undefined
+
+    // Execute the chat invocation within the execution context
+    return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys }, async () => {
+      const models = getFacade()
+
+      // Select and get AI SDK compatible model with allowlist constraint
+      let modelSelection: Awaited<ReturnType<typeof models.resolve>>
+      let model: Awaited<ReturnType<typeof models.getModel>>
+      try {
+        modelSelection = await models.resolve(modelName, {
+          allowlist: allowlist.length > 0 ? allowlist : undefined,
+          userId: clerkId,
+        })
+        model = await models.getModel(modelSelection)
+      } catch (error) {
+        console.error("[Agent Chat] Failed to load model:", error)
+        const userError = getUserFriendlyError(error)
+        return NextResponse.json(
+          {
+            error: userError,
+            details:
+              process.env.NODE_ENV === "development"
+                ? error instanceof Error
+                  ? error.message
+                  : String(error)
+                : undefined,
+            modelName: process.env.NODE_ENV === "development" ? modelName : undefined,
+          },
+          { status: 500 },
+        )
+      }
+
+      // Sanitize and prepare system prompt
+      const basePrompt = "You are a helpful AI assistant. Be concise and clear in your responses."
+      const finalSystemPrompt = systemPrompt ? sanitizeSystemPrompt(systemPrompt) : basePrompt
+
+      // Log custom system prompts for audit
+      if (systemPrompt && systemPrompt !== basePrompt) {
+        console.log(`[Agent Chat] Custom system prompt used for node=${nodeId}`)
+      }
+
+      // Create streaming response with transient status updates
+      return createUIMessageStreamResponse({
+        stream: createUIMessageStream({
+          execute: async ({ writer }) => {
+            writer.write({
+              type: "data-status",
+              data: { message: "Generating response..." },
+              transient: true,
+            })
+
+            const result = streamText({
+              model,
+              system: finalSystemPrompt,
+              messages: convertToModelMessages(messages),
+              onFinish: ({ finishReason, usage }) => {
+                const duration = Date.now() - startTime
+                console.log(
+                  `[Agent Chat] Stream completed for node=${nodeId} in ${duration}ms, tokens=${usage?.totalTokens || 0}, reason=${finishReason}, model=${modelSelection.modelId}`,
+                )
+              },
+              onError: error => {
+                console.error(`[Agent Chat] Streaming error for node=${nodeId}:`, error)
+              },
+            })
+
+            const uiStream = result.toUIMessageStream()
+            for await (const chunk of uiStream) {
+              writer.write(chunk)
+            }
+
+            writer.write({ type: "finish" })
+          },
+        }),
       })
-      model = await models.getModel(modelSelection)
-    } catch (error) {
-      console.error("[Agent Chat] Failed to load model:", error)
-      const userError = getUserFriendlyError(error)
-      return NextResponse.json(
-        {
-          error: userError,
-          details:
-            process.env.NODE_ENV === "development"
-              ? error instanceof Error
-                ? error.message
-                : String(error)
-              : undefined,
-          modelName: process.env.NODE_ENV === "development" ? modelName : undefined,
-        },
-        { status: 500 },
-      )
-    }
-
-    // Sanitize and prepare system prompt
-    const basePrompt = "You are a helpful AI assistant. Be concise and clear in your responses."
-    const finalSystemPrompt = systemPrompt ? sanitizeSystemPrompt(systemPrompt) : basePrompt
-
-    // Log custom system prompts for audit
-    if (systemPrompt && systemPrompt !== basePrompt) {
-      console.log(`[Agent Chat] Custom system prompt used for node=${nodeId}`)
-    }
-
-    // Create streaming response with transient status updates
-    return createUIMessageStreamResponse({
-      stream: createUIMessageStream({
-        execute: async ({ writer }) => {
-          // Send transient "thinking" status
-          writer.write({
-            type: "data-status",
-            data: { message: "Generating response..." },
-            transient: true,
-          })
-
-          // Stream the AI response
-          const result = streamText({
-            model,
-            system: finalSystemPrompt,
-            messages: convertToModelMessages(messages),
-            temperature: 0.7,
-            onFinish: ({ finishReason, usage }) => {
-              const duration = Date.now() - startTime
-              console.log(
-                `[Agent Chat] Stream completed for node=${nodeId} in ${duration}ms, tokens=${usage?.totalTokens || 0}, reason=${finishReason}, model=${modelSelection.modelId}`,
-              )
-            },
-            onError: error => {
-              console.error(`[Agent Chat] Streaming error for node=${nodeId}:`, error)
-            },
-          })
-
-          // Convert to UI message stream and forward all chunks
-          const uiStream = result.toUIMessageStream()
-          for await (const chunk of uiStream) {
-            writer.write(chunk)
-          }
-
-          // Signal completion
-          writer.write({ type: "finish" })
-        },
-      }),
     })
   } catch (error) {
     logException(error, {

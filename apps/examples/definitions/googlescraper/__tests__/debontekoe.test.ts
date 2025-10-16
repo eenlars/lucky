@@ -48,20 +48,5 @@ describe("De Bonte Koe Integration Test", () => {
     expect(typeof bonteKoeEntry.city).toBe("string")
     // expect empty city since addresses don't contain postcode format
     expect(bonteKoeEntry.city).toBe("")
-
-    console.log("De Bonte Koe business found:")
-    console.log("Name:", bonteKoeEntry.name)
-    console.log("Address:", bonteKoeEntry.address)
-    console.log("City:", bonteKoeEntry.city)
-    console.log("Postcode:", bonteKoeEntry.postcode)
-
-    // log all businesses to see address formats
-    console.log("All businesses with addresses:")
-    standardizedData.forEach((business, index) => {
-      console.log(`${index + 1}. ${business.name}`)
-      console.log(`   Address: "${business.address}"`)
-      console.log(`   City: "${business.city}"`)
-      console.log(`   Postcode: "${business.postcode}"`)
-    })
   }, 30000) // 30 second timeout for integration test
 })

@@ -30,6 +30,10 @@ vi.mock("@core/utils/spending/SpendingTracker", () => ({
       canMakeRequest: () => true,
       addCost: vi.fn(),
     }),
+    create: () => ({
+      canMakeRequest: () => true,
+      addCost: vi.fn(),
+    }),
   },
 }))
 

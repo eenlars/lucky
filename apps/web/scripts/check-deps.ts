@@ -134,13 +134,13 @@ async function main() {
     mkdirSync(reportsDir, { recursive: true })
   }
 
-  console.log("🔍 Checking dependencies and dead code...\n")
+  console.error("🔍 Checking dependencies and dead code...\n")
 
   // Run depcheck on core and app
-  console.log("Running depcheck on core/...")
+  console.error("Running depcheck on core/...")
   const coreDepcheck = runDepcheck(coreDir)
 
-  console.log("Running depcheck on app/...")
+  console.error("Running depcheck on app/...")
   const appDepcheck = runDepcheck(appDir)
 
   // Filter out internal workspace imports from missing dependencies
@@ -159,10 +159,10 @@ async function main() {
   appDepcheck.missing = filterInternalDeps(appDepcheck.missing)
 
   // Run ts-prune on core and app
-  console.log("Running ts-prune on core/...")
+  console.error("Running ts-prune on core/...")
   const coreTsPrune = runTsPrune(coreDir)
 
-  console.log("Running ts-prune on app/...")
+  console.error("Running ts-prune on app/...")
   const appTsPrune = runTsPrune(appDir)
 
   // Create report
@@ -199,55 +199,55 @@ async function main() {
   // Write JSON report
   const reportPath = join(reportsDir, `deps-${timestamp}.json`)
   writeFileSync(reportPath, JSON.stringify(report, null, 2))
-  console.log(`\n📄 Full report written to: ${reportPath}`)
+  console.error(`\n📄 Full report written to: ${reportPath}`)
 
   // Print human-readable summary
-  console.log("\n📊 Summary:")
-  console.log("==========")
+  console.error("\n📊 Summary:")
+  console.error("==========")
 
   const missingDepsCount = report.summary.totalMissingDeps
   const unusedDepsCount = report.summary.totalUnusedDeps
   const deadExportsCount = report.summary.totalDeadExports
 
   if (missingDepsCount > 0) {
-    console.log(`❌ Missing dependencies: ${missingDepsCount}`)
+    console.error(`❌ Missing dependencies: ${missingDepsCount}`)
     if (Object.keys(coreDepcheck.missing).length > 0) {
-      console.log("  Core:")
+      console.error("  Core:")
       for (const [dep, files] of Object.entries(coreDepcheck.missing)) {
-        console.log(`    - ${dep} (used in ${files.length} files)`)
+        console.error(`    - ${dep} (used in ${files.length} files)`)
       }
     }
     if (Object.keys(appDepcheck.missing).length > 0) {
-      console.log("  App:")
+      console.error("  App:")
       for (const [dep, files] of Object.entries(appDepcheck.missing)) {
-        console.log(`    - ${dep} (used in ${files.length} files)`)
+        console.error(`    - ${dep} (used in ${files.length} files)`)
       }
     }
   } else {
-    console.log("✅ No missing dependencies")
+    console.error("✅ No missing dependencies")
   }
 
   if (unusedDepsCount > 0) {
-    console.log(`\n⚠️  Unused dependencies: ${unusedDepsCount}`)
+    console.error(`\n⚠️  Unused dependencies: ${unusedDepsCount}`)
     if (coreDepcheck.dependencies.length > 0 || coreDepcheck.devDependencies.length > 0) {
-      console.log("  Core:")
-      coreDepcheck.dependencies.forEach(dep => console.log(`    - ${dep}`))
+      console.error("  Core:")
+      coreDepcheck.dependencies.forEach(dep => console.error(`    - ${dep}`))
       coreDepcheck.devDependencies.forEach(dep => console.log(`    - ${dep} (dev)`))
     }
     if (appDepcheck.dependencies.length > 0 || appDepcheck.devDependencies.length > 0) {
-      console.log("  App:")
-      appDepcheck.dependencies.forEach(dep => console.log(`    - ${dep}`))
-      appDepcheck.devDependencies.forEach(dep => console.log(`    - ${dep} (dev)`))
+      console.error("  App:")
+      appDepcheck.dependencies.forEach(dep => console.error(`    - ${dep}`))
+      appDepcheck.devDependencies.forEach(dep => console.error(`    - ${dep} (dev)`))
     }
   } else {
-    console.log("✅ No unused dependencies")
+    console.error("✅ No unused dependencies")
   }
 
   if (deadExportsCount > 0) {
-    console.log(`\n⚠️  Dead exports: ${deadExportsCount}`)
-    console.log("  (Run 'bun run deps:check' to see full report)")
+    console.error(`\n⚠️  Dead exports: ${deadExportsCount}`)
+    console.error("  (Run 'bun run deps:check' to see full report)")
   } else {
-    console.log("✅ No dead exports")
+    console.error("✅ No dead exports")
   }
 
   // Configuration for acceptable thresholds
@@ -262,21 +262,21 @@ async function main() {
   const warningLevel = unusedDepsCount > THRESHOLDS.unusedDeps || deadExportsCount > THRESHOLDS.deadExports
 
   if (criticalErrors) {
-    console.log("\n❌ Dependency check failed! Critical errors found.")
-    console.log(`Missing dependencies exceed threshold (${THRESHOLDS.missingDeps})`)
+    console.error("\n❌ Dependency check failed! Critical errors found.")
+    console.error(`Missing dependencies exceed threshold (${THRESHOLDS.missingDeps})`)
     process.exit(1)
   } else if (warningLevel) {
-    console.log("\n⚠️  Dependency check passed with warnings.")
+    console.error("\n⚠️  Dependency check passed with warnings.")
     if (unusedDepsCount > THRESHOLDS.unusedDeps) {
-      console.log(`Unused dependencies (${unusedDepsCount}) exceed threshold (${THRESHOLDS.unusedDeps})`)
+      console.error(`Unused dependencies (${unusedDepsCount}) exceed threshold (${THRESHOLDS.unusedDeps})`)
     }
     if (deadExportsCount > THRESHOLDS.deadExports) {
-      console.log(`Dead exports (${deadExportsCount}) exceed threshold (${THRESHOLDS.deadExports})`)
+      console.error(`Dead exports (${deadExportsCount}) exceed threshold (${THRESHOLDS.deadExports})`)
     }
     // Exit 0 for warnings in local dev, but could be changed for CI
     process.exit(0)
   } else {
-    console.log("\n✅ All checks passed!")
+    console.error("\n✅ All checks passed!")
   }
 }
 

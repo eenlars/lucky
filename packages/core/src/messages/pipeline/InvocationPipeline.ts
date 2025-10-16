@@ -1,6 +1,6 @@
 import { RaceConditionError, StateManagementError } from "@core/utils/errors/WorkflowErrors"
 import { lgg } from "@core/utils/logging/Logger"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
+import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 
 // @sdk-import - marker for easy removal when ejecting SDK
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
@@ -626,7 +626,7 @@ export class InvocationPipeline {
    */
   private addCost(c = 0, isSDK = false): void {
     this.usdCost += c
-    const tracker = SpendingTracker.getInstance()
+    const tracker = getSpendingTracker()
     if (isSDK) {
       tracker.addSDKCost(c, this.ctx.workflowInvocationId)
     } else {
