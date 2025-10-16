@@ -12,11 +12,17 @@ import { toast } from "sonner"
 export function MCPServersConfig() {
   const config = useMCPConfigStore(state => state.config)
   const _addServer = useMCPConfigStore(state => state.addServer)
+  const loadFromBackend = useMCPConfigStore(state => state.loadFromBackend)
 
   const [showJsonMode, setShowJsonMode] = useState(false)
 
   const serverNames = Object.keys(config.mcpServers)
   const updateConfig = useMCPConfigStore(state => state.updateConfig)
+
+  // Load MCP config from backend on mount
+  useEffect(() => {
+    loadFromBackend()
+  }, [loadFromBackend])
 
   // Create context for the PromptBar
   const mcpPromptContext: PromptBarContext = {
@@ -91,13 +97,7 @@ export function MCPServersConfig() {
   )
 }
 
-function ServerRow({
-  name,
-  config,
-}: {
-  name: string
-  config: MCPServerConfig
-}) {
+function ServerRow({ name, config }: { name: string; config: MCPServerConfig }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
