@@ -1,14 +1,10 @@
 import { requireAuth } from "@/lib/api-auth"
-import { decryptGCM, encryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
 export const runtime = "nodejs"
-
-const MCP_CONFIG_NAME = "servers"
-const MCP_CONFIG_NAMESPACE = "mcp"
 
 // Validation schema for MCP server config
 const mcpServerConfigSchema = z.object({
@@ -23,7 +19,7 @@ const mcpConfigSchema = z.object({
 
 /**
  * GET /api/mcp/config
- * Returns the user's MCP server configuration from lockbox
+ * Returns the user's MCP server configurations from mcp.user_server_configs (stdio servers only)
  */
 export async function GET(req: NextRequest) {
   const authResult = await requireAuth()
@@ -31,58 +27,39 @@ export async function GET(req: NextRequest) {
   const clerkId = authResult
 
   const supabase = await createRLSClient()
-  const ns = normalizeNamespace(MCP_CONFIG_NAMESPACE)
 
   try {
     const { data, error } = await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .select("ciphertext, iv, auth_tag, user_secret_id")
-      .eq("clerk_id", clerkId)
-      .eq("namespace", ns)
-      .eq("name", MCP_CONFIG_NAME)
-      .eq("is_current", true)
-      .is("deleted_at", null)
-      .maybeSingle()
+      .schema("mcp")
+      .from("user_server_configs")
+      .select("name, config_json, enabled")
+      .eq("user_id", clerkId)
+      .is("server_id", null) // Only stdio servers (not marketplace servers)
+      .eq("enabled", true)
 
     if (error) {
-      return NextResponse.json({ error: `Failed to fetch MCP config: ${error.message}` }, { status: 500 })
+      return NextResponse.json({ error: `Failed to fetch MCP configs: ${error.message}` }, { status: 500 })
     }
 
-    if (!data) {
-      // No config stored yet, return empty config
-      return NextResponse.json({ mcpServers: {} })
+    // Transform rows into { mcpServers: { name: config } } format
+    const mcpServers: Record<string, any> = {}
+    for (const row of data || []) {
+      mcpServers[row.name] = row.config_json
     }
 
-    // Decrypt and parse
-    const configJson = decryptGCM({
-      ciphertext: data.ciphertext as any,
-      iv: data.iv as any,
-      authTag: data.auth_tag as any,
-    })
-
-    const config = JSON.parse(configJson)
-
-    // Update last_used_at
-    await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .update({ last_used_at: new Date().toISOString() })
-      .eq("user_secret_id", data.user_secret_id)
-
-    return NextResponse.json(config)
+    return NextResponse.json({ mcpServers })
   } catch (e: any) {
     logException(e, {
       location: "/api/mcp/config/GET",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to load MCP config" }, { status: 500 })
+    return NextResponse.json({ error: e?.message ?? "Failed to load MCP configs" }, { status: 500 })
   }
 }
 
 /**
  * POST /api/mcp/config
  * Body: { mcpServers: Record<string, MCPServerConfig> }
- * Saves the user's MCP server configuration to lockbox
+ * Saves the user's MCP server configurations to mcp.user_server_configs (stdio servers only)
  */
 export async function POST(req: NextRequest) {
   const authResult = await requireAuth()
@@ -109,79 +86,111 @@ export async function POST(req: NextRequest) {
 
   const { mcpServers } = validation.data
 
-  const ns = normalizeNamespace(MCP_CONFIG_NAMESPACE)
-
   try {
-    // Serialize and encrypt the entire config
-    const configJson = JSON.stringify({ mcpServers })
-    const { ciphertext, iv, authTag } = encryptGCM(configJson)
+    // Get existing stdio configs (server_id IS NULL)
+    const { data: existing, error: fetchErr } = await supabase
+      .schema("mcp")
+      .from("user_server_configs")
+      .select("usco_id, name")
+      .eq("user_id", clerkId)
+      .is("server_id", null)
 
-    // Determine next version
-    const { data: verData, error: verErr } = await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .select("version")
-      .eq("clerk_id", clerkId)
-      .eq("namespace", ns)
-      .eq("name", MCP_CONFIG_NAME)
-      .order("version", { ascending: false })
-      .limit(1)
-
-    if (verErr) {
-      return NextResponse.json({ error: `Version lookup failed: ${verErr.message}` }, { status: 500 })
+    if (fetchErr) {
+      return NextResponse.json({ error: `Failed to fetch existing configs: ${fetchErr.message}` }, { status: 500 })
     }
 
-    const nextVersion = (verData?.[0]?.version ?? 0) + 1
+    const existingNames = new Set((existing || []).map(row => row.name))
+    const incomingNames = new Set(Object.keys(mcpServers))
 
-    // Mark previous current as not current
-    const { error: updErr } = await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .update({ is_current: false })
-      .eq("clerk_id", clerkId)
-      .eq("namespace", ns)
-      .eq("name", MCP_CONFIG_NAME)
-      .eq("is_current", true)
+    // Determine operations
+    const toInsert: Array<{ name: string; config: any }> = []
+    const toUpdate: Array<{ name: string; config: any }> = []
+    const toDelete: string[] = []
 
-    if (updErr && updErr.code !== "PGRST116") {
-      return NextResponse.json({ error: `Failed to update previous versions: ${updErr.message}` }, { status: 500 })
+    // Find inserts and updates
+    for (const [name, config] of Object.entries(mcpServers)) {
+      if (existingNames.has(name)) {
+        toUpdate.push({ name, config })
+      } else {
+        toInsert.push({ name, config })
+      }
     }
 
-    // Insert new version
-    const { data, error } = await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .insert([
-        {
-          clerk_id: clerkId,
-          name: MCP_CONFIG_NAME,
-          namespace: ns,
-          version: nextVersion,
-          ciphertext,
-          iv,
-          auth_tag: authTag,
-          is_current: true,
-          created_by: clerkId,
-          updated_by: clerkId,
-        } as any,
-      ])
-      .select("user_secret_id, version, created_at")
-      .single()
+    // Find deletes (servers that were removed)
+    for (const name of existingNames) {
+      if (!incomingNames.has(name)) {
+        toDelete.push(name)
+      }
+    }
 
-    if (error) {
-      return NextResponse.json({ error: `Insert failed: ${error.message}` }, { status: 500 })
+    // Execute operations
+    const operations: Promise<any>[] = []
+
+    // Insert new servers
+    if (toInsert.length > 0) {
+      const insertData = toInsert.map(({ name, config }) => ({
+        user_id: clerkId,
+        name,
+        config_json: config,
+        secrets_json: {}, // Empty secrets for stdio servers
+        server_id: null, // NULL for stdio servers
+        enabled: true,
+      }))
+
+      operations.push(
+        supabase
+          .schema("mcp")
+          .from("user_server_configs")
+          .insert(insertData)
+      )
+    }
+
+    // Update existing servers
+    for (const { name, config } of toUpdate) {
+      operations.push(
+        supabase
+          .schema("mcp")
+          .from("user_server_configs")
+          .update({ config_json: config, updated_at: new Date().toISOString() })
+          .eq("user_id", clerkId)
+          .eq("name", name)
+          .is("server_id", null)
+      )
+    }
+
+    // Delete removed servers
+    if (toDelete.length > 0) {
+      operations.push(
+        supabase
+          .schema("mcp")
+          .from("user_server_configs")
+          .delete()
+          .eq("user_id", clerkId)
+          .in("name", toDelete)
+          .is("server_id", null)
+      )
+    }
+
+    // Execute all operations
+    const results = await Promise.all(operations)
+
+    // Check for errors
+    for (const result of results) {
+      if (result.error) {
+        return NextResponse.json({ error: `Operation failed: ${result.error.message}` }, { status: 500 })
+      }
     }
 
     return NextResponse.json({
       success: true,
-      id: data.user_secret_id,
-      version: data.version,
-      createdAt: data.created_at,
+      inserted: toInsert.length,
+      updated: toUpdate.length,
+      deleted: toDelete.length,
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/mcp/config/POST",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to save MCP config" }, { status: 500 })
+    return NextResponse.json({ error: e?.message ?? "Failed to save MCP configs" }, { status: 500 })
   }
 }

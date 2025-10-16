@@ -2,7 +2,7 @@
 
 Author: (Acting as a product+engineering owner)
 
-Status: ✅ **IMPLEMENTED** - Context-based MCP toolkit bridge with lockbox persistence
+Status: ✅ **IMPLEMENTED** - Context-based MCP toolkit bridge with database persistence
 
 ---
 
@@ -23,18 +23,18 @@ This aligns with how we already pass model keys and provider config through cont
 ✅ **Core Bridge (Complete)**
 1. ✅ Runtime toolkits contract added (`packages/shared/src/contracts/mcp-runtime.ts`)
 2. ✅ Execution context extended with `mcp.toolkits` field (`packages/core/src/context/executionContext.ts`)
-3. ✅ Invoke route loads from lockbox and passes to context (`apps/web/src/app/api/workflow/invoke/route.ts`)
+3. ✅ Invoke route loads from database and passes to context (`apps/web/src/app/api/workflow/invoke/route.ts`)
 4. ✅ Tools setup accepts and prioritizes context toolkits (`packages/tools/src/mcp/setup.ts`)
 5. ✅ ToolManager passes context to MCP setup (`packages/core/src/node/toolManager.ts`)
 
 ✅ **Persistence Layer (Complete)**
 6. ✅ API endpoints for MCP config persistence (`/api/mcp/config` GET/POST)
-   - Encrypted storage in `lockbox.user_secrets` (namespace: "mcp", name: "servers")
+   - Storage in `mcp.user_server_configs` (stdio servers with `server_id = NULL`)
    - Zod validation for all inputs
-   - Versioned secrets with rotation support
-7. ✅ Client-side sync hook (`apps/web/src/lib/mcp/useMCPSync.ts`)
+   - Reliable database persistence (no localStorage dependency)
+7. ✅ Client-side Zustand store (`apps/web/src/stores/mcp-config-store.ts`)
    - Auto-loads config from backend on mount
-   - Provides `saveToBackend()` for manual sync
+   - Auto-syncs changes to database
    - Error handling and loading states
 
 🔄 **Pending (Future Work)**
@@ -98,11 +98,11 @@ Principle: MCP state is a property of a workflow invocation. Carry the toolkit(s
 2) Build toolkits at invocation time (Web → Core)
    - File: `apps/web/src/app/api/workflow/invoke/route.ts`
    - Steps:
-     - Load the user’s MCP config JSON (lockbox or dedicated storage). Shape:
+     - Load the user's MCP config JSON from `mcp.user_server_configs` (where `server_id IS NULL`). Shape:
        ```json
        { "mcpServers": { "tavily": { "command": "npx", "args": ["-y", "tavily-mcp"], "env": { "TAVILY_API_KEY": "anythingrandomthiswillbeignoredanyways" } } } }
        ```
-     - Convert to `toolkits` with `transportSpec` per entry (don’t instantiate transports here unless we strongly want warm‑start).
+     - Convert to `toolkits` with `transportSpec` per entry (don't instantiate transports here unless we strongly want warm‑start).
      - Call `withExecutionContext({ principal, secrets, apiKeys, mcp: { toolkits } }, () => invokeWorkflow(...))`.
 
 3) Initialize MCP clients from context in tools layer
@@ -292,76 +292,63 @@ This keeps our mental model aligned with runtime: servers (“toolkits”) deliv
 ## Persistence Layer Architecture
 
 ### Storage
-MCP configurations are stored as encrypted JSON in Supabase lockbox:
-- **Table**: `lockbox.user_secrets`
-- **Namespace**: `"mcp"`
-- **Name**: `"servers"`
-- **Format**: `{ mcpServers: Record<string, MCPServerConfig> }`
-- **Encryption**: AES-256-GCM with per-secret IV and auth tag
-- **Versioning**: Each update creates a new version; only `is_current=true` is loaded
+MCP configurations are stored in the dedicated MCP schema:
+- **Table**: `mcp.user_server_configs`
+- **Filter**: `server_id IS NULL` (stdio servers only, marketplace servers have `server_id NOT NULL`)
+- **Format**: Each server is a row with `config_json` containing `{ command, args, env }`
+- **RLS**: Row-level security enforces user isolation via `user_id = clerk_id`
 
 ### API Endpoints
 
 **GET /api/mcp/config**
-- Returns decrypted MCP configuration for authenticated user
-- Returns `{ mcpServers: {} }` if no config exists
-- Updates `last_used_at` timestamp on access
+- Returns MCP configurations for authenticated user from `mcp.user_server_configs`
+- Filters: `user_id = clerk_id`, `server_id IS NULL`, `enabled = true`
+- Returns `{ mcpServers: {} }` if no configs exist
+- Transforms rows to `{ mcpServers: { name: config_json } }` format
 
 **POST /api/mcp/config**
 - Body: `{ mcpServers: Record<string, MCPServerConfig> }`
 - Validates with Zod schema: `command` (string), `args` (string[]), `env?` (Record<string, string>)
-- Encrypts and stores as new version
-- Marks previous version as `is_current=false`
-- Returns: `{ success: true, id, version, createdAt }`
+- Performs insert/update/delete operations to sync state
+- Sets `server_id = NULL` and `secrets_json = {}` for stdio servers
+- Returns: `{ success: true, inserted, updated, deleted }`
 
-### Client-Side Sync
+### Client-Side Store
 
-**useMCPSync() Hook**
+**useMCPConfigStore (Zustand)**
 ```typescript
-const { isLoading, error, loadFromBackend, saveToBackend } = useMCPSync()
+const { config, isSyncing, addServer, deleteServer, updateConfig, loadFromBackend } = useMCPConfigStore()
 ```
 
-- **Auto-loads** config from backend on component mount
-- **Merges** backend config with localStorage (backend takes precedence)
-- **Provides** `saveToBackend()` for manual sync
-- **Handles** errors and loading states
+- **Auto-saves** to database on every change
+- **No localStorage persist** - all state lives in database
+- **Toast notifications** for save/load feedback
+- **Error handling** with `lastSyncError` state
 
 ### Migration Path
 
-1. **Existing users** (localStorage only):
-   - Config remains in localStorage until first `saveToBackend()` call
-   - On next mount, `loadFromBackend()` returns empty → localStorage config still works
+1. **New implementation** (database-only):
+   - All MCP servers stored in `mcp.user_server_configs` with `server_id = NULL`
+   - Reliable persistence, survives localStorage clears
+   - Prepared for future: can "un-nullify" `server_id` to require marketplace entries
 
-2. **New users**:
-   - Configure MCP servers in UI → stored in localStorage
-   - Call `saveToBackend()` → encrypted and stored in lockbox
-   - On workflow invoke → loaded from lockbox → passed to execution context
-
-3. **Migration script** (future):
-   ```typescript
-   // In MCP settings page
-   useEffect(() => {
-     const hasLocalConfig = Object.keys(config.mcpServers).length > 0
-     const hasBackendConfig = /* check backend */
-     if (hasLocalConfig && !hasBackendConfig) {
-       saveToBackend() // Auto-migrate
-     }
-   }, [])
-   ```
+2. **Separation of concerns**:
+   - Stdio servers (user-defined): `server_id = NULL`
+   - Marketplace servers (future): `server_id` references `mcp.servers`
 
 ### Security
 
-- ✅ Encryption at rest (AES-256-GCM)
-- ✅ RLS policies enforce clerk_id isolation
+- ✅ RLS policies enforce user_id isolation
 - ✅ No file writes for session-auth users
 - ✅ No environment variable leakage
-- ✅ Versioned secrets prevent race conditions
+- ✅ Check constraint: stdio configs must have `command` field
 - ✅ Server-side validation with Zod
+- ✅ Database-level constraints prevent data corruption
 
 ### Performance
 
 - ✅ Single query per workflow invocation (cached in context)
-- ✅ Lazy decryption (only when needed)
+- ✅ Indexed queries: `user_id, server_id, enabled`
 - ✅ Client cache for MCP clients (keyed by workflowVersionId)
 - ⏳ Optional cleanup: `clearWorkflowMCPClientCache()` after invocation
 

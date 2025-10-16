@@ -593,7 +593,7 @@ export type Database = {
           name: string
           negotiated_protocol_version: string | null
           secrets_json: Json
-          server_id: string
+          server_id: string | null
           session_expires_at: string | null
           session_id: string | null
           updated_at: string
@@ -609,7 +609,7 @@ export type Database = {
           name?: string
           negotiated_protocol_version?: string | null
           secrets_json?: Json
-          server_id: string
+          server_id?: string | null
           session_expires_at?: string | null
           session_id?: string | null
           updated_at?: string
@@ -625,7 +625,7 @@ export type Database = {
           name?: string
           negotiated_protocol_version?: string | null
           secrets_json?: Json
-          server_id?: string
+          server_id?: string | null
           session_expires_at?: string | null
           session_id?: string | null
           updated_at?: string
