@@ -1,4 +1,6 @@
+import { hashSecret } from "@/lib/api-key-utils"
 import { logException } from "@/lib/error-logger"
+import { createClient } from "@/lib/supabase/server"
 import { extractBearerToken, pickIdempotencyKey } from "@lucky/shared/contracts/invoke"
 import type { InvokeRequest } from "@lucky/shared/contracts/invoke"
 
@@ -45,21 +47,17 @@ export function validateAuth(
 /**
  * Validate bearer token against workflow permissions
  * Checks:
- * 1. Token exists in database
- * 2. Token is not revoked
- * 3. Token's user has access to the workflow (via RLS)
+ * 1. Token exists in database and is not revoked
+ * 2. Token has access to the specified workflow (via scopes)
+ * 3. Returns false if token is invalid or lacks permission
  */
 export async function validateBearerToken(bearerToken: string, workflowId: string): Promise<boolean> {
   try {
-    // Import createClient dynamically to avoid circular dependencies
-    const { createClient } = await import("@/lib/supabase/server")
-    const { hashSecret } = await import("@/lib/api-key-utils")
-
     // Extract secret from token (format: "alive_<secret>")
     if (!bearerToken.startsWith("alive_")) {
       return false
     }
-    const secret = bearerToken.slice(6) // Remove "alive_" prefix
+    const secret = bearerToken.slice(6)
     const secretHash = hashSecret(secret)
 
     // Use service client to query lockbox schema (bypasses RLS for token validation)
@@ -78,16 +76,42 @@ export async function validateBearerToken(bearerToken: string, workflowId: strin
       return false
     }
 
-    // Check scopes - if { all: true }, allow access to all workflows
-    if (keyData.scopes && typeof keyData.scopes === "object" && "all" in keyData.scopes && keyData.scopes.all === true) {
+    // Validate scopes structure
+    if (!keyData.scopes || typeof keyData.scopes !== "object" || Array.isArray(keyData.scopes)) {
+      return false
+    }
+
+    const scopes = keyData.scopes
+
+    // TypeScript doesn't narrow Json type well, so we validate at runtime
+    const isValidScopes = (obj: unknown): obj is Record<string, unknown> => {
+      return typeof obj === "object" && obj !== null && !Array.isArray(obj)
+    }
+
+    if (!isValidScopes(scopes)) {
+      return false
+    }
+
+    // Check for universal access
+    if ("all" in scopes && scopes.all === true) {
       return true
     }
 
-    // For workflow-specific access, we rely on RLS
-    // The workflow query will fail if the user (clerk_id) doesn't have access
-    // This is enforced by RLS policies on the WorkflowVersion table
-    // So we just need to verify the token is valid here
-    return true
+    // Check for workflow-specific access
+    if ("workflows" in scopes && Array.isArray(scopes.workflows)) {
+      const workflows = scopes.workflows
+      // Validate all elements are strings
+      const isStringArray = (arr: unknown[]): arr is string[] => {
+        return arr.every(item => typeof item === "string")
+      }
+
+      if (isStringArray(workflows)) {
+        return workflows.includes(workflowId)
+      }
+    }
+
+    // No valid scope found
+    return false
   } catch (error) {
     logException(error, {
       location: "/lib/mcp-invoke/auth:validateBearerToken",

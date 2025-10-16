@@ -10,11 +10,11 @@ vi.mock("@/lib/supabase/server")
 vi.mock("@/lib/api-key-utils")
 vi.mock("@/lib/error-logger")
 
-// Import after mocks are set up
-import { validateBearerToken } from "../auth"
-import * as supabaseServer from "@/lib/supabase/server"
 import * as apiKeyUtils from "@/lib/api-key-utils"
 import * as errorLogger from "@/lib/error-logger"
+import * as supabaseServer from "@/lib/supabase/server"
+// Import after mocks are set up
+import { validateBearerToken } from "../auth"
 
 describe("validateBearerToken", () => {
   beforeEach(() => {
@@ -93,7 +93,7 @@ describe("validateBearerToken", () => {
     expect(result).toBe(true)
   })
 
-  it("should return true for token with specific workflow scopes", async () => {
+  it("should return true for token with matching workflow scope", async () => {
     const mockSupabase = {
       schema: vi.fn().mockReturnThis(),
       from: vi.fn().mockReturnThis(),
@@ -116,6 +116,31 @@ describe("validateBearerToken", () => {
     const result = await validateBearerToken("alive_test_key", "wf_123")
 
     expect(result).toBe(true)
+  })
+
+  it("should return false for token without matching workflow scope", async () => {
+    const mockSupabase = {
+      schema: vi.fn().mockReturnThis(),
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      is: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: {
+          clerk_id: "user_123",
+          scopes: { workflows: ["wf_123", "wf_456"] },
+          revoked_at: null,
+        },
+        error: null,
+      }),
+    }
+
+    mockCreateClient.mockResolvedValue(mockSupabase)
+    mockHashSecret.mockReturnValue("hashed_secret")
+
+    const result = await validateBearerToken("alive_test_key", "wf_789")
+
+    expect(result).toBe(false)
   })
 
   it("should return false when token is not found in database", async () => {
@@ -192,11 +217,11 @@ describe("validateBearerToken", () => {
       expect.any(Error),
       expect.objectContaining({
         location: "/lib/mcp-invoke/auth:validateBearerToken",
-      })
+      }),
     )
   })
 
-  it("should handle missing scopes field", async () => {
+  it("should return false for missing scopes field", async () => {
     const mockSupabase = {
       schema: vi.fn().mockReturnThis(),
       from: vi.fn().mockReturnThis(),
@@ -218,11 +243,10 @@ describe("validateBearerToken", () => {
 
     const result = await validateBearerToken("alive_test_key", "wf_test_123")
 
-    // Should still return true as RLS will handle workflow access
-    expect(result).toBe(true)
+    expect(result).toBe(false)
   })
 
-  it("should handle scopes as non-object", async () => {
+  it("should return false for invalid scopes format", async () => {
     const mockSupabase = {
       schema: vi.fn().mockReturnThis(),
       from: vi.fn().mockReturnThis(),
@@ -244,6 +268,31 @@ describe("validateBearerToken", () => {
 
     const result = await validateBearerToken("alive_test_key", "wf_test_123")
 
-    expect(result).toBe(true)
+    expect(result).toBe(false)
+  })
+
+  it("should return false for scopes with no valid permissions", async () => {
+    const mockSupabase = {
+      schema: vi.fn().mockReturnThis(),
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      is: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: {
+          clerk_id: "user_123",
+          scopes: { other: "value" },
+          revoked_at: null,
+        },
+        error: null,
+      }),
+    }
+
+    mockCreateClient.mockResolvedValue(mockSupabase)
+    mockHashSecret.mockReturnValue("hashed_secret")
+
+    const result = await validateBearerToken("alive_test_key", "wf_test_123")
+
+    expect(result).toBe(false)
   })
 })
