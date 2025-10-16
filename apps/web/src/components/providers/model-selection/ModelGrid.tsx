@@ -5,10 +5,11 @@ import {
   filterModels,
   getRecommendedModels,
   isModelRecommended,
+  sortModels,
   sortModelsWithEnabledFirst,
 } from "@/lib/providers/model-filters"
 import { AlertCircle, Loader2 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ModelBulkActions } from "./ModelBulkActions"
 import { ModelCard } from "./ModelCard"
 import { ModelFilters } from "./ModelFilters"
@@ -17,6 +18,15 @@ import type { FilterPreset, ModelGridProps } from "./types"
 export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleModels, isLoading }: ModelGridProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activePreset, setActivePreset] = useState<FilterPreset>("all")
+  const [hasUserInteracted, setHasUserInteracted] = useState(false)
+  const initialEnabledCount = useRef<number>(enabledModels.size)
+
+  // Detect first user interaction - when enabled count changes from initial state
+  useEffect(() => {
+    if (!hasUserInteracted && enabledModels.size !== initialEnabledCount.current) {
+      setHasUserInteracted(true)
+    }
+  }, [enabledModels.size, hasUserInteracted])
 
   // Get recommended model names
   const recommendedModelNames = useMemo(() => getRecommendedModels(models), [models])
@@ -42,9 +52,14 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
       filtered = filtered.filter(m => recommendedModelNames.includes(m.name))
     }
 
-    // Sort with enabled models first, then by recommended score
-    return sortModelsWithEnabledFirst(filtered, enabledModels, "recommended", models)
-  }, [models, filters, activePreset, recommendedModelNames, enabledModels])
+    // Sort enabled models to top only on initial load, not after user interaction
+    if (!hasUserInteracted) {
+      return sortModelsWithEnabledFirst(filtered, enabledModels, "recommended", models)
+    }
+
+    // After user interaction, maintain stable sort order (don't move enabled to top)
+    return sortModels(filtered, "recommended", models)
+  }, [models, filters, activePreset, recommendedModelNames, enabledModels, hasUserInteracted])
 
   // Bulk actions
   const handleEnableRecommended = () => {
