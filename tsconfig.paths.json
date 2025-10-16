@@ -4,6 +4,7 @@
     "paths": {
       "@/*": ["apps/web/src/*"],
       "@tests/*": ["tests/*"],
+      "@repo/*": ["packages/*/src"],
       "@lucky/shared": ["packages/shared/src"],
       "@lucky/shared/*": ["packages/shared/src/*"],
       "@lucky/core": ["packages/core/src"],
@@ -14,9 +15,10 @@
       "@lucky/models/*": ["packages/models/src/*"],
       "@lucky/examples": ["apps/examples"],
       "@lucky/examples/*": ["apps/examples/*"],
-      "@examples/*": ["apps/examples/*"],
+      "@lucky/*": ["packages/*/src"],
       "@core": ["packages/core/src"],
-      "@core/*": ["packages/core/src/*"]
+      "@core/*": ["packages/core/src/*"],
+      "@examples/*": ["apps/examples/*"]
     }
   }
 }

@@ -1,49 +1,70 @@
 /**
- * Root Vitest config - single-project for cross-repo integration tests only
- *
- * For multi-project workspace testing, use vitest.workspace.ts instead:
- * - bunx vitest -w -p pkg-unit
- * - bunx vitest -w -p pkg-int
- * - bunx vitest -w -p xrepo
- * - bunx vitest -w -p e2e
+ * Root Vitest config with multi-project workspace
  */
-import path from "node:path"
-import { defineConfig, loadEnv } from "vite"
-import { configDefaults } from "vitest/config"
+import { defineConfig } from "vitest/config"
+import tsconfigPaths from "vite-tsconfig-paths"
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "")
-  process.env = {
-    ...process.env,
-    ...env,
-    NODE_ENV: mode as "test" | "development" | "production",
-  }
-  return {
-    resolve: {
-      alias: {
-        "@lucky/shared": path.resolve(__dirname, "./packages/shared/src"),
-        "@lucky/core": path.resolve(__dirname, "./packages/core/src"),
-        "@lucky/tools": path.resolve(__dirname, "./packages/tools/src"),
-        "@lucky/examples": path.resolve(__dirname, "./apps/examples"),
-        "@core": path.resolve(__dirname, "./packages/core/src"),
-        "@": path.resolve(__dirname, "./apps/web/src"),
-        "@tests": path.resolve(__dirname, "./tests"),
+const sharedPlugins = [tsconfigPaths({ projects: ["./tsconfig.paths.json"] })]
+
+export default defineConfig({
+  plugins: sharedPlugins,
+  test: {
+    globals: true,
+    setupFiles: ["./packages/test-config/src/setup.global.ts"],
+    projects: [
+      {
+        plugins: sharedPlugins,
+        test: {
+          name: "pkg-unit",
+          include: ["packages/*/src/**/*.test.{ts,tsx}"],
+        },
       },
-    },
-    test: {
-      include: ["tests/integration/**/*.test.ts", "tests/integration/**/*.spec.test.ts"],
-      exclude: [...configDefaults.exclude, "**/e2e/**"],
-      environment: "node",
-      globals: true,
-      testTimeout: 120000,
-      coverage: {
-        provider: "v8",
-        reporter: ["text", "html"],
-        reportsDirectory: "coverage-integration",
-        include: ["apps/web/src/**/*.{ts,tsx,js,jsx}"],
-        exclude: ["node_modules/"],
-        all: true,
+      {
+        plugins: sharedPlugins,
+        test: {
+          name: "pkg-int",
+          include: ["packages/*/src/**/*.spec.test.{ts,tsx}"],
+          testTimeout: 30000,
+        },
       },
-    },
-  }
+      {
+        plugins: sharedPlugins,
+        test: {
+          name: "app-unit",
+          include: ["apps/web/src/**/*.test.{ts,tsx}"],
+          environment: "node",
+        },
+      },
+      {
+        plugins: sharedPlugins,
+        test: {
+          name: "app-int",
+          include: ["apps/web/src/**/*.spec.test.{ts,tsx}"],
+          testTimeout: 30000,
+        },
+      },
+      {
+        plugins: sharedPlugins,
+        test: {
+          name: "xrepo",
+          include: ["tests/integration/**/*.test.{ts,tsx}"],
+          testTimeout: 45000,
+        },
+      },
+      {
+        plugins: sharedPlugins,
+        test: {
+          name: "e2e",
+          include: ["tests/e2e-essential/**/*.test.{ts,tsx}"],
+          pool: "threads",
+          poolOptions: {
+            threads: {
+              singleThread: true,
+            },
+          },
+          testTimeout: 60000,
+        },
+      },
+    ],
+  },
 })

@@ -11,8 +11,8 @@ Tests are organized by type and location:
 ```
 packages/*/src/**/*.test.ts          → pkg-unit (unit tests)
 packages/*/src/**/*.spec.test.ts     → pkg-int (integration tests)
-apps/web/src/**/*.test.ts            → app-unit (unit tests)
-apps/web/src/**/*.spec.test.ts       → app-int (integration tests)
+apps/web/src/**/*.test.{ts,tsx}      → app-unit
+apps/web/src/**/*.spec.test.{ts,tsx} → app-int
 tests/integration/**                 → xrepo (cross-repo integration)
 tests/e2e-essential/**               → e2e (end-to-end golden tests)
 ```
@@ -51,22 +51,22 @@ Run specific test projects by name:
 
 ```bash
 # Package unit tests
-bun test:pkg-unit
+bunx vitest --project pkg-unit
 
 # Package integration tests
-bun test:pkg-int
+bunx vitest --project pkg-int
 
 # App unit tests
-bun test:app-unit
+bunx vitest --project app-unit
 
 # App integration tests
-bun test:app-int
+bunx vitest --project app-int
 
 # Cross-repo integration
-bun test:xrepo
+bunx vitest --project xrepo
 
 # E2E golden tests
-bun test:e2e
+bunx vitest --project e2e
 ```
 
 ### Legacy Commands
@@ -79,9 +79,6 @@ bun test:smoke
 
 # Gate tests (comprehensive)
 bun test:gate
-
-# Per-package tests
-cd packages/core && bun test:unit
 ```
 
 ### Watch Mode
@@ -89,8 +86,8 @@ cd packages/core && bun test:unit
 Run tests in watch mode during development:
 
 ```bash
-bunx vitest -w --project pkg-unit
-bunx vitest -w --project pkg-int
+bunx vitest --project pkg-unit --watch
+bunx vitest --project pkg-int --watch
 ```
 
 ### Coverage
@@ -183,22 +180,24 @@ describe("executeWorkflow", () => {
 
 ## Configuration
 
-### Shared Config
+### Root Configuration
 
-All tests use shared configuration from `@lucky/test-config`:
+All test configuration is in `vitest.config.ts` at the repository root using multi-project setup.
 
-- Consistent timeouts
-- Deterministic execution
-- V8 coverage
-- Thread pool settings
-- Mock reset between tests
+### Shared Test Configuration
 
-### Per-Package Config
+The `@repo/test-config` package provides shared Vitest configuration:
 
-Each package has a thin `vitest.config.ts` that imports the shared config:
+- **vitest.base.ts** - Base configuration function with common settings
+- **plugins.ts** - Shared Vite plugins (tsconfig paths resolution)
+- **setup.global.ts** - Global test setup (timezone, CI settings)
+
+### Per-Package Configuration
+
+Each package can have a thin `vitest.config.ts` for running tests inside the package directory:
 
 ```typescript
-import { baseConfig } from "@lucky/test-config/vitest.base"
+import { baseConfig } from "@repo/test-config/vitest.base"
 
 export default baseConfig({
   test: {
@@ -215,6 +214,7 @@ All tests have access to path aliases from `tsconfig.paths.json`:
 - `@tests/*` for test utilities
 - `@/*` for Next.js app code
 - `@core/*` for core package shortcuts
+- `@examples/*` for example definitions
 
 ## Best Practices
 
@@ -231,7 +231,7 @@ All tests have access to path aliases from `tsconfig.paths.json`:
 3. **Make tests deterministic**
    - No flaky timeouts
    - Reset mocks between tests
-   - Use fixed timestamps
+   - Use fixed timestamps (via global setup)
 
 4. **Test behavior, not implementation**
    - Test public APIs
