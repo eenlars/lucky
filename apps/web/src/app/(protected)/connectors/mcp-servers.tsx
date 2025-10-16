@@ -11,13 +11,12 @@ import { toast } from "sonner"
 
 export function MCPServersConfig() {
   const config = useMCPConfigStore(state => state.config)
-  const _addServer = useMCPConfigStore(state => state.addServer)
   const loadFromBackend = useMCPConfigStore(state => state.loadFromBackend)
+  const updateConfig = useMCPConfigStore(state => state.updateConfig)
 
   const [showJsonMode, setShowJsonMode] = useState(false)
 
   const serverNames = Object.keys(config.mcpServers)
-  const updateConfig = useMCPConfigStore(state => state.updateConfig)
 
   // Load MCP config from backend on mount
   useEffect(() => {
@@ -58,10 +57,6 @@ export function MCPServersConfig() {
             Connect to Model Context Protocol servers to extend your workflows with external tools
           </p>
         </div>
-
-        {/* Add Server Form */}
-        {/* TODO: Bring back Add Server Form later (components/AddServerForm.tsx) */}
-        {/* <AddServerForm onAdd={_addServer} existingNames={serverNames} /> */}
 
         {/* Server List */}
         {serverNames.length > 0 && (
@@ -114,15 +109,6 @@ function ServerRow({ name, config }: { name: string; config: MCPServerConfig }) 
             <code className="text-xs text-muted-foreground">{config.command}</code>
           </div>
         </button>
-        {/* TODO: Bring back Remove button later */}
-        {/* <Button
-          onClick={onDelete}
-          variant="ghost"
-          size="sm"
-          className="opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <Trash2 className="size-4 text-muted-foreground" />
-        </Button> */}
       </div>
 
       {expanded && (
