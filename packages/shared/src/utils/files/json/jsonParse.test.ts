@@ -62,16 +62,16 @@ describe("extractJSON", () => {
   })
 
   it("throws if input is not a string", () => {
-    expect(() => JSONN.extract(123)).toThrow(/expected a string/)
+    expect(() => JSONN.extract(123, true)).toThrow(/expected a string/)
   })
 
   it("throws if there is no JSON at all", () => {
-    expect(() => JSONN.extract("no braces here")).toThrow(/no valid JSON/)
+    expect(() => JSONN.extract("no braces here", true)).toThrow(/no valid JSON/)
   })
 
   it("throws if braces are unmatched", () => {
     const input = '{ "incomplete": 42 '
-    expect(() => JSONN.extract(input)).toThrow(/no valid JSON/)
+    expect(() => JSONN.extract(input, true)).toThrow(/no valid JSON/)
   })
 
   it("isJSON works", () => {

@@ -1,6 +1,6 @@
 import type { Principal } from "@/lib/auth/principal"
-import { logException } from "@/lib/error-logger"
 import { fetchWorkflowVersion, fetchWorkflowWithVersions } from "@/lib/data/workflow-repository"
+import { logException } from "@/lib/error-logger"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { JsonSchemaDefinition, WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
@@ -210,7 +210,24 @@ async function loadWorkflowByVersionId(versionId: string, principal?: Principal)
 
   console.log("[workflow-loader] Version query result:", { hasData: !!data, error: error?.message })
 
-  if (error || !data) {
+  if (error) {
+    console.log("[workflow-loader] ❌ Failed to load workflow version (repository error):", {
+      versionId,
+      message: error.message,
+    })
+    logException(error, {
+      location: "/lib/mcp-invoke/workflow-loader/version",
+    })
+    return {
+      success: false,
+      error: {
+        code: ErrorCodes.INTERNAL_ERROR,
+        message: error.message ?? "Failed to load workflow version",
+      },
+    }
+  }
+
+  if (!data) {
     console.log("[workflow-loader] ❌ Workflow version not found or access denied:", versionId)
     return {
       success: false,
@@ -253,7 +270,24 @@ async function loadWorkflowByWorkflowId(workflowId: string, principal?: Principa
     error: error?.message,
   })
 
-  if (error || !data) {
+  if (error) {
+    console.log("[workflow-loader] ❌ Failed to load workflow (repository error):", {
+      workflowId,
+      message: error.message,
+    })
+    logException(error, {
+      location: "/lib/mcp-invoke/workflow-loader/workflow",
+    })
+    return {
+      success: false,
+      error: {
+        code: ErrorCodes.INTERNAL_ERROR,
+        message: error.message ?? "Failed to load workflow",
+      },
+    }
+  }
+
+  if (!data) {
     console.log("[workflow-loader] ❌ Workflow not found or access denied:", workflowId)
     return {
       success: false,

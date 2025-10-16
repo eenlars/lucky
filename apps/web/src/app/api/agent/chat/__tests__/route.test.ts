@@ -1,17 +1,22 @@
 import { NextRequest } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { POST } from "../route"
 
-// Mock dependencies
-const mockRequireAuth = vi.fn()
+const mockRequireAuth = vi.hoisted(() => vi.fn())
+const mockGetFacade = vi.hoisted(() => vi.fn())
+
 vi.mock("@/lib/api-auth", () => ({
-  requireAuth: mockRequireAuth,
+  requireAuthWithApiKey: mockRequireAuth,
 }))
 
-const mockGetFacade = vi.fn()
-vi.mock("@lucky/models", () => ({
-  getFacade: mockGetFacade,
-}))
+vi.mock("@lucky/models", async () => {
+  const actual = await vi.importActual<typeof import("@lucky/models")>("@lucky/models")
+  return {
+    ...actual,
+    getFacade: mockGetFacade,
+  }
+})
+
+import { POST } from "../route"
 
 describe("POST /api/agent/chat", () => {
   beforeEach(() => {
