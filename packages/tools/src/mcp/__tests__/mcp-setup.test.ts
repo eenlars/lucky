@@ -1,16 +1,16 @@
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import type { MCPToolName } from "../registry/types"
 import { type ToolSet, tool } from "ai"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
+import type { MCPToolName } from "../registry/types"
 
 // Simple logger replacement
 const lgg = {
-	log: (...args: any[]) => console.log(...args),
-	info: (...args: any[]) => console.log(...args),
-	error: (...args: any[]) => console.error(...args),
+  log: (...args: any[]) => console.log(...args),
+  info: (...args: any[]) => console.log(...args),
+  error: (...args: any[]) => console.error(...args),
 }
 
 // Create a temporary external MCP config and mock MCP transport/client

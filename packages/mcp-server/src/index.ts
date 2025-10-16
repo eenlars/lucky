@@ -204,7 +204,7 @@ List all workflows available to the authenticated user.
     const rawBody = await response.text()
     try {
       workflows = JSON.parse(rawBody)
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
@@ -316,7 +316,7 @@ Execute a workflow with provided input data.
     const rawBody = await response.text()
     try {
       rpcResponse = JSON.parse(rawBody) as JsonRpcResponse
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
@@ -411,7 +411,7 @@ Check the status of a workflow execution.
     const rawBody = await response.text()
     try {
       status = JSON.parse(rawBody)
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 
@@ -480,7 +480,7 @@ Cancel a running workflow execution.
     const rawBody = await response.text()
     try {
       result = JSON.parse(rawBody)
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
     }
 

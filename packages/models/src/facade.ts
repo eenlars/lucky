@@ -115,7 +115,7 @@ export class ModelsFacade {
    * ```
    */
   async resolve(intent: string, options: SelectionOptions = {}): Promise<ModelSelection> {
-    const startTime = Date.now()
+    const _startTime = Date.now()
 
     try {
       // Use policy selector for intelligent selection

@@ -9,7 +9,7 @@
 import { cn } from "@/lib/utils"
 import { Provider, useChat } from "@ai-sdk-tools/store"
 import { DefaultChatTransport } from "ai"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ChatInput } from "./components/ChatInput/ChatInput"
 import { EmptyResponseError } from "./components/EmptyResponseError"
 import { MessagesArea } from "./components/MessagesArea"
@@ -24,8 +24,8 @@ interface ChatInterfaceRealInnerProps extends ChatInterfaceProps {
 function ChatInterfaceRealInner({
   placeholder = "Ask me anything about workflows...",
   onSendMessage,
-  onMessageSent: _onMessageSent,
-  onError: _onError,
+  onMessageSent,
+  onError,
   maxHeight,
   className,
   nodeId,
@@ -48,6 +48,7 @@ function ChatInterfaceRealInner({
     }),
   })
   const [inputValue, setInputValue] = useState("")
+  const previousMessagesLengthRef = useRef(0)
 
   const isLoading = status === "submitted" || status === "streaming"
 
@@ -70,6 +71,28 @@ function ChatInterfaceRealInner({
   const showEmptyResponseWarning =
     !isLoading && lastMessage && lastMessage.role === "assistant" && lastMessage.content.trim().length === 0
 
+  // Notify parent when new assistant messages arrive
+  useEffect(() => {
+    if (messages.length > previousMessagesLengthRef.current) {
+      const newMessages = messages.slice(previousMessagesLengthRef.current)
+      const newAssistantMessages = newMessages.filter(msg => msg.role === "assistant")
+
+      if (newAssistantMessages.length > 0 && onMessageSent) {
+        // Notify for the latest assistant message
+        onMessageSent(newAssistantMessages[newAssistantMessages.length - 1])
+      }
+
+      previousMessagesLengthRef.current = messages.length
+    }
+  }, [messages, onMessageSent])
+
+  // Notify parent when errors occur
+  useEffect(() => {
+    if (error && onError) {
+      onError(error instanceof Error ? error : new Error(String(error)))
+    }
+  }, [error, onError])
+
   // Handle send
   const handleSend = useCallback(async () => {
     if (!inputValue.trim() || isLoading) return
@@ -84,6 +107,16 @@ function ChatInterfaceRealInner({
     sendMessage({ text: content })
   }, [inputValue, isLoading, sendMessage, onSendMessage])
 
+  // Handle retry - resend the last user message
+  const handleRetry = useCallback(() => {
+    // Find the last user message
+    const lastUserMessage = [...messages].reverse().find(msg => msg.role === "user")
+
+    if (lastUserMessage) {
+      sendMessage({ text: lastUserMessage.content })
+    }
+  }, [messages, sendMessage])
+
   return (
     <div className={cn("flex flex-col h-full w-full bg-white dark:bg-gray-950", className)} style={{ maxHeight }}>
       {/* Messages area */}
@@ -94,7 +127,7 @@ function ChatInterfaceRealInner({
             isLoading={isLoading}
             statusMessage={isLoading ? "Thinking..." : null}
             error={error instanceof Error ? error : error ? new Error(String(error)) : null}
-            onRetry={() => {}}
+            onRetry={handleRetry}
           />
 
           {/* Empty response warning - show inline after messages */}
