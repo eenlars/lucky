@@ -1,7 +1,7 @@
 import { isNir } from "@lucky/shared"
 
-import { printValidationResult, validateToolkitRegistration } from "../registration/validation"
 import type { ToolkitDefinition } from "../registration/customToolsRegistration"
+import { printValidationResult, validateToolkitRegistration } from "../registration/validation"
 import { type CodeToolRegistry, codeToolRegistry } from "./CustomToolRegistry"
 import type { CodeToolName } from "./types"
 

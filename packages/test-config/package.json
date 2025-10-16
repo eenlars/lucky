@@ -1,0 +1,17 @@
+{
+  "name": "@repo/test-config",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./vitest.base": "./src/vitest.base.ts",
+    "./workspace": "./src/workspace.ts",
+    "./plugins": "./src/plugins.ts",
+    "./setup.global": "./src/setup.global.ts"
+  },
+  "dependencies": {
+    "vitest": "^3.2.4",
+    "vite": "^6.0.7",
+    "vite-tsconfig-paths": "^4.3.2"
+  }
+}

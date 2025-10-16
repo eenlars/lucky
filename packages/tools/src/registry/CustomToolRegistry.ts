@@ -1,8 +1,8 @@
 import type { Tool } from "ai"
 import { type ToolExecutionContext, toAITool } from "../factory/toolFactory"
+import type { RS } from "../factory/types"
 import type { ToolkitDefinition, ToolkitTool } from "../registration/customToolsRegistration"
 import type { CodeToolName } from "./types"
-import type { RS } from "../factory/types"
 
 export type FlexibleToolDefinition = ToolkitTool & {
   execute: (params: any, externalContext?: any) => Promise<RS<any>> | RS<any>
