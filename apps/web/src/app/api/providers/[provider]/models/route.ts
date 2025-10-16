@@ -63,13 +63,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
     let result: string[] | EnrichedModelInfo[]
     if (includeMetadata) {
       const catalogModels = getModelsByProvider(validatedProvider)
-      const catalogMap = new Map(catalogModels.map(m => [m.model, m]))
+      // Create map with both formats: with and without provider prefix
+      const catalogMap = new Map<string, (typeof catalogModels)[0]>()
+      for (const model of catalogModels) {
+        catalogMap.set(model.model, model)
+        // Also map without prefix for OpenRouter/Groq format matching
+        const withoutPrefix = model.model.replace(/^[^#]+#/, "")
+        catalogMap.set(withoutPrefix, model)
+      }
+      const isDevelopment = process.env.NODE_ENV === "development"
 
-      // Only return models that exist in catalog and are not disabled
+      // In development: show all models from catalog
+      // In production: only show models that are not disabled
       result = modelIds
         .map(modelId => {
           const catalogEntry = catalogMap.get(modelId)
-          if (catalogEntry && !catalogEntry.disabled) {
+          // In development, show all catalog models; in production, filter disabled ones
+          if (catalogEntry && (isDevelopment || !catalogEntry.disabled)) {
             return {
               id: catalogEntry.id,
               name: catalogEntry.model,
@@ -85,7 +95,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
               intelligence: catalogEntry.intelligence,
             }
           }
-          // Don't return models not in catalog or disabled models
+          // Don't return models not in catalog (or disabled models in production)
           return null
         })
         .filter(Boolean) as EnrichedModelInfo[]
