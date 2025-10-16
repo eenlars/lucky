@@ -326,9 +326,32 @@ bun remove zod && bun add zod@^4.1.5 fastmcp@latest
 # ✓ All 4 tools returned with proper schemas
 ```
 
+### Issue #3: Server Crashes on Startup (2025-10-16)
+
+**Problem**: MCP server crashed immediately after initialization with error: `Either LUCKY_API_KEY or LUCKY_API_URL must be provided`
+
+**Root Cause**: The `authenticate` callback was calling `process.exit(1)` when env vars weren't set during server initialization. In stdio mode (Claude Desktop), env vars are passed via config and available at tool invocation time, not during init.
+
+**Solution**: Removed the `process.exit(1)` from authenticate for non-cloud mode:
+```typescript
+// Before (crashes):
+if (!process.env.LUCKY_API_KEY && !process.env.LUCKY_API_URL) {
+  console.error("Either LUCKY_API_KEY or LUCKY_API_URL must be provided")
+  process.exit(1)  // ❌ Crashes server
+}
+
+// After (works):
+// For self-hosted/stdio mode, API key is optional
+// LUCKY_API_URL will be checked when tools are invoked
+return { luckyApiKey: process.env.LUCKY_API_KEY }
+```
+
+**Verification**: MCP server now starts successfully and tools are callable.
+
 **Commits**:
 - `fix(mcp): suppress console output in stdio mode to prevent JSON-RPC corruption`
 - `fix(mcp): upgrade FastMCP to v3.20.0 for Zod v4 compatibility`
+- `fix(mcp): remove process.exit in authenticate for stdio mode`
 
 ---
 
