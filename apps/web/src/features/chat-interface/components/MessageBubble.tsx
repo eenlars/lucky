@@ -48,7 +48,7 @@ export function MessageBubble({ id, role, content, onCopy, onDelete }: MessageBu
         <div
           className={cn(
             "flex gap-2.5 text-[11px] tracking-tight",
-            "opacity-0 group-hover:opacity-100",
+            "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
             "motion-safe:transition-opacity motion-safe:duration-150",
             "motion-reduce:transition-none motion-reduce:opacity-100",
             isUser ? "justify-end" : "justify-start",
