@@ -1,5 +1,66 @@
 [
   {
+    "id": "openrouter#openai/gpt-5-image-mini",
+    "canonical_slug": "openai/gpt-5-image-mini",
+    "hugging_face_id": "",
+    "name": "OpenAI: GPT-5 Image Mini",
+    "created": 1760624583,
+    "description": "GPT-5 Image Mini combines OpenAI's GPT-5 Mini with state-of-the-art image generation capabilities. It provides the same instruction-following and safety-tuning benefits as GPT-5, but with reduced latency and cost. This natively multimodal model incorporates GPT Image 1 Mini's superior instruction following, text rendering, and detailed image editing, making it ideal for applications that require both efficient text processing and high-quality visual creation at scale.",
+    "context_length": 400000,
+    "architecture": {
+      "modality": "text+image->text+image",
+      "input_modalities": [
+        "file",
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "image",
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 2.5,
+      "completion": 2,
+      "request": 0,
+      "image": 2.5,
+      "web_search": 10000,
+      "internal_reasoning": 0,
+      "input_cache_read": 0.25
+    },
+    "top_provider": {
+      "context_length": 400000,
+      "max_completion_tokens": 128000,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "include_reasoning",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "presence_penalty",
+      "reasoning",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": null,
+      "top_p": null,
+      "frequency_penalty": null
+    }
+  },
+  {
     "id": "openrouter#anthropic/claude-haiku-4.5",
     "canonical_slug": "anthropic/claude-4.5-haiku-20251001",
     "hugging_face_id": "",
@@ -9,8 +70,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -37,7 +103,9 @@
       "stop",
       "temperature",
       "tool_choice",
-      "tools"
+      "tools",
+      "top_k",
+      "top_p"
     ],
     "default_parameters": {
       "temperature": null,
@@ -55,8 +123,13 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -102,8 +175,13 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -144,6 +222,67 @@
     }
   },
   {
+    "id": "openrouter#openai/gpt-5-image",
+    "canonical_slug": "openai/gpt-5-image",
+    "hugging_face_id": "",
+    "name": "OpenAI: GPT-5 Image",
+    "created": 1760447986,
+    "description": "[GPT-5](https://openrouter.ai/openai/gpt-5) Image combines OpenAI's most advanced language model with state-of-the-art image generation capabilities. It offers major improvements in reasoning, code quality, and user experience while incorporating GPT Image 1's superior instruction following, text rendering, and detailed image editing.",
+    "context_length": 400000,
+    "architecture": {
+      "modality": "text+image->text+image",
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "image",
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 10,
+      "completion": 10,
+      "request": 0,
+      "image": 10,
+      "web_search": 10000,
+      "internal_reasoning": 0,
+      "input_cache_read": 1.25
+    },
+    "top_provider": {
+      "context_length": 400000,
+      "max_completion_tokens": 128000,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "include_reasoning",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "presence_penalty",
+      "reasoning",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": null,
+      "top_p": null,
+      "frequency_penalty": null
+    }
+  },
+  {
     "id": "openrouter#inclusionai/ling-1t",
     "canonical_slug": "inclusionai/ling-1t",
     "hugging_face_id": "inclusionAI/Ling-1T",
@@ -153,14 +292,18 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
     "pricing": {
-      "prompt": 1,
-      "completion": 3,
+      "prompt": 0.57,
+      "completion": 2.28,
       "request": 0,
       "image": 0,
       "web_search": 0,
@@ -180,6 +323,7 @@
       "min_p",
       "presence_penalty",
       "repetition_penalty",
+      "response_format",
       "seed",
       "stop",
       "structured_outputs",
@@ -206,8 +350,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -260,8 +410,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -314,8 +470,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -362,8 +522,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -410,8 +574,14 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text+image",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["image", "text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "image",
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -429,7 +599,14 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {
       "temperature": null,
       "top_p": null,
@@ -446,8 +623,13 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -499,8 +681,13 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -550,8 +737,14 @@
     "context_length": 400000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -595,8 +788,12 @@
     "context_length": 202752,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -652,8 +849,14 @@
     "context_length": 1000000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -698,8 +901,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-v3.1"
     },
@@ -753,8 +960,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -801,8 +1012,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -820,7 +1035,11 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "seed", "stop"],
+    "supported_parameters": [
+      "max_tokens",
+      "seed",
+      "stop"
+    ],
     "default_parameters": {
       "temperature": null,
       "top_p": null,
@@ -837,8 +1056,14 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "file", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "file",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -887,8 +1112,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -935,8 +1167,13 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -989,8 +1226,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1045,8 +1287,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1087,8 +1333,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1134,8 +1384,13 @@
     "context_length": 400000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -1180,8 +1435,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-v3.1"
     },
@@ -1236,8 +1495,13 @@
     "context_length": 2000000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -1286,8 +1550,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1340,8 +1608,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1393,8 +1665,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1439,8 +1715,12 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1488,8 +1768,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1536,8 +1821,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1588,8 +1877,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1638,8 +1931,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1688,8 +1985,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1707,7 +2008,11 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -1720,8 +2025,12 @@
     "context_length": 1000000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1762,8 +2071,12 @@
     "context_length": 1000000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -1806,8 +2119,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1845,8 +2162,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1894,8 +2215,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -1935,6 +2260,63 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#deepcogito/cogito-v2-preview-llama-70b",
+    "canonical_slug": "deepcogito/cogito-v2-preview-llama-70b",
+    "hugging_face_id": "deepcogito/cogito-v2-preview-llama-70B",
+    "name": "Deep Cogito: Cogito V2 Preview Llama 70B",
+    "created": 1756831784,
+    "description": "Cogito v2 70B is a dense hybrid reasoning model that combines direct answering capabilities with advanced self-reflection. Built with iterative policy improvement, it delivers strong performance across reasoning tasks while maintaining efficiency through shorter reasoning chains and improved intuition.",
+    "context_length": 32768,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Llama3",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 0.88,
+      "completion": 0.88,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 32768,
+      "max_completion_tokens": null,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "include_reasoning",
+      "logit_bias",
+      "max_tokens",
+      "min_p",
+      "presence_penalty",
+      "reasoning",
+      "repetition_penalty",
+      "response_format",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": null,
+      "top_p": null,
+      "frequency_penalty": null
+    }
+  },
+  {
     "id": "openrouter#deepcogito/cogito-v2-preview-llama-109b-moe",
     "canonical_slug": "deepcogito/cogito-v2-preview-llama-109b-moe",
     "hugging_face_id": "deepcogito/cogito-v2-preview-llama-109B-MoE",
@@ -1944,8 +2326,13 @@
     "context_length": 32767,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama4",
       "instruct_type": null
     },
@@ -1982,6 +2369,63 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#deepcogito/cogito-v2-preview-llama-405B",
+    "canonical_slug": "deepcogito/cogito-v2-preview-llama-405B",
+    "hugging_face_id": "deepcogito/cogito-v2-preview-llama-405B",
+    "name": "Deep Cogito: Cogito V2 Preview Llama 405B",
+    "created": 1756831149,
+    "description": "Cogito v2 405B is a dense hybrid reasoning model that combines direct answering capabilities with advanced self-reflection. It represents a significant step toward frontier intelligence with dense architecture delivering performance competitive with leading closed models. This advanced reasoning system combines policy improvement with massive scale for exceptional capabilities.",
+    "context_length": 32768,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Llama3",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 3.5,
+      "completion": 3.5,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 32768,
+      "max_completion_tokens": null,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "include_reasoning",
+      "logit_bias",
+      "max_tokens",
+      "min_p",
+      "presence_penalty",
+      "reasoning",
+      "repetition_penalty",
+      "response_format",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": null,
+      "top_p": null,
+      "frequency_penalty": null
+    }
+  },
+  {
     "id": "openrouter#deepcogito/cogito-v2-preview-deepseek-671b",
     "canonical_slug": "deepcogito/cogito-v2-preview-deepseek-671b",
     "hugging_face_id": "deepcogito/cogito-v2-preview-deepseek-671B-MoE",
@@ -1991,8 +2435,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -2036,8 +2484,13 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2079,8 +2532,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -2131,8 +2588,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -2178,8 +2639,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -2228,8 +2693,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2278,8 +2747,14 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text+image",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["image", "text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "image",
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -2297,7 +2772,14 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {
       "temperature": null,
       "top_p": null,
@@ -2314,8 +2796,12 @@
     "context_length": 163800,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-v3.1"
     },
@@ -2333,7 +2819,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "seed", "stop", "temperature"],
+    "supported_parameters": [
+      "include_reasoning",
+      "max_tokens",
+      "reasoning",
+      "seed",
+      "stop",
+      "temperature"
+    ],
     "default_parameters": {}
   },
   {
@@ -2346,8 +2839,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-v3.1"
     },
@@ -2398,8 +2895,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["audio", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "audio",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2446,8 +2948,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -2492,8 +2999,12 @@
     "context_length": 120000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2538,8 +3049,13 @@
     "context_length": 30000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2582,8 +3098,13 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2635,8 +3156,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2654,7 +3179,15 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "stop", "temperature", "tool_choice", "tools", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -2667,8 +3200,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -2686,7 +3223,15 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "stop", "temperature", "tool_choice", "tools", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -2699,8 +3244,14 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2719,7 +3270,12 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs"
+    ],
     "default_parameters": {}
   },
   {
@@ -2732,8 +3288,14 @@
     "context_length": 400000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2778,8 +3340,14 @@
     "context_length": 400000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2820,8 +3388,14 @@
     "context_length": 400000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2862,8 +3436,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2914,8 +3492,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -2964,8 +3546,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -3016,8 +3602,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -3064,8 +3656,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -3110,8 +3706,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -3160,8 +3760,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -3210,8 +3814,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3267,8 +3875,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3322,8 +3934,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3376,8 +3992,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -3428,8 +4048,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3447,7 +4071,13 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
     "default_parameters": {
       "temperature": 0.75,
       "top_p": null,
@@ -3464,8 +4094,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -3512,8 +4146,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -3562,8 +4200,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3606,8 +4249,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -3652,8 +4302,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": null
     },
@@ -3702,8 +4356,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3743,8 +4401,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3762,7 +4424,12 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "seed", "stop", "temperature"],
+    "supported_parameters": [
+      "max_tokens",
+      "seed",
+      "stop",
+      "temperature"
+    ],
     "default_parameters": {}
   },
   {
@@ -3775,8 +4442,12 @@
     "context_length": 63000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3825,8 +4496,13 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -3869,8 +4545,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -3915,8 +4595,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -3964,8 +4648,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4006,8 +4694,13 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -4052,8 +4745,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4093,8 +4790,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4141,8 +4842,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4191,8 +4896,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -4239,8 +4948,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -4287,8 +5000,12 @@
     "context_length": 81920,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4306,7 +5023,11 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature"
+    ],
     "default_parameters": {
       "temperature": null,
       "top_p": null,
@@ -4323,8 +5044,12 @@
     "context_length": 81920,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4342,7 +5067,11 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature"
+    ],
     "default_parameters": {
       "temperature": null,
       "top_p": null,
@@ -4359,8 +5088,13 @@
     "context_length": 123000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4403,8 +5137,12 @@
     "context_length": 123000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4447,8 +5185,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -4491,8 +5233,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4539,8 +5285,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -4590,8 +5341,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -4642,8 +5398,12 @@
     "context_length": 1000000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4689,8 +5449,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -4736,8 +5503,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -4782,8 +5556,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -4828,8 +5609,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4876,8 +5661,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -4917,8 +5706,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "file", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "file",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -4958,8 +5753,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -5005,8 +5804,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -5052,8 +5855,12 @@
     "context_length": 40000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -5091,17 +5898,21 @@
     }
   },
   {
-    "id": "openrouter#mistralai/magistral-medium-2506",
+    "id": "openrouter#mistralai/magistral-medium-2506:thinking",
     "canonical_slug": "mistralai/magistral-medium-2506",
     "hugging_face_id": "",
-    "name": "Mistral: Magistral Medium 2506",
+    "name": "Mistral: Magistral Medium 2506 (thinking)",
     "created": 1749354054,
     "description": "Magistral is Mistral's first reasoning model. It is ideal for general purpose use requiring longer thought processing and better accuracy than with non-reasoning LLMs. From legal research and financial forecasting to software development and creative storytelling — this model solves multi-step challenges where transparency and precision are critical.",
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -5139,17 +5950,21 @@
     }
   },
   {
-    "id": "openrouter#mistralai/magistral-medium-2506:thinking",
+    "id": "openrouter#mistralai/magistral-medium-2506",
     "canonical_slug": "mistralai/magistral-medium-2506",
     "hugging_face_id": "",
-    "name": "Mistral: Magistral Medium 2506 (thinking)",
+    "name": "Mistral: Magistral Medium 2506",
     "created": 1749354054,
     "description": "Magistral is Mistral's first reasoning model. It is ideal for general purpose use requiring longer thought processing and better accuracy than with non-reasoning LLMs. From legal research and financial forecasting to software development and creative storytelling — this model solves multi-step challenges where transparency and precision are critical.",
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -5196,8 +6011,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["file", "image", "text", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "file",
+        "image",
+        "text",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -5242,8 +6064,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "deepseek-r1"
     },
@@ -5290,8 +6116,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "deepseek-r1"
     },
@@ -5338,8 +6168,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-r1"
     },
@@ -5386,8 +6220,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-r1"
     },
@@ -5438,8 +6276,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -5486,8 +6330,14 @@
     "context_length": 1000000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -5530,8 +6380,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -5580,8 +6434,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -5632,8 +6490,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -5673,8 +6535,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -5716,8 +6582,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -5758,8 +6629,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -5800,8 +6675,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -5848,8 +6727,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -5894,8 +6778,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -5940,8 +6831,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -5983,8 +6879,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -6026,8 +6926,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -6071,8 +6975,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -6114,8 +7022,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -6160,8 +7072,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -6208,8 +7124,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6254,8 +7174,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -6298,8 +7222,13 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -6343,8 +7272,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6391,8 +7324,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6443,8 +7380,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6491,8 +7432,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6535,8 +7480,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6583,8 +7532,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6635,8 +7588,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6687,8 +7644,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6739,8 +7700,12 @@
     "context_length": 40960,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen3",
       "instruct_type": "qwen3"
     },
@@ -6791,8 +7756,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -6839,8 +7808,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -6887,8 +7860,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-r1"
     },
@@ -6935,8 +7912,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-r1"
     },
@@ -6983,8 +7964,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -7031,8 +8016,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -7073,8 +8064,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -7115,8 +8112,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -7157,8 +8160,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -7203,8 +8210,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -7249,8 +8260,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -7295,8 +8310,14 @@
     "context_length": 1047576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -7344,8 +8365,14 @@
     "context_length": 1047576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -7393,8 +8420,14 @@
     "context_length": 1047576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["image", "text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "image",
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -7441,8 +8474,12 @@
     "context_length": 4096,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "code-llama"
     },
@@ -7484,8 +8521,12 @@
     "context_length": 4096,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "alpaca"
     },
@@ -7527,8 +8568,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -7575,8 +8620,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -7623,8 +8672,12 @@
     "context_length": 96000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -7671,8 +8724,12 @@
     "context_length": 96000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -7719,8 +8776,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -7765,8 +8826,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Grok",
       "instruct_type": null
     },
@@ -7811,8 +8876,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -7857,8 +8926,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama4",
       "instruct_type": null
     },
@@ -7899,8 +8973,13 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama4",
       "instruct_type": null
     },
@@ -7949,8 +9028,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama4",
       "instruct_type": null
     },
@@ -7991,8 +9075,13 @@
     "context_length": 327680,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama4",
       "instruct_type": null
     },
@@ -8041,8 +9130,13 @@
     "context_length": 4096,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -8089,8 +9183,13 @@
     "context_length": 16384,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -8136,8 +9235,13 @@
     "context_length": 16384,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -8184,8 +9288,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -8232,8 +9340,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -8282,8 +9394,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -8321,8 +9439,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -8373,8 +9496,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -8425,8 +9553,12 @@
     "context_length": 4096,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -8469,8 +9601,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -8488,7 +9625,14 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -8501,8 +9645,13 @@
     "context_length": 96000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -8548,8 +9697,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -8567,7 +9721,12 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "seed", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "seed",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -8580,8 +9739,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -8628,8 +9792,12 @@
     "context_length": 256000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -8671,8 +9839,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -8690,7 +9862,12 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "structured_outputs", "web_search_options"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "structured_outputs",
+      "web_search_options"
+    ],
     "default_parameters": {}
   },
   {
@@ -8703,8 +9880,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -8722,7 +9903,12 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "structured_outputs", "web_search_options"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "structured_outputs",
+      "web_search_options"
+    ],
     "default_parameters": {}
   },
   {
@@ -8735,8 +9921,13 @@
     "context_length": 96000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -8783,8 +9974,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -8831,8 +10027,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -8877,8 +10077,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -8924,8 +10129,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -8966,8 +10176,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9006,8 +10221,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -9048,8 +10267,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "qwq"
     },
@@ -9100,8 +10323,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9146,8 +10373,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9192,8 +10423,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -9234,8 +10472,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -9278,8 +10522,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -9320,8 +10570,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -9366,8 +10620,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9412,8 +10670,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9458,8 +10720,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "none"
     },
@@ -9505,8 +10771,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -9525,7 +10796,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs",
+      "tool_choice",
+      "tools"
+    ],
     "default_parameters": {}
   },
   {
@@ -9538,8 +10816,15 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file", "audio"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file",
+        "audio"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -9583,8 +10868,13 @@
     "context_length": 7500,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9602,7 +10892,14 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "presence_penalty", "response_format", "seed", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -9615,8 +10912,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9634,7 +10935,13 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "temperature", "top_p"],
+    "supported_parameters": [
+      "include_reasoning",
+      "max_tokens",
+      "reasoning",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -9647,8 +10954,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9666,7 +10977,13 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "temperature", "top_p"],
+    "supported_parameters": [
+      "include_reasoning",
+      "max_tokens",
+      "reasoning",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -9679,8 +10996,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -9698,7 +11019,11 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -9708,11 +11033,16 @@
     "name": "Qwen: Qwen VL Max",
     "created": 1738434304,
     "description": "Qwen VL Max is a visual understanding model with 7500 tokens context length. It excels in delivering optimal performance for a broader spectrum of complex tasks.\n",
-    "context_length": 7500,
+    "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9725,13 +11055,26 @@
       "internal_reasoning": 0
     },
     "top_provider": {
-      "context_length": 7500,
-      "max_completion_tokens": 1500,
+      "context_length": 131072,
+      "max_completion_tokens": 8192,
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "presence_penalty", "response_format", "seed", "temperature", "top_p"],
-    "default_parameters": {}
+    "supported_parameters": [
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": null,
+      "top_p": null,
+      "frequency_penalty": null
+    }
   },
   {
     "id": "openrouter#qwen/qwen-turbo",
@@ -9743,8 +11086,12 @@
     "context_length": 1000000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9785,8 +11132,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9804,7 +11156,14 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "presence_penalty", "response_format", "seed", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -9817,8 +11176,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9863,8 +11227,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9905,8 +11273,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -9947,8 +11319,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -9967,7 +11344,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs",
+      "tool_choice",
+      "tools"
+    ],
     "default_parameters": {}
   },
   {
@@ -9980,8 +11364,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -10028,8 +11416,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -10080,8 +11472,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "deepseek-r1"
     },
@@ -10127,8 +11523,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "deepseek-r1"
     },
@@ -10173,8 +11573,12 @@
     "context_length": 127000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "deepseek-r1"
     },
@@ -10215,8 +11619,13 @@
     "context_length": 127072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -10255,8 +11664,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "chatml"
     },
@@ -10298,8 +11711,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "chatml"
     },
@@ -10341,8 +11758,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "deepseek-r1"
     },
@@ -10389,8 +11810,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "deepseek-r1"
     },
@@ -10438,8 +11863,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-r1"
     },
@@ -10457,7 +11886,12 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["include_reasoning", "max_tokens", "reasoning", "temperature"],
+    "supported_parameters": [
+      "include_reasoning",
+      "max_tokens",
+      "reasoning",
+      "temperature"
+    ],
     "default_parameters": {}
   },
   {
@@ -10470,8 +11904,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": "deepseek-r1"
     },
@@ -10492,8 +11930,6 @@
     "supported_parameters": [
       "frequency_penalty",
       "include_reasoning",
-      "logit_bias",
-      "logprobs",
       "max_tokens",
       "min_p",
       "presence_penalty",
@@ -10502,12 +11938,10 @@
       "response_format",
       "seed",
       "stop",
-      "structured_outputs",
       "temperature",
       "tool_choice",
       "tools",
       "top_k",
-      "top_logprobs",
       "top_p"
     ],
     "default_parameters": {}
@@ -10522,8 +11956,13 @@
     "context_length": 1000192,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -10541,7 +11980,11 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -10554,8 +11997,12 @@
     "context_length": 262144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -10600,8 +12047,12 @@
     "context_length": 16384,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -10645,8 +12096,12 @@
     "context_length": 16000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": null
     },
@@ -10689,8 +12144,12 @@
     "context_length": 163840,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "DeepSeek",
       "instruct_type": null
     },
@@ -10739,8 +12198,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -10784,8 +12247,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -10804,7 +12273,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "response_format", "seed", "structured_outputs", "tool_choice", "tools"],
+    "supported_parameters": [
+      "max_tokens",
+      "response_format",
+      "seed",
+      "structured_outputs",
+      "tool_choice",
+      "tools"
+    ],
     "default_parameters": {}
   },
   {
@@ -10817,8 +12293,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Cohere",
       "instruct_type": null
     },
@@ -10860,8 +12340,13 @@
     "context_length": 1048576,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": null
     },
@@ -10901,8 +12386,12 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -10946,14 +12435,18 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
     "pricing": {
       "prompt": 0.13,
-      "completion": 0.39,
+      "completion": 0.38,
       "request": 0,
       "image": 0,
       "web_search": 0,
@@ -10961,7 +12454,7 @@
     },
     "top_provider": {
       "context_length": 131072,
-      "max_completion_tokens": 120000,
+      "max_completion_tokens": 16384,
       "is_moderated": false
     },
     "per_request_limits": null,
@@ -10996,8 +12489,13 @@
     "context_length": 300000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Nova",
       "instruct_type": null
     },
@@ -11015,7 +12513,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11028,8 +12533,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Nova",
       "instruct_type": null
     },
@@ -11047,7 +12556,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11060,8 +12576,13 @@
     "context_length": 300000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Nova",
       "instruct_type": null
     },
@@ -11079,7 +12600,14 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11092,8 +12620,14 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -11141,8 +12675,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -11187,8 +12725,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -11233,8 +12775,13 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -11279,8 +12826,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -11325,8 +12876,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -11372,8 +12927,12 @@
     "context_length": 16000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "vicuna"
     },
@@ -11416,8 +12975,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -11459,8 +13022,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -11480,7 +13048,15 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11493,8 +13069,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -11514,7 +13096,15 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11527,8 +13117,12 @@
     "context_length": 16384,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -11576,8 +13170,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -11597,52 +13197,16 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"],
-    "default_parameters": {}
-  },
-  {
-    "id": "openrouter#mistralai/ministral-3b",
-    "canonical_slug": "mistralai/ministral-3b",
-    "hugging_face_id": null,
-    "name": "Mistral: Ministral 3B",
-    "created": 1729123200,
-    "description": "Ministral 3B is a 3B parameter model optimized for on-device and edge computing. It excels in knowledge, commonsense reasoning, and function-calling, outperforming larger models like Mistral 7B on most benchmarks. Supporting up to 128k context length, it’s ideal for orchestrating agentic workflows and specialist tasks with efficient inference.",
-    "context_length": 32768,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "Mistral",
-      "instruct_type": null
-    },
-    "pricing": {
-      "prompt": 0.04,
-      "completion": 0.04,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 32768,
-      "max_completion_tokens": null,
-      "is_moderated": false
-    },
-    "per_request_limits": null,
     "supported_parameters": [
-      "frequency_penalty",
       "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
       "stop",
-      "structured_outputs",
       "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
       "top_p"
     ],
-    "default_parameters": {
-      "temperature": 0.3
-    }
+    "default_parameters": {}
   },
   {
     "id": "openrouter#mistralai/ministral-8b",
@@ -11654,8 +13218,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -11691,6 +13259,54 @@
     }
   },
   {
+    "id": "openrouter#mistralai/ministral-3b",
+    "canonical_slug": "mistralai/ministral-3b",
+    "hugging_face_id": null,
+    "name": "Mistral: Ministral 3B",
+    "created": 1729123200,
+    "description": "Ministral 3B is a 3B parameter model optimized for on-device and edge computing. It excels in knowledge, commonsense reasoning, and function-calling, outperforming larger models like Mistral 7B on most benchmarks. Supporting up to 128k context length, it’s ideal for orchestrating agentic workflows and specialist tasks with efficient inference.",
+    "context_length": 32768,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Mistral",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 0.04,
+      "completion": 0.04,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 32768,
+      "max_completion_tokens": null,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": 0.3
+    }
+  },
+  {
     "id": "openrouter#qwen/qwen-2.5-7b-instruct",
     "canonical_slug": "qwen/qwen-2.5-7b-instruct",
     "hugging_face_id": "Qwen/Qwen2.5-7B-Instruct",
@@ -11700,8 +13316,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -11749,8 +13369,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -11796,8 +13420,12 @@
     "context_length": 8000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -11815,7 +13443,12 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11828,8 +13461,12 @@
     "context_length": 8000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": null
     },
@@ -11847,7 +13484,12 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -11860,8 +13502,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -11908,8 +13554,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -11952,8 +13602,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -11992,8 +13646,12 @@
     "context_length": 16384,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -12042,8 +13700,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -12052,53 +13714,6 @@
       "completion": 0.01,
       "request": 0,
       "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 131072,
-      "max_completion_tokens": 16384,
-      "is_moderated": false
-    },
-    "per_request_limits": null,
-    "supported_parameters": [
-      "frequency_penalty",
-      "logit_bias",
-      "max_tokens",
-      "min_p",
-      "presence_penalty",
-      "repetition_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
-      "temperature",
-      "top_k",
-      "top_logprobs",
-      "top_p"
-    ],
-    "default_parameters": {}
-  },
-  {
-    "id": "openrouter#meta-llama/llama-3.2-11b-vision-instruct",
-    "canonical_slug": "meta-llama/llama-3.2-11b-vision-instruct",
-    "hugging_face_id": "meta-llama/Llama-3.2-11B-Vision-Instruct",
-    "name": "Meta: Llama 3.2 11B Vision Instruct",
-    "created": 1727222400,
-    "description": "Llama 3.2 11B Vision is a multimodal model with 11 billion parameters, designed to handle tasks combining visual and textual data. It excels in tasks such as image captioning and visual question answering, bridging the gap between language generation and visual reasoning. Pre-trained on a massive dataset of image-text pairs, it performs well in complex, high-accuracy image analysis.\n\nIts ability to integrate visual understanding with language processing makes it an ideal solution for industries requiring comprehensive visual-linguistic AI applications, such as content creation, AI-driven customer service, and research.\n\nClick here for the [original model card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD_VISION.md).\n\nUsage of this model is subject to [Meta's Acceptable Use Policy](https://www.llama.com/llama3/use-policy/).",
-    "context_length": 131072,
-    "architecture": {
-      "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
-      "tokenizer": "Llama3",
-      "instruct_type": "llama3"
-    },
-    "pricing": {
-      "prompt": 0.049,
-      "completion": 0.049,
-      "request": 0,
-      "image": 79.48,
       "web_search": 0,
       "internal_reasoning": 0
     },
@@ -12136,8 +13751,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -12171,6 +13791,58 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#meta-llama/llama-3.2-11b-vision-instruct",
+    "canonical_slug": "meta-llama/llama-3.2-11b-vision-instruct",
+    "hugging_face_id": "meta-llama/Llama-3.2-11B-Vision-Instruct",
+    "name": "Meta: Llama 3.2 11B Vision Instruct",
+    "created": 1727222400,
+    "description": "Llama 3.2 11B Vision is a multimodal model with 11 billion parameters, designed to handle tasks combining visual and textual data. It excels in tasks such as image captioning and visual question answering, bridging the gap between language generation and visual reasoning. Pre-trained on a massive dataset of image-text pairs, it performs well in complex, high-accuracy image analysis.\n\nIts ability to integrate visual understanding with language processing makes it an ideal solution for industries requiring comprehensive visual-linguistic AI applications, such as content creation, AI-driven customer service, and research.\n\nClick here for the [original model card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD_VISION.md).\n\nUsage of this model is subject to [Meta's Acceptable Use Policy](https://www.llama.com/llama3/use-policy/).",
+    "context_length": 131072,
+    "architecture": {
+      "modality": "text+image->text",
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Llama3",
+      "instruct_type": "llama3"
+    },
+    "pricing": {
+      "prompt": 0.049,
+      "completion": 0.049,
+      "request": 0,
+      "image": 79.48,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 131072,
+      "max_completion_tokens": 16384,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "logit_bias",
+      "max_tokens",
+      "min_p",
+      "presence_penalty",
+      "repetition_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "top_k",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#qwen/qwen-2.5-72b-instruct:free",
     "canonical_slug": "qwen/qwen-2.5-72b-instruct",
     "hugging_face_id": "Qwen/Qwen2.5-72B-Instruct",
@@ -12180,8 +13852,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -12226,8 +13902,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": "chatml"
     },
@@ -12275,8 +13955,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -12315,39 +13999,6 @@
     "default_parameters": {}
   },
   {
-    "id": "openrouter#openai/o1-mini-2024-09-12",
-    "canonical_slug": "openai/o1-mini-2024-09-12",
-    "hugging_face_id": null,
-    "name": "OpenAI: o1-mini (2024-09-12)",
-    "created": 1726099200,
-    "description": "The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding.\n\nThe o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the [launch announcement](https://openai.com/o1).\n\nNote: This model is currently experimental and not suitable for production use-cases, and may be heavily rate-limited.",
-    "context_length": 128000,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "GPT",
-      "instruct_type": null
-    },
-    "pricing": {
-      "prompt": 1.1,
-      "completion": 4.4,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0,
-      "input_cache_read": 0.55
-    },
-    "top_provider": {
-      "context_length": 128000,
-      "max_completion_tokens": 65536,
-      "is_moderated": true
-    },
-    "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "seed"],
-    "default_parameters": {}
-  },
-  {
     "id": "openrouter#openai/o1-mini",
     "canonical_slug": "openai/o1-mini",
     "hugging_face_id": null,
@@ -12357,8 +14008,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -12377,7 +14032,50 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "seed"],
+    "supported_parameters": [
+      "max_tokens",
+      "seed"
+    ],
+    "default_parameters": {}
+  },
+  {
+    "id": "openrouter#openai/o1-mini-2024-09-12",
+    "canonical_slug": "openai/o1-mini-2024-09-12",
+    "hugging_face_id": null,
+    "name": "OpenAI: o1-mini (2024-09-12)",
+    "created": 1726099200,
+    "description": "The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding.\n\nThe o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the [launch announcement](https://openai.com/o1).\n\nNote: This model is currently experimental and not suitable for production use-cases, and may be heavily rate-limited.",
+    "context_length": 128000,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 1.1,
+      "completion": 4.4,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0,
+      "input_cache_read": 0.55
+    },
+    "top_provider": {
+      "context_length": 128000,
+      "max_completion_tokens": 65536,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "max_tokens",
+      "seed"
+    ],
     "default_parameters": {}
   },
   {
@@ -12390,8 +14088,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -12433,50 +14136,6 @@
     }
   },
   {
-    "id": "openrouter#cohere/command-r-08-2024",
-    "canonical_slug": "cohere/command-r-08-2024",
-    "hugging_face_id": null,
-    "name": "Cohere: Command R (08-2024)",
-    "created": 1724976000,
-    "description": "command-r-08-2024 is an update of the [Command R](/models/cohere/command-r) with improved performance for multilingual retrieval-augmented generation (RAG) and tool use. More broadly, it is better at math, code and reasoning and is competitive with the previous version of the larger Command R+ model.\n\nRead the launch post [here](https://docs.cohere.com/changelog/command-gets-refreshed).\n\nUse of this model is subject to Cohere's [Usage Policy](https://docs.cohere.com/docs/usage-policy) and [SaaS Agreement](https://cohere.com/saas-agreement).",
-    "context_length": 128000,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "Cohere",
-      "instruct_type": null
-    },
-    "pricing": {
-      "prompt": 0.15,
-      "completion": 0.6,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 128000,
-      "max_completion_tokens": 4000,
-      "is_moderated": true
-    },
-    "per_request_limits": null,
-    "supported_parameters": [
-      "frequency_penalty",
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
-      "temperature",
-      "tools",
-      "top_k",
-      "top_p"
-    ],
-    "default_parameters": {}
-  },
-  {
     "id": "openrouter#cohere/command-r-plus-08-2024",
     "canonical_slug": "cohere/command-r-plus-08-2024",
     "hugging_face_id": null,
@@ -12486,8 +14145,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Cohere",
       "instruct_type": null
     },
@@ -12521,45 +14184,48 @@
     "default_parameters": {}
   },
   {
-    "id": "openrouter#sao10k/l3.1-euryale-70b",
-    "canonical_slug": "sao10k/l3.1-euryale-70b",
-    "hugging_face_id": "Sao10K/L3.1-70B-Euryale-v2.2",
-    "name": "Sao10K: Llama 3.1 Euryale 70B v2.2",
-    "created": 1724803200,
-    "description": "Euryale L3.1 70B v2.2 is a model focused on creative roleplay from [Sao10k](https://ko-fi.com/sao10k). It is the successor of [Euryale L3 70B v2.1](/models/sao10k/l3-euryale-70b).",
-    "context_length": 32768,
+    "id": "openrouter#cohere/command-r-08-2024",
+    "canonical_slug": "cohere/command-r-08-2024",
+    "hugging_face_id": null,
+    "name": "Cohere: Command R (08-2024)",
+    "created": 1724976000,
+    "description": "command-r-08-2024 is an update of the [Command R](/models/cohere/command-r) with improved performance for multilingual retrieval-augmented generation (RAG) and tool use. More broadly, it is better at math, code and reasoning and is competitive with the previous version of the larger Command R+ model.\n\nRead the launch post [here](https://docs.cohere.com/changelog/command-gets-refreshed).\n\nUse of this model is subject to Cohere's [Usage Policy](https://docs.cohere.com/docs/usage-policy) and [SaaS Agreement](https://cohere.com/saas-agreement).",
+    "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "Llama3",
-      "instruct_type": "llama3"
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Cohere",
+      "instruct_type": null
     },
     "pricing": {
-      "prompt": 0.65,
-      "completion": 0.75,
+      "prompt": 0.15,
+      "completion": 0.6,
       "request": 0,
       "image": 0,
       "web_search": 0,
       "internal_reasoning": 0
     },
     "top_provider": {
-      "context_length": 32768,
-      "max_completion_tokens": null,
-      "is_moderated": false
+      "context_length": 128000,
+      "max_completion_tokens": 4000,
+      "is_moderated": true
     },
     "per_request_limits": null,
     "supported_parameters": [
       "frequency_penalty",
       "max_tokens",
-      "min_p",
       "presence_penalty",
-      "repetition_penalty",
       "response_format",
       "seed",
       "stop",
       "structured_outputs",
       "temperature",
+      "tools",
       "top_k",
       "top_p"
     ],
@@ -12575,8 +14241,13 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Qwen",
       "instruct_type": null
     },
@@ -12614,6 +14285,55 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#sao10k/l3.1-euryale-70b",
+    "canonical_slug": "sao10k/l3.1-euryale-70b",
+    "hugging_face_id": "Sao10K/L3.1-70B-Euryale-v2.2",
+    "name": "Sao10K: Llama 3.1 Euryale 70B v2.2",
+    "created": 1724803200,
+    "description": "Euryale L3.1 70B v2.2 is a model focused on creative roleplay from [Sao10k](https://ko-fi.com/sao10k). It is the successor of [Euryale L3 70B v2.1](/models/sao10k/l3-euryale-70b).",
+    "context_length": 32768,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Llama3",
+      "instruct_type": "llama3"
+    },
+    "pricing": {
+      "prompt": 0.65,
+      "completion": 0.75,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 32768,
+      "max_completion_tokens": null,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "max_tokens",
+      "min_p",
+      "presence_penalty",
+      "repetition_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "top_k",
+      "top_p"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#microsoft/phi-3.5-mini-128k-instruct",
     "canonical_slug": "microsoft/phi-3.5-mini-128k-instruct",
     "hugging_face_id": "microsoft/Phi-3.5-mini-instruct",
@@ -12623,8 +14343,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "phi3"
     },
@@ -12642,7 +14366,13 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -12655,8 +14385,12 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "chatml"
     },
@@ -12705,8 +14439,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "chatml"
     },
@@ -12752,8 +14490,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -12797,8 +14540,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -12841,8 +14588,14 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -12890,8 +14643,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "none"
     },
@@ -12936,8 +14693,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -12977,56 +14738,6 @@
     "default_parameters": {}
   },
   {
-    "id": "openrouter#meta-llama/llama-3.1-70b-instruct",
-    "canonical_slug": "meta-llama/llama-3.1-70b-instruct",
-    "hugging_face_id": "meta-llama/Meta-Llama-3.1-70B-Instruct",
-    "name": "Meta: Llama 3.1 70B Instruct",
-    "created": 1721692800,
-    "description": "Meta's latest class of model (Llama 3.1) launched with a variety of sizes & flavors. This 70B instruct-tuned version is optimized for high quality dialogue usecases.\n\nIt has demonstrated strong performance compared to leading closed-source models in human evaluations.\n\nTo read more about the model release, [click here](https://ai.meta.com/blog/meta-llama-3-1/). Usage of this model is subject to [Meta's Acceptable Use Policy](https://llama.meta.com/llama3/use-policy/).",
-    "context_length": 131072,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "Llama3",
-      "instruct_type": "llama3"
-    },
-    "pricing": {
-      "prompt": 0.4,
-      "completion": 0.4,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 131072,
-      "max_completion_tokens": null,
-      "is_moderated": false
-    },
-    "per_request_limits": null,
-    "supported_parameters": [
-      "frequency_penalty",
-      "logit_bias",
-      "logprobs",
-      "max_tokens",
-      "min_p",
-      "presence_penalty",
-      "repetition_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_k",
-      "top_logprobs",
-      "top_p"
-    ],
-    "default_parameters": {}
-  },
-  {
     "id": "openrouter#meta-llama/llama-3.1-405b-instruct",
     "canonical_slug": "meta-llama/llama-3.1-405b-instruct",
     "hugging_face_id": "meta-llama/Meta-Llama-3.1-405B-Instruct",
@@ -13036,8 +14747,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -13077,6 +14792,60 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#meta-llama/llama-3.1-70b-instruct",
+    "canonical_slug": "meta-llama/llama-3.1-70b-instruct",
+    "hugging_face_id": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+    "name": "Meta: Llama 3.1 70B Instruct",
+    "created": 1721692800,
+    "description": "Meta's latest class of model (Llama 3.1) launched with a variety of sizes & flavors. This 70B instruct-tuned version is optimized for high quality dialogue usecases.\n\nIt has demonstrated strong performance compared to leading closed-source models in human evaluations.\n\nTo read more about the model release, [click here](https://ai.meta.com/blog/meta-llama-3-1/). Usage of this model is subject to [Meta's Acceptable Use Policy](https://llama.meta.com/llama3/use-policy/).",
+    "context_length": 131072,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Llama3",
+      "instruct_type": "llama3"
+    },
+    "pricing": {
+      "prompt": 0.4,
+      "completion": 0.4,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 131072,
+      "max_completion_tokens": null,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "min_p",
+      "presence_penalty",
+      "repetition_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#mistralai/mistral-nemo:free",
     "canonical_slug": "mistralai/mistral-nemo",
     "hugging_face_id": "mistralai/Mistral-Nemo-Instruct-2407",
@@ -13086,8 +14855,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -13134,8 +14907,12 @@
     "context_length": 131072,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -13177,17 +14954,23 @@
     }
   },
   {
-    "id": "openrouter#openai/gpt-4o-mini-2024-07-18",
-    "canonical_slug": "openai/gpt-4o-mini-2024-07-18",
+    "id": "openrouter#openai/gpt-4o-mini",
+    "canonical_slug": "openai/gpt-4o-mini",
     "hugging_face_id": null,
-    "name": "OpenAI: GPT-4o-mini (2024-07-18)",
+    "name": "OpenAI: GPT-4o-mini",
     "created": 1721260800,
     "description": "GPT-4o mini is OpenAI's newest model after [GPT-4 Omni](/models/openai/gpt-4o), supporting both text and image inputs with text outputs.\n\nAs their most advanced small model, it is many multiples more affordable than other recent frontier models, and more than 60% cheaper than [GPT-3.5 Turbo](/models/openai/gpt-3.5-turbo). It maintains SOTA intelligence, while being significantly more cost-effective.\n\nGPT-4o mini achieves an 82% score on MMLU and presently ranks higher than GPT-4 on chat preferences [common leaderboards](https://arena.lmsys.org/).\n\nCheck out the [launch announcement](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) to learn more.\n\n#multimodal",
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -13195,7 +14978,7 @@
       "prompt": 0.15,
       "completion": 0.6,
       "request": 0,
-      "image": 7225,
+      "image": 217,
       "web_search": 0,
       "internal_reasoning": 0,
       "input_cache_read": 0.075
@@ -13226,17 +15009,23 @@
     "default_parameters": {}
   },
   {
-    "id": "openrouter#openai/gpt-4o-mini",
-    "canonical_slug": "openai/gpt-4o-mini",
+    "id": "openrouter#openai/gpt-4o-mini-2024-07-18",
+    "canonical_slug": "openai/gpt-4o-mini-2024-07-18",
     "hugging_face_id": null,
-    "name": "OpenAI: GPT-4o-mini",
+    "name": "OpenAI: GPT-4o-mini (2024-07-18)",
     "created": 1721260800,
     "description": "GPT-4o mini is OpenAI's newest model after [GPT-4 Omni](/models/openai/gpt-4o), supporting both text and image inputs with text outputs.\n\nAs their most advanced small model, it is many multiples more affordable than other recent frontier models, and more than 60% cheaper than [GPT-3.5 Turbo](/models/openai/gpt-3.5-turbo). It maintains SOTA intelligence, while being significantly more cost-effective.\n\nGPT-4o mini achieves an 82% score on MMLU and presently ranks higher than GPT-4 on chat preferences [common leaderboards](https://arena.lmsys.org/).\n\nCheck out the [launch announcement](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) to learn more.\n\n#multimodal",
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -13244,7 +15033,7 @@
       "prompt": 0.15,
       "completion": 0.6,
       "request": 0,
-      "image": 217,
+      "image": 7225,
       "web_search": 0,
       "internal_reasoning": 0,
       "input_cache_read": 0.075
@@ -13284,8 +15073,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -13325,8 +15118,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -13371,8 +15168,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Gemini",
       "instruct_type": "gemma"
     },
@@ -13419,8 +15220,14 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -13440,7 +15247,15 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -13453,8 +15268,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -13486,23 +15305,27 @@
     "default_parameters": {}
   },
   {
-    "id": "openrouter#mistralai/mistral-7b-instruct-v0.3",
-    "canonical_slug": "mistralai/mistral-7b-instruct-v0.3",
-    "hugging_face_id": "mistralai/Mistral-7B-Instruct-v0.3",
-    "name": "Mistral: Mistral 7B Instruct v0.3",
+    "id": "openrouter#nousresearch/hermes-2-pro-llama-3-8b",
+    "canonical_slug": "nousresearch/hermes-2-pro-llama-3-8b",
+    "hugging_face_id": "NousResearch/Hermes-2-Pro-Llama-3-8B",
+    "name": "NousResearch: Hermes 2 Pro - Llama-3 8B",
     "created": 1716768000,
-    "description": "A high-performing, industry-standard 7.3B parameter model, with optimizations for speed and context length.\n\nAn improved version of [Mistral 7B Instruct v0.2](/models/mistralai/mistral-7b-instruct-v0.2), with the following changes:\n\n- Extended vocabulary to 32768\n- Supports v3 Tokenizer\n- Supports function calling\n\nNOTE: Support for function calling depends on the provider.",
+    "description": "Hermes 2 Pro is an upgraded, retrained version of Nous Hermes 2, consisting of an updated and cleaned version of the OpenHermes 2.5 Dataset, as well as a newly introduced Function Calling and JSON Mode dataset developed in-house.",
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "Mistral",
-      "instruct_type": "mistral"
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Llama3",
+      "instruct_type": "chatml"
     },
     "pricing": {
-      "prompt": 0.028,
-      "completion": 0.054,
+      "prompt": 0.025,
+      "completion": 0.08,
       "request": 0,
       "image": 0,
       "web_search": 0,
@@ -13510,29 +15333,24 @@
     },
     "top_provider": {
       "context_length": 32768,
-      "max_completion_tokens": 16384,
+      "max_completion_tokens": null,
       "is_moderated": false
     },
     "per_request_limits": null,
     "supported_parameters": [
       "frequency_penalty",
-      "logit_bias",
       "max_tokens",
-      "min_p",
       "presence_penalty",
       "repetition_penalty",
       "response_format",
       "seed",
       "stop",
+      "structured_outputs",
       "temperature",
-      "tool_choice",
-      "tools",
       "top_k",
       "top_p"
     ],
-    "default_parameters": {
-      "temperature": 0.3
-    }
+    "default_parameters": {}
   },
   {
     "id": "openrouter#mistralai/mistral-7b-instruct:free",
@@ -13544,8 +15362,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -13592,8 +15414,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -13632,23 +15458,27 @@
     }
   },
   {
-    "id": "openrouter#nousresearch/hermes-2-pro-llama-3-8b",
-    "canonical_slug": "nousresearch/hermes-2-pro-llama-3-8b",
-    "hugging_face_id": "NousResearch/Hermes-2-Pro-Llama-3-8B",
-    "name": "NousResearch: Hermes 2 Pro - Llama-3 8B",
+    "id": "openrouter#mistralai/mistral-7b-instruct-v0.3",
+    "canonical_slug": "mistralai/mistral-7b-instruct-v0.3",
+    "hugging_face_id": "mistralai/Mistral-7B-Instruct-v0.3",
+    "name": "Mistral: Mistral 7B Instruct v0.3",
     "created": 1716768000,
-    "description": "Hermes 2 Pro is an upgraded, retrained version of Nous Hermes 2, consisting of an updated and cleaned version of the OpenHermes 2.5 Dataset, as well as a newly introduced Function Calling and JSON Mode dataset developed in-house.",
+    "description": "A high-performing, industry-standard 7.3B parameter model, with optimizations for speed and context length.\n\nAn improved version of [Mistral 7B Instruct v0.2](/models/mistralai/mistral-7b-instruct-v0.2), with the following changes:\n\n- Extended vocabulary to 32768\n- Supports v3 Tokenizer\n- Supports function calling\n\nNOTE: Support for function calling depends on the provider.",
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "Llama3",
-      "instruct_type": "chatml"
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Mistral",
+      "instruct_type": "mistral"
     },
     "pricing": {
-      "prompt": 0.025,
-      "completion": 0.08,
+      "prompt": 0.028,
+      "completion": 0.054,
       "request": 0,
       "image": 0,
       "web_search": 0,
@@ -13656,24 +15486,29 @@
     },
     "top_provider": {
       "context_length": 32768,
-      "max_completion_tokens": null,
+      "max_completion_tokens": 16384,
       "is_moderated": false
     },
     "per_request_limits": null,
     "supported_parameters": [
       "frequency_penalty",
+      "logit_bias",
       "max_tokens",
+      "min_p",
       "presence_penalty",
       "repetition_penalty",
       "response_format",
       "seed",
       "stop",
-      "structured_outputs",
       "temperature",
+      "tool_choice",
+      "tools",
       "top_k",
       "top_p"
     ],
-    "default_parameters": {}
+    "default_parameters": {
+      "temperature": 0.3
+    }
   },
   {
     "id": "openrouter#microsoft/phi-3-mini-128k-instruct",
@@ -13685,8 +15520,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "phi3"
     },
@@ -13704,7 +15543,13 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -13717,8 +15562,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Other",
       "instruct_type": "phi3"
     },
@@ -13736,54 +15585,12 @@
       "is_moderated": false
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "temperature", "tool_choice", "tools", "top_p"],
-    "default_parameters": {}
-  },
-  {
-    "id": "openrouter#openai/gpt-4o-2024-05-13",
-    "canonical_slug": "openai/gpt-4o-2024-05-13",
-    "hugging_face_id": null,
-    "name": "OpenAI: GPT-4o (2024-05-13)",
-    "created": 1715558400,
-    "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of [GPT-4 Turbo](/models/openai/gpt-4-turbo) while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.\n\nFor benchmarking against other models, it was briefly called [\"im-also-a-good-gpt2-chatbot\"](https://twitter.com/LiamFedus/status/1790064963966370209)\n\n#multimodal",
-    "context_length": 128000,
-    "architecture": {
-      "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
-      "tokenizer": "GPT",
-      "instruct_type": null
-    },
-    "pricing": {
-      "prompt": 5,
-      "completion": 15,
-      "request": 0,
-      "image": 7225,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 128000,
-      "max_completion_tokens": 4096,
-      "is_moderated": true
-    },
-    "per_request_limits": null,
     "supported_parameters": [
-      "frequency_penalty",
-      "logit_bias",
-      "logprobs",
       "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
       "temperature",
       "tool_choice",
       "tools",
-      "top_logprobs",
-      "top_p",
-      "web_search_options"
+      "top_p"
     ],
     "default_parameters": {}
   },
@@ -13797,8 +15604,14 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -13846,8 +15659,14 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image", "file"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -13894,8 +15713,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "none"
     },
@@ -13928,6 +15751,60 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#openai/gpt-4o-2024-05-13",
+    "canonical_slug": "openai/gpt-4o-2024-05-13",
+    "hugging_face_id": null,
+    "name": "OpenAI: GPT-4o (2024-05-13)",
+    "created": 1715558400,
+    "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of [GPT-4 Turbo](/models/openai/gpt-4-turbo) while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.\n\nFor benchmarking against other models, it was briefly called [\"im-also-a-good-gpt2-chatbot\"](https://twitter.com/LiamFedus/status/1790064963966370209)\n\n#multimodal",
+    "context_length": 128000,
+    "architecture": {
+      "modality": "text+image->text",
+      "input_modalities": [
+        "text",
+        "image",
+        "file"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 5,
+      "completion": 15,
+      "request": 0,
+      "image": 7225,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 128000,
+      "max_completion_tokens": 4096,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_logprobs",
+      "top_p",
+      "web_search_options"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#meta-llama/llama-3-8b-instruct",
     "canonical_slug": "meta-llama/llama-3-8b-instruct",
     "hugging_face_id": "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -13937,8 +15814,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -13984,8 +15865,12 @@
     "context_length": 8192,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama3",
       "instruct_type": "llama3"
     },
@@ -14033,8 +15918,12 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -14084,8 +15973,12 @@
     "context_length": 65536,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "vicuna"
     },
@@ -14128,8 +16021,13 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -14175,8 +16073,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -14196,7 +16099,15 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -14209,8 +16120,13 @@
     "context_length": 200000,
     "architecture": {
       "modality": "text+image->text",
-      "input_modalities": ["text", "image"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Claude",
       "instruct_type": null
     },
@@ -14230,7 +16146,15 @@
       "is_moderated": true
     },
     "per_request_limits": null,
-    "supported_parameters": ["max_tokens", "stop", "temperature", "tool_choice", "tools", "top_k", "top_p"],
+    "supported_parameters": [
+      "max_tokens",
+      "stop",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
     "default_parameters": {}
   },
   {
@@ -14243,8 +16167,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -14280,53 +16208,6 @@
     }
   },
   {
-    "id": "openrouter#openai/gpt-4-turbo-preview",
-    "canonical_slug": "openai/gpt-4-turbo-preview",
-    "hugging_face_id": null,
-    "name": "OpenAI: GPT-4 Turbo Preview",
-    "created": 1706140800,
-    "description": "The preview GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Training data: up to Dec 2023.\n\n**Note:** heavily rate limited by OpenAI while in preview.",
-    "context_length": 128000,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "GPT",
-      "instruct_type": null
-    },
-    "pricing": {
-      "prompt": 10,
-      "completion": 30,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 128000,
-      "max_completion_tokens": 4096,
-      "is_moderated": true
-    },
-    "per_request_limits": null,
-    "supported_parameters": [
-      "frequency_penalty",
-      "logit_bias",
-      "logprobs",
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_logprobs",
-      "top_p"
-    ],
-    "default_parameters": {}
-  },
-  {
     "id": "openrouter#openai/gpt-3.5-turbo-0613",
     "canonical_slug": "openai/gpt-3.5-turbo-0613",
     "hugging_face_id": null,
@@ -14336,8 +16217,12 @@
     "context_length": 4095,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -14374,6 +16259,57 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#openai/gpt-4-turbo-preview",
+    "canonical_slug": "openai/gpt-4-turbo-preview",
+    "hugging_face_id": null,
+    "name": "OpenAI: GPT-4 Turbo Preview",
+    "created": 1706140800,
+    "description": "The preview GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Training data: up to Dec 2023.\n\n**Note:** heavily rate limited by OpenAI while in preview.",
+    "context_length": 128000,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 10,
+      "completion": 30,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 128000,
+      "max_completion_tokens": 4096,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#mistralai/mistral-small",
     "canonical_slug": "mistralai/mistral-small",
     "hugging_face_id": null,
@@ -14383,8 +16319,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -14429,8 +16369,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": null
     },
@@ -14475,8 +16419,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -14520,8 +16468,12 @@
     "context_length": 32768,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -14569,8 +16521,12 @@
     "context_length": 4096,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama2",
       "instruct_type": "alpaca"
     },
@@ -14618,8 +16574,12 @@
     "context_length": 6144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama2",
       "instruct_type": "airoboros"
     },
@@ -14667,8 +16627,12 @@
     "context_length": 2000000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Router",
       "instruct_type": null
     },
@@ -14695,8 +16659,12 @@
     "context_length": 128000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -14733,6 +16701,55 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#openai/gpt-3.5-turbo-instruct",
+    "canonical_slug": "openai/gpt-3.5-turbo-instruct",
+    "hugging_face_id": null,
+    "name": "OpenAI: GPT-3.5 Turbo Instruct",
+    "created": 1695859200,
+    "description": "This model is a variant of GPT-3.5 Turbo tuned for instructional prompts and omitting chat-related optimizations. Training data: up to Sep 2021.",
+    "context_length": 4095,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": "chatml"
+    },
+    "pricing": {
+      "prompt": 1.5,
+      "completion": 2,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 4095,
+      "max_completion_tokens": 4096,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#mistralai/mistral-7b-instruct-v0.1",
     "canonical_slug": "mistralai/mistral-7b-instruct-v0.1",
     "hugging_face_id": "mistralai/Mistral-7B-Instruct-v0.1",
@@ -14742,8 +16759,12 @@
     "context_length": 2824,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Mistral",
       "instruct_type": "mistral"
     },
@@ -14781,51 +16802,6 @@
     }
   },
   {
-    "id": "openrouter#openai/gpt-3.5-turbo-instruct",
-    "canonical_slug": "openai/gpt-3.5-turbo-instruct",
-    "hugging_face_id": null,
-    "name": "OpenAI: GPT-3.5 Turbo Instruct",
-    "created": 1695859200,
-    "description": "This model is a variant of GPT-3.5 Turbo tuned for instructional prompts and omitting chat-related optimizations. Training data: up to Sep 2021.",
-    "context_length": 4095,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "GPT",
-      "instruct_type": "chatml"
-    },
-    "pricing": {
-      "prompt": 1.5,
-      "completion": 2,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 4095,
-      "max_completion_tokens": 4096,
-      "is_moderated": true
-    },
-    "per_request_limits": null,
-    "supported_parameters": [
-      "frequency_penalty",
-      "logit_bias",
-      "logprobs",
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
-      "temperature",
-      "top_logprobs",
-      "top_p"
-    ],
-    "default_parameters": {}
-  },
-  {
     "id": "openrouter#openai/gpt-3.5-turbo-16k",
     "canonical_slug": "openai/gpt-3.5-turbo-16k",
     "hugging_face_id": null,
@@ -14835,8 +16811,12 @@
     "context_length": 16385,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -14882,8 +16862,12 @@
     "context_length": 8000,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama2",
       "instruct_type": "alpaca"
     },
@@ -14931,8 +16915,12 @@
     "context_length": 6144,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama2",
       "instruct_type": "alpaca"
     },
@@ -14980,8 +16968,12 @@
     "context_length": 4096,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "Llama2",
       "instruct_type": "alpaca"
     },
@@ -15020,53 +17012,6 @@
     "default_parameters": {}
   },
   {
-    "id": "openrouter#openai/gpt-4",
-    "canonical_slug": "openai/gpt-4",
-    "hugging_face_id": null,
-    "name": "OpenAI: GPT-4",
-    "created": 1685232000,
-    "description": "OpenAI's flagship model, GPT-4 is a large-scale multimodal language model capable of solving difficult problems with greater accuracy than previous models due to its broader general knowledge and advanced reasoning capabilities. Training data: up to Sep 2021.",
-    "context_length": 8191,
-    "architecture": {
-      "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
-      "tokenizer": "GPT",
-      "instruct_type": null
-    },
-    "pricing": {
-      "prompt": 30,
-      "completion": 60,
-      "request": 0,
-      "image": 0,
-      "web_search": 0,
-      "internal_reasoning": 0
-    },
-    "top_provider": {
-      "context_length": 8191,
-      "max_completion_tokens": 4096,
-      "is_moderated": true
-    },
-    "per_request_limits": null,
-    "supported_parameters": [
-      "frequency_penalty",
-      "logit_bias",
-      "logprobs",
-      "max_tokens",
-      "presence_penalty",
-      "response_format",
-      "seed",
-      "stop",
-      "structured_outputs",
-      "temperature",
-      "tool_choice",
-      "tools",
-      "top_logprobs",
-      "top_p"
-    ],
-    "default_parameters": {}
-  },
-  {
     "id": "openrouter#openai/gpt-3.5-turbo",
     "canonical_slug": "openai/gpt-3.5-turbo",
     "hugging_face_id": null,
@@ -15076,8 +17021,12 @@
     "context_length": 16385,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },
@@ -15114,6 +17063,57 @@
     "default_parameters": {}
   },
   {
+    "id": "openrouter#openai/gpt-4",
+    "canonical_slug": "openai/gpt-4",
+    "hugging_face_id": null,
+    "name": "OpenAI: GPT-4",
+    "created": 1685232000,
+    "description": "OpenAI's flagship model, GPT-4 is a large-scale multimodal language model capable of solving difficult problems with greater accuracy than previous models due to its broader general knowledge and advanced reasoning capabilities. Training data: up to Sep 2021.",
+    "context_length": 8191,
+    "architecture": {
+      "modality": "text->text",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "GPT",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": 30,
+      "completion": 60,
+      "request": 0,
+      "image": 0,
+      "web_search": 0,
+      "internal_reasoning": 0
+    },
+    "top_provider": {
+      "context_length": 8191,
+      "max_completion_tokens": 4096,
+      "is_moderated": true
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "presence_penalty",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_logprobs",
+      "top_p"
+    ],
+    "default_parameters": {}
+  },
+  {
     "id": "openrouter#openai/gpt-4-0314",
     "canonical_slug": "openai/gpt-4-0314",
     "hugging_face_id": null,
@@ -15123,8 +17123,12 @@
     "context_length": 8191,
     "architecture": {
       "modality": "text->text",
-      "input_modalities": ["text"],
-      "output_modalities": ["text"],
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
       "tokenizer": "GPT",
       "instruct_type": null
     },

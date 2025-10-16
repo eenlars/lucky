@@ -21,7 +21,7 @@ import {
   validateProviderKeys,
 } from "@/lib/workflow/provider-validation"
 import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
-import { withObservationContext } from "@lucky/core/context/observationContext"
+import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
@@ -202,7 +202,8 @@ export async function POST(req: NextRequest) {
     // Create observer for real-time event streaming
     const randomId = genShortId()
     const observer = new AgentObserver()
-    ObserverRegistry.getInstance().register(randomId, observer)
+    const registry = ObserverRegistry.getInstance()
+    registry.register(randomId, observer)
 
     const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
       return withObservationContext({ randomId, observer }, async () => {
@@ -219,7 +220,7 @@ export async function POST(req: NextRequest) {
     setTimeout(
       () => {
         observer.dispose()
-        ObserverRegistry.getInstance().dispose(randomId)
+        registry.dispose(randomId)
       },
       5 * 60 * 1000,
     )
@@ -257,6 +258,19 @@ export async function POST(req: NextRequest) {
     activeWorkflows.delete(requestId)
     await deleteWorkflowState(requestId)
     await unsubscribe()
+
+    // Dispose observer if it was created (randomId will be in scope if observer was registered)
+    try {
+      const randomId = getObservationContext()?.randomId
+      if (randomId) {
+        const registry = ObserverRegistry.getInstance()
+        const observer = registry.get(randomId)
+        observer?.dispose()
+        registry.dispose(randomId)
+      }
+    } catch (cleanupError) {
+      console.error("[/api/workflow/invoke] Error during observer cleanup:", cleanupError)
+    }
 
     logException(error, {
       location: "/api/workflow/invoke",

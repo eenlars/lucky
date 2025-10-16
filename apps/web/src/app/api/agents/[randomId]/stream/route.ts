@@ -57,14 +57,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ rand
         }
       })
 
-      // Cleanup on client disconnect
-      req.signal.addEventListener("abort", () => {
-        unsubscribe()
-        controller?.close()
-      })
-
       // Auto-close after 5 minutes
-      setTimeout(
+      const timeoutId = setTimeout(
         () => {
           unsubscribe()
           const timeoutMsg = JSON.stringify({ type: "timeout" })
@@ -73,6 +67,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ rand
         },
         5 * 60 * 1000,
       )
+
+      // Cleanup on client disconnect
+      req.signal.addEventListener("abort", () => {
+        clearTimeout(timeoutId)
+        unsubscribe()
+        controller?.close()
+      })
     },
   })
 

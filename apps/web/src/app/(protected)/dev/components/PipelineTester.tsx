@@ -29,7 +29,7 @@ interface PipelineTestRequest {
   codeTools: string[]
   mcpTools: string[]
   message: string
-  toolStrategy: "v2" | "v3"
+  toolStrategy: "v2" | "v3" | "auto"
   mainGoal?: string
 }
 
@@ -44,6 +44,7 @@ interface PipelineTestResult {
 
 interface PipelineTestResponse {
   success: boolean
+  randomId?: string
   result?: PipelineTestResult
   error?: string
 }
@@ -67,13 +68,15 @@ export function PipelineTester() {
     codeTools: ["math"],
     mcpTools: [],
     message: "What is 5 + 3?",
-    toolStrategy: "v3",
+    toolStrategy: "auto",
     mainGoal: "Test pipeline execution",
   })
 
   const [isRunning, setIsRunning] = useState(false)
   const [result, setResult] = useState<PipelineTestResponse | null>(null)
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set())
+  const [streamEvents, setStreamEvents] = useState<any[]>([])
+  const [isStreaming, setIsStreaming] = useState(false)
 
   // Filter models by selected provider
   const availableModels = useMemo(() => {
@@ -86,20 +89,21 @@ export function PipelineTester() {
     setConfig({
       ...config,
       provider,
-      modelName: modelsForProvider[0]?.model || "",
+      modelName: modelsForProvider[0]?.id || "",
     })
   }
 
   // Set initial model
   useMemo(() => {
     if (!config.modelName && availableModels.length > 0) {
-      setConfig(prev => ({ ...prev, modelName: availableModels[0].model }))
+      setConfig(prev => ({ ...prev, modelName: availableModels[0].id }))
     }
   }, [availableModels, config.modelName])
 
   const handleRun = async () => {
     setIsRunning(true)
     setResult(null)
+    setStreamEvents([])
 
     try {
       const response = await fetch("/api/dev/pipeline/invoke", {
@@ -128,6 +132,11 @@ export function PipelineTester() {
       const data = (await response.json()) as PipelineTestResponse
       setResult(data)
       setIsRunning(false)
+
+      // Connect to SSE stream if randomId is present
+      if (data.randomId) {
+        connectToStream(data.randomId)
+      }
     } catch (error) {
       console.error("Pipeline test fetch error:", error)
       setResult({
@@ -136,6 +145,31 @@ export function PipelineTester() {
       })
       setIsRunning(false)
     }
+  }
+
+  const connectToStream = (randomId: string) => {
+    setIsStreaming(true)
+    const eventSource = new EventSource(`/api/agents/${randomId}/stream`)
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        setStreamEvents(prev => [...prev, data])
+      } catch (error) {
+        console.error("Error parsing SSE event:", error)
+      }
+    }
+
+    eventSource.onerror = () => {
+      eventSource.close()
+      setIsStreaming(false)
+    }
+
+    // Auto-close after 5 minutes
+    setTimeout(() => {
+      eventSource.close()
+      setIsStreaming(false)
+    }, 5 * 60 * 1000)
   }
 
   const toggleStep = (index: number) => {
@@ -209,7 +243,7 @@ export function PipelineTester() {
             >
               {availableModels.length === 0 && <option value="">No active models</option>}
               {availableModels.map(model => (
-                <option key={model.id} value={model.model}>
+                <option key={model.id} value={model.id}>
                   {model.model} (${model.input}/${model.output})
                 </option>
               ))}
@@ -237,20 +271,20 @@ export function PipelineTester() {
           {/* Tool Strategy */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Tool Strategy</label>
-            <div className="flex gap-2">
-              {(["v2", "v3"] as const).map(strategy => (
+            <div className="grid grid-cols-3 gap-2">
+              {(["auto", "v2", "v3"] as const).map(strategy => (
                 <button
                   type="button"
                   key={strategy}
                   onClick={() => setConfig({ ...config, toolStrategy: strategy })}
                   className={cn(
-                    "flex-1 px-3 py-2 text-sm rounded border transition-colors",
+                    "px-3 py-2 text-sm rounded border transition-colors",
                     config.toolStrategy === strategy
                       ? "bg-primary text-primary-foreground border-primary"
                       : "border-border hover:bg-muted",
                   )}
                 >
-                  {strategy.toUpperCase()}
+                  {strategy === "auto" ? "Auto" : strategy.toUpperCase()}
                 </button>
               ))}
             </div>
@@ -396,6 +430,43 @@ export function PipelineTester() {
                   </>
                 )}
               </div>
+
+              {/* Stream Events */}
+              {streamEvents.length > 0 && (
+                <div className="border border-border rounded-lg p-4 bg-card">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="size-4 text-blue-500" />
+                    <h3 className="text-sm font-semibold">Live Events</h3>
+                    {isStreaming && <span className="text-xs text-blue-500">(streaming...)</span>}
+                  </div>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {streamEvents.map((event, idx) => (
+                      <div
+                        key={idx}
+                        className="text-xs font-mono p-2 bg-muted/50 rounded border border-border"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded text-[10px] font-semibold",
+                            event.type === "agent.start" && "bg-green-500/20 text-green-500",
+                            event.type === "agent.end" && "bg-blue-500/20 text-blue-500",
+                            event.type === "agent.error" && "bg-red-500/20 text-red-500",
+                            event.type === "agent.tool.start" && "bg-yellow-500/20 text-yellow-500",
+                            event.type === "agent.tool.end" && "bg-purple-500/20 text-purple-500",
+                            event.type === "connected" && "bg-gray-500/20 text-gray-500"
+                          )}>
+                            {event.type}
+                          </span>
+                          {event.nodeId && <span className="text-muted-foreground">node: {event.nodeId}</span>}
+                        </div>
+                        <div className="text-muted-foreground">
+                          {JSON.stringify(event, null, 2)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Error Message */}
               {!result.success && result.error && (

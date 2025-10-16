@@ -3,7 +3,10 @@ import { InvocationPipeline } from "@core/messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { ToolManager } from "@core/node/toolManager"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
-import type { WorkflowNodeConfig } from "@lucky/shared"
+import { withObservationContext } from "@lucky/core/context/observationContext"
+import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
+import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
+import { genShortId, type WorkflowNodeConfig } from "@lucky/shared"
 import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
@@ -16,7 +19,7 @@ interface PipelineTestRequest {
   codeTools: string[]
   mcpTools: string[]
   message: string
-  toolStrategy: "v2" | "v3"
+  toolStrategy: "v2" | "v3" | "auto"
   mainGoal?: string
 }
 
@@ -70,6 +73,11 @@ export async function POST(request: Request) {
     if (process.env.GROQ_API_KEY) devApiKeys.GROQ_API_KEY = process.env.GROQ_API_KEY
     if (process.env.ANTHROPIC_API_KEY) devApiKeys.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
+    // Create observer for real-time streaming
+    const randomId = genShortId()
+    const observer = new AgentObserver()
+    ObserverRegistry.getInstance().register(randomId, observer)
+
     const result = await withExecutionContext(
       {
         principal: {
@@ -84,6 +92,7 @@ export async function POST(request: Request) {
         apiKeys: devApiKeys,
       },
       async () => {
+        return withObservationContext({ randomId, observer }, async () => {
         // Create tool manager with all required arguments
         // workflowVersionId doesn't matter for dev testing
         const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, "dev-test-version")
@@ -133,8 +142,15 @@ export async function POST(request: Request) {
         const result = await pipeline.process()
 
         return result
+        })
       },
     )
+
+    // Dispose observer after execution
+    setTimeout(() => {
+      observer.dispose()
+      ObserverRegistry.getInstance().dispose(randomId)
+    }, 5 * 60 * 1000)
 
     const executionTime = Date.now() - startTime
 
@@ -170,6 +186,7 @@ export async function POST(request: Request) {
     // Pipeline succeeded
     return NextResponse.json({
       success: true,
+      randomId, // Include randomId for SSE streaming
       result: {
         content: result.nodeInvocationFinalOutput,
         agentSteps: result.agentSteps || [],
