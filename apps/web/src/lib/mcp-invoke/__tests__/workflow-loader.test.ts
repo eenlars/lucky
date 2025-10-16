@@ -1,19 +1,21 @@
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock dependencies
-const mockCreateRLSClient = vi.fn()
-const mockLogException = vi.fn()
-
+// Mock dependencies - must be defined before vi.mock calls
 vi.mock("@/lib/supabase/server-rls", () => ({
-  createRLSClient: mockCreateRLSClient,
+  createRLSClient: vi.fn(),
 }))
 
 vi.mock("@/lib/error-logger", () => ({
-  logException: mockLogException,
+  logException: vi.fn(),
 }))
 
+import { logException } from "@/lib/error-logger"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { loadWorkflowConfig } from "../workflow-loader"
+
+const mockCreateRLSClient = vi.mocked(createRLSClient)
+const mockLogException = vi.mocked(logException)
 
 describe("loadWorkflowConfig", () => {
   beforeEach(() => {
@@ -40,7 +42,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_ver_abc123", "workflow_version")
 
@@ -68,7 +70,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_ver_nonexistent", "workflow_version")
 
@@ -120,7 +122,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_parent_123", "workflow_parent")
 
@@ -140,7 +142,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_nonexistent", "workflow_parent")
 
@@ -162,7 +164,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_empty", "workflow_parent")
 
@@ -198,7 +200,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_ver_auto")
 
@@ -226,7 +228,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_auto")
 
@@ -254,7 +256,7 @@ describe("loadWorkflowConfig", () => {
         }),
       }
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase)
+      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
       const result = await loadWorkflowConfig("wf_ver_test")
 

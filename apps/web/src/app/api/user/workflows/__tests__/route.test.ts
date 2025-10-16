@@ -1,24 +1,34 @@
 import { NextRequest } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock dependencies
-const mockAuthenticateRequest = vi.fn()
-const mockCreateRLSClient = vi.fn()
-const mockLogException = vi.fn()
-
+// Mock dependencies - must be defined before vi.mock calls
 vi.mock("@/lib/auth/principal", () => ({
-  authenticateRequest: mockAuthenticateRequest,
+  authenticateRequest: vi.fn(),
 }))
 
 vi.mock("@/lib/supabase/server-rls", () => ({
-  createRLSClient: mockCreateRLSClient,
+  createRLSClient: vi.fn(),
 }))
 
 vi.mock("@/lib/error-logger", () => ({
-  logException: mockLogException,
+  logException: vi.fn(),
 }))
 
+vi.mock("@/lib/mcp-invoke/workflow-loader", () => ({
+  getDemoWorkflow: vi.fn(() => ({
+    inputSchema: { type: "object" },
+    outputSchema: { type: "object" },
+  })),
+}))
+
+import { authenticateRequest } from "@/lib/auth/principal"
+import { logException } from "@/lib/error-logger"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import { GET } from "../route"
+
+const mockAuthenticateRequest = vi.mocked(authenticateRequest)
+const mockCreateRLSClient = vi.mocked(createRLSClient)
+const mockLogException = vi.mocked(logException)
 
 describe("GET /api/user/workflows", () => {
   beforeEach(() => {
@@ -80,7 +90,7 @@ describe("GET /api/user/workflows", () => {
       }),
     }
 
-    mockCreateRLSClient.mockResolvedValue(mockSupabase)
+    mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
     const request = new NextRequest("http://localhost/api/user/workflows")
     const response = await GET(request)
@@ -109,7 +119,7 @@ describe("GET /api/user/workflows", () => {
     })
   })
 
-  it("returns empty array when user has no workflows", async () => {
+  it("returns demo workflow when user has no workflows", async () => {
     mockAuthenticateRequest.mockResolvedValue({
       clerk_id: "user_123",
       scopes: ["*"],
@@ -125,14 +135,15 @@ describe("GET /api/user/workflows", () => {
       }),
     }
 
-    mockCreateRLSClient.mockResolvedValue(mockSupabase)
+    mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
     const request = new NextRequest("http://localhost/api/user/workflows")
     const response = await GET(request)
 
     expect(response.status).toBe(200)
     const body = await response.json()
-    expect(body).toEqual([])
+    expect(body).toHaveLength(1)
+    expect(body[0].workflow_id).toBe("wf_demo")
   })
 
   it("returns latest version when multiple versions exist", async () => {
@@ -177,7 +188,7 @@ describe("GET /api/user/workflows", () => {
       }),
     }
 
-    mockCreateRLSClient.mockResolvedValue(mockSupabase)
+    mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
     const request = new NextRequest("http://localhost/api/user/workflows")
     const response = await GET(request)
@@ -204,7 +215,7 @@ describe("GET /api/user/workflows", () => {
       }),
     }
 
-    mockCreateRLSClient.mockResolvedValue(mockSupabase)
+    mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
     const request = new NextRequest("http://localhost/api/user/workflows")
     const response = await GET(request)
@@ -240,7 +251,7 @@ describe("GET /api/user/workflows", () => {
       }),
     }
 
-    mockCreateRLSClient.mockResolvedValue(mockSupabase)
+    mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
 
     const request = new NextRequest("http://localhost/api/user/workflows", {
       headers: {

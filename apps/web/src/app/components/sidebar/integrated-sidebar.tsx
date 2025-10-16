@@ -46,20 +46,20 @@ const allNavigationItems: NavItemData[] = [
   {
     type: "editor",
     href: "/edit",
-    label: "Create",
+    label: "Create Workflow",
     icon: <Sparkles className="w-4 h-4 text-orange-500" />,
     description: "Build workflows",
   },
   {
     type: "workflows",
     href: "/workflows",
-    label: "Workflows",
+    label: "My Workflows",
     icon: <Network className="w-4 h-4" />,
     description: "Your workflows",
     submenus: [
       {
         type: "workflows-list",
-        label: "Workflows",
+        label: "My Workflows",
         href: "/workflows",
       },
       {
@@ -78,10 +78,10 @@ const allNavigationItems: NavItemData[] = [
     submenus: [
       {
         type: "connectors-marketplace",
-        label: "Connectors",
+        label: "External Connectors",
         href: "/connectors",
       },
-      { type: "developer-tools", label: "Developers", href: "/tools" },
+      { type: "developer-tools", label: "Custom Tools", href: "/tools" },
     ],
   },
   {
@@ -99,10 +99,9 @@ const allNavigationItems: NavItemData[] = [
     icon: <Settings className="w-4 h-4" />,
     description: "Configure app",
     submenus: [
-      { type: "settings-general", label: "General", href: "/settings" },
-      { type: "settings-profile", label: "Profile", href: "/profile" },
-      { type: "settings-providers", label: "Providers", href: "/settings/providers" },
-      { type: "settings-payment", label: "Payment", href: "/payment" },
+      { type: "settings-profile", label: "Profile", href: "/settings/profile" },
+      { type: "settings-providers", label: "LLMs", href: "/settings/providers" },
+      { type: "settings-payment", label: "Payment", href: "/settings/payment" },
     ],
   },
   {

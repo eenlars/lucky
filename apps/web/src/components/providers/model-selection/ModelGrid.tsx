@@ -5,6 +5,7 @@ import {
   filterModels,
   getRecommendedModels,
   isModelRecommended,
+  sortModels,
   sortModelsWithEnabledFirst,
 } from "@/lib/providers/model-filters"
 import { AlertCircle, Loader2 } from "lucide-react"
@@ -17,6 +18,18 @@ import type { FilterPreset, ModelGridProps } from "./types"
 export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleModels, isLoading }: ModelGridProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activePreset, setActivePreset] = useState<FilterPreset>("all")
+  const [hasUserInteracted, setHasUserInteracted] = useState(false)
+
+  // Track user interaction on actual toggle events
+  const handleToggleModel = (modelId: string) => {
+    setHasUserInteracted(true)
+    onToggleModel(modelId)
+  }
+
+  const handleBulkToggle = (modelIds: string[], enabled: boolean) => {
+    setHasUserInteracted(true)
+    onBulkToggleModels(modelIds, enabled)
+  }
 
   // Get recommended model names
   const recommendedModelNames = useMemo(() => getRecommendedModels(models), [models])
@@ -42,9 +55,14 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
       filtered = filtered.filter(m => recommendedModelNames.includes(m.name))
     }
 
-    // Sort with enabled models first, then by recommended score
-    return sortModelsWithEnabledFirst(filtered, enabledModels, "recommended", models)
-  }, [models, filters, activePreset, recommendedModelNames, enabledModels])
+    // Sort enabled models to top only on initial load, not after user interaction
+    if (!hasUserInteracted) {
+      return sortModelsWithEnabledFirst(filtered, enabledModels, "recommended", models)
+    }
+
+    // After user interaction, maintain stable sort order (don't move enabled to top)
+    return sortModels(filtered, "recommended", models)
+  }, [models, filters, activePreset, recommendedModelNames, enabledModels, hasUserInteracted])
 
   // Bulk actions
   const handleEnableRecommended = () => {
@@ -53,21 +71,21 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
       .filter(m => recommendedModelNames.includes(m.name) && !enabledModels.has(m.id))
       .map(m => m.id)
     if (recommendedModelIds.length > 0) {
-      onBulkToggleModels(recommendedModelIds, true)
+      handleBulkToggle(recommendedModelIds, true)
     }
   }
 
   const handleEnableAll = () => {
     const modelsToEnable = filteredAndSortedModels.filter(m => !enabledModels.has(m.id)).map(m => m.id)
     if (modelsToEnable.length > 0) {
-      onBulkToggleModels(modelsToEnable, true)
+      handleBulkToggle(modelsToEnable, true)
     }
   }
 
   const handleDisableAll = () => {
     const modelsToDisable = filteredAndSortedModels.filter(m => enabledModels.has(m.id)).map(m => m.id)
     if (modelsToDisable.length > 0) {
-      onBulkToggleModels(modelsToDisable, false)
+      handleBulkToggle(modelsToDisable, false)
     }
   }
 
@@ -142,7 +160,7 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
               key={model.id}
               model={model}
               isEnabled={enabledModels.has(model.id)}
-              onToggle={() => onToggleModel(model.id)}
+              onToggle={() => handleToggleModel(model.id)}
               isRecommended={isModelRecommended(model.name, models)}
             />
           ))}
