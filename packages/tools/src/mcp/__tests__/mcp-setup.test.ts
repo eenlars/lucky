@@ -1,11 +1,17 @@
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import { lgg } from "@core/utils/logging/Logger"
-import type { MCPToolName } from "@lucky/tools"
 import { type ToolSet, tool } from "ai"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
+import type { MCPToolName } from "../registry/types"
+
+// Simple logger replacement
+const lgg = {
+  log: (...args: any[]) => console.log(...args),
+  info: (...args: any[]) => console.log(...args),
+  error: (...args: any[]) => console.error(...args),
+}
 
 // Create a temporary external MCP config and mock MCP transport/client
 // so unit tests don't require real binaries or network access.
@@ -126,7 +132,7 @@ beforeAll(async () => {
   process.env.MCP_SECRET_PATH = tempConfigPath
 
   // Import after env and mocks so the module reads our temp config
-  const mod = await import("../mcp")
+  const mod = await import("../setup")
   setupMCPForNode = mod.setupMCPForNode
 })
 

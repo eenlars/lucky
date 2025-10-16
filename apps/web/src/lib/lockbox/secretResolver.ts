@@ -1,12 +1,8 @@
-import { decryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
-import { logException } from "@/lib/error-logger"
 import type { Principal } from "@/lib/auth/principal"
+import { decryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
 import { fetchSecret, fetchSecrets, touchSecrets } from "@/lib/data/secret-repository"
-
-export type SecretResolver = {
-  get(name: string, namespace?: string): Promise<string | undefined>
-  getAll(names: string[], namespace?: string): Promise<Record<string, string>>
-}
+import { logException } from "@/lib/error-logger"
+import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 
 /**
  * Context-aware secret resolver.

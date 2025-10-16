@@ -1,34 +1,44 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
+import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
+import type { Models } from "@lucky/models"
+import { providerConfigSchema as modelsProviderConfigSchema } from "@lucky/models"
+import { ZPrincipal } from "@lucky/shared"
+import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
+import { z } from "zod"
+import { RuntimeContext } from "./runtime-context"
+/**
+ * Runtime cache schema for workflow execution.
+ * Stores computed values that should be reused throughout a single workflow invocation.
+ */
+export const ZExecutionSchema = z.object({
+  principal: ZPrincipal,
+  secrets: z.custom<SecretResolver>(),
+  apiKeys: z.record(z.string()).optional(),
+  // Provider configuration used by @lucky/models instance
+  providerConfig: z.record(modelsProviderConfigSchema).optional(),
+  modelsInstance: z.custom<Models>().optional(),
+  spendingTracker: z.custom<SpendingTracker>().optional(),
+})
 
-export type Principal = {
-  clerk_id: string
-  scopes: string[]
-  auth_method: "api_key" | "session"
-}
+export type ExecutionSchema = z.infer<typeof ZExecutionSchema>
 
-export type SecretResolver = {
-  get(name: string, namespace?: string): Promise<string | undefined>
-  getAll(names: string[], namespace?: string): Promise<Record<string, string>>
-}
+const executionContextStore = new AsyncLocalStorage<RuntimeContext<ExecutionSchema>>()
 
-export type ExecutionContext = {
-  principal: Principal
-  secrets: SecretResolver
-  apiKeys?: Record<string, string> // Pre-fetched API keys for multi-provider workflows
-}
-
-const executionContextStore = new AsyncLocalStorage<ExecutionContext>()
-
-export function withExecutionContext<T>(ctx: ExecutionContext, fn: () => Promise<T>): Promise<T> {
+export function withExecutionContext<T>(values: ExecutionSchema, fn: () => Promise<T>): Promise<T> {
+  const parsed = ZExecutionSchema.safeParse(values)
+  if (!parsed.success) {
+    throw new Error(`Invalid execution context: ${parsed.error.message}`)
+  }
+  const ctx = new RuntimeContext<ExecutionSchema>(Object.entries(parsed.data) as any)
   return executionContextStore.run(ctx, fn)
 }
 
-export function getExecutionContext(): ExecutionContext | undefined {
+export function getExecutionContext(): RuntimeContext<ExecutionSchema> | undefined {
   return executionContextStore.getStore()
 }
 
-export function requireExecutionContext(): ExecutionContext {
+export function requireExecutionContext(): RuntimeContext<ExecutionSchema> {
   const ctx = getExecutionContext()
   if (!ctx) {
     throw new Error("No execution context. Workflow must be invoked via API endpoint.")
@@ -38,44 +48,56 @@ export function requireExecutionContext(): ExecutionContext {
 
 export async function getApiKey(name: string): Promise<string | undefined> {
   const ctx = getExecutionContext()
-  console.log(`[getApiKey] Looking for ${name}, context exists:`, !!ctx)
+  const isProduction = process.env.NODE_ENV === "production"
+  console.log(`[getApiKey] Looking for ${name}, ctx: ${Boolean(ctx)}, prod: ${isProduction}`)
 
-  // No context means server-level execution (use process.env)
-  if (!ctx) {
-    console.log(`[getApiKey] No context, using process.env.${name}`)
-    return process.env[name]
-  }
+  // Local/dev/test: Check execution context first, then fall back to process.env
+  if (!isProduction) {
+    // If execution context exists, prefer its apiKeys over process.env
+    if (ctx) {
+      const apiKeys = ctx.get("apiKeys") as Record<string, string> | undefined
+      if (apiKeys?.[name]) return apiKeys[name]
 
-  // Check pre-fetched keys first (fast path for multi-provider workflows)
-  if (ctx.apiKeys?.[name]) {
-    console.log(`[getApiKey] Found ${name} in pre-fetched keys`)
-    return ctx.apiKeys[name]
-  }
+      // Check secrets from context
+      const secrets = ctx.get("secrets")
+      const secretValue = await secrets.get(name, "environment-variables")
+      if (secretValue) return secretValue
 
-  console.log(`[getApiKey] ${name} not in pre-fetched keys, fetching from secrets`)
-  // Fallback to on-demand fetch (lazy loading for single-provider workflows)
-  const secretValue = await ctx.secrets.get(name, "environment-variables")
-
-  // If user doesn't have this key in their secrets
-  if (!secretValue) {
-    console.log(`[getApiKey] Secret not found. Auth method: ${ctx.principal.auth_method}`)
-
-    // Session auth (UI users) REQUIRE their own configured keys - no fallback
-    if (ctx.principal.auth_method === "session") {
-      const providerName = getProviderDisplayName(name)
-      console.error(
-        `[getApiKey] ❌ ${providerName} API key not configured for user (session auth - no fallback allowed)`,
-      )
-      console.error(`   User must add ${providerName} in Settings → Providers`)
-      return undefined
+      // Session auth should NOT fall back to process.env for security
+      const principal = ctx.get("principal")
+      if (principal?.auth_method === "session") {
+        return undefined
+      }
     }
 
-    // API key auth (programmatic access) can fall back to server-level keys
-    console.log(
-      `[getApiKey] ${name} not in user secrets, falling back to process.env (auth_method: ${ctx.principal.auth_method})`,
-    )
-    return process.env[name]
+    // Fall back to process.env if no context value found (except for session auth)
+    const envVal = process.env[name]
+    if (envVal) return envVal
+
+    return undefined
   }
 
+  // Production: MUST resolve to external keys (execution context); never process.env
+  if (!ctx) {
+    console.error(`[getApiKey] ❌ No execution context in production for key ${name}`)
+    return undefined
+  }
+
+  const apiKeys = ctx.get("apiKeys") as Record<string, string> | undefined
+  if (apiKeys?.[name]) return apiKeys[name]
+
+  const secrets = ctx.get("secrets")
+  const secretValue = await secrets.get(name, "environment-variables")
+  if (!secretValue) {
+    const principal = ctx.get("principal")
+    const providerName = getProviderDisplayName(name)
+    console.error(
+      `[getApiKey] ❌ ${providerName} API key not configured for user in production (auth_method: ${principal.auth_method})`,
+    )
+    return undefined
+  }
   return secretValue
 }
+
+// Re-export SecretResolver type for tests and consumers importing from core
+export type { SecretResolver } from "@lucky/shared/contracts/ingestion"

@@ -138,7 +138,7 @@ export const handleWorkflowCompletionTierStrategy = (
 }
 
 export const handleWorkflowCompletionUserModelsStrategy = (
-  oldWorkflow: WorkflowConfig | null,
+  _oldWorkflow: WorkflowConfig | null,
   newWorkflow: z.infer<typeof WorkflowConfigSchemaEasy>,
 ): WorkflowConfig => {
   return {

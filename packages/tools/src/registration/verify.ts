@@ -6,6 +6,7 @@
  * and should be verified from that location.
  */
 
+import type { MCPServerToolDefinition } from "@lucky/tools/registration/customToolsRegistration"
 import { mcpToolkits } from "./mcpToolsRegistration"
 
 console.log("\n=== NOTE ===")
@@ -19,8 +20,8 @@ console.log(`Total tools: ${mcpToolkits.toolkits.reduce((acc, toolkit) => acc + 
 console.log("\nToolkits:")
 mcpToolkits.toolkits.forEach(toolkit => {
   console.log(`  • ${toolkit.toolkitName}: ${toolkit.tools.length} tools - ${toolkit.description}`)
-  toolkit.tools.forEach(tool => {
-    console.log(`    - ${tool.toolName} [server: ${tool.serverName}]: ${tool.description}`)
+  toolkit.tools.forEach((tool: MCPServerToolDefinition) => {
+    console.log(`    - ${tool.toolName} [toolkit: ${toolkit.toolkitName}]: ${tool.description}`)
   })
 })
 

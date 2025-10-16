@@ -57,11 +57,9 @@ const googleMaps = defineTool({
       mustHaveSearchTerms.every(term => query.toLowerCase().includes(term)) &&
       normalizeHostname(domainFilter ?? "") === "ah.nl"
     ) {
-      console.log("🔍 Using cached response for Den Bosch Albert Heijn No Domain")
       return Tools.createSuccess("searchGoogleMaps", DenBoschAlbertHeijnNoDomain)
     }
     if (mustHaveSearchTerms.every(term => query.toLowerCase().includes(term))) {
-      console.log("🔍 Using cached response for Den Bosch Albert Heijn")
       return Tools.createSuccess("searchGoogleMaps", DenBoschAlbertHeijn)
     }
 
@@ -72,7 +70,6 @@ const googleMaps = defineTool({
 
     try {
       const cachedData = await fs.readFile(cacheFilePath, "utf-8")
-      console.log(`🔍 Using file-cached response for query: ${query}`)
       return Tools.createSuccess("searchGoogleMaps", JSON.parse(cachedData))
     } catch (_error) {
       // Cache miss, proceed to fetch data

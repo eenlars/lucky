@@ -1,9 +1,9 @@
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/tools/toolManager.ts
 
-import { isLoggingEnabled } from "@core/core-config/coreConfig"
-import { setupMCPForNode } from "@core/tools/mcp/mcp"
+import path from "node:path"
+import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { isNir } from "@lucky/shared/client"
-import { setupCodeToolsForNode } from "@lucky/tools"
+import { setupCodeToolsForNode, setupMCPForNode } from "@lucky/tools"
 import type { CodeToolName, MCPToolName } from "@lucky/tools/client"
 import type { ToolExecutionContext } from "@lucky/tools/client"
 import type { Tool, ToolSet } from "ai"
@@ -81,7 +81,9 @@ export class ToolManager {
 
     try {
       // Initialize MCP tools eagerly; defer code tools until per-invocation context is available
-      const mcp = await setupMCPForNode(this.mcpToolNames, this.workflowVersionId)
+      const config = getCoreConfig()
+      const mcpConfigPath = path.join(config.paths.runtime, "mcp-secret.json")
+      const mcp = await setupMCPForNode(this.mcpToolNames, this.workflowVersionId, mcpConfigPath)
       this.mcpTools = mcp
       this.codeTools = {}
       this.toolsInitialized = true

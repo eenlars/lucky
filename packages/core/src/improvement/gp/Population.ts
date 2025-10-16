@@ -26,7 +26,7 @@
 
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
 import { PopulationError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"

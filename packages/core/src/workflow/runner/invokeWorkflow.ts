@@ -16,7 +16,6 @@ import { getCoreConfig } from "@core/core-config/coreConfig"
 import { WorkflowConfigurationError, WorkflowExecutionError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { obs } from "@core/utils/observability/obs"
-import { SpendingTracker } from "@core/utils/spending/SpendingTracker"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
@@ -111,17 +110,13 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       )
     }
 
-    // Initialize spending tracker if enabled
-    if (getCoreConfig().limits.enableSpendingLimits) {
-      SpendingTracker.getInstance().initialize(getCoreConfig().limits.maxCostUsdPerRun)
-    }
-
     // Validate workflow based on validation method
-    const validationMethod = input.validation ?? 'strict'
+    // Note: SpendingTracker is now per-context and auto-initialized on first access via getSpendingTracker()
+    const validationMethod = input.validation ?? "strict"
 
-    if (validationMethod === 'strict') {
+    if (validationMethod === "strict") {
       await verifyWorkflowConfigStrict(config)
-    } else if (validationMethod === 'ai') {
+    } else if (validationMethod === "ai") {
       // AI-powered validation and repair (not implemented yet - would call validateAndRepairWorkflow)
       lgg.warn("[invokeWorkflow] AI validation not yet implemented, falling back to strict")
       await verifyWorkflowConfigStrict(config)

@@ -1,10 +1,5 @@
 // Clean, simple Evaluator tests - testing real behavior, not complex mocks
-import {
-  createMockGenome,
-  createMockWorkflowIO,
-  mockRuntimeConstantsForGP,
-  setupCoreTest,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { createMockGenome, createMockWorkflowIO, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Simple inline mocks - no external variables
@@ -57,7 +52,6 @@ vi.mock("@core/utils/logging/Logger", () => ({
 describe("GPEvaluatorAdapter", () => {
   beforeEach(() => {
     setupCoreTest()
-    mockRuntimeConstantsForGP()
     vi.clearAllMocks()
   })
 

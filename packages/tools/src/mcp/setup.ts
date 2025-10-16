@@ -1,15 +1,19 @@
+/**
+ * MCP (Model Context Protocol) client setup
+ * SERVER-ONLY - do not import from client code.
+ */
+
 import fs from "node:fs"
 import path from "node:path"
-import { getCoreConfig } from "@core/core-config/coreConfig"
-import { envi } from "@core/utils/env.mjs"
-import type { MCPToolName } from "@lucky/tools"
-import { type ToolSet, experimental_createMCPClient } from "ai"
+import type { ToolSet } from "ai"
+import { experimental_createMCPClient } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
+import type { MCPToolName } from "../registry/types"
 
 // Environment variable substitution utility
 function substituteEnvVars(str: string, missingVars?: string[]): string {
   return str.replace(/\$\{([^}]+)\}/g, (match, varName) => {
-    const value = (envi as Record<string, any>)[varName] ?? process.env[varName]
+    const value = process.env[varName]
     if (value === undefined && missingVars) {
       if (!missingVars.includes(varName)) {
         missingVars.push(varName)
@@ -50,21 +54,33 @@ interface MCPConfig {
   >
 }
 
-function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
-  const config = getCoreConfig()
+function loadExternalMCPConfig(configPath?: string): MCPConfig["mcpServers"] {
   try {
-    // Prefer process.env for tests that set MCP_SECRET_PATH dynamically,
-    // fallback to envi (mocked in tests), then to runtime default
-    const configuredPath = process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
-    const configPath = configuredPath ? path.resolve(configuredPath) : path.join(config.paths.runtime, "mcp-secret.json")
+    // Determine config path: explicit param > env var > no config
+    const resolvedPath = configPath ?? process.env.MCP_SECRET_PATH
 
-    if (!fs.existsSync(configPath)) {
+    if (!resolvedPath) {
+      console.warn("\n⚠️  MCP Configuration Missing")
+      console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+      console.warn("📁 No MCP config path provided")
+      console.warn("\n📝 To enable MCP tools:")
+      console.warn("   1. Set MCP_SECRET_PATH environment variable")
+      console.warn("   2. Or pass configPath to setupMCPForNode()")
+      console.warn("   3. See apps/examples/mcp-config.example.json for format")
+      console.warn("\n💡 Tip: Set MCP_SECRET_PATH env var to use a custom location")
+      console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+      return {}
+    }
+
+    const absolutePath = path.resolve(resolvedPath)
+
+    if (!fs.existsSync(absolutePath)) {
       // Provide helpful setup guidance
       console.warn("\n⚠️  MCP Configuration Missing")
       console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      console.warn(`📁 Expected location: ${configPath}`)
+      console.warn(`📁 Expected location: ${absolutePath}`)
       console.warn("\n📝 To enable MCP tools:")
-      console.warn("   1. Create mcp-secret.json in the runtime folder")
+      console.warn("   1. Create mcp-secret.json at the path above")
       console.warn("   2. See apps/examples/mcp-config.example.json for format")
       console.warn("   3. Configure your MCP servers with valid commands and args")
       console.warn("\n💡 Tip: Set MCP_SECRET_PATH env var to use a custom location")
@@ -72,7 +88,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
       return {}
     }
 
-    const configContent = fs.readFileSync(configPath, "utf-8")
+    const configContent = fs.readFileSync(absolutePath, "utf-8")
     let mcpConfig: MCPConfig
 
     try {
@@ -80,7 +96,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     } catch (parseError) {
       console.error("\n❌ Failed to parse mcp-secret.json")
       console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      console.error(`📁 File: ${configPath}`)
+      console.error(`📁 File: ${absolutePath}`)
       console.error(`🔍 Error: ${parseError instanceof Error ? parseError.message : String(parseError)}`)
       console.error("\n💡 Check that your JSON is valid:")
       console.error("   - All strings are in double quotes")
@@ -93,7 +109,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     if (!mcpConfig.mcpServers || typeof mcpConfig.mcpServers !== "object") {
       console.error("\n❌ Invalid mcp-secret.json structure")
       console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      console.error(`📁 File: ${configPath}`)
+      console.error(`📁 File: ${absolutePath}`)
       console.error('🔍 Missing or invalid "mcpServers" field')
       console.error("\n💡 Expected format:")
       console.error('   { "mcpServers": { "serverName": { "command": "...", "args": [...] } } }')
@@ -101,7 +117,7 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
       return {}
     }
 
-    console.log(`📍 Loading MCP config from: ${configPath}`)
+    console.log(`📍 Loading MCP config from: ${absolutePath}`)
 
     // Validate each MCP server config
     const validatedServers: MCPConfig["mcpServers"] = {}
@@ -143,7 +159,9 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
     if (errors.length > 0) {
       console.warn("\n⚠️  MCP Configuration Issues")
       console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      errors.forEach(err => console.warn(err))
+      for (const err of errors) {
+        console.warn(err)
+      }
       console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     }
 
@@ -165,11 +183,16 @@ function loadExternalMCPConfig(): MCPConfig["mcpServers"] {
 
 // Lazy-loaded to avoid build-time requirements
 let externalMCPConfig: MCPConfig["mcpServers"] | null = null
+let lastConfigPath: string | undefined = undefined
 
 // Lazy getter for MCP config - only loads when actually needed
-function getCreateTools(): Record<string, { command: string; args: string[]; env?: Record<string, string> }> {
-  if (externalMCPConfig === null) {
-    externalMCPConfig = loadExternalMCPConfig()
+function getCreateTools(
+  configPath?: string,
+): Record<string, { command: string; args: string[]; env?: Record<string, string> }> {
+  // Reload if config path changed
+  if (externalMCPConfig === null || lastConfigPath !== configPath) {
+    externalMCPConfig = loadExternalMCPConfig(configPath)
+    lastConfigPath = configPath
   }
   return externalMCPConfig
 }
@@ -181,10 +204,16 @@ const clientCache = new Map<string, any>()
  * Spin up MCP clients for the requested tool names and return a single
  * `tools` object suitable for `generateText({ tools })` or `streamText({ tools })`.
  * Clients are cached per workflow to maintain persistent sessions (e.g., browser state).
+ *
+ * @param toolNames Array of MCP tool names to initialize
+ * @param workflowId Workflow ID for client caching
+ * @param configPath Optional path to mcp-secret.json (defaults to MCP_SECRET_PATH env var)
+ * @returns ToolSet ready for AI SDK usage
  */
 export async function setupMCPForNode(
   toolNames: MCPToolName[] | null | undefined,
   workflowId: string,
+  configPath?: string,
 ): Promise<ToolSet> {
   const safeToolNames: MCPToolName[] = Array.isArray(toolNames) ? toolNames : []
   if (safeToolNames.length === 0) {
@@ -202,7 +231,7 @@ export async function setupMCPForNode(
         return { name, client: clientCache.get(cacheKey) }
       }
 
-      const createTools = getCreateTools()
+      const createTools = getCreateTools(configPath)
       const cfg = createTools[name]
       if (!cfg) {
         const availableTools = Object.keys(createTools)
@@ -224,7 +253,7 @@ export async function setupMCPForNode(
           args: cfg.args,
           env: cfg.env,
         })
-        const client = experimental_createMCPClient({ transport })
+        const client = await experimental_createMCPClient({ transport })
 
         // Cache the client for reuse with workflow-specific key
         clientCache.set(cacheKey, client)
@@ -323,7 +352,9 @@ export function clearMCPClientCache() {
  */
 export function clearWorkflowMCPClientCache(workflowId: string) {
   const keysToDelete = Array.from(clientCache.keys()).filter(key => key.startsWith(`${workflowId}:`))
-  keysToDelete.forEach(key => clientCache.delete(key))
+  for (const key of keysToDelete) {
+    clientCache.delete(key)
+  }
   if (keysToDelete.length > 0) {
     console.log(`🧹 Cleared ${keysToDelete.length} cached MCP client(s) for workflow ${workflowId}`)
   }
@@ -332,34 +363,32 @@ export function clearWorkflowMCPClientCache(workflowId: string) {
 /**
  * Get status of MCP configuration and available tools
  */
-export function getMCPStatus(): {
+export function getMCPStatus(configPath?: string): {
   configured: boolean
   availableServers: string[]
   cachedClients: number
-  configPath: string
+  configPath: string | undefined
 } {
-  const config = getCoreConfig()
-  const createTools = getCreateTools()
-  const configuredPath = process.env.MCP_SECRET_PATH ?? envi.MCP_SECRET_PATH ?? undefined
-  const configPath = configuredPath ? path.resolve(configuredPath) : path.join(config.paths.runtime, "mcp-secret.json")
+  const createTools = getCreateTools(configPath)
+  const resolvedPath = configPath ?? process.env.MCP_SECRET_PATH ?? undefined
 
   return {
     configured: Object.keys(createTools).length > 0,
     availableServers: Object.keys(createTools),
     cachedClients: clientCache.size,
-    configPath,
+    configPath: resolvedPath,
   }
 }
 
 /**
  * Display MCP status in a user-friendly format
  */
-export function logMCPStatus(): void {
-  const status = getMCPStatus()
+export function logMCPStatus(configPath?: string): void {
+  const status = getMCPStatus(configPath)
 
   console.log("\n📊 MCP Status")
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-  console.log(`📁 Config path: ${status.configPath}`)
+  console.log(`📁 Config path: ${status.configPath ?? "Not configured"}`)
   console.log(`✅ Configured: ${status.configured ? "Yes" : "No"}`)
 
   if (status.configured) {
@@ -368,8 +397,9 @@ export function logMCPStatus(): void {
   } else {
     console.log("⚠️  No MCP servers configured")
     console.log("\n💡 To set up MCP:")
-    console.log("   1. Create mcp-secret.json at the config path above")
-    console.log("   2. See apps/examples/mcp-config.example.json for format")
+    console.log("   1. Set MCP_SECRET_PATH environment variable")
+    console.log("   2. Create mcp-secret.json at that path")
+    console.log("   3. See apps/examples/mcp-config.example.json for format")
   }
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 }

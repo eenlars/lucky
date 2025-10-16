@@ -8,8 +8,10 @@ import { z } from "zod"
 // Provider Configuration Schema
 // ============================================================================
 
+export const providerIdSchema = z.string().min(1, "Provider id is required")
+
 export const providerConfigSchema = z.object({
-  id: z.string().min(1, "Provider ID is required"),
+  id: providerIdSchema,
   baseUrl: z.string().url().optional(),
   apiKey: z.string().optional(),
   maxConcurrent: z.number().int().positive().optional(),

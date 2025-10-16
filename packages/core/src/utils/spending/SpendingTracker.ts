@@ -10,6 +10,12 @@ export class SpendingTracker {
     return SpendingTracker.instance
   }
 
+  static create(limit: number): SpendingTracker {
+    const tracker = new SpendingTracker()
+    tracker.initialize(limit)
+    return tracker
+  }
+
   initialize(limit: number): void {
     this.spend = 0
     this.sdkSpend = 0

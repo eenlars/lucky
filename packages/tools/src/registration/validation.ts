@@ -4,8 +4,7 @@
  * Ensures that tool registrations are valid and match their definitions
  */
 
-import type { ToolkitDefinition } from "./codeToolsRegistration"
-import type { MCPToolkit } from "./mcpToolsRegistration"
+import type { ToolkitDefinition } from "@lucky/tools/registration/customToolsRegistration"
 
 /**
  * Validation result
@@ -58,29 +57,6 @@ export function validateToolkitRegistration(toolkits: ToolkitDefinition[]): Vali
       if (!tool.toolFunc) {
         errors.push(`Tool ${tool.toolName} is missing toolFunc`)
       }
-
-      // Check tool function has required properties
-      if (tool.toolFunc) {
-        if (!tool.toolFunc.name) {
-          warnings.push(`Tool ${tool.toolName}: toolFunc is missing 'name' property`)
-        }
-        if (!tool.toolFunc.description) {
-          warnings.push(`Tool ${tool.toolName}: toolFunc is missing 'description' property`)
-        }
-        if (!tool.toolFunc.parameters) {
-          warnings.push(`Tool ${tool.toolName}: toolFunc is missing 'parameters' property`)
-        }
-        if (!tool.toolFunc.execute || typeof tool.toolFunc.execute !== "function") {
-          errors.push(`Tool ${tool.toolName}: toolFunc is missing 'execute' function`)
-        }
-
-        // Warn if registration name doesn't match tool function name
-        if (tool.toolFunc.name && tool.toolFunc.name !== tool.toolName) {
-          warnings.push(
-            `Tool name mismatch: registration uses '${tool.toolName}' but toolFunc.name is '${tool.toolFunc.name}'`,
-          )
-        }
-      }
     }
   }
 
@@ -94,7 +70,7 @@ export function validateToolkitRegistration(toolkits: ToolkitDefinition[]): Vali
 /**
  * Validate MCP toolkit registration
  */
-export function validateMCPToolkitRegistration(toolkits: MCPToolkit[]): ValidationResult {
+export function validateMCPToolkitRegistration(toolkits: ToolkitDefinition<"mcp">[]): ValidationResult {
   const errors: string[] = []
   const warnings: string[] = []
   const seenNames = new Set<string>()
@@ -126,7 +102,7 @@ export function validateMCPToolkitRegistration(toolkits: MCPToolkit[]): Validati
       seenNames.add(tool.toolName)
 
       // Track server names
-      seenServerNames.add(tool.serverName)
+      seenServerNames.add(tool.toolName)
 
       // Check tool has description
       if (!tool.description || tool.description.trim().length === 0) {
@@ -134,8 +110,8 @@ export function validateMCPToolkitRegistration(toolkits: MCPToolkit[]): Validati
       }
 
       // Check tool has server name
-      if (!tool.serverName || tool.serverName.trim().length === 0) {
-        errors.push(`Tool ${tool.toolName} is missing serverName`)
+      if (!tool.toolName || tool.toolName.trim().length === 0) {
+        errors.push(`Tool ${tool.toolName} is missing toolName`)
       }
     }
   }
@@ -169,7 +145,7 @@ export function printValidationResult(type: "Code" | "MCP", result: ValidationRe
  */
 export function validateAllRegistrations(
   codeToolkits: ToolkitDefinition[],
-  mcpToolkits: MCPToolkit[],
+  mcpToolkits: ToolkitDefinition<"mcp">[],
   throwOnError = true,
 ): boolean {
   const codeResult = validateToolkitRegistration(codeToolkits)

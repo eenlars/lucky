@@ -22,6 +22,7 @@ export const TOOLS = {
     googleScholar: "Search Google Scholar",
     playwright: "Use a browser to do navigation and find data.",
     serpAPI: "Search the web",
+    "composio-googledrive": "Search Google Drive",
   },
   code: {
     searchGoogleMaps:

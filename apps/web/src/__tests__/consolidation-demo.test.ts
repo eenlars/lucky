@@ -1,5 +1,5 @@
 // demonstration of mock consolidation - before and after comparison
-import { mockRuntimeConstantsForGP, setupCoreTest, setupGPTestMocks } from "@lucky/core/utils/__tests__/setup/coreMocks"
+import { setupCoreTest, setupGPTestMocks } from "@lucky/core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // BEFORE: Duplicate mock setup that would appear in multiple files
@@ -30,8 +30,6 @@ describe("Before consolidation example", () => {
     lgg: mockLogger,
   }))
 
-  // Runtime constants mocked by mockRuntimeConstantsForGP
-
   beforeEach(() => {
     vi.clearAllMocks()
     mockRunService.createRun.mockResolvedValue("test-run-id")
@@ -51,7 +49,6 @@ describe("After consolidation example", () => {
 
   beforeEach(() => {
     setupCoreTest() // replaces vi.clearAllMocks() and other setup
-    mockRuntimeConstantsForGP()
     runService.getCurrentRunId.mockReturnValue("test-run-id")
   })
 

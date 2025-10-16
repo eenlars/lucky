@@ -6,27 +6,27 @@
  */
 
 // Type definitions only
-export type { MCPToolName, CodeToolName, AllToolNames } from "./registry/types"
+export type { AllToolNames, CodeToolName, MCPToolName } from "./registry/types"
 
-export type { FlexibleToolDefinition } from "./registry/CodeToolRegistry"
+export type { FlexibleToolDefinition } from "./registry/CustomToolRegistry"
 
 // Constants (no runtime tool code)
 export {
-  ACTIVE_MCP_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES,
   ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT,
-  ALL_ACTIVE_TOOL_NAMES,
-  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
+  ACTIVE_MCP_TOOL_NAMES,
+  ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_TOOLS_WITH_DESCRIPTION,
+  ALL_ACTIVE_TOOL_NAMES,
   INACTIVE_TOOLS,
 } from "./registry/types"
 
 // Config metadata (no runtime code)
 export {
-  TOOLS,
   DEFAULT_INACTIVE_TOOLS,
+  TOOLS,
 } from "@lucky/shared/contracts/tools"
 
 // Tool factory types only (no runtime code - defineTool/commonSchemas pulled in @lucky/shared main bundle with Node.js deps)
-export type { ToolExecutionContext, InvocationContext } from "./factory/types"
+export type { InvocationContext, ToolExecutionContext } from "./factory/types"

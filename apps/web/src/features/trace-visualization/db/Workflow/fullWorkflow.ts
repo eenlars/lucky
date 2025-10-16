@@ -1,7 +1,7 @@
 "use server"
 import { safeJSON } from "@/features/trace-visualization/db/Workflow/utils"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import type { AgentStep, AgentSteps } from "@lucky/core/messages/pipeline/AgentStep.types"
+import type { AgentSteps, AgentStepsLegacy } from "@lucky/core/messages/pipeline/AgentStep.types"
 import type { NodeMemory } from "@lucky/core/utils/memory/memorySchema"
 import type { Tables } from "@lucky/shared/client"
 import { JSONN } from "@lucky/shared/client"
@@ -11,11 +11,6 @@ export interface NodeInvocationExtended extends Tables<"NodeInvocation"> {
   node: Tables<"NodeVersion">
   inputs: Tables<"Message">[]
   outputs: Tables<"Message">[]
-}
-
-type AgentStepsLegacy = {
-  outputs: AgentStep[]
-  totalCost: number
 }
 
 export interface NodeInvocationExtras {
