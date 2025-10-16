@@ -8,7 +8,7 @@ import { getDefaultModels } from "@core/core-config/coreConfig"
 // Import the parent setup files
 import parentSetup1 from "@core/improvement/gp/__tests__/setup/setupfile-parent-1.json"
 import parentSetup2 from "@core/improvement/gp/__tests__/setup/setupfile-parent-2.json"
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 

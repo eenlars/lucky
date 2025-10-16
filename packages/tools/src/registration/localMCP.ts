@@ -1,4 +1,9 @@
-import { type ToolkitRegistry, type ToolkitToolDefinition, createToolkit } from "./codeToolsRegistration"
+import {
+  type CustomToolDefinition,
+  type ToolkitRegistry,
+  type ToolkitTool,
+  createToolkit,
+} from "./customToolsRegistration"
 
 type TransportCommon = {
   type: string
@@ -23,7 +28,7 @@ export type LocalMCPTransport = LocalMCPTransportStdio | LocalMCPTransportOAuth
 export type LocalMCPTool = {
   name: string
   description: string
-  definition: ToolkitToolDefinition["toolFunc"]
+  definition: ToolkitTool
   env?: Record<string, string>
 }
 
@@ -142,7 +147,7 @@ export class LocalMCPRegistry {
     const toolkits = this.config.servers.map(server => {
       servers[server.id] = server
 
-      const toolDefinitions = server.tools.map<ToolkitToolDefinition>(tool => {
+      const toolDefinitions = server.tools.map<CustomToolDefinition>(tool => {
         toolToServer[tool.name] = server.id
         return {
           toolName: tool.name,

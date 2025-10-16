@@ -693,45 +693,6 @@ export const createMockFullFlowRuntimeConfig = (toolOverrides: Partial<FlowRunti
   }
 }
 
-/**
- * @deprecated No-op function - mock at test level
- * Placeholder for GP-specific runtime constants
- */
-export const mockRuntimeConstantsForGP = (_overrides?: {
-  verbose?: boolean
-  [key: string]: unknown
-}) => {
-  // No-op: vi.mock needs to be at top level
-  // Tests should use vi.mock("@core/core-config/compat") directly
-}
-
-/**
- * @deprecated No-op function - mock at test level
- */
-export const mockRuntimeConstantsForIterative = (_overrides?: {
-  [key: string]: unknown
-}) => {
-  // No-op: vi.mock needs to be at top level
-}
-
-/**
- * @deprecated No-op function - mock at test level
- */
-export const mockRuntimeConstantsForDatabase = (_overrides?: {
-  [key: string]: unknown
-}) => {
-  // No-op: vi.mock needs to be at top level
-}
-
-/**
- * @deprecated No-op function - mock at test level
- */
-export const mockRuntimeConstants = (_overrides?: {
-  [key: string]: unknown
-}) => {
-  // No-op: vi.mock needs to be at top level
-}
-
 // ====== INDIVIDUAL MOCK HELPERS ======
 
 export const mockRunService = () => {
@@ -904,10 +865,7 @@ export const mockWorkflowGeneration = () => {
 
 // ====== COMBINED SETUP HELPERS ======
 
-export const setupGPTestMocks = (
-  runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForGP>[0],
-  options?: { mockGenome?: boolean },
-) => {
+export const setupGPTestMocks = (_runtimeOverrides?: Record<string, unknown>, options?: { mockGenome?: boolean }) => {
   const runService = mockRunService()
   const verificationCache = mockVerificationCache()
   const logger = mockLogger()
@@ -915,7 +873,6 @@ export const setupGPTestMocks = (
   const genome = shouldMockGenome ? mockGenomeClass() : getMockGenome()
   const population = mockPopulationClass()
 
-  mockRuntimeConstantsForGP(runtimeOverrides)
   mockWorkflowGeneration()
   mockCrossoverClass()
   mockMutationsClass()
@@ -970,16 +927,14 @@ export const setupGPTestMocks = (
   return { runService, verificationCache, logger, genome, population }
 }
 
-export const setupDatabaseTestMocks = (runtimeOverrides?: Parameters<typeof mockRuntimeConstantsForDatabase>[0]) => {
+export const setupDatabaseTestMocks = (_runtimeOverrides?: Record<string, unknown>) => {
   const supabase = mockSupabaseClient()
   const logger = mockLogger()
-  mockRuntimeConstantsForDatabase(runtimeOverrides)
   return { supabase, logger }
 }
 
-export const setupToolTestMocks = (runtimeOverrides?: Parameters<typeof mockRuntimeConstants>[0]) => {
+export const setupToolTestMocks = (_runtimeOverrides?: Record<string, unknown>) => {
   const logger = mockLogger()
-  mockRuntimeConstants(runtimeOverrides)
   return { logger }
 }
 

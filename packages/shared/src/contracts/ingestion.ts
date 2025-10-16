@@ -5,6 +5,11 @@
 
 import { z } from "zod"
 
+export type SecretResolver = {
+  get(name: string, namespace?: string): Promise<string | undefined>
+  getAll(names: string[], namespace?: string): Promise<Record<string, string>>
+}
+
 // ============================================================================
 // OUTPUT SCHEMA (for validation)
 // ============================================================================

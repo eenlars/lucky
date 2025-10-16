@@ -2,7 +2,7 @@
 // TODO: overly complex mocking setup makes tests brittle
 // CONFIG mock contains many properties not needed for mutation tests
 // consider extracting minimal mocks to test utilities
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
@@ -97,7 +97,7 @@ vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
 // isNir is used from real implementation; no mocking
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
-import { Mutations } from "@core/improvement/gp/operators/Mutations"
+import { MutationCoordinator } from "@core/improvement/gp/operators/mutations/MutationCoordinator"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
@@ -245,7 +245,7 @@ describe("Mutations", () => {
       // fails because: Cannot read properties of undefined (reading 'rateWindowMs') - CONFIG.limits is undefined
       const options = createMockOptions()
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -263,7 +263,7 @@ describe("Mutations", () => {
       const options = createMockOptions()
       // simulate failure via other mechanisms if needed (no isNir mocking)
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -279,7 +279,7 @@ describe("Mutations", () => {
       const options = createMockOptions()
       mockFormalizeWorkflow.mockRejectedValue(new Error("mutation failed"))
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -293,7 +293,7 @@ describe("Mutations", () => {
     it("should handle mutation process successfully", async () => {
       const options = createMockOptions()
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -308,7 +308,7 @@ describe("Mutations", () => {
       const options = createMockOptions()
 
       const startTime = Date.now()
-      await Mutations.mutateWorkflowGenome({
+      await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -328,7 +328,7 @@ describe("Mutations", () => {
 
       // Since verbose mode is false (mocked), this should call formalizeWorkflow
       // which is mocked to reject, but the function may still return a genome
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -350,7 +350,7 @@ describe("Mutations", () => {
         usdCost: 0.01,
       })
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -371,7 +371,7 @@ describe("Mutations", () => {
         },
       }
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...(options as any),
         evolutionMode: "GP",
       })
@@ -385,7 +385,7 @@ describe("Mutations", () => {
       const options = createMockOptions()
 
       const startTime = Date.now()
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })
@@ -407,7 +407,7 @@ describe("Mutations", () => {
     it("should handle mutation process without throwing", async () => {
       const options = createMockOptions()
 
-      const result = await Mutations.mutateWorkflowGenome({
+      const result = await MutationCoordinator.mutateWorkflowGenome({
         ...options,
         evolutionMode: "GP",
       })

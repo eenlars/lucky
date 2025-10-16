@@ -21,7 +21,7 @@
 import crypto from "node:crypto"
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
-import { Mutations } from "@core/improvement/gp/operators/Mutations"
+import { MutationCoordinator } from "@core/improvement/gp/operators/mutations/MutationCoordinator"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
@@ -38,8 +38,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { R, type RS, genShortId } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import type { IPersistence } from "@together/adapter-supabase"
-import type { GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
-import type { EvolutionContext } from "./resources/types"
+import type { EvolutionContext, GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
 
 /**
  * A Genome *is* a workflow: it carries the workflow-level behaviour supplied by
@@ -184,10 +183,10 @@ export class Genome extends Workflow {
           return R.error("Failed to create base workflow genome", 0)
         }
         // apply random mutations to create diversity from base workflow
-        const formalizedWorkflow = await Mutations.mutateWorkflowGenome({
+        const formalizedWorkflow = await MutationCoordinator.mutateWorkflowGenome({
           parent: baseWorkflowGenome,
           generationNumber: _evolutionContext.generationNumber,
-          aggression: randomness,
+          intensity: randomness,
           evolutionMode,
         })
         return formalizedWorkflow

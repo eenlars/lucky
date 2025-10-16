@@ -53,6 +53,11 @@ vi.mock("@core/utils/spending/SpendingTracker", () => ({
         canMakeRequest: () => true,
         addCost: vi.fn(),
       }) satisfies Pick<import("@core/utils/spending/SpendingTracker").SpendingTracker, "canMakeRequest" | "addCost">,
+    create: () =>
+      ({
+        canMakeRequest: () => true,
+        addCost: vi.fn(),
+      }) satisfies Pick<import("@core/utils/spending/SpendingTracker").SpendingTracker, "canMakeRequest" | "addCost">,
   },
 }))
 

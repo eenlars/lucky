@@ -2,9 +2,9 @@ import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
+import { clearMCPClientCache, setupMCPForNode } from "@lucky/tools"
 import { generateText, stepCountIs } from "ai"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
-import { clearMCPClientCache, setupMCPForNode } from "../mcp"
 
 describe.skip("browser session persistence tests", () => {
   // TODO: More integration tests that depend on external services and browser automation.

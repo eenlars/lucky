@@ -3,7 +3,6 @@ import {
   createMockGenome,
   createMockWorkflowIO,
   createMockWorkflowScore,
-  mockRuntimeConstantsForGP,
   setupCoreTest,
 } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -51,13 +50,9 @@ vi.mock("@core/workflow/Workflow", () => ({
   },
 }))
 
-// Mock runtime constants to avoid dependency issues
-// Runtime constants mocked by mockRuntimeConstantsForGP
-
 describe("Evaluator", () => {
   beforeEach(() => {
     setupCoreTest()
-    mockRuntimeConstantsForGP()
     vi.clearAllMocks()
   })
 

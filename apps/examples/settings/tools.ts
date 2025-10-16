@@ -7,6 +7,7 @@ export const TOOLS = {
     tavily: "Search the web",
     filesystem: "Save and load files",
     firecrawl: "Search the web",
+    "composio-googledrive": "Search Google Drive",
     browserUse:
       "Use a browser to navigate to a URL and return the HTML. its quite slow, but works for very hard websites.",
     googleScholar: "Search Google Scholar",

@@ -1,5 +1,5 @@
 // tests for crossover operations
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import {
   createMockCrossoverParams,
   createMockWorkflowConfig,

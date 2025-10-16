@@ -1,7 +1,7 @@
 import { isNir } from "@lucky/shared"
 import type { Tool, ToolSet } from "ai"
 import type { ToolExecutionContext } from "../factory/types"
-import { type CodeToolRegistry, codeToolRegistry } from "./CodeToolRegistry"
+import { type CodeToolRegistry, codeToolRegistry } from "./CustomToolRegistry"
 import { ensureCodeToolsRegistered } from "./ensureCodeToolsRegistered"
 import type { CodeToolName } from "./types"
 

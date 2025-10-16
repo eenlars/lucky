@@ -1,11 +1,7 @@
 import { decryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-
-export type SecretResolver = {
-  get(name: string, namespace?: string): Promise<string | undefined>
-  getAll(names: string[], namespace?: string): Promise<Record<string, string>>
-}
+import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 
 export function createSecretResolver(clerk_id: string): SecretResolver {
   return {

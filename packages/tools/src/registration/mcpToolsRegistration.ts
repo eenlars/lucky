@@ -8,95 +8,84 @@
  * Configuration for server commands comes from mcp-secret.json
  */
 
+import type { ToolkitRegistry } from "@lucky/tools"
+import type { MCPServerToolDefinition, ToolkitDefinition } from "@lucky/tools/registration/customToolsRegistration"
+
 export type MCPServerConfig = {
   command: string
   args: string[]
   env?: Record<string, string>
 }
 
-export type MCPToolkitToolDefinition = {
-  toolName: string
-  serverName: string // The key in mcp-secret.json
-  description: string
-}
-
-export type MCPToolkit = {
-  toolkitName: string
-  description: string
-  tools: MCPToolkitToolDefinition[]
-}
-
 /**
- * MCP toolkit registration structure with toolkit-based organization
- * Same structure as code toolkits for easy maintenance
+ * MCP toolkit registration structure.
+ * Each MCP server IS a toolkit that provides tools.
+ * The tools array is optional - we don't always know what tools an MCP server provides upfront.
  */
-export const mcpToolkits: {
-  toolkits: MCPToolkit[]
-} = {
+export const mcpToolkits: ToolkitRegistry<"mcp"> = {
   toolkits: [
     {
-      toolkitName: "web-search",
-      description: "Web search and research tools for finding information across the internet",
+      type: "mcp",
+      toolkitName: "tavily",
+      description: "AI-powered web search engine providing multiple search tools",
       tools: [
         {
-          toolName: "tavily",
-          serverName: "tavily",
-          description: "Search the web using Tavily AI-powered search engine",
+          toolName: "tavily_search",
+          description: "Search the web using Tavily",
         },
         {
-          toolName: "serpAPI",
-          serverName: "serpAPI",
-          description: "Search the web using SerpAPI (Google, Bing, etc.)",
-        },
-        {
-          toolName: "googleScholar",
-          serverName: "googleScholar",
-          description: "Search Google Scholar for academic papers and research",
+          toolName: "tavily_extract",
+          description: "Extract data from the web using Tavily",
         },
       ],
     },
     {
-      toolkitName: "web-scraping",
-      description: "Browser automation and web scraping tools for extracting data from websites",
-      tools: [
-        {
-          toolName: "firecrawl",
-          serverName: "firecrawl",
-          description: "Search the web and extract structured data using Firecrawl",
-        },
-        {
-          toolName: "browserUse",
-          serverName: "browserUse",
-          description: "Use a browser to navigate to URLs and return HTML (slower but works for hard websites)",
-        },
-        {
-          toolName: "playwright",
-          serverName: "playwright",
-          description: "Use Playwright for browser automation, navigation, and data extraction",
-        },
-      ],
+      type: "mcp",
+      toolkitName: "serpAPI",
+      description: "Search the web using SerpAPI (Google, Bing, etc.)",
+      tools: [],
     },
     {
+      type: "mcp",
+      toolkitName: "googleScholar",
+      description: "Search Google Scholar for academic papers and research",
+      tools: [],
+    },
+    {
+      type: "mcp",
+      toolkitName: "firecrawl",
+      description: "Web scraping and structured data extraction using Firecrawl",
+      tools: [],
+    },
+    {
+      type: "mcp",
+      toolkitName: "browserUse",
+      description: "Browser automation to navigate URLs and extract HTML (slower but works for hard websites)",
+      tools: [],
+    },
+    {
+      type: "mcp",
+      toolkitName: "playwright",
+      description: "Browser automation, navigation, and data extraction using Playwright",
+      tools: [],
+    },
+    {
+      type: "mcp",
       toolkitName: "filesystem",
       description: "File system operations for reading and writing files",
-      tools: [
-        {
-          toolName: "filesystem",
-          serverName: "filesystem",
-          description: "Save and load files to/from the filesystem",
-        },
-      ],
+      tools: [],
     },
     {
+      type: "mcp",
       toolkitName: "proxy",
-      description: "HTTP proxy tools for making web requests",
-      tools: [
-        {
-          toolName: "proxy",
-          serverName: "proxy",
-          description: "Proxy requests to a specific URL",
-        },
-      ],
+      description: "HTTP proxy for making web requests",
+      tools: [],
+    },
+    {
+      type: "mcp",
+      toolkitName: "composio-googledrive",
+      description: "Search Google Drive for files and folders",
+      tools: [],
     },
   ],
 }
@@ -104,25 +93,32 @@ export const mcpToolkits: {
 /**
  * Get all MCP tools flattened from all toolkits
  */
-export function getAllMCPTools(): MCPToolkitToolDefinition[] {
-  return mcpToolkits.toolkits.flatMap(toolkit => toolkit.tools)
+export function getAllMCPTools(): MCPServerToolDefinition[] {
+  return mcpToolkits.toolkits.flatMap((toolkit: ToolkitDefinition<"mcp">) => {
+    if (toolkit.type === "mcp") {
+      return toolkit.tools
+    }
+    return []
+  })
 }
 
 /**
  * Get MCP tools by toolkit name
  */
-export function getMCPToolsByToolkit(toolkitName: string): MCPToolkitToolDefinition[] {
-  const toolkit = mcpToolkits.toolkits.find(t => t.toolkitName === toolkitName)
+export function getMCPToolsByToolkit(toolkitName: string): MCPServerToolDefinition[] {
+  const toolkit = mcpToolkits.toolkits.find(t => t.type === "mcp" && t.toolkitName === toolkitName)
   return toolkit?.tools ?? []
 }
 
 /**
  * Get a specific MCP tool by name
  */
-export function getMCPToolByName(toolName: string): MCPToolkitToolDefinition | null {
+export function getMCPToolByName(toolName: string): MCPServerToolDefinition | null {
   for (const toolkit of mcpToolkits.toolkits) {
-    const tool = toolkit.tools.find(t => t.toolName === toolName)
-    if (tool) return tool
+    if (toolkit.type === "mcp") {
+      const tool = toolkit.tools.find((t: MCPServerToolDefinition) => t.toolName === toolName)
+      if (tool) return tool
+    }
   }
   return null
 }
@@ -133,8 +129,8 @@ export function getMCPToolByName(toolName: string): MCPToolkitToolDefinition | n
 export function getAllMCPServerNames(): string[] {
   const serverNames = new Set<string>()
   for (const toolkit of mcpToolkits.toolkits) {
-    for (const tool of toolkit.tools) {
-      serverNames.add(tool.serverName)
+    if (toolkit.type === "mcp") {
+      serverNames.add(toolkit.toolkitName)
     }
   }
   return Array.from(serverNames)

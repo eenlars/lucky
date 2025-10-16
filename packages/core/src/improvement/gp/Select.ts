@@ -30,11 +30,11 @@
 
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
-import { Mutations } from "@core/improvement/gp/operators/Mutations"
+import { MutationCoordinator } from "@core/improvement/gp/operators/mutations/MutationCoordinator"
 import { createDummyGenome, createDummySurvivors } from "@core/improvement/gp/resources/debug/dummyGenome"
 import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { failureTracker } from "@core/improvement/gp/resources/tracker"
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
 import type { VerificationCache } from "@core/improvement/gp/resources/wrappers"
 import { truncater } from "@core/utils/common/llmify"
 import { parallelLimit } from "@core/utils/common/parallelLimit"
@@ -272,7 +272,7 @@ export class Select {
               generationNumber: _evolutionContext.generationNumber,
               evolutionMode: population.getRunService().getEvolutionMode(),
             }
-            const mutated = await Mutations.mutateWorkflowGenome(mutationOptions)
+            const mutated = await MutationCoordinator.mutateWorkflowGenome(mutationOptions)
             lgg.log("Mutation complete")
             if (mutated.success) {
               children = [mutated.data]

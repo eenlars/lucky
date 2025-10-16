@@ -12,13 +12,9 @@ export async function POST(request: NextRequest) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
-  console.log("authResult", authResult)
-
   try {
     const body = await request.json()
     const { dsl, commitMessage } = body
-
-    console.log("body", JSON.stringify(body, null, 2))
 
     const { parentId } = body as { parentId?: string }
     let { workflowId, iterationBudget, timeBudgetSeconds } = body as {
@@ -37,7 +33,6 @@ export async function POST(request: NextRequest) {
     // If editing an existing version, prefer authoritative workflow_id + budgets from parent
     if (parentId) {
       const parent = await retrieveWorkflowVersion(parentId).catch(() => null)
-      console.log("parent", parent)
       if (!parent) {
         return NextResponse.json({ error: "Parent workflow version not found" }, { status: 404 })
       }

@@ -2,8 +2,8 @@ import { existsSync } from "node:fs"
 import { resolve } from "node:path"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
+import { setupMCPForNode } from "@lucky/tools"
 import { describe, expect, it } from "vitest"
-import { setupMCPForNode } from "../mcp"
 
 describe("MCP Integration Tests", () => {
   // TODO: Another integration test that makes real API calls. Should be in a separate

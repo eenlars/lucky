@@ -18,7 +18,6 @@
       "**/tmp/**",
       "**/*.log",
       "**/.DS_Store",
-      "**/mcp/**",
       "apps/web/src/results/**",
       "apps/examples/logging_folder/**",
       "packages/core/logging_folder/**",
