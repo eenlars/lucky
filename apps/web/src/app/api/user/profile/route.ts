@@ -3,15 +3,13 @@ import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import { ZodError } from "zod"
 
 export async function GET() {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return fail("user/profile", "Unauthorized", { code: "UNAUTHORIZED", status: 401 })
-    }
+    const { isAuthenticated, userId } = await auth()
+    if (!isAuthenticated) return new NextResponse('Unauthorized', { status: 401 })
 
     const supabase = await createRLSClient()
     const { data, error } = await supabase
@@ -55,10 +53,8 @@ export async function PUT(req: NextRequest) {
   if (isHandleBodyError(body)) return body
 
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return fail("user/profile:put", "Unauthorized", { code: "UNAUTHORIZED", status: 401 })
-    }
+    const { isAuthenticated, userId } = await auth()
+    if (!isAuthenticated) return new NextResponse('Unauthorized', { status: 401 })
 
     // Validate and sanitize profile data using Zod (transforms will trim strings)
     const validatedProfile = personalProfileSchema.parse(body.profile)

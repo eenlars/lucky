@@ -6,7 +6,7 @@ import { ZodError } from "zod"
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth()
+    const { isAuthenticated, userId } = await auth()
 
     // Validate request body using type-safe schema
     const body = await handleBody("feedback", req as any)

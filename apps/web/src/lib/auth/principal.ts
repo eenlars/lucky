@@ -38,13 +38,13 @@ export async function authenticateRequest(req: Request): Promise<Principal | nul
   }
 
   // Path 2: Clerk session authentication
-  const { userId } = await auth()
-  if (!userId) {
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) {
     return null
   }
 
   return {
-    clerk_id: userId,
+    clerk_id: userId!,
     scopes: ["*"],
     auth_method: "session",
   }
