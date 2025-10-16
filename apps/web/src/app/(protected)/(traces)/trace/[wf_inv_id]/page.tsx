@@ -15,11 +15,7 @@ const SUPABASE_TABLES = {
   WorkflowInvocation: 17720,
 } as const
 
-export default function TraceDetailPage({
-  params,
-}: {
-  params: Promise<{ wf_inv_id: string }>
-}) {
+export default function TraceDetailPage({ params }: { params: Promise<{ wf_inv_id: string }> }) {
   const { wf_inv_id } = use(params)
 
   // Use TanStack Query for data fetching with auto-refresh for running workflows

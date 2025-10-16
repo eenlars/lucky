@@ -16,11 +16,7 @@ const formatJSON = (obj: unknown, indent = 2): string => {
 }
 import { StructureMiniMap } from "./StructureMiniMap"
 
-export default function WorkflowStructurePage({
-  params,
-}: {
-  params: Promise<{ wf_inv_id: string }>
-}) {
+export default function WorkflowStructurePage({ params }: { params: Promise<{ wf_inv_id: string }> }) {
   const { wf_inv_id } = use(params)
   const [workflowData, setWorkflowData] = useState<any>(null)
   const [loading, setLoading] = useState(true)

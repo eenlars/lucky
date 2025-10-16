@@ -61,13 +61,8 @@ export function useUpdateWorkflowDescription() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({
-      workflowId,
-      description,
-    }: {
-      workflowId: string
-      description: string
-    }) => updateWorkflowDescription(workflowId, description),
+    mutationFn: ({ workflowId, description }: { workflowId: string; description: string }) =>
+      updateWorkflowDescription(workflowId, description),
     onSuccess: (_, variables) => {
       // Invalidate the specific workflow and lists
       queryClient.invalidateQueries({

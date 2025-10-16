@@ -16,15 +16,7 @@ import { useAppStore } from "@/features/react-flow-visualization/store/store"
 // this is an example of how to implement the WorkflowNode component. All the nodes in the Workflow Builder example
 // are variations on this CustomNode defined in the index.tsx file.
 // you can also create new components for each of your nodes for greater flexibility.
-function WorkflowNode({
-  id,
-  data,
-  children,
-}: {
-  id: string
-  data: WorkflowNodeData
-  children?: React.ReactNode
-}) {
+function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeData; children?: React.ReactNode }) {
   const _setPromptDialogOpen = (_: boolean) => {}
   const openNodeDetails = useAppStore(state => state.openNodeDetails)
   const updateNode = useAppStore(state => state.updateNode)

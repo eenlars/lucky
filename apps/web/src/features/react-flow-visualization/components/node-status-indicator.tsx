@@ -36,13 +36,7 @@ export const LoadingIndicator = ({ children }: { children: ReactNode }) => {
   )
 }
 
-const StatusBorder = ({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) => {
+const StatusBorder = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
     <>
       <div
