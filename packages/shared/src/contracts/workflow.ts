@@ -29,7 +29,7 @@ export const WorkflowNodeConfigSchema = z.object({
   requiresApproval: z.boolean().optional(),
   approvalPrompt: z.string().optional(),
   connectors: z.array(z.string()).optional(),
-  maxSteps: z.number().positive().optional(),
+  maxSteps: z.number().int().positive().optional(),
 })
 
 /**

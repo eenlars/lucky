@@ -1350,12 +1350,16 @@ export function getProviderInfo(): ProviderInfo[] {
  * Helper: Get catalog statistics
  */
 export function getCatalogStats() {
+  const isDevelopment = process.env.NODE_ENV === "development"
   const active = getActiveModels()
   const providers = getAllProviders()
   const byProvider: Record<string, number> = {}
 
   for (const provider of providers) {
-    byProvider[provider] = getModelsByProvider(provider).filter(m => m.active).length
+    const providerModels = getModelsByProvider(provider)
+    byProvider[provider] = isDevelopment
+      ? providerModels.length
+      : providerModels.filter(m => m.active).length
   }
 
   return {

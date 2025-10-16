@@ -189,7 +189,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       } else if (message.includes("Overall timeout") || message.includes("Stall timeout")) {
         errorCategory = "timeout"
         severity = "warn"
-      } else if (message.includes("rate limit")) {
+      } else if (message.toLowerCase().includes("rate limit")) {
         errorCategory = "rate_limit"
         severity = "warn"
       }

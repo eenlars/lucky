@@ -235,7 +235,7 @@ export async function logError(input: ErrorLogInput): Promise<void> {
   console.error(`${severityIcon} ${logPrefix} ${input.message}`)
 
   if (input.context) {
-    console.error(`${logPrefix} Context:`, JSON.stringify(input.context, null, 2))
+    console.error(`${logPrefix} Context:`, input.context)
   }
 
   if (input.stack) {
