@@ -12,6 +12,7 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   minify: false,
+  tsconfig: "./tsconfig.build.json",
   external: [
     "@lucky/shared",
     /^@core\/.*/,

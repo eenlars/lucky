@@ -2,9 +2,9 @@ import { openai } from "@ai-sdk/openai"
 import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
 import { llmGuard } from "@core/utils/common/llmGuard"
 import { lgg } from "@core/utils/logging/Logger"
+import { setupMCPForNode } from "@lucky/tools"
 import { generateText, stepCountIs } from "ai"
 import { describe, expect, it } from "vitest"
-import { setupMCPForNode } from "../mcp"
 
 describe.skip("browser functionality tests", () => {
   // TODO: These are integration tests that require actual browser automation and internet access.

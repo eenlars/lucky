@@ -9,7 +9,6 @@ describe("LocationDataManager Tool Integration", () => {
 
   beforeEach(async () => {
     await codeToolRegistry.destroy()
-    // @ts-expect-error - TODO: fix this
     codeToolRegistry.register(locationDataManager)
     await codeToolRegistry.initialize()
   })

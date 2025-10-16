@@ -1,7 +1,8 @@
 import { isNir } from "@lucky/shared"
 
 import { printValidationResult, validateToolkitRegistration } from "../registration/validation"
-import { type CodeToolRegistry, codeToolRegistry } from "./CodeToolRegistry"
+import type { ToolkitDefinition } from "../registration/customToolsRegistration"
+import { type CodeToolRegistry, codeToolRegistry } from "./CustomToolRegistry"
 import type { CodeToolName } from "./types"
 
 /**
@@ -37,7 +38,7 @@ export async function ensureCodeToolsRegistered(
       }
     },
     {
-      validate: toolkits => {
+      validate: (toolkits: ToolkitDefinition<"code">[]) => {
         const result = validateToolkitRegistration(toolkits)
         printValidationResult("Code", result)
         if (!result.valid) {

@@ -5,8 +5,8 @@
  * Call this once at application startup before using any tools.
  */
 
-import { type CodeToolRegistry, codeToolRegistry } from "../registry/CodeToolRegistry"
-import type { ToolkitRegistry } from "./codeToolsRegistration"
+import { type CodeToolRegistry, codeToolRegistry } from "../registry/CustomToolRegistry"
+import type { ToolkitRegistry } from "./customToolsRegistration"
 import { printValidationResult, validateToolkitRegistration } from "./validation"
 
 /**
