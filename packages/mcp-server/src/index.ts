@@ -250,7 +250,10 @@ Execute a workflow with provided input data.
   `,
   parameters: z.object({
     workflow_id: z.string().describe("Workflow identifier from lucky_list_workflows"),
-    input: z.unknown().describe("Input data matching the workflow's inputSchema"),
+    input: z
+      .object({})
+      .passthrough()
+      .describe("Input data matching the workflow's inputSchema (must be a JSON object)"),
     options: z
       .object({
         timeoutMs: z.number().max(600000).optional().describe("Max execution time in milliseconds"),
