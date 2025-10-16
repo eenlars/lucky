@@ -7,8 +7,7 @@
 "use client"
 
 import { ChatInterfaceReal } from "./ChatInterfaceReal"
-import { ChatInterfaceSimulation } from "./ChatInterfaceSimulation"
-import type { ChatInterfaceProps } from "./types/types"
+import { ChatInterfaceSimulation, type ChatInterfaceProps } from "./ChatInterfaceSimulation"
 
 export function ChatInterface(props: ChatInterfaceProps) {
   const { useSimulation = true } = props

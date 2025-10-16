@@ -2,51 +2,25 @@
 
 import { AnimatedStatusText } from "@/components/ui/animated-status-text"
 import { cn } from "@/lib/utils"
+import type { UIMessage } from "@ai-sdk-tools/store"
 import { ArrowDown } from "lucide-react"
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom"
-
-interface MessageBubbleProps {
-  role: "user" | "assistant"
-  content: string
-}
-
-function MessageBubble({ role, content }: MessageBubbleProps) {
-  const isUser = role === "user"
-
-  return (
-    <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
-      <div
-        className={cn(
-          "max-w-[70%] px-3.5 py-2.5 rounded-lg text-sm",
-          isUser
-            ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
-            : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100",
-        )}
-      >
-        <div className="whitespace-pre-wrap leading-relaxed">{content}</div>
-      </div>
-    </div>
-  )
-}
-
-interface SimpleMessage {
-  id: string
-  role: "user" | "assistant" | "system"
-  content: string
-}
+import { MessageBubble } from "./MessageBubble"
 
 interface MessagesAreaProps {
-  messages: SimpleMessage[]
+  messages: UIMessage[]
   isLoading?: boolean
   statusMessage?: string | null
   error?: Error | null
   onRetry?: () => void
+  onCopy?: (id: string, content: string) => void
+  onDelete?: (id: string) => void
   emptyState?: React.ReactNode
   className?: string
 }
 
 /**
- * MessagesArea - Reusable minimal chat messages container
+ * MessagesArea - Reusable chat messages container
  *
  * Complete message display system with:
  * - Smart auto-scroll (StickToBottom)
@@ -62,6 +36,8 @@ export function MessagesArea({
   statusMessage = null,
   error = null,
   onRetry,
+  onCopy,
+  onDelete,
   emptyState,
   className,
 }: MessagesAreaProps) {
@@ -81,12 +57,32 @@ export function MessagesArea({
           <div className="space-y-3">
             {messages
               .filter(message => {
-                // Hide empty messages and system messages
-                return message.role !== "system" && message.content && message.content.trim().length > 0
+                // Hide empty assistant messages during streaming
+                if (message.role === "assistant") {
+                  const hasText = message.parts.some(part => part.type === "text" && (part as any).text?.trim())
+                  return hasText
+                }
+                // Hide system messages
+                return message.role !== "system"
               })
-              .map(message => (
-                <MessageBubble key={message.id} role={message.role as "user" | "assistant"} content={message.content} />
-              ))}
+              .map(message => {
+                // Extract text content from message parts
+                const content = message.parts
+                  .filter(part => part.type === "text")
+                  .map(part => (part as any).text)
+                  .join("")
+
+                return (
+                  <MessageBubble
+                    key={message.id}
+                    id={message.id}
+                    role={message.role as "user" | "assistant"}
+                    content={content}
+                    onCopy={onCopy}
+                    onDelete={onDelete}
+                  />
+                )
+              })}
 
             {/* Shimmering status - no bubble, just status text */}
             {isLoading && statusMessage && (

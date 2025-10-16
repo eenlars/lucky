@@ -6,9 +6,14 @@
 
 "use client"
 
-import type { ChatSuggestionsProps } from "@/features/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 import { SuggestionCard } from "./SuggestionCard"
+
+export interface ChatSuggestionsProps {
+  suggestions: string[]
+  onSelect: (suggestion: string) => void
+  className?: string
+}
 
 export function ChatSuggestions({ suggestions, onSelect, className }: ChatSuggestionsProps) {
   if (suggestions.length === 0) return null

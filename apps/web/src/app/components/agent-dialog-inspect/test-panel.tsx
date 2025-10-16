@@ -1,13 +1,13 @@
 "use client"
 
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
+import { MessagesArea } from "@/features/chat-interface/components/MessagesArea"
 import { cn } from "@/lib/utils"
 import { AIDevtools } from "@ai-sdk-tools/devtools"
 import { useChat } from "@ai-sdk-tools/store"
 import { DefaultChatTransport } from "ai"
 import { Brain, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { MessagesArea } from "./MessagesArea"
 
 interface TestPanelProps {
   node: AppNode

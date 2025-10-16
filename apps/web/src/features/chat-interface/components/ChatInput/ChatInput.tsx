@@ -7,11 +7,22 @@
 
 "use client"
 
-import type { ChatInputProps } from "@/features/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef } from "react"
 import { InputToolbar } from "./InputToolbar"
 import { SendButton } from "./SendButton"
+
+export interface ChatInputProps {
+  value: string
+  onChange: (value: string) => void
+  onSend: () => void
+  onKeyDown?: (e: React.KeyboardEvent) => void
+  placeholder?: string
+  disabled?: boolean
+  isLoading?: boolean
+  maxLength?: number
+  className?: string
+}
 
 export function ChatInput({
   value,
