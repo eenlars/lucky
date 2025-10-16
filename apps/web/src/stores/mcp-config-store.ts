@@ -1,5 +1,5 @@
-import { create } from "zustand"
 import { toast } from "sonner"
+import { create } from "zustand"
 
 export interface MCPServerConfig {
   command: string
@@ -26,6 +26,45 @@ interface MCPConfigStore {
 }
 
 const initialState: MCPServers = { mcpServers: {} }
+
+// Legacy localStorage key for migration
+const LEGACY_STORAGE_KEY = "mcp-config"
+
+/**
+ * Check if there's legacy localStorage data that needs migration
+ */
+function checkLegacyLocalStorage(): MCPServers | null {
+  if (typeof window === "undefined") return null
+
+  try {
+    const stored = localStorage.getItem(LEGACY_STORAGE_KEY)
+    if (!stored) return null
+
+    const parsed = JSON.parse(stored)
+    // Validate it has the expected structure
+    if (parsed && typeof parsed === "object" && "mcpServers" in parsed) {
+      return parsed as MCPServers
+    }
+  } catch (e) {
+    console.warn("Failed to parse legacy localStorage MCP config:", e)
+  }
+
+  return null
+}
+
+/**
+ * Clear legacy localStorage after successful migration
+ */
+function clearLegacyLocalStorage(): void {
+  if (typeof window === "undefined") return
+
+  try {
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+    console.log("[MCP Migration] Cleared legacy localStorage")
+  } catch (e) {
+    console.warn("Failed to clear legacy localStorage:", e)
+  }
+}
 
 /**
  * Save MCP config to backend database (mcp.user_server_configs with server_id=NULL)
@@ -156,12 +195,41 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
 
   /**
    * Load config from backend on mount
+   * Handles automatic migration from legacy localStorage if needed
    */
   loadFromBackend: async () => {
     set({ isSyncing: true, lastSyncError: null })
 
     try {
       const config = await loadConfigFromBackend(true) // silent on mount
+
+      // Check if backend is empty but localStorage has legacy data (migration needed)
+      const hasBackendData = Object.keys(config.mcpServers).length > 0
+      if (!hasBackendData) {
+        const legacyConfig = checkLegacyLocalStorage()
+        if (legacyConfig && Object.keys(legacyConfig.mcpServers).length > 0) {
+          console.log("[MCP Migration] Migrating legacy localStorage config to database...")
+          toast.info("Migrating MCP configuration to database...")
+
+          try {
+            // Migrate legacy config to backend
+            await saveConfigToBackend(legacyConfig)
+
+            // Clear localStorage after successful migration
+            clearLegacyLocalStorage()
+
+            // Update local state with migrated config
+            set({ config: legacyConfig, isSyncing: false })
+            toast.success("MCP configuration migrated successfully")
+            return
+          } catch (migrationError) {
+            console.error("[MCP Migration] Failed to migrate:", migrationError)
+            toast.error("Failed to migrate MCP configuration. Please reconfigure manually.")
+            // Fall through to set empty config
+          }
+        }
+      }
+
       set({ config, isSyncing: false })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
