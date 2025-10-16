@@ -1,23 +1,10 @@
 import { openai } from "@ai-sdk/openai"
+import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
+import { envi } from "@core/utils/env.mjs"
+import { lgg } from "@core/utils/logging/Logger"
+import { clearMCPClientCache, setupMCPForNode } from "@lucky/tools"
 import { generateText, stepCountIs } from "ai"
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
-import { clearMCPClientCache, setupMCPForNode } from "../setup"
-
-// Mock core dependencies
-const lgg = {
-	log: (...args: any[]) => console.log(...args),
-	info: (...args: any[]) => console.log(...args),
-	error: (...args: any[]) => console.error(...args),
-}
-
-// Mock processStepsV2 and envi
-vi.mock("@core/messages/api/vercel/vercelStepProcessor", () => ({
-	processStepsV2: vi.fn(),
-}))
-
-vi.mock("@core/utils/env.mjs", () => ({
-	envi: { OPENAI_API_KEY: process.env.OPENAI_API_KEY },
-}))
+import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
 describe.skip("browser session persistence tests", () => {
   // TODO: More integration tests that depend on external services and browser automation.

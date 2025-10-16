@@ -1,22 +1,10 @@
 import { openai } from "@ai-sdk/openai"
+import { processStepsV2 } from "@core/messages/api/vercel/vercelStepProcessor"
+import { llmGuard } from "@core/utils/common/llmGuard"
+import { lgg } from "@core/utils/logging/Logger"
+import { setupMCPForNode } from "@lucky/tools"
 import { generateText, stepCountIs } from "ai"
-import { describe, expect, it, vi } from "vitest"
-import { setupMCPForNode } from "../setup"
-
-// Mock core dependencies
-const lgg = {
-	log: (...args: any[]) => console.log(...args),
-	info: (...args: any[]) => console.log(...args),
-	error: (...args: any[]) => console.error(...args),
-}
-
-vi.mock("@core/messages/api/vercel/vercelStepProcessor", () => ({
-	processStepsV2: vi.fn(),
-}))
-
-vi.mock("@core/utils/common/llmGuard", () => ({
-	llmGuard: vi.fn(),
-}))
+import { describe, expect, it } from "vitest"
 
 describe.skip("browser functionality tests", () => {
   // TODO: These are integration tests that require actual browser automation and internet access.

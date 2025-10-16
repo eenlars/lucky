@@ -1,18 +1,9 @@
 import { existsSync } from "node:fs"
 import { resolve } from "node:path"
-import { describe, expect, it, vi } from "vitest"
-import { setupMCPForNode } from "../setup"
-
-// Mock core dependencies
-const lgg = {
-	log: (...args: any[]) => console.log(...args),
-	info: (...args: any[]) => console.log(...args),
-	error: (...args: any[]) => console.error(...args),
-}
-
-vi.mock("@core/messages/api/sendAI/sendAI", () => ({
-	sendAI: vi.fn(),
-}))
+import { sendAI } from "@core/messages/api/sendAI/sendAI"
+import { lgg } from "@core/utils/logging/Logger"
+import { setupMCPForNode } from "@lucky/tools"
+import { describe, expect, it } from "vitest"
 
 describe("MCP Integration Tests", () => {
   // TODO: Another integration test that makes real API calls. Should be in a separate
