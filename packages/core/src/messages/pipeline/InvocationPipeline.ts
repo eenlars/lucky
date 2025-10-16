@@ -16,6 +16,7 @@ import {
 import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
+import { getEffectiveMaxSteps } from "@core/messages/pipeline/agentStepLoop/utils"
 import { prepareIncomingMessage } from "@core/messages/pipeline/prepare/incomingMessage"
 import { createSummary } from "@core/messages/summaries/createSummary"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
@@ -26,7 +27,7 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import { saveInLoc, saveInLogging } from "@core/utils/fs/fileSaver"
 import { JSONN, isNir } from "@lucky/shared"
-import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
+import type { GenerateTextResult, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
 const maxRounds = getCoreConfig().tools.experimentalMultiStepLoopMaxRounds
@@ -84,7 +85,6 @@ enum PipelineState {
 
 export class InvocationPipeline {
   /* ------------------------------- state --------------------------------- */
-  private sdkMessages: ModelMessage[] = []
   private tools: ToolSet = {}
   private toolChoice: ToolChoice<ToolSet> | null = null
 
@@ -429,6 +429,7 @@ export class InvocationPipeline {
         mode: "text" as const,
         opts: {
           saveOutputs: this.saveOutputs,
+          maxSteps: getEffectiveMaxSteps(this.ctx.nodeConfig.maxSteps, config.tools.maxStepsVercel),
         },
       })
 
@@ -486,7 +487,10 @@ export class InvocationPipeline {
         tools: this.tools,
         toolChoice: this.toolChoice ?? "auto",
         saveOutputs: this.saveOutputs,
-        maxSteps: this.toolChoice === "required" ? 1 : undefined,
+        maxSteps:
+          this.toolChoice === "required"
+            ? 1
+            : getEffectiveMaxSteps(this.ctx.nodeConfig.maxSteps, config.tools.maxStepsVercel),
       },
     })
 
@@ -545,7 +549,7 @@ export class InvocationPipeline {
       tools: this.tools,
       agentSteps: this.agentSteps,
       model: this.ctx.nodeConfig.modelName,
-      maxRounds,
+      maxRounds: getEffectiveMaxSteps(this.ctx.nodeConfig.maxSteps, maxRounds),
       verbose,
       addCost: cost => this.addCost(cost),
       setUpdatedMemory: memory => {
@@ -563,7 +567,7 @@ export class InvocationPipeline {
       tools: this.tools,
       agentSteps: this.agentSteps,
       model: this.ctx.nodeConfig.modelName,
-      maxRounds,
+      maxRounds: getEffectiveMaxSteps(this.ctx.nodeConfig.maxSteps, maxRounds),
       verbose,
       addCost: cost => this.addCost(cost),
       setUpdatedMemory: memory => {

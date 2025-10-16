@@ -23,6 +23,7 @@ import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
 import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
+import { logException } from "@core/utils/error-tracking/errorLogger"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { getCurrentProvider } from "@core/utils/spending/provider"
@@ -148,7 +149,64 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
     // TODO: add error recovery strategies beyond fallback
     // TODO: create error analytics and reporting
     const { message, debug } = normalizeError(err)
-    lgg.error("execText error", message, modelName, model, getCurrentProvider())
+
+    // Enhanced error logging with full context for debugging
+    const provider = getCurrentProvider()
+    const errorContext = {
+      provider,
+      model: modelName,
+      error: message,
+      debug,
+      requestInfo: {
+        messageCount: messages.length,
+        hasReasoning: Boolean(opts.reasoning),
+        maxSteps: opts.maxSteps ?? config.tools.maxStepsVercel,
+        retries,
+      },
+    }
+
+    lgg.error("❌ execText failed", JSON.stringify(errorContext, null, 2))
+
+    // Determine severity based on error type
+    let severity: "error" | "warn" = "error"
+    let errorCategory = "unknown"
+
+    // Log quota/auth errors with extra visibility
+    if (typeof message === "string") {
+      if (message.toLowerCase().includes("quota") || message.toLowerCase().includes("insufficient credits")) {
+        errorCategory = "quota"
+        severity = "error"
+        lgg.error(`💰 QUOTA ERROR: ${provider} - ${message}`)
+        lgg.error(`   Model: ${modelName}`)
+        lgg.error(`   This usually means your API key has reached its usage limit.`)
+        lgg.error(`   Check your billing settings at your provider's dashboard.`)
+      } else if (message.toLowerCase().includes("authentication") || message.toLowerCase().includes("api key")) {
+        errorCategory = "auth"
+        severity = "error"
+        lgg.error(`🔑 AUTH ERROR: ${provider} - ${message}`)
+        lgg.error(`   Model: ${modelName}`)
+        lgg.error(`   Check that your API key is set correctly and has the right permissions.`)
+      } else if (message.includes("Overall timeout") || message.includes("Stall timeout")) {
+        errorCategory = "timeout"
+        severity = "warn"
+      } else if (message.toLowerCase().includes("rate limit")) {
+        errorCategory = "rate_limit"
+        severity = "warn"
+      }
+    }
+
+    // Log to backend for tracking and alerting
+    logException(err, {
+      location: `core/execText/${errorCategory}`,
+      context: {
+        ...errorContext,
+        errorCategory,
+      },
+      severity,
+    }).catch(logErr => {
+      // Never let logging errors disrupt execution
+      console.error("Failed to log error to backend:", logErr)
+    })
 
     // TODO: expand timeout detection to include more error patterns
     // TODO: implement model health monitoring beyond timeout tracking

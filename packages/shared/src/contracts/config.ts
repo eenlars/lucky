@@ -63,11 +63,14 @@ export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
 /**
  * Provider availability configuration - single source of truth.
  * Providers marked as disabled will not be initialized even if API keys are present.
+ * In development mode, all providers are enabled for testing.
  */
+const isDevelopment = process.env.NODE_ENV === "development"
+
 export const PROVIDER_AVAILABILITY = {
   openai: true,
-  openrouter: false, // Disabled
-  groq: false, // Disabled
+  openrouter: isDevelopment, // Enabled in development for testing
+  groq: isDevelopment, // Enabled in development for testing
 } as const
 
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")

@@ -29,6 +29,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfigOutpu
 
   console.log("[buildProviderConfig] Building provider config (first time this workflow)")
   const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
+  const isDevelopment = process.env.NODE_ENV === "development"
 
   const providers: Record<string, ProviderConfigOutput> = {}
   const missingKeys: string[] = []
@@ -50,7 +51,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfigOutpu
     }
   }
 
-  // OpenRouter (currently disabled)
+  // OpenRouter (enabled in development for testing)
   if (PROVIDER_AVAILABILITY.openrouter) {
     const openrouterKey = (await getApiKey("OPENROUTER_API_KEY")) || (isTest ? "test-key" : undefined)
     if (openrouterKey) {
@@ -58,7 +59,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfigOutpu
         id: "openrouter" as const,
         apiKey: openrouterKey,
         baseUrl: "https://openrouter.ai/api/v1",
-        enabled: false,
+        enabled: isDevelopment, // ✅ Enabled in development
       }
       console.log("✓ OpenRouter provider configured")
     } else {
@@ -66,7 +67,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfigOutpu
     }
   }
 
-  // Groq (currently disabled)
+  // Groq (enabled in development for testing)
   if (PROVIDER_AVAILABILITY.groq) {
     const groqKey = (await getApiKey("GROQ_API_KEY")) || (isTest ? "test-key" : undefined)
     if (groqKey) {
@@ -74,7 +75,7 @@ async function buildProviderConfig(): Promise<Record<string, ProviderConfigOutpu
         id: "groq" as const,
         apiKey: groqKey,
         baseUrl: "https://api.groq.com/openai/v1",
-        enabled: false,
+        enabled: isDevelopment, // ✅ Enabled in development
       }
       console.log("✓ Groq provider configured")
     } else {

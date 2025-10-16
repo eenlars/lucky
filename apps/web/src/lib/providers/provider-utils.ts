@@ -20,7 +20,10 @@ export interface ProviderConfig {
 /**
  * Provider metadata - static configuration for each provider
  * This is the only place where provider-specific metadata should be defined
+ * In development mode, all providers are enabled for testing
  */
+const isDevelopment = process.env.NODE_ENV === "development"
+
 const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultModelsCount">> = {
   openai: {
     name: "OpenAI",
@@ -39,7 +42,7 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     logo: "/logos/groq.svg",
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
-    disabled: true,
+    disabled: !isDevelopment, // Enabled in development
   },
   openrouter: {
     name: "OpenRouter",
@@ -49,7 +52,7 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
     logo: "/logos/openrouter.svg",
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
-    disabled: true,
+    disabled: !isDevelopment, // Enabled in development
   },
 }
 
