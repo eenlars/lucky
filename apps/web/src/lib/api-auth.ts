@@ -1,7 +1,7 @@
 import { type Principal, authenticateRequest } from "@/lib/auth/principal"
 import { auth } from "@clerk/nextjs/server"
-import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server"
 
 /**
  * Legacy authentication helper - returns Clerk userId (session-only)

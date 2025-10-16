@@ -3,8 +3,8 @@
  * Designed to work seamlessly with Vercel AI SDK
  */
 
-import { providerNameSchema } from "@lucky/shared"
 import type { LanguageModelV2 } from "@openrouter/ai-sdk-provider"
+import { providerIdSchema } from "./schemas"
 
 // ============================================================================
 // Provider Configuration
@@ -13,7 +13,7 @@ import { z } from "zod"
 
 export const providerConfigSchema = z.object({
   /** Provider identifier (openai, anthropic, openrouter, local, etc.) */
-  id: providerNameSchema,
+  id: providerIdSchema,
 
   /** Base URL for the provider API */
   baseUrl: z.string().optional(),
