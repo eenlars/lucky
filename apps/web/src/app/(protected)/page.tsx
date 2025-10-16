@@ -9,6 +9,8 @@ import { useEffect, useState } from "react"
 export default function HomePage() {
   const router = useRouter()
   const [hasStartedChat, setHasStartedChat] = useState(false)
+  const [useSimulation, setUseSimulation] = useState(true)
+
   // In production, redirect home to the editor
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
@@ -38,39 +40,58 @@ export default function HomePage() {
     <div className="flex flex-col h-screen bg-white pt-[env(safe-area-inset-top)]">
       <OnboardingGuide />
 
-      {/* Demo Button - Shows before first message */}
+      {/* Mode Toggle */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            {useSimulation ? "Simulation Mode" : "Real AI Mode"}
+          </div>
+          <button
+            type="button"
+            onClick={() => setUseSimulation(!useSimulation)}
+            className="text-sm px-3 py-1.5 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            {useSimulation ? "Switch to Real AI" : "Switch to Simulation"}
+          </button>
+        </div>
+      </div>
+
+      {/* Demo Prompt Box - Shows before first message */}
       {!hasStartedChat && (
-        <div className="border-b border-black/10 bg-gradient-to-b from-black/[0.02] to-transparent animate-in fade-in slide-in-from-top duration-500">
-          <div className="max-w-3xl mx-auto px-4 pt-6 pb-3 sm:py-4 md:py-6">
-            <button
-              type="button"
-              onClick={handleDemoClick}
-              className="w-full group flex items-center justify-between p-3 sm:p-4 md:p-6 border-2 border-dashed border-black/20 rounded-2xl hover:border-black/40 hover:bg-black/[0.02] hover:shadow-sm transition-all duration-300 active:scale-[0.99]"
-            >
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-full bg-gradient-to-br from-black/5 to-black/10 flex items-center justify-center group-hover:from-black/10 group-hover:to-black/15 transition-all duration-300">
-                  <Sparkles size={18} className="sm:size-5 text-black/60 group-hover:text-black/80 transition-colors" />
-                </div>
-                <div className="text-left min-w-0 flex-1">
-                  <h3 className="text-base sm:text-lg font-medium text-black mb-0.5 sm:mb-1 group-hover:text-black transition-colors">
-                    Try a demo workflow
-                  </h3>
-                  <p className="text-xs sm:text-sm font-light text-black/60 group-hover:text-black/70 transition-colors line-clamp-2">
-                    See how AI workflows can analyze customer feedback and generate insights
-                  </p>
-                </div>
+        <div className="flex items-center justify-center py-8">
+          <button
+            type="button"
+            onClick={handleDemoClick}
+            className="group flex flex-col bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 w-[720px] max-w-[calc(100vw-2rem)]"
+          >
+            <div className="flex items-center gap-4 px-5 py-4">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800">
+                <Sparkles className="w-5 h-5 text-gray-600 dark:text-gray-400" strokeWidth={1.5} />
               </div>
-              <div className="text-xl sm:text-2xl text-black/40 group-hover:text-black/60 group-hover:translate-x-1 transition-all shrink-0 ml-2">
+              <div className="flex-1 text-left">
+                <h3 className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">Try a demo workflow</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  See how AI workflows can analyze customer feedback and generate insights
+                </p>
+              </div>
+              <div className="text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
                 →
               </div>
-            </button>
-          </div>
+            </div>
+          </button>
         </div>
       )}
 
       {/* Chat Interface */}
       <div className="flex-1 overflow-hidden">
-        <ChatInterface onSendMessage={handleSendMessage} placeholder="Ask me anything about workflows..." />
+        <ChatInterface
+          onSendMessage={handleSendMessage}
+          placeholder="Ask me anything about workflows..."
+          useSimulation={useSimulation}
+          modelName={useSimulation ? undefined : "openai#gpt-5-nano"}
+          nodeId="home-chat"
+          systemPrompt="You are a helpful AI assistant for workflow automation. Be concise and clear."
+        />
       </div>
     </div>
   )

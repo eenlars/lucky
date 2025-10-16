@@ -134,6 +134,14 @@ export interface ChatInterfaceProps {
   maxHeight?: string
   /** Custom className for container */
   className?: string
+  /** Use simulated responses instead of real AI calls (default: true) */
+  useSimulation?: boolean
+  /** Model name for real AI calls (e.g., "openai/gpt-4") */
+  modelName?: string
+  /** Node ID for agent context (used in real mode) */
+  nodeId?: string
+  /** System prompt for the agent (used in real mode) */
+  systemPrompt?: string
 }
 
 export interface ChatMessageProps {

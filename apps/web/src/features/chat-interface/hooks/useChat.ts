@@ -1,8 +1,8 @@
 /**
  * useChat Hook
  *
- * Main chat state management hook
- * Handles messages, sending, streaming, and error states
+ * Chat state management hook for SIMULATION MODE ONLY
+ * For real AI mode, use ChatInterfaceReal with Provider pattern
  */
 
 import { logException } from "@/lib/error-logger"
@@ -23,6 +23,8 @@ export interface UseChatOptions {
   enableStreaming?: boolean
   /** Maximum number of messages to keep */
   maxMessages?: number
+  /** Use simulated responses (always true for this hook) */
+  useSimulation?: boolean
 }
 
 export interface UseChatReturn extends ChatState, ChatActions {
@@ -76,7 +78,6 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           await onSendMessage(content)
         }
 
-        // Simulate assistant response (in real implementation, this would come from backend)
         setIsTyping(true)
 
         // Simulate delay

@@ -18,7 +18,7 @@ let globalTracker: SpendingTracker | undefined
 export function getSpendingTracker(): SpendingTracker {
   const ctx = getExecutionContext()
   const isProduction = process.env.NODE_ENV === "production"
-  const isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
+  const _isTest = process.env.NODE_ENV === "test" || process.env.VITEST === "true"
 
   // In production, require execution context
   if (isProduction && !ctx) {
