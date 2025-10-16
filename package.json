@@ -49,8 +49,6 @@
     "test:app-int": "bun --env-file .env --env-file .env.local vitest run --project app-int",
     "test:xrepo": "bun --env-file .env --env-file .env.local vitest run --project xrepo",
     "test:e2e": "bun --env-file .env --env-file .env.local vitest run --project e2e",
-    "test:unit": "bun --env-file .env --env-file .env.local turbo run test:unit",
-    "test:integration": "bun --env-file .env --env-file .env.local turbo run test:integration",
     "test:smoke": "bun --env-file .env --env-file .env.local vitest run tests/e2e-essential/smoke --config tests/e2e-essential/vitest.config.js",
     "test:gate": "bun --env-file .env --env-file .env.local vitest run tests/e2e-essential --config tests/e2e-essential/vitest.config.js",
     "lint": "biome lint .",

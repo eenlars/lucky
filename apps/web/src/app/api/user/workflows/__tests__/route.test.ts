@@ -1,17 +1,20 @@
 import { NextRequest } from "next/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock dependencies - must be defined before vi.mock calls
+const mockAuthenticateRequest = vi.hoisted(() => vi.fn())
+const mockCreateRLSClient = vi.hoisted(() => vi.fn())
+const mockLogException = vi.hoisted(() => vi.fn())
+
 vi.mock("@/lib/auth/principal", () => ({
-  authenticateRequest: vi.fn(),
+  authenticateRequest: mockAuthenticateRequest,
 }))
 
 vi.mock("@/lib/supabase/server-rls", () => ({
-  createRLSClient: vi.fn(),
+  createRLSClient: mockCreateRLSClient,
 }))
 
 vi.mock("@/lib/error-logger", () => ({
-  logException: vi.fn(),
+  logException: mockLogException,
 }))
 
 vi.mock("@/lib/mcp-invoke/workflow-loader", () => ({
@@ -21,14 +24,7 @@ vi.mock("@/lib/mcp-invoke/workflow-loader", () => ({
   })),
 }))
 
-import { authenticateRequest } from "@/lib/auth/principal"
-import { logException } from "@/lib/error-logger"
-import { createRLSClient } from "@/lib/supabase/server-rls"
 import { GET } from "../route"
-
-const mockAuthenticateRequest = vi.mocked(authenticateRequest)
-const mockCreateRLSClient = vi.mocked(createRLSClient)
-const mockLogException = vi.mocked(logException)
 
 describe("GET /api/user/workflows", () => {
   beforeEach(() => {

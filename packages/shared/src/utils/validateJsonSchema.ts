@@ -28,7 +28,10 @@ function validateJsonSchema(val: unknown) {
   }
 
   if (typeof val !== "object" || val === null) {
-    return { ok: false, errors: "Schema must be a boolean or non-null object" }
+    return {
+      ok: false,
+      errors: "Schema must be a non-null object.\nBoolean schemas (true/false) are allowed.",
+    }
   }
 
   const obj = val as Record<string, unknown>

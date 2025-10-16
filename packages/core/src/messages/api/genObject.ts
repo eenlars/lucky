@@ -77,7 +77,13 @@ output:
 
   usdCost += result.usdCost ?? 0
 
-  const extractedJson = JSONN.extract(result.data.text)
+  let extractedJson: Record<string, unknown> | string
+  try {
+    extractedJson = JSONN.extract(result.data.text, true)
+  } catch (error) {
+    console.warn("[genObject] failed to extract JSON", { error })
+    return R.error(`No valid JSON found in response: ${JSONN.show(result.data.text)}`, usdCost)
+  }
   if (!extractedJson) {
     console.warn("[genObject] no JSON in response")
     return R.error(`No valid JSON found in response: ${JSONN.show(result.data.text)}`, usdCost)

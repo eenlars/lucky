@@ -1,5 +1,6 @@
+import type { Principal } from "@/lib/auth/principal"
+import { fetchWorkflowVersion, fetchWorkflowWithVersions } from "@/lib/data/workflow-repository"
 import { logException } from "@/lib/error-logger"
-import { createRLSClient } from "@/lib/supabase/server-rls"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { JsonSchemaDefinition, WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
@@ -96,26 +97,25 @@ export function getDemoWorkflow(): WorkflowLoadResult {
  * Loads workflow configuration with support for both workflow IDs (wf_*) and version IDs (wf_ver_*)
  *
  * @param workflowId - Either a workflow ID (wf_*) or version ID (wf_ver_*)
+ * @param principal - Authenticated user principal (for access control)
  * @param mode - Optional: Enforce specific ID type to prevent mistakes
  *   - "workflow_version": Expects wf_ver_* (specific version)
  *   - "workflow_parent": Expects wf_* (parent workflow, resolves to latest)
  *   - undefined: Auto-detect (less safe, not recommended)
+ * @param options - Additional options
  * @returns WorkflowLoadResult with config and schemas
  *
  * @example
  * // Load latest version of a workflow parent
- * await loadWorkflowConfig("wf_research_paper", "workflow_parent")
+ * await loadWorkflowConfig("wf_research_paper", principal, "workflow_parent")
  *
  * @example
  * // Load specific version
- * await loadWorkflowConfig("wf_ver_abc123", "workflow_version")
- *
- * @example
- * // Auto-detect ID type (not recommended - use mode parameter)
- * await loadWorkflowConfig("wf_research_paper")
+ * await loadWorkflowConfig("wf_ver_abc123", principal, "workflow_version")
  */
 export async function loadWorkflowConfig(
   workflowId: string,
+  principal?: Principal,
   mode?: WorkflowIdMode,
   options?: { returnDemoOnNotFound?: boolean },
 ): Promise<WorkflowLoadResult> {
@@ -152,7 +152,7 @@ export async function loadWorkflowConfig(
 
     // Handle version ID - direct lookup
     if (isVersionId) {
-      const result = await loadWorkflowByVersionId(workflowId)
+      const result = await loadWorkflowByVersionId(workflowId, principal)
       if (!result.success && options?.returnDemoOnNotFound) {
         console.log(`[workflow-loader] Workflow ${workflowId} not found, returning demo workflow`)
         return getDemoWorkflow()
@@ -162,7 +162,7 @@ export async function loadWorkflowConfig(
 
     // Handle workflow ID - resolve to latest version
     if (isWorkflowId) {
-      const result = await loadWorkflowByWorkflowId(workflowId)
+      const result = await loadWorkflowByWorkflowId(workflowId, principal)
       if (!result.success && options?.returnDemoOnNotFound) {
         console.log(`[workflow-loader] Workflow ${workflowId} not found, returning demo workflow`)
         return getDemoWorkflow()
@@ -200,16 +200,35 @@ export async function loadWorkflowConfig(
 /**
  * Load workflow by version ID (wf_ver_*)
  */
-async function loadWorkflowByVersionId(versionId: string): Promise<WorkflowLoadResult> {
-  const supabase = await createRLSClient()
+async function loadWorkflowByVersionId(versionId: string, principal?: Principal): Promise<WorkflowLoadResult> {
+  console.log("[workflow-loader] Loading by version ID:", versionId)
 
-  const { data, error } = await supabase
-    .from("WorkflowVersion")
-    .select("*")
-    .eq("wf_version_id", versionId)
-    .maybeSingle()
+  const clientMode = principal ? principal.auth_method : "session (RLS)"
+  console.log(`[workflow-loader] Using ${clientMode} access for version lookup`)
 
-  if (error || !data) {
+  const { data, error } = await fetchWorkflowVersion(versionId, principal)
+
+  console.log("[workflow-loader] Version query result:", { hasData: !!data, error: error?.message })
+
+  if (error) {
+    console.log("[workflow-loader] ❌ Failed to load workflow version (repository error):", {
+      versionId,
+      message: error.message,
+    })
+    logException(error, {
+      location: "/lib/mcp-invoke/workflow-loader/version",
+    })
+    return {
+      success: false,
+      error: {
+        code: ErrorCodes.INTERNAL_ERROR,
+        message: error.message ?? "Failed to load workflow version",
+      },
+    }
+  }
+
+  if (!data) {
+    console.log("[workflow-loader] ❌ Workflow version not found or access denied:", versionId)
     return {
       success: false,
       error: {
@@ -234,26 +253,42 @@ async function loadWorkflowByVersionId(versionId: string): Promise<WorkflowLoadR
 /**
  * Load workflow by workflow ID (wf_*) - resolves to latest version
  */
-async function loadWorkflowByWorkflowId(workflowId: string): Promise<WorkflowLoadResult> {
-  const supabase = await createRLSClient()
+async function loadWorkflowByWorkflowId(workflowId: string, principal?: Principal): Promise<WorkflowLoadResult> {
+  console.log("[workflow-loader] Loading by workflow ID:", workflowId)
 
-  // Query workflow with its versions (RLS enforced)
-  const { data, error } = await supabase
-    .from("Workflow")
-    .select(
-      `
-      wf_id,
-      versions:WorkflowVersion(
-        wf_version_id,
-        dsl,
-        created_at
-      )
-    `,
-    )
-    .eq("wf_id", workflowId)
-    .maybeSingle()
+  const clientMode = principal ? principal.auth_method : "session (RLS)"
+  console.log(`[workflow-loader] Using ${clientMode} access for workflow lookup`)
 
-  if (error || !data) {
+  const { data, error } = await fetchWorkflowWithVersions(workflowId, principal)
+
+  console.log("[workflow-loader] Workflow query result:", {
+    hasData: !!data,
+    workflowClerkId: data?.clerk_id,
+    principalClerkId: principal?.clerk_id,
+    authMethod: principal?.auth_method,
+    versionsCount: data?.versions?.length,
+    error: error?.message,
+  })
+
+  if (error) {
+    console.log("[workflow-loader] ❌ Failed to load workflow (repository error):", {
+      workflowId,
+      message: error.message,
+    })
+    logException(error, {
+      location: "/lib/mcp-invoke/workflow-loader/workflow",
+    })
+    return {
+      success: false,
+      error: {
+        code: ErrorCodes.INTERNAL_ERROR,
+        message: error.message ?? "Failed to load workflow",
+      },
+    }
+  }
+
+  if (!data) {
+    console.log("[workflow-loader] ❌ Workflow not found or access denied:", workflowId)
     return {
       success: false,
       error: {

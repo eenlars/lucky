@@ -10,6 +10,7 @@ export interface ContextStore {
   listWithInfo(scope: "workflow" | "node"): Promise<ContextFileInfo[]>
   delete(scope: "workflow" | "node", key: string): Promise<void>
   getSummary(scope: "workflow" | "node", key: string): Promise<string | undefined>
+  isCached(scope: "workflow" | "node", key: string): boolean
 }
 
 export function createContextStore(backend: "memory", workflowInvocationId: string): InMemoryContextStore

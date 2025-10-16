@@ -64,16 +64,6 @@
       "outputs": ["coverage/**"],
       "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY"]
     },
-    "test:unit": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"],
-      "passThroughEnv": ["ANTH_SECRET_KEY"]
-    },
-    "test:integration": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"],
-      "passThroughEnv": ["ANTH_SECRET_KEY"]
-    },
     "test:pkg-unit": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"],

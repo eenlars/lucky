@@ -30,7 +30,8 @@ export async function createRLSClient() {
     // Get Clerk session token and pass it to Supabase
     // This allows RLS policies to identify the current user via iam.current_user_id()
     async accessToken() {
-      return (await auth()).getToken()
+      const token = await (await auth()).getToken()
+      return token
     },
   })
 }

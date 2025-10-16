@@ -110,9 +110,19 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       )
     }
 
-    // Strictly validate before creating workflow
+    // Validate workflow based on validation method
     // Note: SpendingTracker is now per-context and auto-initialized on first access via getSpendingTracker()
-    await verifyWorkflowConfigStrict(config)
+    const validationMethod = input.validation ?? "strict"
+
+    if (validationMethod === "strict") {
+      await verifyWorkflowConfigStrict(config)
+    } else if (validationMethod === "ai") {
+      // AI-powered validation and repair (not implemented yet - would call validateAndRepairWorkflow)
+      lgg.warn("[invokeWorkflow] AI validation not yet implemented, falling back to strict")
+      await verifyWorkflowConfigStrict(config)
+    } else {
+      lgg.log("[invokeWorkflow] Skipping validation (validation='none')")
+    }
 
     // Create workflow
     const workflow = Workflow.create({
