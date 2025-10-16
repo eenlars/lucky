@@ -75,10 +75,8 @@ Edit `claude_desktop_config.json` and add the Lucky MCP server configuration:
         "/ABSOLUTE/PATH/TO/lucky/packages/mcp-server/dist/index.js"
       ],
       "env": {
-        "LUCKY_API_URL": "http://localhost:3000"
-      },
-      "session": {
-        "luckyApiKey": "alive_YOUR_API_KEY_HERE"
+        "LUCKY_API_URL": "http://localhost:3000",
+        "LUCKY_API_KEY": "alive_YOUR_API_KEY_HERE"
       }
     }
   }
@@ -89,7 +87,7 @@ Edit `claude_desktop_config.json` and add the Lucky MCP server configuration:
 - Replace `/ABSOLUTE/PATH/TO/lucky` with your actual Lucky installation path
 - Replace `alive_YOUR_API_KEY_HERE` with your actual API key from Step "Get Your API Key"
 - For production deployments, change `LUCKY_API_URL` to your production URL
-- The `session.luckyApiKey` is how the MCP server authenticates with Lucky
+- The `LUCKY_API_KEY` env var is how the MCP server authenticates with Lucky
 
 ### Step 3: Verify Configuration
 
