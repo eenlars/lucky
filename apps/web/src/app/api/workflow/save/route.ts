@@ -4,37 +4,49 @@ import {
   saveWorkflowVersion,
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import type { Tables } from "@lucky/shared"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export async function POST(request: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  if (authResult) return authResult
+
+  const body = await handleBody("workflow/save", request)
+  if (isHandleBodyError(body)) return body
+
+  const { dsl, commitMessage, parentId, workflowId: bodyWorkflowId, iterationBudget: bodyIterationBudget, timeBudgetSeconds: bodyTimeBudgetSeconds } = body as {
+    dsl?: unknown
+    commitMessage?: string
+    parentId?: string
+    workflowId?: string
+    iterationBudget?: number
+    timeBudgetSeconds?: number
+  }
+
+  // Validate required fields
+  if (!dsl || !commitMessage) {
+    return fail("workflow/save", "Missing required fields: dsl or commitMessage", {
+      code: "MISSING_FIELDS",
+      status: 400,
+    })
+  }
+
+  let workflowId = bodyWorkflowId
+  let iterationBudget = bodyIterationBudget
+  let timeBudgetSeconds = bodyTimeBudgetSeconds
 
   try {
-    const body = await request.json()
-    const { dsl, commitMessage } = body
-
-    const { parentId } = body as { parentId?: string }
-    let { workflowId, iterationBudget, timeBudgetSeconds } = body as {
-      dsl: unknown
-      commitMessage: string
-      workflowId?: string
-      iterationBudget?: number
-      timeBudgetSeconds?: number
-    }
-
-    // Validate required fields
-    if (!dsl || !commitMessage) {
-      return NextResponse.json({ error: "Missing required fields: dsl or commitMessage" }, { status: 400 })
-    }
 
     // If editing an existing version, prefer authoritative workflow_id + budgets from parent
     if (parentId) {
       const parent = await retrieveWorkflowVersion(parentId).catch(() => null)
       if (!parent) {
-        return NextResponse.json({ error: "Parent workflow version not found" }, { status: 404 })
+        return fail("workflow/save", "Parent workflow version not found", {
+          code: "PARENT_NOT_FOUND",
+          status: 404,
+        })
       }
       workflowId = parent.workflow_id
       if (iterationBudget === undefined || iterationBudget === null) iterationBudget = parent.iteration_budget
@@ -47,22 +59,22 @@ export async function POST(request: NextRequest) {
 
     // Validate workflowId after resolving parent
     if (!workflowId) {
-      return NextResponse.json({ error: "workflowId is required" }, { status: 400 })
+      return fail("workflow/save", "workflowId is required", {
+        code: "MISSING_WORKFLOW_ID",
+        status: 400,
+      })
     }
 
     // Ensure workflow exists (new workflows) or confirm ownership (existing)
     try {
-      await ensureWorkflowExists(commitMessage, workflowId, authResult)
+      await ensureWorkflowExists(commitMessage, workflowId, authResult as string)
     } catch (e) {
       const err = e as any
       if (err?.code === "WORKFLOW_OWNERSHIP_CONFLICT") {
-        return NextResponse.json(
-          {
-            error:
-              "You don't have access to this workflow id. It likely predates ownership. Please duplicate to a new workflow or run the data backfill migration.",
-            code: "WORKFLOW_OWNERSHIP_CONFLICT",
-          },
-          { status: 409 },
+        return fail(
+          "workflow/save",
+          "You don't have access to this workflow id. It likely predates ownership. Please duplicate to a new workflow or run the data backfill migration.",
+          { code: "WORKFLOW_OWNERSHIP_CONFLICT", status: 409 },
         )
       }
       throw e
@@ -83,19 +95,16 @@ export async function POST(request: NextRequest) {
       const err = e as any
       // Translate RLS errors into actionable feedback
       if (err?.code === "42501") {
-        return NextResponse.json(
-          {
-            error:
-              "RLS blocked saving this version. The workflow may not be owned by your account. If this is legacy data, run the migration to backfill clerk_id or create a new workflow.",
-            code: "RLS_POLICY_VIOLATION",
-          },
-          { status: 403 },
+        return fail(
+          "workflow/save",
+          "RLS blocked saving this version. The workflow may not be owned by your account. If this is legacy data, run the migration to backfill clerk_id or create a new workflow.",
+          { code: "RLS_POLICY_VIOLATION", status: 403 },
         )
       }
       throw e
     }
 
-    return NextResponse.json({
+    return alrighty("workflow/save", {
       success: true,
       data: newWorkflowVersion,
     })
@@ -104,11 +113,7 @@ export async function POST(request: NextRequest) {
       location: "/api/workflow/save",
     })
     console.error("Error saving workflow version:", error)
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Failed to save workflow version",
-      },
-      { status: 500 },
-    )
+    const message = error instanceof Error ? error.message : "Failed to save workflow version"
+    return fail("workflow/save", message, { code: "SAVE_ERROR", status: 500 })
   }
 }

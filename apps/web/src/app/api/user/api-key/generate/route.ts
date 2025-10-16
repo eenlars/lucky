@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail } from "@/lib/api/server"
 import { generateApiKey, hashSecret } from "@/lib/api-key-utils"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
@@ -27,16 +28,17 @@ export async function POST(_req: NextRequest) {
       .maybeSingle()
 
     if (checkError) {
-      return NextResponse.json({ error: `Failed to check existing key: ${checkError.message}` }, { status: 500 })
+      return fail("user/api-key/generate", `Failed to check existing key: ${checkError.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
     if (existing) {
-      return NextResponse.json(
-        {
-          error: "You already have an active API key. Use the roll endpoint to generate a new one.",
-        },
-        { status: 400 },
-      )
+      return fail("user/api-key/generate", "You already have an active API key. Use the roll endpoint to generate a new one.", {
+        code: "ALREADY_EXISTS",
+        status: 400
+      })
     }
 
     // Generate new API key
@@ -63,22 +65,28 @@ export async function POST(_req: NextRequest) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: `Failed to create API key: ${error.message}` }, { status: 500 })
+      return fail("user/api-key/generate", `Failed to create API key: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
     // Return the full key ONLY this one time
-    return NextResponse.json({
-      apiKey: fullKey,
-      metadata: {
-        secretId: data.secret_id,
-        keyId: data.key_id,
-        createdAt: data.created_at,
+    return alrighty("user/api-key/generate", {
+      success: true,
+      data: {
+        apiKey: fullKey,
+        createdAt: data.created_at
       },
+      error: null
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/api-key/generate",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to generate API key" }, { status: 500 })
+    return fail("user/api-key/generate", e?.message ?? "Failed to generate API key", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }

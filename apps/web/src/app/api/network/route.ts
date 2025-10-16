@@ -1,12 +1,13 @@
+import { alrighty, fail } from "@/lib/api/server"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import { networkMonitor } from "@lucky/examples/definitions/browser-automation/network"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const url = searchParams.get("url")
   if (!url) {
-    return NextResponse.json({ error: "URL is required" }, { status: 400 })
+    return fail("network", "URL is required", { code: "MISSING_URL", status: 400 })
   }
   try {
     const result = await networkMonitor({
@@ -15,9 +16,9 @@ export async function GET(request: NextRequest) {
       maxRequests: 100,
       maxResponseSize: 1000000,
     })
-    return NextResponse.json(result, { status: 200 })
+    return alrighty("network", result)
   } catch (error) {
     lgg.error(error)
-    return NextResponse.json({ error: "Failed to monitor network" }, { status: 500 })
+    return fail("network", "Failed to monitor network", { code: "NETWORK_MONITOR_ERROR", status: 500 })
   }
 }

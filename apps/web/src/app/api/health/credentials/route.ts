@@ -8,7 +8,10 @@ import { NextResponse } from "next/server"
 export async function GET() {
   try {
     const health = getSystemHealth()
-    return NextResponse.json(health)
+    return NextResponse.json({
+      ...health,
+      timestamp: new Date().toISOString(),
+    })
   } catch (error) {
     return NextResponse.json(
       {

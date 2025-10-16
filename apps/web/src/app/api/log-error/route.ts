@@ -1,6 +1,7 @@
 import crypto from "node:crypto"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { createClient } from "@/lib/supabase/server"
-import { type DatabaseWithAppFunctions, ErrorReportSchema } from "@lucky/shared"
+import { type DatabaseWithAppFunctions } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -70,8 +71,8 @@ function computeHash(parts: {
 
 export async function POST(request: NextRequest) {
   try {
-    const input = await request.json()
-    const data = ErrorReportSchema.parse(input)
+    const data = await handleBody("log-error", request)
+    if (isHandleBodyError(data)) return data
 
     // Map 'warning' to 'warn' to match database enum
     const dbSeverity = data.severity === "warning" ? "warn" : data.severity
@@ -120,13 +121,26 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("log-error upsert failed:", error)
-      return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
+      return fail("log-error", error.message, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
-    return NextResponse.json({ ok: true, result: record })
+    return alrighty("log-error", {
+      success: true,
+      data: {
+        logged: true,
+        errorId: record?.id ? String(record.id) : undefined
+      },
+      error: null
+    })
   } catch (err) {
     const error = err instanceof Error ? err : new Error("Unknown error")
     console.error("log-error failed:", error)
-    return NextResponse.json({ ok: false, error: error.message }, { status: 400 })
+    return fail("log-error", error.message, {
+      code: "INTERNAL_ERROR",
+      status: 400
+    })
   }
 }

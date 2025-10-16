@@ -1,18 +1,14 @@
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import type { LuckyProvider } from "@lucky/shared"
 import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { provider, apiKey } = body as {
-      provider: LuckyProvider
-      apiKey: string
-    }
+    const body = await handleBody("providers/test-connection", request as any)
+    if (isHandleBodyError(body)) return body
 
-    if (!provider || !apiKey) {
-      return NextResponse.json({ error: "Provider and API key are required" }, { status: 400 })
-    }
+    const { provider, apiKey } = body
 
     // Test connection based on provider
     let testResult: { success: boolean; error?: string; modelCount?: number }
@@ -28,23 +24,36 @@ export async function POST(request: Request) {
         testResult = await testOpenRouterConnection(apiKey)
         break
       default:
-        return NextResponse.json({ error: `Unsupported provider: ${provider}` }, { status: 400 })
+        return fail("providers/test-connection", `Unsupported provider: ${provider}`, {
+          code: "UNSUPPORTED_PROVIDER",
+          status: 400
+        })
     }
 
     if (!testResult.success) {
-      return NextResponse.json({ error: testResult.error }, { status: 401 })
+      return fail("providers/test-connection", testResult.error || "Connection test failed", {
+        code: "CONNECTION_FAILED",
+        status: 401
+      })
     }
 
-    return NextResponse.json({
+    return alrighty("providers/test-connection", {
       success: true,
-      modelCount: testResult.modelCount,
+      data: {
+        connected: true,
+        message: `Connected successfully (${testResult.modelCount} models available)`,
+      },
+      error: null
     })
   } catch (error) {
     logException(error, {
       location: "/api/providers/test-connection",
     })
     console.error("Error testing provider connection:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return fail("providers/test-connection", "Internal server error", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }
 

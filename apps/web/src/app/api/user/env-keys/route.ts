@@ -1,8 +1,9 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { encryptGCM } from "@/lib/crypto/lockbox"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -12,13 +13,13 @@ const ENV_NAMESPACE = "environment-variables"
 // Returns list of all environment variable names and metadata (not values)
 export async function GET(_req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
 
   try {
-    const { data, error } = await supabase
+    const { data, error} = await supabase
       .schema("lockbox")
       .from("user_secrets")
       .select("user_secret_id, name, created_at, last_used_at")
@@ -30,55 +31,55 @@ export async function GET(_req: NextRequest) {
 
     if (error) {
       console.error("[GET /api/user/env-keys] Supabase error:", error)
-      return NextResponse.json({ error: `Failed to fetch environment keys: ${error.message}` }, { status: 500 })
+      return fail("user/env-keys", `Failed to fetch environment keys: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
-    return NextResponse.json({
-      keys: data.map(row => ({
-        id: row.user_secret_id,
-        name: row.name,
-        createdAt: row.created_at,
-        lastUsedAt: row.last_used_at,
-      })),
+    const keys = data.map(row => ({
+      id: row.user_secret_id,
+      name: row.name,
+      createdAt: row.created_at,
+    }))
+
+    return alrighty("user/env-keys", {
+      success: true,
+      data: keys,
+      error: null
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/env-keys/GET",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to fetch environment keys" }, { status: 500 })
+    return fail("user/env-keys", e?.message ?? "Failed to fetch environment keys", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }
 
 // POST /api/user/env-keys
-// Body: { name: string, value: string }
+// Body: { key: string, value: string }
 // Creates or updates an environment variable
 export async function POST(req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
 
-  let body: unknown
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-  }
+  const body = await handleBody("user/env-keys/set", req)
+  if (isHandleBodyError(body)) return body
 
-  const { name, value } = (body ?? {}) as { name?: string; value?: string }
-  if (!name || !value) {
-    return NextResponse.json({ error: "Missing required fields: name, value" }, { status: 400 })
-  }
+  const { key: name, value } = body
 
-  // Validate name (alphanumeric, underscore, max 128 chars)
+  // Validate name (alphanumeric, underscore, max 128 chars) - additional validation beyond Zod
   if (!/^[A-Z0-9_]+$/i.test(name) || name.length > 128) {
-    return NextResponse.json(
-      {
-        error: "Invalid name: must be alphanumeric/underscore, max 128 characters",
-      },
-      { status: 400 },
-    )
+    return fail("user/env-keys/set", "Invalid name: must be alphanumeric/underscore, max 128 characters", {
+      code: "VALIDATION_ERROR",
+      status: 400
+    })
   }
 
   try {
@@ -102,9 +103,10 @@ export async function POST(req: NextRequest) {
     // Validate auth_tag is exactly 16 bytes
     if (authTagBytes.length !== 16) {
       console.error(`[POST /api/user/env-keys] Invalid auth_tag length: ${authTagBytes.length} bytes (expected 16)`)
-      return NextResponse.json(
-        { error: `Encryption error: auth_tag is ${authTagBytes.length} bytes, expected 16` },
-        { status: 500 },
+      return fail(
+        "user/env-keys/set",
+        `Encryption error: auth_tag is ${authTagBytes.length} bytes, expected 16`,
+        { code: "ENCRYPTION_ERROR", status: 500 },
       )
     }
 
@@ -166,19 +168,25 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("[POST /api/user/env-keys] Insert error:", error)
       console.error("[POST /api/user/env-keys] Error details:", JSON.stringify(error, null, 2))
-      return NextResponse.json({ error: `Failed to save environment key: ${error.message}` }, { status: 500 })
+      return fail("user/env-keys/set", `Failed to save environment key: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
-    return NextResponse.json({
-      id: data.user_secret_id,
-      name: data.name,
-      createdAt: data.created_at,
+    return alrighty("user/env-keys/set", {
+      success: true,
+      data: { updated: true },
+      error: null
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/env-keys/POST",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to save environment key" }, { status: 500 })
+    return fail("user/env-keys/set", e?.message ?? "Failed to save environment key", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }
 
@@ -186,14 +194,17 @@ export async function POST(req: NextRequest) {
 // Soft-deletes an environment variable
 export async function DELETE(req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
   const name = req.nextUrl.searchParams.get("name")
 
   if (!name) {
-    return NextResponse.json({ error: "Missing required parameter: name" }, { status: 400 })
+    return fail("user/env-keys/[name]", "Missing required parameter: name", {
+      code: "MISSING_PARAMETER",
+      status: 400
+    })
   }
 
   try {
@@ -212,14 +223,24 @@ export async function DELETE(req: NextRequest) {
 
     if (error) {
       console.error("[DELETE /api/user/env-keys] Delete error:", error)
-      return NextResponse.json({ error: `Failed to delete environment key: ${error.message}` }, { status: 500 })
+      return fail("user/env-keys/[name]", `Failed to delete environment key: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
-    return NextResponse.json({ success: true })
+    return alrighty("user/env-keys", {
+      success: true,
+      data: [],
+      error: null
+    })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/env-keys/DELETE",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to delete environment key" }, { status: 500 })
+    return fail("user/env-keys/[name]", e?.message ?? "Failed to delete environment key", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }

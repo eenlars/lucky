@@ -8,12 +8,16 @@ import { NextResponse } from "next/server"
 export async function GET() {
   try {
     const features = getAllFeatureStatus()
-    return NextResponse.json(features)
+    return NextResponse.json({
+      features,
+      timestamp: new Date().toISOString(),
+    })
   } catch (error) {
     return NextResponse.json(
       {
         error: "Failed to get feature status",
         details: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString(),
       },
       { status: 500 },
     )

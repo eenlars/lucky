@@ -1,33 +1,29 @@
 // app/src/app/api/invoke/route.ts
 
 import { requireAuth } from "@/lib/api-auth"
+import { handleBody, isHandleBodyError, alrighty, fail } from "@/lib/api/server"
 import { genShortId } from "@lucky/shared/client"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export async function POST(req: NextRequest) {
   try {
     // Require authentication
     const authResult = await requireAuth()
-    if (authResult instanceof NextResponse) return authResult
-    const body = await req.json()
-    const { workflowVersionId, prompt } = body as {
-      workflowVersionId: string
-      prompt: string
-    }
+    if (authResult) return authResult
 
-    // Basic null checks - detailed validation happens in core layer
-    if (!workflowVersionId || !prompt) {
-      return NextResponse.json({ error: "Missing workflowVersionId or prompt" }, { status: 400 })
-    }
+    // Validate request body using type-safe schema
+    const body = await handleBody("invoke", req)
+    if (isHandleBodyError(body)) return body
+    // body is now fully typed as { workflowVersionId: string, prompt: string }
 
     // Generate unique workflow ID for this prompt-only invocation
     const workflowId = `prompt_only_${genShortId()}`
 
     const input = {
-      workflowVersionId,
+      workflowVersionId: body.workflowVersionId,
       evalInput: {
-        type: "prompt-only",
-        goal: prompt,
+        type: "prompt-only" as const,
+        goal: body.prompt,
         workflowId,
       },
     }
@@ -46,16 +42,22 @@ export async function POST(req: NextRequest) {
 
     const result = await invokeResponse.json()
 
-    // Handle JSON-RPC 2.0 response format
-    if ("error" in result) {
-      // JSON-RPC error response
-      return NextResponse.json({ error: result.error.message }, { status: invokeResponse.status })
+    // Handle response format (could be success or error envelope)
+    if ("error" in result && result.error) {
+      return fail("invoke", result.error.message || "Workflow invocation failed", {
+        code: "INVOKE_ERROR",
+        status: invokeResponse.status || 500
+      })
     }
 
-    // JSON-RPC success response - extract output from result
-    return NextResponse.json(result.result.output, { status: 200 })
+    // Extract output from result (handle both enveloped and direct responses)
+    const output = result.data?.output || result.result?.output || result
+    return alrighty("invoke", { success: true, data: output, error: null })
   } catch (error) {
     console.error("Prompt-only API Error:", error)
-    return NextResponse.json({ error: "Failed to process prompt-only request" }, { status: 500 })
+    return fail("invoke", "Failed to process prompt-only request", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }

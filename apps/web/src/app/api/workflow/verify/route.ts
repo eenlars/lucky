@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
 import { formatErrorResponse, formatSuccessResponse } from "@/lib/mcp-invoke/response"
@@ -6,7 +7,7 @@ import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow/veri
 import { clientWorkflowLoader } from "@lucky/core/workflow/setup/WorkflowLoader.client"
 import { genShortId } from "@lucky/shared"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export async function POST(request: NextRequest) {
   const requestId = `workflow-verify-${genShortId()}`
@@ -15,20 +16,21 @@ export async function POST(request: NextRequest) {
   try {
     // Require authentication
     const authResult = await requireAuth()
-    if (authResult instanceof NextResponse) return authResult
+    if (authResult) return authResult
 
     // Ensure core is initialized
     ensureCoreInit()
 
-    const { workflow, mode } = await request.json()
+    const body = await handleBody("workflow/verify", request)
+    if (isHandleBodyError(body)) return body
+
+    const { workflow, mode } = body as { workflow: any; mode?: string }
 
     if (!workflow) {
-      return NextResponse.json(
-        formatErrorResponse(requestId, {
-          code: ErrorCodes.INVALID_REQUEST,
-          message: "Workflow configuration is required",
-        }),
-        { status: 400 },
+      return fail(
+        "workflow/verify",
+        "Workflow configuration is required",
+        { code: "MISSING_WORKFLOW", status: 400 },
       )
     }
 
@@ -41,7 +43,8 @@ export async function POST(request: NextRequest) {
             ? await clientWorkflowLoader.loadFromDSLDisplay(workflow)
             : await clientWorkflowLoader.loadFromDSL(workflow)
         const finishedAt = new Date().toISOString()
-        return NextResponse.json(
+        return alrighty(
+          "workflow/verify",
           formatSuccessResponse(
             requestId,
             { isValid: true, config: validated },
@@ -54,14 +57,11 @@ export async function POST(request: NextRequest) {
           ),
         )
       } catch (error) {
-        return NextResponse.json(
-          formatErrorResponse(requestId, {
-            code: ErrorCodes.INPUT_VALIDATION_FAILED,
-            message: error instanceof Error ? error.message : "Invalid DSL configuration",
-            data: { isValid: false, errors: [error instanceof Error ? error.message : "Invalid DSL configuration"] },
-          }),
-          { status: 400 },
-        )
+        const message = error instanceof Error ? error.message : "Invalid DSL configuration"
+        return fail("workflow/verify", message, {
+          code: "VALIDATION_FAILED",
+          status: 400,
+        })
       }
     }
 
@@ -71,7 +71,8 @@ export async function POST(request: NextRequest) {
     })
 
     const finishedAt = new Date().toISOString()
-    return NextResponse.json(
+    return alrighty(
+      "workflow/verify",
       formatSuccessResponse(requestId, result, {
         requestId,
         workflowId: "verify",
@@ -84,16 +85,8 @@ export async function POST(request: NextRequest) {
       location: "/api/workflow/verify",
     })
     console.error("Workflow verification error:", error)
-    return NextResponse.json(
-      formatErrorResponse(requestId, {
-        code: ErrorCodes.INTERNAL_ERROR,
-        message: error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error",
-        data: {
-          isValid: false,
-          errors: [error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"],
-        },
-      }),
-      { status: 500 },
-    )
+    const message =
+      error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"
+    return fail("workflow/verify", message, { code: "VERIFICATION_ERROR", status: 500 })
   }
 }

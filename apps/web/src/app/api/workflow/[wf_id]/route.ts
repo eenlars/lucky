@@ -1,12 +1,13 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail } from "@/lib/api/server"
 import { createClient } from "@/lib/supabase/server"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(_request: NextRequest, context: { params: Promise<{ wf_id: string }> }) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  if (authResult) return authResult
 
   const supabase = await createClient()
   const { wf_id } = await context.params
@@ -24,19 +25,25 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ wf
       .single()
 
     if (error || !data) {
-      return NextResponse.json({ error: error?.message || "Workflow not found" }, { status: 404 })
+      return fail("workflow/[wf_id]", error?.message || "Workflow not found", {
+        code: "NOT_FOUND",
+        status: 404,
+      })
     }
 
     const sortedVersions = (data.versions || []).sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
 
-    return NextResponse.json({
+    return alrighty("workflow/[wf_id]", {
       ...data,
       versions: sortedVersions,
     })
   } catch (error) {
     console.error("Error fetching workflow:", error)
-    return NextResponse.json({ error: "Failed to fetch workflow" }, { status: 500 })
+    return fail("workflow/[wf_id]", "Failed to fetch workflow", {
+      code: "INTERNAL_ERROR",
+      status: 500,
+    })
   }
 }

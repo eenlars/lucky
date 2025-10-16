@@ -1,15 +1,16 @@
 import { personalProfileSchema } from "@/features/profile/schemas/profile.schema"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
-import { NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 import { ZodError } from "zod"
 
 export async function GET() {
   try {
     const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return fail("user/profile", "Unauthorized", { code: "UNAUTHORIZED", status: 401 })
     }
 
     const supabase = await createRLSClient()
@@ -22,53 +23,45 @@ export async function GET() {
 
     if (error) {
       console.error("Failed to fetch user profile:", error)
-      return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 })
+      return fail("user/profile", "Failed to fetch profile", { code: "SUPABASE_ERROR", status: 500 })
     }
 
     // If no profile exists yet, return empty profile
     if (!data) {
-      return NextResponse.json({ profile: {} })
+      return alrighty("user/profile", { profile: {} })
     }
 
     // Validate with Zod
     const validatedProfile = personalProfileSchema.parse(data)
 
-    return NextResponse.json({ profile: validatedProfile })
+    return alrighty("user/profile", { profile: validatedProfile })
   } catch (error) {
     if (error instanceof ZodError) {
-      return NextResponse.json({ error: "Invalid profile data", details: error.errors }, { status: 400 })
+      return fail("user/profile", "Invalid profile data", {
+        code: "VALIDATION_ERROR",
+        status: 400,
+      })
     }
     logException(error, {
       location: "/api/user/profile/GET",
     })
     console.error("Profile GET error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return fail("user/profile", "Internal server error", { code: "INTERNAL_ERROR", status: 500 })
   }
 }
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
+  const body = await handleBody("user/profile:put", req)
+  if (isHandleBodyError(body)) return body
+
   try {
     const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return fail("user/profile:put", "Unauthorized", { code: "UNAUTHORIZED", status: 401 })
     }
-
-    // Parse and validate request body
-    let body: unknown
-    try {
-      body = await req.json()
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
-    }
-
-    if (!body || typeof body !== "object" || !("profile" in body)) {
-      return NextResponse.json({ error: "Missing 'profile' field" }, { status: 400 })
-    }
-
-    const { profile } = body as { profile: unknown }
 
     // Validate and sanitize profile data using Zod (transforms will trim strings)
-    const validatedProfile = personalProfileSchema.parse(profile)
+    const validatedProfile = personalProfileSchema.parse(body.profile)
 
     const supabase = await createRLSClient()
     const { error } = await supabase
@@ -87,27 +80,24 @@ export async function PUT(req: Request) {
 
     if (error) {
       console.error("Failed to update user profile:", error)
-      return NextResponse.json({ error: "Failed to update profile" }, { status: 500 })
+      return fail("user/profile:put", "Failed to update profile", {
+        code: "SUPABASE_ERROR",
+        status: 500,
+      })
     }
 
-    return NextResponse.json({ success: true, profile: validatedProfile })
+    return alrighty("user/profile:put", { success: true, profile: validatedProfile })
   } catch (error) {
     if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          error: "Invalid profile data",
-          details: error.errors.map(e => ({
-            field: e.path.join("."),
-            message: e.message,
-          })),
-        },
-        { status: 400 },
-      )
+      return fail("user/profile:put", "Invalid profile data", {
+        code: "VALIDATION_ERROR",
+        status: 400,
+      })
     }
     logException(error, {
       location: "/api/user/profile/PUT",
     })
     console.error("Profile PUT error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return fail("user/profile:put", "Internal server error", { code: "INTERNAL_ERROR", status: 500 })
   }
 }

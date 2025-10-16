@@ -4,13 +4,14 @@
  */
 
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { checkMultipleProviderKeys } from "@/lib/lockbox/check-provider-keys"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { getAllProviders } from "@lucky/models"
 import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
 import { userModelPreferencesSchema } from "@lucky/shared"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -20,8 +21,8 @@ export const runtime = "nodejs"
  */
 export async function GET(_req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
 
@@ -35,7 +36,10 @@ export async function GET(_req: NextRequest) {
 
     if (error) {
       console.error("[GET /api/user/model-preferences] Supabase error:", error)
-      return NextResponse.json({ error: `Failed to fetch preferences: ${error.message}` }, { status: 500 })
+      return fail("user/model-preferences", `Failed to fetch preferences: ${error.message}`, {
+        code: "SUPABASE_ERROR",
+        status: 500,
+      })
     }
 
     // Create map of available providers for validation
@@ -75,14 +79,14 @@ export async function GET(_req: NextRequest) {
     // Validate with Zod
     const validated = userModelPreferencesSchema.parse(preferences)
 
-    return NextResponse.json(validated)
+    return alrighty("user/model-preferences", validated)
   } catch (e: unknown) {
     logException(e, {
       location: "/api/user/model-preferences/GET",
     })
     console.error("[GET /api/user/model-preferences] Error:", e)
     const message = e instanceof Error ? e.message : "Failed to fetch preferences"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return fail("user/model-preferences", message, { code: "FETCH_ERROR", status: 500 })
   }
 }
 
@@ -93,28 +97,21 @@ export async function GET(_req: NextRequest) {
  */
 export async function PUT(req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
 
-  let body: unknown
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-  }
+  const body = await handleBody("user/model-preferences:put", req)
+  if (isHandleBodyError(body)) return body
 
   // Validate with Zod
   const validation = userModelPreferencesSchema.safeParse(body)
   if (!validation.success) {
-    return NextResponse.json(
-      {
-        error: "Invalid preferences format",
-        details: validation.error.errors,
-      },
-      { status: 400 },
-    )
+    return fail("user/model-preferences:put", "Invalid preferences format", {
+      code: "VALIDATION_ERROR",
+      status: 400,
+    })
   }
 
   const preferences = validation.data
@@ -124,13 +121,10 @@ export async function PUT(req: NextRequest) {
     // Validate providers (but not models - provider API is source of truth)
     for (const providerSettings of preferences.providers) {
       if (!validProviders.has(providerSettings.provider)) {
-        return NextResponse.json(
-          {
-            error: `Invalid provider: ${providerSettings.provider}`,
-            validProviders: Array.from(validProviders),
-          },
-          { status: 400 },
-        )
+        return fail("user/model-preferences:put", `Invalid provider: ${providerSettings.provider}`, {
+          code: "INVALID_PROVIDER",
+          status: 400,
+        })
       }
 
       // Note: We don't validate models against MODEL_CATALOG because the provider's API
@@ -180,13 +174,10 @@ export async function PUT(req: NextRequest) {
     const errors = results.filter(r => r.error)
     if (errors.length > 0) {
       console.error("[PUT /api/user/model-preferences] Update errors:", errors)
-      return NextResponse.json(
-        {
-          error: "Failed to update some provider settings",
-          details: errors.map(r => r.error?.message),
-        },
-        { status: 500 },
-      )
+      return fail("user/model-preferences:put", "Failed to update some provider settings", {
+        code: "UPDATE_ERROR",
+        status: 500,
+      })
     }
 
     // Return updated preferences
@@ -195,13 +186,13 @@ export async function PUT(req: NextRequest) {
       lastSynced: new Date().toISOString(),
     }
 
-    return NextResponse.json(updatedPreferences)
+    return alrighty("user/model-preferences:put", updatedPreferences)
   } catch (e: unknown) {
     logException(e, {
       location: "/api/user/model-preferences/PUT",
     })
     console.error("[PUT /api/user/model-preferences] Error:", e)
     const message = e instanceof Error ? e.message : "Failed to update preferences"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return fail("user/model-preferences:put", message, { code: "INTERNAL_ERROR", status: 500 })
   }
 }

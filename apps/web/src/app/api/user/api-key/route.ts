@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
@@ -33,29 +34,40 @@ export async function GET(_req: NextRequest) {
         code: error.code,
         clerkId,
       })
-      return NextResponse.json({ error: `Failed to fetch API key: ${error.message}` }, { status: 500 })
+      return fail("user/api-key", `Failed to fetch API key: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
     if (!data) {
-      return NextResponse.json({ apiKey: null }, { status: 200 })
+      return alrighty("user/api-key", {
+        success: true,
+        data: {
+          apiKey: "",
+          createdAt: new Date().toISOString(),
+          expiresAt: undefined
+        },
+        error: null
+      })
     }
 
-    // Return the key_id as the displayable API key
-    return NextResponse.json({
-      apiKey: data.key_id,
-      metadata: {
-        name: data.name,
-        environment: data.environment,
-        scopes: data.scopes,
+    return alrighty("user/api-key", {
+      success: true,
+      data: {
+        apiKey: data.key_id,
         createdAt: data.created_at,
-        lastUsedAt: data.last_used_at,
-        expiresAt: data.expires_at,
+        expiresAt: data.expires_at || undefined
       },
+      error: null
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/api-key",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to fetch API key" }, { status: 500 })
+    return fail("user/api-key", e?.message ?? "Failed to fetch API key", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }

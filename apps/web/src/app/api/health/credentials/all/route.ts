@@ -8,7 +8,10 @@ import { NextResponse } from "next/server"
 export async function GET() {
   try {
     const credentials = getAllCredentialStatus()
-    return NextResponse.json(credentials)
+    return NextResponse.json({
+      credentials,
+      timestamp: new Date().toISOString(),
+    })
   } catch (error) {
     return NextResponse.json(
       {

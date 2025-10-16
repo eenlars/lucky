@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail } from "@/lib/api/server"
 import { generateApiKey, hashSecret } from "@/lib/api-key-utils"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
@@ -26,7 +27,10 @@ export async function POST(_req: NextRequest) {
 
     if (revokeError && revokeError.code !== "PGRST116") {
       // PGRST116 = no rows updated
-      return NextResponse.json({ error: `Failed to revoke old keys: ${revokeError.message}` }, { status: 500 })
+      return fail("user/api-key/roll", `Failed to revoke old keys: ${revokeError.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
     // Generate new API key
@@ -53,22 +57,28 @@ export async function POST(_req: NextRequest) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: `Failed to create new API key: ${error.message}` }, { status: 500 })
+      return fail("user/api-key/roll", `Failed to create new API key: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500
+      })
     }
 
     // Return the full key ONLY this one time
-    return NextResponse.json({
-      apiKey: fullKey,
-      metadata: {
-        secretId: data.secret_id,
-        keyId: data.key_id,
-        createdAt: data.created_at,
+    return alrighty("user/api-key/roll", {
+      success: true,
+      data: {
+        apiKey: fullKey,
+        createdAt: data.created_at
       },
+      error: null
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/api-key/roll",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to roll API key" }, { status: 500 })
+    return fail("user/api-key/roll", e?.message ?? "Failed to roll API key", {
+      code: "INTERNAL_ERROR",
+      status: 500
+    })
   }
 }

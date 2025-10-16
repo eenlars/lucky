@@ -2,34 +2,41 @@ import { mkdirSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { createClient } from "@/lib/supabase/server"
 import { IngestionLayer } from "@lucky/core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput } from "@lucky/core/workflow/ingestion/ingestion.types"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  if (authResult) return authResult
 
   // Ensure core is initialized
   ensureCoreInit()
 
   const supabase = await createClient()
 
+  const body = await handleBody("ingestions/cases", req)
+  if (isHandleBodyError(body)) return body
+
+  const { datasetId } = body as { datasetId: string }
+  if (!datasetId) {
+    return fail("ingestions/cases", "Missing datasetId", { code: "MISSING_DATASET_ID", status: 400 })
+  }
+
   try {
-    const body = await req.json()
-    const { datasetId } = body as { datasetId: string }
-    if (!datasetId) {
-      return NextResponse.json({ error: "Missing datasetId" }, { status: 400 })
-    }
 
     const bucket = "input"
     const manifestPath = `ingestions/${datasetId}.json`
     const { data: manifestBlob, error: manifestError } = await supabase.storage.from(bucket).download(manifestPath)
     if (manifestError || !manifestBlob) {
-      return NextResponse.json({ error: `Manifest not found for ${datasetId}` }, { status: 404 })
+      return fail("ingestions/cases", `Manifest not found for ${datasetId}`, {
+        code: "MANIFEST_NOT_FOUND",
+        status: 404,
+      })
     }
 
     const manifest = JSON.parse(await manifestBlob.text()) as {
@@ -40,7 +47,10 @@ export async function POST(req: NextRequest) {
     const metaPath = `${manifest.folder}/meta.json`
     const { data: metaBlob, error: metaError } = await supabase.storage.from(bucket).download(metaPath)
     if (metaError || !metaBlob) {
-      return NextResponse.json({ error: `meta.json not found for ${datasetId}` }, { status: 404 })
+      return fail("ingestions/cases", `meta.json not found for ${datasetId}`, {
+        code: "META_NOT_FOUND",
+        status: 404,
+      })
     }
     const meta = JSON.parse(await metaBlob.text()) as any
 
@@ -50,7 +60,10 @@ export async function POST(req: NextRequest) {
       // Prefer downloading to a local temp file to avoid public access requirements
       const { data: csvBlob, error: csvErr } = await supabase.storage.from(bucket).download(meta.file.path)
       if (csvErr || !csvBlob) {
-        return NextResponse.json({ error: "Failed to download CSV" }, { status: 500 })
+        return fail("ingestions/cases", "Failed to download CSV", {
+          code: "CSV_DOWNLOAD_ERROR",
+          status: 500,
+        })
       }
       const arrayBuffer = await csvBlob.arrayBuffer()
       const dir = join(tmpdir(), "ingestions")
@@ -71,7 +84,10 @@ export async function POST(req: NextRequest) {
       // Download the text data file
       const { data: textBlob, error: textErr } = await supabase.storage.from(bucket).download(meta.file.path)
       if (textErr || !textBlob) {
-        return NextResponse.json({ error: "Failed to download text data" }, { status: 500 })
+        return fail("ingestions/cases", "Failed to download text data", {
+          code: "TEXT_DOWNLOAD_ERROR",
+          status: 500,
+        })
       }
       const textData = JSON.parse(await textBlob.text())
       evaluation = {
@@ -82,13 +98,19 @@ export async function POST(req: NextRequest) {
         workflowId: "adhoc-ui",
       }
     } else {
-      return NextResponse.json({ error: "Unsupported ingestion type" }, { status: 400 })
+      return fail("ingestions/cases", "Unsupported ingestion type", {
+        code: "UNSUPPORTED_TYPE",
+        status: 400,
+      })
     }
 
     const cases = await IngestionLayer.convert(evaluation)
-    return NextResponse.json({ success: true, cases })
+    return alrighty("ingestions/cases", {
+      success: true,
+      cases: cases as any,
+    })
   } catch (_error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return fail("ingestions/cases", "Internal server error", { code: "INTERNAL_ERROR", status: 500 })
   }
 }
 

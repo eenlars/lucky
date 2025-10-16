@@ -1,8 +1,9 @@
 import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { decryptGCM, encryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -11,25 +12,24 @@ export const runtime = "nodejs"
 // Creates a new version (rotate) and marks it as current. Never returns plaintext back.
 export async function POST(req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
 
-  let body: unknown
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-  }
+  const body = await handleBody("lockbox/secrets", req)
+  if (isHandleBodyError(body)) return body
 
-  const { name, namespace, value } = (body ?? {}) as {
+  const { name, namespace, value } = body as {
     name?: string
     namespace?: string
     value?: string
   }
   if (!name || !value) {
-    return NextResponse.json({ error: "Missing required fields: name, value" }, { status: 400 })
+    return fail("lockbox/secrets", "Missing required fields: name, value", {
+      code: "MISSING_FIELDS",
+      status: 400,
+    })
   }
   const ns = normalizeNamespace(namespace)
 
@@ -48,7 +48,11 @@ export async function POST(req: NextRequest) {
       .order("version", { ascending: false })
       .limit(1)
 
-    if (verErr) return NextResponse.json({ error: `Version lookup failed: ${verErr.message}` }, { status: 500 })
+    if (verErr)
+      return fail("lockbox/secrets", `Version lookup failed: ${verErr.message}`, {
+        code: "VERSION_LOOKUP_ERROR",
+        status: 500,
+      })
     const nextVersion = (verData?.[0]?.version ?? 0) + 1
 
     // Mark previous current as not current
@@ -63,7 +67,10 @@ export async function POST(req: NextRequest) {
 
     if (updErr && updErr.code !== "PGRST116") {
       // PGRST116 = no rows updated
-      return NextResponse.json({ error: `Failed to update previous versions: ${updErr.message}` }, { status: 500 })
+      return fail("lockbox/secrets", `Failed to update previous versions: ${updErr.message}`, {
+        code: "UPDATE_ERROR",
+        status: 500,
+      })
     }
 
     // Insert new version (current)
@@ -87,9 +94,13 @@ export async function POST(req: NextRequest) {
       .select("user_secret_id, name, namespace, version, created_at")
       .single()
 
-    if (error) return NextResponse.json({ error: `Insert failed: ${error.message}` }, { status: 500 })
+    if (error)
+      return fail("lockbox/secrets", `Insert failed: ${error.message}`, {
+        code: "INSERT_ERROR",
+        status: 500,
+      })
 
-    return NextResponse.json({
+    return alrighty("lockbox/secrets", {
       id: data.user_secret_id,
       name: data.name,
       namespace: data.namespace,
@@ -100,7 +111,8 @@ export async function POST(req: NextRequest) {
     logException(e, {
       location: "/api/lockbox/secrets/POST",
     })
-    return NextResponse.json({ error: e?.message ?? "Encryption/insert error" }, { status: 500 })
+    const message = e?.message ?? "Encryption/insert error"
+    return fail("lockbox/secrets", message, { code: "ENCRYPTION_ERROR", status: 500 })
   }
 }
 
@@ -108,8 +120,8 @@ export async function POST(req: NextRequest) {
 // By default, returns metadata only. If reveal=1, returns plaintext value and updates last_used_at.
 export async function GET(req: NextRequest) {
   const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  if (authResult) return authResult
+  const clerkId = authResult as string
 
   const supabase = await createRLSClient()
   const params = req.nextUrl.searchParams
@@ -117,7 +129,7 @@ export async function GET(req: NextRequest) {
   const ns = normalizeNamespace(params.get("namespace"))
   const reveal = params.get("reveal") === "1"
 
-  if (!name) return NextResponse.json({ error: "Missing name" }, { status: 400 })
+  if (!name) return fail("lockbox/secrets:get", "Missing name", { code: "MISSING_NAME", status: 400 })
 
   const { data, error } = await supabase
     .schema("lockbox")
@@ -129,16 +141,21 @@ export async function GET(req: NextRequest) {
     .eq("is_current", true)
     .maybeSingle()
 
-  if (error) return NextResponse.json({ error: `Query failed: ${error.message}` }, { status: 500 })
-  if (!data) return NextResponse.json({ error: "Secret not found" }, { status: 404 })
+  if (error)
+    return fail("lockbox/secrets:get", `Query failed: ${error.message}`, {
+      code: "QUERY_ERROR",
+      status: 500,
+    })
+  if (!data)
+    return fail("lockbox/secrets:get", "Secret not found", { code: "NOT_FOUND", status: 404 })
 
   if (!reveal) {
-    return NextResponse.json({
+    return alrighty("lockbox/secrets:get", {
       id: data.user_secret_id,
       name: data.name,
       namespace: data.namespace,
       version: data.version,
-      lastUsedAt: data.last_used_at,
+      lastUsedAt: data.last_used_at ?? undefined,
       createdAt: data.created_at,
     })
   }
@@ -161,7 +178,7 @@ export async function GET(req: NextRequest) {
       console.warn("Failed to update last_used_at for secret", data.user_secret_id, updErr)
     }
 
-    return NextResponse.json({
+    return alrighty("lockbox/secrets:get", {
       id: data.user_secret_id,
       name: data.name,
       namespace: data.namespace,
@@ -172,6 +189,7 @@ export async function GET(req: NextRequest) {
     logException(e, {
       location: "/api/lockbox/secrets/GET",
     })
-    return NextResponse.json({ error: e?.message ?? "Decryption failed" }, { status: 500 })
+    const message = e?.message ?? "Decryption failed"
+    return fail("lockbox/secrets:get", message, { code: "DECRYPTION_ERROR", status: 500 })
   }
 }
