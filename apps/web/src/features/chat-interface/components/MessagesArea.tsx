@@ -81,11 +81,11 @@ export function MessagesArea({
           <div className="space-y-3">
             {messages
               .filter(message => {
-                // Hide empty messages
-                return message.content && message.content.trim().length > 0
+                // Hide empty messages and system messages
+                return message.role !== "system" && message.content && message.content.trim().length > 0
               })
               .map(message => (
-                <MessageBubble key={message.id} role={message.role} content={message.content} />
+                <MessageBubble key={message.id} role={message.role as "user" | "assistant"} content={message.content} />
               ))}
 
             {/* Shimmering status - no bubble, just status text */}

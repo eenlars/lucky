@@ -19,9 +19,7 @@ export function EmptyResponseError({ modelName, onRetry }: EmptyResponseErrorPro
         <p className="text-sm text-yellow-900 dark:text-yellow-100">
           No response received. Check your API credits or try a different model.
         </p>
-        {modelName && (
-          <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">Using: {modelName}</p>
-        )}
+        {modelName && <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">Using: {modelName}</p>}
       </div>
       {onRetry && (
         <button

@@ -71,7 +71,12 @@ export function ChatInput({
   }
 
   return (
-    <div className={cn("flex flex-col bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg", className)}>
+    <div
+      className={cn(
+        "flex flex-col bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg",
+        className,
+      )}
+    >
       {/* Textarea */}
       <textarea
         ref={textareaRef}

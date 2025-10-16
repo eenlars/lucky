@@ -24,15 +24,20 @@ interface ChatInterfaceRealInnerProps extends ChatInterfaceProps {
 function ChatInterfaceRealInner({
   placeholder = "Ask me anything about workflows...",
   onSendMessage,
-  onMessageSent,
-  onError,
+  onMessageSent: _onMessageSent,
+  onError: _onError,
   maxHeight,
   className,
   nodeId,
   modelName,
   systemPrompt,
 }: ChatInterfaceRealInnerProps) {
-  const { messages: aiMessages, sendMessage, status, error } = useChat({
+  const {
+    messages: aiMessages,
+    sendMessage,
+    status,
+    error,
+  } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/agent/chat",
       body: {
@@ -49,7 +54,7 @@ function ChatInterfaceRealInner({
   // Convert AI SDK messages (with parts) to our Message format (with content)
   const messages = aiMessages.map(msg => {
     const textPart = msg.parts.find((p: any) => p.type === "text")
-    const content = textPart?.text || ""
+    const content = (textPart as any)?.text || ""
 
     return {
       id: msg.id,
@@ -63,10 +68,7 @@ function ChatInterfaceRealInner({
   // Check if last message is empty assistant response
   const lastMessage = messages[messages.length - 1]
   const showEmptyResponseWarning =
-    !isLoading &&
-    lastMessage &&
-    lastMessage.role === "assistant" &&
-    lastMessage.content.trim().length === 0
+    !isLoading && lastMessage && lastMessage.role === "assistant" && lastMessage.content.trim().length === 0
 
   // Handle send
   const handleSend = useCallback(async () => {
@@ -127,8 +129,16 @@ export function ChatInterfaceReal({
   systemPrompt,
   ...props
 }: ChatInterfaceProps) {
+  // Convert Message[] (with content) to UIMessage[] (with parts) for Provider
+  const uiMessages = (props.initialMessages || []).map(msg => ({
+    id: msg.id,
+    role: msg.role,
+    parts: [{ type: "text" as const, text: msg.content }],
+    timestamp: msg.timestamp || new Date(),
+  }))
+
   return (
-    <Provider initialMessages={props.initialMessages || []}>
+    <Provider initialMessages={uiMessages}>
       <ChatInterfaceRealInner {...props} nodeId={nodeId} modelName={modelName} systemPrompt={systemPrompt} />
     </Provider>
   )

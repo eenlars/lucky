@@ -69,9 +69,7 @@ export default function HomePage() {
                 <Sparkles className="w-5 h-5 text-gray-600 dark:text-gray-400" strokeWidth={1.5} />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">
-                  Try a demo workflow
-                </h3>
+                <h3 className="text-[15px] font-medium text-gray-900 dark:text-gray-100 mb-1">Try a demo workflow</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   See how AI workflows can analyze customer feedback and generate insights
                 </p>

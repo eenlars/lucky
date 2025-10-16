@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
               model,
               system: finalSystemPrompt,
               messages: convertToModelMessages(messages),
-              onFinish: ({ finishReason, usage, text, error: streamError }) => {
+              onFinish: ({ finishReason, usage, text }) => {
                 const duration = Date.now() - startTime
                 console.log(
                   `[Agent Chat] Stream completed for node=${nodeId} in ${duration}ms, tokens=${usage?.totalTokens || 0}, reason=${finishReason}, model=${modelSelection.modelId}`,
@@ -247,24 +247,23 @@ export async function POST(request: NextRequest) {
                 console.log(`[Agent Chat] Final text length: ${text.length} chars`)
                 console.log(`[Agent Chat] Text preview: ${text.substring(0, 100)}...`)
 
-                // Check for errors or suspicious zero-token completions
-                if (streamError) {
-                  console.error(`[Agent Chat] Stream error in onFinish:`, streamError)
-                }
+                // Check for suspicious zero-token completions
                 if (usage?.totalTokens === 0 || text.length === 0) {
-                  console.error(`[Agent Chat] SUSPICIOUS: Stream completed with 0 tokens/text. Possible quota/payment issue.`)
+                  console.error(
+                    "[Agent Chat] SUSPICIOUS: Stream completed with 0 tokens/text. Possible quota/payment issue.",
+                  )
                 }
               },
               onError: error => {
                 console.error(`[Agent Chat] Streaming error for node=${nodeId}:`, error)
-                console.error(`[Agent Chat] Error details:`, JSON.stringify(error, null, 2))
+                console.error("[Agent Chat] Error details:", JSON.stringify(error, null, 2))
               },
             })
 
             console.log(`[Agent Chat] Starting stream conversion for node=${nodeId}`)
 
             // Check if result has any immediate error indicators
-            console.log(`[Agent Chat] Stream result keys:`, Object.keys(result))
+            console.log("[Agent Chat] Stream result keys:", Object.keys(result))
 
             const uiStream = result.toUIMessageStream()
             let chunkCount = 0
@@ -277,15 +276,15 @@ export async function POST(request: NextRequest) {
                 // Log ALL chunk details
                 console.log(`[Agent Chat] Chunk ${chunkCount} FULL:`, JSON.stringify(chunk, null, 2))
 
-                if (chunk.type === "text-delta" && chunk.textDelta) {
+                if (chunk.type === "text-delta" && "delta" in chunk) {
                   textChunkCount++
-                  console.log(`[Agent Chat] TEXT chunk ${textChunkCount}: "${chunk.textDelta.substring(0, 50)}..."`)
+                  console.log(`[Agent Chat] TEXT chunk ${textChunkCount}: "${chunk.delta.substring(0, 50)}..."`)
                 }
 
                 writer.write(chunk)
               }
             } catch (streamError) {
-              console.error(`[Agent Chat] Error during stream iteration:`, streamError)
+              console.error("[Agent Chat] Error during stream iteration:", streamError)
               throw streamError
             }
 
@@ -293,7 +292,9 @@ export async function POST(request: NextRequest) {
 
             // Warning if no text was streamed - log but don't send custom error chunk (breaks AI SDK validation)
             if (textChunkCount === 0) {
-              console.error(`[Agent Chat] WARNING: No text chunks received! Check model quota/credits or API key permissions.`)
+              console.error(
+                "[Agent Chat] WARNING: No text chunks received! Check model quota/credits or API key permissions.",
+              )
             }
 
             writer.write({ type: "finish" })

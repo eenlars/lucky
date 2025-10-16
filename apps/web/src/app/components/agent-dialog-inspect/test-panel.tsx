@@ -92,10 +92,19 @@ export function TestPanel({ node }: TestPanelProps) {
     }
   }
 
+  // Filter out system messages for display
+  const displayMessages = messages.filter(msg => msg.role !== "system")
+
   return (
     <div className="flex flex-col h-full">
       {/* Messages Area with Smart Auto-Scroll */}
-      <MessagesArea messages={messages} isLoading={isLoading} statusMessage={statusMessage} error={error} onRetry={() => regenerate()} />
+      <MessagesArea
+        messages={displayMessages as any}
+        isLoading={isLoading}
+        statusMessage={statusMessage}
+        error={error}
+        onRetry={() => regenerate()}
+      />
 
       {/* Input Area */}
       <div className="border-t border-gray-200 dark:border-gray-700 p-4">

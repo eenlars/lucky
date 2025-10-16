@@ -9,8 +9,8 @@
 
 import { cn } from "@/lib/utils"
 import { useCallback, useState } from "react"
-import { ChatInput } from "./components/ChatInput/ChatInput"
 import { ChatInterfaceReal } from "./ChatInterfaceReal"
+import { ChatInput } from "./components/ChatInput/ChatInput"
 import { MessagesArea } from "./components/MessagesArea"
 import { useChat } from "./hooks/useChat"
 import type { ChatInterfaceProps } from "./types/types"
@@ -22,16 +22,16 @@ export function ChatInterface(props: ChatInterfaceProps) {
     onSendMessage,
     onMessageSent,
     onError,
-    showTimestamps = true,
-    enableMessageActions = true,
-    enableMarkdown = false,
-    enableCodeHighlighting = false,
+    showTimestamps: _showTimestamps = true,
+    enableMessageActions: _enableMessageActions = true,
+    enableMarkdown: _enableMarkdown = false,
+    enableCodeHighlighting: _enableCodeHighlighting = false,
     maxHeight,
     className,
     useSimulation = true,
     modelName,
     nodeId,
-    systemPrompt,
+    systemPrompt: _systemPrompt,
   } = props
 
   // Use real AI mode with Provider pattern
@@ -41,7 +41,15 @@ export function ChatInterface(props: ChatInterfaceProps) {
 
   // Simulation mode - use custom hook
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { messages, isTyping, error, isLoading, sendMessage, retryMessage, deleteMessage } = useChat({
+  const {
+    messages,
+    isTyping,
+    error,
+    isLoading,
+    sendMessage,
+    retryMessage,
+    deleteMessage: _deleteMessage,
+  } = useChat({
     initialMessages,
     onSendMessage,
     onMessageReceived: onMessageSent,

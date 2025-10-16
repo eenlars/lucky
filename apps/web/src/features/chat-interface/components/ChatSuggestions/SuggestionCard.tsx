@@ -15,7 +15,7 @@ interface SuggestionCardProps {
   index?: number
 }
 
-export function SuggestionCard({ suggestion, onClick, index = 0 }: SuggestionCardProps) {
+export function SuggestionCard({ suggestion, onClick, index: _index = 0 }: SuggestionCardProps) {
   return (
     <button
       type="button"
@@ -28,12 +28,8 @@ export function SuggestionCard({ suggestion, onClick, index = 0 }: SuggestionCar
       )}
     >
       <div className="flex items-center justify-between gap-4">
-        <span className="text-sm font-light text-black/70 group-hover:text-black transition-colors">
-          {suggestion}
-        </span>
-        <span className="text-black/30 group-hover:text-black/50 transition-colors shrink-0">
-          →
-        </span>
+        <span className="text-sm font-light text-black/70 group-hover:text-black transition-colors">{suggestion}</span>
+        <span className="text-black/30 group-hover:text-black/50 transition-colors shrink-0">→</span>
       </div>
     </button>
   )
