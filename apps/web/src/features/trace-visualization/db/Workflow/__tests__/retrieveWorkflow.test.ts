@@ -1,19 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { retrieveWorkflowInvocations } from "../retrieveWorkflow"
 
-// FAILING: "Cannot access 'mockSupabase' before initialization" - vitest hoisting issue with mock variables
-// Mock supabase
-const mockSupabase = {
+const mockSupabase = vi.hoisted(() => ({
   from: vi.fn(),
-}
-
-vi.mock("@lucky/core/clients/supabase/client", () => ({
-  supabase: mockSupabase,
 }))
+
+const mockCreateRLSClient = vi.hoisted(() => vi.fn())
+
+vi.mock("@/lib/supabase/server-rls", () => ({
+  createRLSClient: mockCreateRLSClient,
+}))
+
+import { retrieveWorkflowInvocations } from "../retrieveWorkflow"
 
 describe("retrieveWorkflowInvocations", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockSupabase.from.mockReset()
+    mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
   })
 
   it("should sort by duration correctly", async () => {

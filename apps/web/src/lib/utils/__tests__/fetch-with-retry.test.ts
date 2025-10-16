@@ -1,4 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
+
+const mockLogException = vi.hoisted(() => vi.fn())
+
+vi.mock("@/lib/error-logger", () => ({
+  logException: mockLogException,
+}))
+
 import { fetchWithRetry } from "../fetch-with-retry"
 
 describe("fetchWithRetry", () => {

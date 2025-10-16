@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const secrets = createSecretResolver(principal.clerk_id)
+    const secrets = createSecretResolver(principal.clerk_id, principal)
 
     // Extract workflow config to determine required providers
     let workflowConfig: WorkflowConfig | null = null

@@ -1,206 +1,192 @@
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock dependencies - must be defined before vi.mock calls
-vi.mock("@/lib/supabase/server-rls", () => ({
-  createRLSClient: vi.fn(),
+const mockFetchWorkflowVersion = vi.hoisted(() => vi.fn())
+const mockFetchWorkflowWithVersions = vi.hoisted(() => vi.fn())
+const mockLogException = vi.hoisted(() => vi.fn())
+
+vi.mock("@/lib/data/workflow-repository", () => ({
+  fetchWorkflowVersion: mockFetchWorkflowVersion,
+  fetchWorkflowWithVersions: mockFetchWorkflowWithVersions,
 }))
 
 vi.mock("@/lib/error-logger", () => ({
-  logException: vi.fn(),
+  logException: mockLogException,
 }))
 
-import { logException } from "@/lib/error-logger"
-import { createRLSClient } from "@/lib/supabase/server-rls"
 import { loadWorkflowConfig } from "../workflow-loader"
 
-const mockCreateRLSClient = vi.mocked(createRLSClient)
-const mockLogException = vi.mocked(logException)
+type PgSingleResponse<T> = {
+  data: T | null
+  error: { message: string } | null
+  status: number
+  statusText: string
+}
+
+const pgSuccess = <T>(data: T | null): PgSingleResponse<T> => ({
+  data,
+  error: null,
+  status: 200,
+  statusText: "OK",
+})
+
+const pgFailure = (message: string): PgSingleResponse<never> => ({
+  data: null,
+  error: { message },
+  status: 500,
+  statusText: "ERROR",
+})
 
 describe("loadWorkflowConfig", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockFetchWorkflowVersion.mockReset()
+    mockFetchWorkflowWithVersions.mockReset()
   })
 
   describe("workflow_version mode (wf_ver_*)", () => {
     it("loads workflow by version ID", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: {
-            wf_version_id: "wf_ver_abc123",
-            dsl: {
-              nodes: [{ nodeId: "test", description: "Test node" }],
-              entryNodeId: "test",
-              inputSchema: { type: "object", properties: { input: { type: "string" } } },
-              outputSchema: { type: "object", properties: { output: { type: "string" } } },
-            },
+      mockFetchWorkflowVersion.mockResolvedValue(
+        pgSuccess({
+          workflow_id: "wf_parent_abc",
+          dsl: {
+            nodes: [{ nodeId: "test", description: "Test node" }],
+            entryNodeId: "test",
+            inputSchema: { type: "object", properties: { input: { type: "string" } } },
+            outputSchema: { type: "object", properties: { output: { type: "string" } } },
           },
-          error: null,
         }),
-      }
+      )
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
+      const result = await loadWorkflowConfig("wf_ver_abc123", undefined, "workflow_version")
 
-      const result = await loadWorkflowConfig("wf_ver_abc123", "workflow_version")
-
+      expect(mockFetchWorkflowVersion).toHaveBeenCalledWith("wf_ver_abc123", undefined)
       expect(result.success).toBe(true)
-      expect(result.config).toBeDefined()
       expect(result.config?.entryNodeId).toBe("test")
-      expect(result.inputSchema).toMatchObject({
-        type: "object",
-        properties: { input: { type: "string" } },
-      })
-      expect(result.outputSchema).toMatchObject({
-        type: "object",
-        properties: { output: { type: "string" } },
-      })
+      expect(result.inputSchema?.properties).toHaveProperty("input")
+      expect(result.outputSchema?.properties).toHaveProperty("output")
     })
 
     it("returns error when version not found", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: null,
-          error: null,
-        }),
-      }
+      mockFetchWorkflowVersion.mockResolvedValue(pgSuccess(null))
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
-
-      const result = await loadWorkflowConfig("wf_ver_nonexistent", "workflow_version")
+      const result = await loadWorkflowConfig("wf_ver_missing", undefined, "workflow_version")
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
-      expect(result.error?.message).toContain("not found")
     })
 
-    it("enforces workflow_version mode - rejects wf_* ID", async () => {
-      const result = await loadWorkflowConfig("wf_parent_123", "workflow_version")
+    it("propagates repository errors", async () => {
+      mockFetchWorkflowVersion.mockResolvedValue(pgFailure("Database error"))
+
+      const result = await loadWorkflowConfig("wf_ver_error", undefined, "workflow_version")
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
+      expect(result.error?.code).toBe(ErrorCodes.INTERNAL_ERROR)
+      expect(mockLogException).toHaveBeenCalled()
+    })
+
+    it("rejects wf_* IDs in workflow_version mode", async () => {
+      const result = await loadWorkflowConfig("wf_parent_123", undefined, "workflow_version")
+
+      expect(result.success).toBe(false)
       expect(result.error?.message).toContain("Expected workflow version ID")
     })
   })
 
   describe("workflow_parent mode (wf_*)", () => {
-    it("loads workflow by parent ID and resolves to latest version", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: {
-            wf_id: "wf_parent_123",
-            versions: [
-              {
-                wf_version_id: "wf_ver_v1",
-                dsl: {
-                  nodes: [],
-                  entryNodeId: "old",
-                  inputSchema: { type: "object", properties: { old: { type: "string" } } },
-                },
-                created_at: "2025-01-01T00:00:00Z",
+    it("loads workflow and resolves latest version", async () => {
+      mockFetchWorkflowWithVersions.mockResolvedValue(
+        pgSuccess({
+          wf_id: "wf_parent_123",
+          clerk_id: "user_123",
+          versions: [
+            {
+              wf_version_id: "wf_ver_v1",
+              dsl: {
+                nodes: [],
+                entryNodeId: "old",
+                inputSchema: { type: "object", properties: { old: { type: "string" } } },
+                outputSchema: { type: "object", properties: { oldOut: { type: "string" } } },
               },
-              {
-                wf_version_id: "wf_ver_v2",
-                dsl: {
-                  nodes: [],
-                  entryNodeId: "new",
-                  inputSchema: { type: "object", properties: { new: { type: "string" } } },
-                },
-                created_at: "2025-01-02T00:00:00Z",
+              created_at: "2025-01-01T00:00:00Z",
+            },
+            {
+              wf_version_id: "wf_ver_v2",
+              dsl: {
+                nodes: [],
+                entryNodeId: "new",
+                inputSchema: { type: "object", properties: { newer: { type: "string" } } },
+                outputSchema: { type: "object", properties: { newerOut: { type: "string" } } },
               },
-            ],
-          },
-          error: null,
+              created_at: "2025-01-02T00:00:00Z",
+            },
+          ],
         }),
-      }
+      )
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
+      const result = await loadWorkflowConfig("wf_parent_123", undefined, "workflow_parent")
 
-      const result = await loadWorkflowConfig("wf_parent_123", "workflow_parent")
-
+      expect(mockFetchWorkflowWithVersions).toHaveBeenCalledWith("wf_parent_123", undefined)
       expect(result.success).toBe(true)
       expect(result.config?.entryNodeId).toBe("new")
-      expect(result.inputSchema?.properties).toHaveProperty("new")
+      expect(result.inputSchema?.properties).toHaveProperty("newer")
     })
 
-    it("returns error when parent workflow not found", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: null,
-          error: null,
-        }),
-      }
+    it("returns error when workflow not found", async () => {
+      mockFetchWorkflowWithVersions.mockResolvedValue(pgSuccess(null))
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
-
-      const result = await loadWorkflowConfig("wf_nonexistent", "workflow_parent")
+      const result = await loadWorkflowConfig("wf_missing", undefined, "workflow_parent")
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
     })
 
-    it("returns error when workflow has no versions", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: {
-            wf_id: "wf_empty",
-            versions: [],
-          },
-          error: null,
+    it("propagates repository errors", async () => {
+      mockFetchWorkflowWithVersions.mockResolvedValue(pgFailure("Database error"))
+
+      const result = await loadWorkflowConfig("wf_error", undefined, "workflow_parent")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe(ErrorCodes.INTERNAL_ERROR)
+      expect(mockLogException).toHaveBeenCalled()
+    })
+
+    it("rejects wf_ver_* IDs in workflow_parent mode", async () => {
+      const result = await loadWorkflowConfig("wf_ver_abc123", undefined, "workflow_parent")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.message).toContain("Expected workflow parent ID")
+    })
+
+    it("returns error when no versions exist", async () => {
+      mockFetchWorkflowWithVersions.mockResolvedValue(
+        pgSuccess({
+          wf_id: "wf_empty",
+          clerk_id: "user_123",
+          versions: [],
         }),
-      }
+      )
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
-
-      const result = await loadWorkflowConfig("wf_empty", "workflow_parent")
+      const result = await loadWorkflowConfig("wf_empty", undefined, "workflow_parent")
 
       expect(result.success).toBe(false)
       expect(result.error?.message).toContain("No versions found")
     })
-
-    it("enforces workflow_parent mode - rejects wf_ver_* ID", async () => {
-      const result = await loadWorkflowConfig("wf_ver_abc123", "workflow_parent")
-
-      expect(result.success).toBe(false)
-      expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
-      expect(result.error?.message).toContain("Expected workflow parent ID")
-    })
   })
 
-  describe("auto-detect mode (no mode specified)", () => {
-    it("auto-detects wf_ver_* format", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: {
-            wf_version_id: "wf_ver_auto",
-            dsl: {
-              nodes: [],
-              entryNodeId: "auto",
-              inputSchema: {},
-            },
+  describe("auto-detect mode", () => {
+    it("detects wf_ver_* IDs", async () => {
+      mockFetchWorkflowVersion.mockResolvedValue(
+        pgSuccess({
+          workflow_id: "wf_parent_auto",
+          dsl: {
+            nodes: [],
+            entryNodeId: "auto",
+            inputSchema: {},
           },
-          error: null,
         }),
-      }
-
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
+      )
 
       const result = await loadWorkflowConfig("wf_ver_auto")
 
@@ -208,32 +194,25 @@ describe("loadWorkflowConfig", () => {
       expect(result.config?.entryNodeId).toBe("auto")
     })
 
-    it("auto-detects wf_* format", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: {
-            wf_id: "wf_auto",
-            versions: [
-              {
-                wf_version_id: "wf_ver_v1",
-                dsl: { nodes: [], entryNodeId: "auto", inputSchema: {} },
-                created_at: "2025-01-01T00:00:00Z",
-              },
-            ],
-          },
-          error: null,
+    it("falls back to workflow lookup for wf_* IDs", async () => {
+      mockFetchWorkflowWithVersions.mockResolvedValue(
+        pgSuccess({
+          wf_id: "wf_parent_auto",
+          clerk_id: "user_123",
+          versions: [
+            {
+              wf_version_id: "wf_ver_parent",
+              dsl: { nodes: [], entryNodeId: "parent" },
+              created_at: "2025-01-01T00:00:00Z",
+            },
+          ],
         }),
-      }
+      )
 
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
-
-      const result = await loadWorkflowConfig("wf_auto")
+      const result = await loadWorkflowConfig("wf_parent_auto")
 
       expect(result.success).toBe(true)
-      expect(result.config?.entryNodeId).toBe("auto")
+      expect(result.config?.entryNodeId).toBe("parent")
     })
 
     it("returns error for invalid format", async () => {
@@ -241,37 +220,6 @@ describe("loadWorkflowConfig", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.message).toContain("Invalid workflow ID format")
-    })
-  })
-
-  describe("error handling", () => {
-    it("handles database errors gracefully", async () => {
-      const mockSupabase = {
-        from: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: null,
-          error: { message: "Connection timeout" },
-        }),
-      }
-
-      mockCreateRLSClient.mockResolvedValue(mockSupabase as any)
-
-      const result = await loadWorkflowConfig("wf_ver_test")
-
-      expect(result.success).toBe(false)
-      expect(result.error?.code).toBe(ErrorCodes.WORKFLOW_NOT_FOUND)
-    })
-
-    it("handles unexpected exceptions", async () => {
-      mockCreateRLSClient.mockRejectedValue(new Error("Network error"))
-
-      const result = await loadWorkflowConfig("wf_ver_test")
-
-      expect(result.success).toBe(false)
-      expect(result.error?.code).toBe(ErrorCodes.INTERNAL_ERROR)
-      expect(mockLogException).toHaveBeenCalled()
     })
   })
 })

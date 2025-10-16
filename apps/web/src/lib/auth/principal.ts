@@ -1,6 +1,6 @@
-import crypto from "node:crypto"
-import { createRLSClient } from "@/lib/supabase/server-rls"
+import { createClient } from "@/lib/supabase/server"
 import { auth } from "@clerk/nextjs/server"
+import crypto from "node:crypto"
 
 export type Principal = {
   clerk_id: string
@@ -19,29 +19,20 @@ export async function authenticateRequest(req: Request): Promise<Principal | nul
     const secret = token.startsWith("alive_") ? token.slice(6) : token
     const secretHash = crypto.createHash("sha256").update(secret).digest("hex")
 
-    const supabase = await createRLSClient()
-    const { data, error } = await supabase
+    // Validate token via SECURITY DEFINER RPC (uses anon; no direct table access)
+    const supabase = await createClient() // defaults to anon (RLS enforced)
+    const { data: row, error } = await supabase
       .schema("lockbox")
-      .from("secret_keys")
-      .select("clerk_id, scopes, secret_id")
-      .eq("secret_hash", secretHash)
-      .is("revoked_at", null)
+      .rpc("validate_bearer_token", { p_secret_hash: secretHash })
       .maybeSingle()
 
-    if (error || !data) {
+    if (error || !row) {
       return null
     }
 
-    // Update last_used_at
-    await supabase
-      .schema("lockbox")
-      .from("secret_keys")
-      .update({ last_used_at: new Date().toISOString() })
-      .eq("secret_id", data.secret_id)
-
     return {
-      clerk_id: data.clerk_id,
-      scopes: (data.scopes as any)?.all ? ["*"] : [],
+      clerk_id: row.clerk_id as string,
+      scopes: (row.scopes as any)?.all ? ["*"] : [],
       auth_method: "api_key",
     }
   }
