@@ -3,7 +3,7 @@
  */
 
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"

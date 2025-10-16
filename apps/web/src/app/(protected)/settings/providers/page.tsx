@@ -3,7 +3,7 @@
 import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PROVIDER_CONFIGS, getEnabledProviderSlugs } from "@/lib/providers/provider-utils"
+import { getEnabledProviderSlugs, getProviderConfigs } from "@/lib/providers/provider-utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
@@ -35,10 +35,11 @@ export default function ProvidersPage() {
       const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
       const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
 
-      const providerSlugs = getEnabledProviderSlugs(PROVIDER_CONFIGS)
+      const providerConfigs = getProviderConfigs()
+      const providerSlugs = getEnabledProviderSlugs(providerConfigs)
 
       const providerData: ProviderCardData[] = providerSlugs.map(provider => {
-        const config = PROVIDER_CONFIGS[provider]
+        const config = providerConfigs[provider]
         const hasApiKey = keyNames.has(config.apiKeyName)
 
         return {
@@ -97,7 +98,7 @@ export default function ProvidersPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {providers.map(providerData => {
-          const config = PROVIDER_CONFIGS[providerData.provider]
+          const config = getProviderConfigs()[providerData.provider]
           const Icon = config.icon
 
           return (

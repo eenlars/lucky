@@ -12,15 +12,6 @@ export interface VercelUsage {
 export type PricingLevel = "low" | "medium" | "high"
 
 /**
- * @deprecated Use calculateCostV2 instead
- * This function now uses the new providersV2 system internally
- */
-export function calculateCost(model: string, usage: TokenUsage): number {
-  // Delegate to the new V2 function
-  return calculateCostV2(model, usage)
-}
-
-/**
  * Calculate the USD cost breakdown for input, output, and total tokens.
  * @param model - The model name
  * @param usage - The token usage

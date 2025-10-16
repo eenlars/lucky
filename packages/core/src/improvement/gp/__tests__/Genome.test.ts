@@ -176,7 +176,7 @@ vi.mock("@core/clients/supabase/client", () => ({
 import { Genome } from "@core/improvement/gp/Genome"
 import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
 import { createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
 
