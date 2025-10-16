@@ -11,10 +11,10 @@ import { ChatInterfaceSimulation } from "./ChatInterfaceSimulation"
 import type { ChatInterfaceProps } from "./types/types"
 
 export function ChatInterface(props: ChatInterfaceProps) {
-  const { useSimulation = true, modelName, nodeId } = props
+  const { useSimulation = true } = props
 
-  // Use real AI mode with Provider pattern
-  if (!useSimulation && modelName && nodeId) {
+  // Use real AI mode with Provider pattern (defaults are in ChatInterfaceReal)
+  if (!useSimulation) {
     return <ChatInterfaceReal {...props} />
   }
 

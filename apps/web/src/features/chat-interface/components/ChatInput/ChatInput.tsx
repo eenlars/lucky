@@ -91,7 +91,7 @@ export function ChatInput({
           "flex-1 bg-transparent text-gray-900 dark:text-gray-100",
           "placeholder:text-gray-400 dark:placeholder:text-gray-500",
           "text-[15px] leading-[22px]",
-          "resize-none outline-none",
+          "resize-none outline-none focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2",
           "disabled:opacity-50",
           "px-5 pt-4 pb-1",
           isLoading && "animate-pulse",

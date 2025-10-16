@@ -25,9 +25,9 @@ export function EmptyResponseError({ modelName, onRetry }: EmptyResponseErrorPro
         <button
           type="button"
           onClick={onRetry}
-          className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-100"
+          className="text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-100 px-2 py-1"
         >
-          ✕
+          Retry
         </button>
       )}
     </div>
