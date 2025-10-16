@@ -26,23 +26,3 @@ export async function isOpenRouterAvailable(): Promise<boolean> {
   const apiKey = await getApiKey("OPENROUTER_API_KEY")
   return !!apiKey
 }
-
-/**
- * Legacy sync export for backward compatibility.
- * Use getOpenRouterClient() for new code.
- * @deprecated Use getOpenRouterClient() instead
- */
-export const openrouter = new Proxy((() => {}) as unknown as ReturnType<typeof createOpenRouter>, {
-  get(_target, _prop) {
-    throw new Error(
-      "Sync openrouter client is deprecated. Use: await getOpenRouterClient() instead. " +
-        "This ensures per-user API keys are properly resolved.",
-    )
-  },
-  apply() {
-    throw new Error(
-      "Sync openrouter client is deprecated. Use: await getOpenRouterClient() instead. " +
-        "This ensures per-user API keys are properly resolved.",
-    )
-  },
-}) as ReturnType<typeof createOpenRouter>

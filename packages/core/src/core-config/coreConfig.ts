@@ -4,8 +4,8 @@
  */
 
 import type { StandardModels } from "@lucky/shared"
+import { validateRuntimeConfig } from "@lucky/shared/contracts/config"
 import { createEvolutionSettings } from "@lucky/shared/contracts/evolution"
-import { validateRuntimeConfig } from "@lucky/shared/contracts/runtime"
 import { createDefaultCoreConfig, mergeConfig } from "./defaults"
 import type { CoreConfig, CoreModelsConfig, CorePathsConfig } from "./types"
 import { toRuntimeContract } from "./validation"

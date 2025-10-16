@@ -40,9 +40,6 @@ import { tool as browserAutomation } from "./browser-automation/tool"
 import { tool as searchGoogleMaps } from "./googlescraper/tool"
 import urlToMarkdown from "./url-to-markdown/tool"
 
-// File Operations Tools
-import { tool as saveFileLegacy } from "./file-saver/tool"
-
 // Development/Testing Tools
 import { tool as expectedOutputHandler } from "./expected-output-handler/tool"
 import { tool as jsExecutor } from "./js-executor/tool"
@@ -168,14 +165,6 @@ export const TOOL_TOOLKITS: ToolkitRegistry = {
         toolName: "browserAutomation",
         toolFunc: browserAutomation,
         description: "Automate browser interactions using Playwright for complex web scraping",
-      },
-    ]),
-
-    createToolkit("file", "File system operations for saving and managing files", [
-      {
-        toolName: "saveFileLegacy",
-        toolFunc: saveFileLegacy,
-        description: "Save data to files with automatic path resolution",
       },
     ]),
 

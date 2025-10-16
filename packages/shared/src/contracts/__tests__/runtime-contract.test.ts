@@ -3,12 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest"
-import {
-  DEFAULT_RUNTIME_CONFIG,
-  type RuntimeConfig,
-  safeValidateRuntimeConfig,
-  validateRuntimeConfig,
-} from "../runtime"
+import { DEFAULT_RUNTIME_CONFIG, type RuntimeConfig, safeValidateRuntimeConfig, validateRuntimeConfig } from "../config"
 
 describe("RuntimeConfig Schema Validation", () => {
   const validConfig: RuntimeConfig = DEFAULT_RUNTIME_CONFIG

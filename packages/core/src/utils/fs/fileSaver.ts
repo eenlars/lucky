@@ -8,7 +8,6 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { getCorePaths } from "@core/core-config/coreConfig"
-import type { CodeToolResult } from "@lucky/tools"
 import { nanoid } from "nanoid"
 
 // Re-export saveInLoc from shared (direct subpath import to avoid browser bundle issues)
@@ -47,39 +46,6 @@ export function save<T = any>(filename: string, data: T): void {
   const toWrite = Buffer.isBuffer(data) || typeof data === "string" ? data : JSON.stringify(data, null, 2)
 
   fs.writeFileSync(fullPath, toWrite)
-}
-
-export async function saveFile(
-  filename: string,
-  data: string,
-): Promise<CodeToolResult<{ success: boolean; data: string }>> {
-  save(filename, data)
-  return {
-    success: true,
-    tool: "saveFileLegacy",
-    output: {
-      success: true,
-      data: data,
-    },
-    error: null,
-  }
-}
-
-export async function saveFileInLoc(
-  filePath: string,
-  data: string,
-): Promise<CodeToolResult<{ success: boolean; data: string }>> {
-  const { saveInLoc } = await import("@lucky/shared/utils/fs/fileSaver")
-  saveInLoc(filePath, data)
-  return {
-    success: true,
-    tool: "saveFileLegacy",
-    output: {
-      success: true,
-      data: data,
-    },
-    error: null,
-  }
 }
 
 export async function saveInLogging(data: any, filename?: string, fileExtension?: string): Promise<string> {

@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
     ],
     build: {
       lib: {
-        entry: resolve(__dirname, "definitions/registry.ts"),
+        entry: resolve(__dirname, "definitions/registry-grouped.ts"),
         name: "Examples",
         fileName: "index",
         formats: ["es", "cjs"],
