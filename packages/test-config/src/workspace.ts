@@ -7,6 +7,7 @@ export default defineWorkspace([
     test: {
       name: "pkg-unit",
       include: ["packages/*/src/**/*.test.{ts,tsx}"],
+      exclude: ["packages/*/src/**/*.spec.test.{ts,tsx}"],
     },
   }),
 
@@ -24,6 +25,7 @@ export default defineWorkspace([
     test: {
       name: "app-unit",
       include: ["apps/web/src/**/*.test.{ts,tsx}"],
+      exclude: ["apps/web/src/**/*.spec.test.{ts,tsx}"],
       environment: "node", // switch to 'jsdom' when you start DOM/component tests
     },
   }),
