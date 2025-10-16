@@ -79,6 +79,8 @@ export type {
   ModelResult,
   ModelsConfig,
   ModelSpec,
+  // Alias: clarify provider config is for models runtime
+  ProviderConfig as ModelsProviderConfig,
   // Core types
   ProviderConfig,
   ProviderMetrics,
@@ -99,6 +101,8 @@ export {
   modelSpecSchema,
   modelSpecStringSchema,
   modelSpecUnionSchema,
+  // Alias: clarify that this schema is the runtime models provider config
+  providerConfigSchema as modelsProviderConfigSchema,
   providerConfigSchema,
   providerMetricsSchema,
   providersConfigSchema,
@@ -118,6 +122,8 @@ export type {
   ModelsConfigOutput,
   ModelSpecInput,
   ModelSpecOutput,
+  // Alias: clarify naming in downstream imports
+  ProviderConfigOutput as ModelsProviderConfigOutput,
   ProviderConfigInput,
   ProviderConfigOutput,
   TierConfigInput,

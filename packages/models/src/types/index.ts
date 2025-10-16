@@ -3,39 +3,41 @@
  * Designed to work seamlessly with Vercel AI SDK
  */
 
-import type { OpenAIChatLanguageModel } from "@ai-sdk/openai/internal"
+import { providerNameSchema } from "@lucky/shared"
 import type { LanguageModelV2 } from "@openrouter/ai-sdk-provider"
-import type { LanguageModel } from "ai"
 
 // ============================================================================
 // Provider Configuration
 // ============================================================================
+import { z } from "zod"
 
-export interface ProviderConfig {
+export const providerConfigSchema = z.object({
   /** Provider identifier (openai, anthropic, openrouter, local, etc.) */
-  id: string
+  id: providerNameSchema,
 
   /** Base URL for the provider API */
-  baseUrl?: string
+  baseUrl: z.string().optional(),
 
   /** API key (if required) */
-  apiKey?: string
+  apiKey: z.string().optional(),
 
   /** Model factory (if required) */
-  modelFactory?: ModelFactory
+  modelFactory: z.any().optional(),
 
   /** Maximum concurrent requests to this provider */
-  maxConcurrent?: number
+  maxConcurrent: z.number().optional(),
 
   /** Request timeout in milliseconds */
-  timeout?: number
+  timeout: z.number().optional(),
 
   /** Whether this provider is enabled */
-  enabled?: boolean
+  enabled: z.boolean().optional(),
 
   /** Custom headers */
-  headers?: Record<string, string>
-}
+  headers: z.record(z.string(), z.string()).optional(),
+})
+
+export type ProviderConfig = z.infer<typeof providerConfigSchema>
 
 // ============================================================================
 // Execution Strategy

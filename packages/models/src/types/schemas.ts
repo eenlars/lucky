@@ -2,6 +2,7 @@
  * Zod schemas for runtime validation of all config types
  */
 
+import { providerNameSchema } from "@lucky/shared"
 import { z } from "zod"
 
 // ============================================================================
@@ -9,7 +10,7 @@ import { z } from "zod"
 // ============================================================================
 
 export const providerConfigSchema = z.object({
-  id: z.string().min(1, "Provider ID is required"),
+  id: providerNameSchema,
   baseUrl: z.string().url().optional(),
   apiKey: z.string().optional(),
   maxConcurrent: z.number().int().positive().optional(),

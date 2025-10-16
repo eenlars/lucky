@@ -21,6 +21,16 @@ import os from "node:os"
 import path from "node:path"
 import { z } from "zod"
 
+// Mock SpendingTracker to avoid execution context requirement
+vi.mock("@core/utils/spending/trackerContext", () => ({
+  getSpendingTracker: vi.fn().mockReturnValue({
+    addCost: vi.fn(),
+    addSDKCost: vi.fn(),
+    getTotalCost: vi.fn().mockReturnValue(0),
+    remainingBudget: vi.fn().mockReturnValue(30),
+  }),
+}))
+
 // Mock sendAI to avoid real API calls
 vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn(),
