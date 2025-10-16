@@ -1,22 +1,18 @@
 import type { Tool } from "ai"
 import { type ToolExecutionContext, toAITool } from "../factory/toolFactory"
-import type { ToolkitDefinition } from "../registration/codeToolsRegistration"
+import type { ToolkitDefinition, ToolkitTool } from "../registration/customToolsRegistration"
 import type { CodeToolName } from "./types"
+import type { RS } from "../factory/types"
 
-// more flexible type for tool registration
-export type FlexibleToolDefinition = {
-  name: string
-  description?: string
-  // todo-typesafety: replace 'any' with proper parameter and return types - violates CLAUDE.md "we hate any"
-  parameters: any
-  execute: (params: any, externalContext?: any) => Promise<any>
+export type FlexibleToolDefinition = ToolkitTool & {
+  execute: (params: any, externalContext?: any) => Promise<RS<any>> | RS<any>
 }
 
 /**
  * Modern registry for managing code tools (defineTool-based approach)
  */
-export class CodeToolRegistry {
-  private tools = new Map<CodeToolName, FlexibleToolDefinition>()
+export class CustomToolRegistry {
+  private tools = new Map<string, FlexibleToolDefinition>()
   private initialized = false
   private defaultRegistration: Promise<void> | null = null
 
@@ -24,12 +20,11 @@ export class CodeToolRegistry {
    * Register a tool definition created with defineTool()
    */
   register(tool: FlexibleToolDefinition): void {
-    // todo-typesafety: unsafe 'as' assertions - violates CLAUDE.md "we hate as"
-    if (this.tools.has(tool.name as CodeToolName)) {
+    if (this.tools.has(tool.name)) {
       throw new Error(`Tool ${tool.name} is already registered`)
     }
 
-    this.tools.set(tool.name as CodeToolName, tool)
+    this.tools.set(tool.name, tool)
     this.initialized = false
 
     // Skip creating cached tools - they should always be created with proper context
@@ -99,7 +94,6 @@ export class CodeToolRegistry {
 
     const contextualTools: Record<string, Tool> = {}
     for (const [name, toolDef] of this.tools) {
-      // todo-typesafety: unsafe 'as any' assertion - violates CLAUDE.md "we hate as"
       contextualTools[name] = toAITool(toolDef as any, toolExecutionContext)
     }
     return contextualTools
@@ -120,7 +114,6 @@ export class CodeToolRegistry {
     for (const name of names) {
       const toolDef = this.tools.get(name)
       if (toolDef) {
-        // todo-typesafety: unsafe 'as any' assertion - violates CLAUDE.md "we hate as"
         result[name] = toAITool(toolDef as any, toolExecutionContext)
       }
     }
@@ -145,8 +138,8 @@ export class CodeToolRegistry {
    * The loader must return a list of tools to register (or null/undefined to skip).
    */
   async ensureDefaultTools(
-    loader: () => Promise<ToolkitDefinition[] | null | undefined>,
-    options?: { validate?: (groups: ToolkitDefinition[]) => Promise<void> | void },
+    loader: () => Promise<ToolkitDefinition<"code">[] | null | undefined>,
+    options?: { validate?: (groups: ToolkitDefinition<"code">[]) => Promise<void> | void },
   ): Promise<void> {
     if (this.initialized || this.tools.size > 0) {
       return
@@ -158,18 +151,16 @@ export class CodeToolRegistry {
     }
 
     this.defaultRegistration = (async () => {
-      const groups = await loader()
-      if (!groups || groups.length === 0) {
+      const toolkits = await loader()
+      if (!toolkits || toolkits.length === 0) {
         return
       }
 
       if (options?.validate) {
-        await options.validate(groups)
+        await options.validate(toolkits)
       }
 
-      const definitions = groups.flatMap((group: ToolkitDefinition) =>
-        group.tools.map(tool => tool.toolFunc as unknown as FlexibleToolDefinition),
-      )
+      const definitions = toolkits.flatMap(toolkit => toolkit.tools.map(tool => tool.toolFunc))
 
       this.registerMany(definitions)
       await this.initialize()
@@ -182,7 +173,12 @@ export class CodeToolRegistry {
 }
 
 // global registry instance (kept for backwards compatibility)
-export const codeToolRegistry = new CodeToolRegistry()
+export const customToolRegistry = new CustomToolRegistry()
 
 // factory for creating isolated registries
-export const createCodeToolRegistry = () => new CodeToolRegistry()
+export const createCustomToolRegistry = () => new CustomToolRegistry()
+
+// Back-compat named exports expected by public API
+export { CustomToolRegistry as CodeToolRegistry }
+export const codeToolRegistry = customToolRegistry
+export const createCodeToolRegistry = createCustomToolRegistry

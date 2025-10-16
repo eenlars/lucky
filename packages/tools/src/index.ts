@@ -21,13 +21,13 @@ export {
 export { validateAndCorrectWithSchema } from "./factory/validation"
 
 // Registry - Tool types, filtering, and management
+export { setupCodeToolsForNode } from "./registry/codeToolsSetup"
 export {
   CodeToolRegistry,
   codeToolRegistry,
   createCodeToolRegistry,
   type FlexibleToolDefinition,
-} from "./registry/CodeToolRegistry"
-export { setupCodeToolsForNode } from "./registry/codeToolsSetup"
+} from "./registry/CustomToolRegistry"
 export { getAllCodeToolNames } from "./registry/getAllCodeToolNames"
 export {
   ACTIVE_CODE_TOOL_NAMES,
@@ -65,15 +65,15 @@ export {
 
 // Registration - Tool registration and startup
 export {
-  createToolDefinition,
+  createCustomToolDefinition,
   createToolkit,
-  getAllTools,
-  getToolByName,
-  getToolsByToolkit,
+  getAllCustomToolsByToolkit,
+  getCustomToolByName,
+  getCustomToolsByToolkit,
+  type CustomToolDefinition,
   type ToolkitDefinition,
   type ToolkitRegistry,
-  type ToolkitToolDefinition,
-} from "./registration/codeToolsRegistration"
+} from "./registration/customToolsRegistration"
 export {
   LocalMCPRegistry,
   type LocalMCPRegistryConfig,
@@ -85,6 +85,7 @@ export {
   type LocalMCPTransportOAuth,
   type LocalMCPTransportStdio,
 } from "./registration/localMCP"
+export { registerAllTools, registerToolkits } from "./registration/startup"
 export {
   getAllMCPServerNames,
   getAllMCPTools,
@@ -92,17 +93,7 @@ export {
   getMCPToolsByToolkit,
   mcpToolkits,
   type MCPServerConfig,
-  type MCPToolkit,
-  type MCPToolkitToolDefinition,
 } from "./registration/mcpToolsRegistration"
-export { registerAllTools, registerToolkits } from "./registration/startup"
-export {
-  printValidationResult,
-  validateAllRegistrations,
-  validateMCPToolkitRegistration,
-  validateToolkitRegistration,
-  type ValidationResult,
-} from "./registration/validation"
 
 // Tool execution context from contracts
 export type {

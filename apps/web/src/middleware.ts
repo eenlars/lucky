@@ -24,8 +24,10 @@ export default clerkMiddleware(
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Match all request paths except for the ones starting with `_next` or containing a file extension.
+    "/((?!.*\\..*|_next).*)",
+    // Also match the root path explicitly (Next middleware quirk)
+    "/",
     // Always run for API routes
     "/(api|trpc)(.*)",
   ],
