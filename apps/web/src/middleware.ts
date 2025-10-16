@@ -1,21 +1,9 @@
-import { clerkMiddleware } from "@clerk/nextjs/server"
-import { NextResponse } from "next/server"
+import { auth, clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 
+const isProtectedRoute = createRouteMatcher(["/(.*)"])
 export default clerkMiddleware(
   async (_auth, req) => {
-    // Hide internal/test pages in production
-    if (process.env.NODE_ENV === "production") {
-      const pathname = req.nextUrl.pathname
-
-      // Block test and experiment pages (unless we add admin check later)
-      if (
-        pathname.startsWith("/test-graph") ||
-        pathname.startsWith("/test-evolution-graph") ||
-        pathname.startsWith("/experiments")
-      ) {
-        return NextResponse.redirect(new URL("/", req.url))
-      }
-    }
+    if (isProtectedRoute(req)) await auth.protect()
   },
   {
     debug: process.env.NODE_ENV === "development" && process.env.CLERK_DEBUG === "1",
@@ -24,8 +12,8 @@ export default clerkMiddleware(
 
 export const config = {
   matcher: [
-    // Match all request paths except for the ones starting with `_next` or containing a file extension.
-    "/((?!.*\\..*|_next).*)",
+    // Skip Next.js internals and all static files, unless found in search params
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Also match the root path explicitly (Next middleware quirk)
     "/",
     // Always run for API routes
