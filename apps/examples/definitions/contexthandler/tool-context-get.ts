@@ -32,6 +32,9 @@ const contextGet = defineTool({
 
     try {
       const store = createContextStore("supabase", workflowInvocationId)
+
+      // Check if value is cached before calling get()
+      const cached = store.isCached(scope, key)
       const value = await store.get(scope, key)
 
       const found = value !== undefined
@@ -44,7 +47,7 @@ const contextGet = defineTool({
         key,
         value: returnValue,
         found,
-        cached: false, // TODO: Could detect if from cache
+        cached,
         message: found
           ? `Successfully retrieved data for key '${key}' from ${scope} scope`
           : defaultValue !== undefined

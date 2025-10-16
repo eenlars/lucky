@@ -283,4 +283,9 @@ export class SupabaseContextStore implements ContextStore {
       return []
     }
   }
+
+  isCached(scope: "workflow" | "node", key: string): boolean {
+    const cacheKey = this.makePath(scope, key)
+    return this.cache.has(cacheKey)
+  }
 }

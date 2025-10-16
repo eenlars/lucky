@@ -140,4 +140,9 @@ export class InMemoryContextStore implements ContextStore {
       })
       .filter((item): item is ContextFileInfo => item !== null)
   }
+
+  isCached(scope: "workflow" | "node", key: string): boolean {
+    // For in-memory store, everything is "cached" since it's all in memory
+    return this.data.has(this.makeKey(scope, key))
+  }
 }
