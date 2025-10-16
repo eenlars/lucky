@@ -18,6 +18,7 @@ import {
   Code2,
   Copy,
   Database,
+  Flame,
   History,
   Layout,
   List,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
+import { PipelineTester } from "./components/PipelineTester"
 
 interface StoreInspector {
   id: string
@@ -68,8 +70,11 @@ interface ActionExecution {
   error?: string
 }
 
+type DevMode = "store-inspector" | "pipeline-tester"
+
 export default function DevPage() {
   const router = useRouter()
+  const [mode, setMode] = useState<DevMode>("store-inspector")
   const [selectedStore, setSelectedStore] = useState<StoreInspector | null>(null)
   const [processedData, setProcessedData] = useState<ProcessedStoreData>({
     state: {},
@@ -330,322 +335,370 @@ export default function DevPage() {
   ]
 
   return (
-    <div className="flex h-full bg-background">
-      {/* Sidebar */}
-      <div className="w-64 border-r border-border bg-sidebar/30">
-        <div className="p-6 border-b border-border">
-          <h1 className="text-lg font-semibold text-foreground">Store Inspector</h1>
-          <p className="text-xs text-muted-foreground mt-1">Development only</p>
-        </div>
-
-        <div className="p-3">
-          {stores.map(store => (
-            <button
-              type="button"
-              key={store.id}
-              onClick={() => setSelectedStore(store)}
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all cursor-pointer",
-                selectedStore?.id === store.id
-                  ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-sidebar/50",
-              )}
-            >
-              <div
-                className={cn(
-                  "p-1.5 rounded-md",
-                  selectedStore?.id === store.id ? "bg-primary/10 text-primary" : "bg-muted/50",
-                )}
-              >
-                {store.icon}
-              </div>
-              <div className="flex-1 text-left">
-                <div className="font-medium">{store.name}</div>
-                <div className="text-xs text-muted-foreground mt-0.5 truncate">{store.description}</div>
-              </div>
-            </button>
-          ))}
+    <div className="flex flex-col h-full bg-background">
+      {/* Mode Switcher */}
+      <div className="border-b border-border px-6 py-4 bg-muted/10">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setMode("store-inspector")}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors",
+              mode === "store-inspector"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
+            )}
+          >
+            <Database className="size-4" />
+            Store Inspector
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("pipeline-tester")}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors",
+              mode === "pipeline-tester"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted",
+            )}
+          >
+            <Flame className="size-4" />
+            Pipeline Tester
+          </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        {selectedStore && (
-          <div className="border-b border-border px-8 py-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10 text-primary">{selectedStore.icon}</div>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-foreground">{selectedStore.name}</h2>
-                <p className="text-sm text-muted-foreground">{selectedStore.description}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setAutoRefresh(!autoRefresh)}
-                  className={cn(autoRefresh && "bg-primary/10")}
-                >
-                  <RefreshCw className={cn("size-4", autoRefresh && "animate-spin")} />
-                  {autoRefresh ? "Auto" : "Manual"}
-                </Button>
-                {!autoRefresh && (
-                  <Button variant="outline" size="sm" onClick={handleRefresh}>
-                    <RefreshCw className="size-4" />
-                    Refresh
-                  </Button>
-                )}
-              </div>
+      {/* Content */}
+      {mode === "pipeline-tester" ? (
+        <PipelineTester />
+      ) : (
+        <div className="flex h-full bg-background">
+          {/* Sidebar */}
+          <div className="w-64 border-r border-border bg-sidebar/30">
+            <div className="p-6 border-b border-border">
+              <h1 className="text-lg font-semibold text-foreground">Store Inspector</h1>
+              <p className="text-xs text-muted-foreground mt-1">Development only</p>
             </div>
-          </div>
-        )}
 
-        {/* Tabs */}
-        <div className="border-b border-border bg-muted/10">
-          <div className="flex px-6">
-            {tabs.map(tab => (
-              <button
-                type="button"
-                key={tab.id}
-                onClick={() => setViewMode(tab.id)}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative",
-                  viewMode === tab.id ? "text-primary" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <tab.icon className="size-4" />
-                {tab.label}
-                {tab.count !== null && (
-                  <span
+            <div className="p-3">
+              {stores.map(store => (
+                <button
+                  type="button"
+                  key={store.id}
+                  onClick={() => setSelectedStore(store)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all cursor-pointer",
+                    selectedStore?.id === store.id
+                      ? "bg-sidebar-accent text-sidebar-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-sidebar/50",
+                  )}
+                >
+                  <div
                     className={cn(
-                      "px-1.5 py-0.5 rounded text-xs font-medium",
-                      viewMode === tab.id ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
+                      "p-1.5 rounded-md",
+                      selectedStore?.id === store.id ? "bg-primary/10 text-primary" : "bg-muted/50",
                     )}
                   >
-                    {tab.count}
-                  </span>
-                )}
-                {viewMode === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 bg-background flex flex-col overflow-hidden">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Braces className="size-4 text-muted-foreground" />
-              <span className="text-sm font-medium capitalize">{viewMode}</span>
-              {autoRefresh && <span className="text-xs text-muted-foreground">(updates every 500ms)</span>}
+                    {store.icon}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-medium">{store.name}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5 truncate">{store.description}</div>
+                  </div>
+                </button>
+              ))}
             </div>
-            <Button variant="outline" size="sm" onClick={handleCopy} className="gap-2">
-              {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-              {copied ? "Copied!" : "Copy JSON"}
-            </Button>
           </div>
 
-          <div className="flex-1 p-6 overflow-auto">
-            {viewMode === "actions" ? (
-              <div className="space-y-4">
-                {processedData.actions.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No actions found</p>
-                ) : (
-                  <>
-                    {processedData.actions.map(action => (
-                      <div key={action.name} className="border border-border rounded-lg overflow-hidden bg-card">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setExpandedActions(prev => {
-                              const next = new Set(prev)
-                              if (next.has(action.name)) {
-                                next.delete(action.name)
-                              } else {
-                                next.add(action.name)
-                              }
-                              return next
-                            })
-                          }}
-                          className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={cn(
-                                "p-1.5 rounded",
-                                action.isAsync ? "bg-blue-500/10 text-blue-500" : "bg-primary/10 text-primary",
-                              )}
-                            >
-                              <Zap className="size-4" />
-                            </div>
-                            <div className="text-left">
-                              <div className="font-mono text-sm font-medium">{action.signature}</div>
-                              {action.params.length > 0 && (
-                                <div className="text-xs text-muted-foreground mt-0.5">
-                                  {action.params.length} parameter{action.params.length !== 1 ? "s" : ""}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className={cn("transition-transform", expandedActions.has(action.name) && "rotate-180")}>
-                            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </div>
-                        </button>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            {selectedStore && (
+              <div className="border-b border-border px-8 py-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary">{selectedStore.icon}</div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-semibold text-foreground">{selectedStore.name}</h2>
+                    <p className="text-sm text-muted-foreground">{selectedStore.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setAutoRefresh(!autoRefresh)}
+                      className={cn(autoRefresh && "bg-primary/10")}
+                    >
+                      <RefreshCw className={cn("size-4", autoRefresh && "animate-spin")} />
+                      {autoRefresh ? "Auto" : "Manual"}
+                    </Button>
+                    {!autoRefresh && (
+                      <Button variant="outline" size="sm" onClick={handleRefresh}>
+                        <RefreshCw className="size-4" />
+                        Refresh
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
-                        {expandedActions.has(action.name) && (
-                          <div className="px-4 py-3 border-t border-border bg-muted/30">
-                            {action.params.length > 0 ? (
-                              <div className="space-y-3">
-                                <div className="space-y-2">
-                                  <label
-                                    htmlFor={`action-${action.name}`}
-                                    className="text-xs font-medium text-muted-foreground block"
-                                  >
-                                    Parameters (as JSON array)
-                                  </label>
-                                  <textarea
-                                    id={`action-${action.name}`}
-                                    value={actionInputs[action.name] || ""}
-                                    onChange={e =>
-                                      setActionInputs(prev => ({
-                                        ...prev,
-                                        [action.name]: e.target.value,
-                                      }))
-                                    }
-                                    placeholder={action.params.map(p => `/* ${p} */ "value"`).join(", ")}
-                                    rows={Math.min(action.params.length + 2, 6)}
-                                    className={cn(
-                                      "w-full px-3 py-2 text-sm border rounded bg-background font-mono resize-none",
-                                      actionInputs[action.name] && !isValidJSON(`[${actionInputs[action.name]}]`)
-                                        ? "border-red-500"
-                                        : "border-border",
-                                    )}
-                                  />
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">
-                                      Parameters:{" "}
-                                      {action.params.map(p => (
-                                        <code key={p} className="px-1 py-0.5 bg-muted rounded text-xs mx-0.5">
-                                          {p}
-                                        </code>
-                                      ))}
-                                    </p>
-                                    <details className="text-xs text-muted-foreground">
-                                      <summary className="cursor-pointer hover:text-foreground">Examples</summary>
-                                      <div className="mt-2 space-y-1 pl-2 border-l-2 border-border">
-                                        <div>
-                                          String: <code className="bg-muted px-1 rounded">&quot;text&quot;</code>
-                                        </div>
-                                        <div>
-                                          Number: <code className="bg-muted px-1 rounded">42</code>
-                                        </div>
-                                        <div>
-                                          Boolean: <code className="bg-muted px-1 rounded">true</code>
-                                        </div>
-                                        <div>
-                                          Object:{" "}
-                                          <code className="bg-muted px-1 rounded">{"{key: &quot;value&quot;}"}</code>
-                                        </div>
-                                        <div>
-                                          Array: <code className="bg-muted px-1 rounded">[1, 2, 3]</code>
-                                        </div>
-                                        <div>
-                                          Multiple:{" "}
-                                          <code className="bg-muted px-1 rounded">
-                                            &quot;arg1&quot;, {"{opt: true}"}
-                                          </code>
-                                        </div>
-                                      </div>
-                                    </details>
-                                  </div>
-                                </div>
-                                <Button
-                                  size="sm"
-                                  onClick={() => executeAction(action)}
-                                  disabled={
-                                    !!actionInputs[action.name] && !isValidJSON(`[${actionInputs[action.name]}]`)
+            {/* Tabs */}
+            <div className="border-b border-border bg-muted/10">
+              <div className="flex px-6">
+                {tabs.map(tab => (
+                  <button
+                    type="button"
+                    key={tab.id}
+                    onClick={() => setViewMode(tab.id)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative",
+                      viewMode === tab.id ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <tab.icon className="size-4" />
+                    {tab.label}
+                    {tab.count !== null && (
+                      <span
+                        className={cn(
+                          "px-1.5 py-0.5 rounded text-xs font-medium",
+                          viewMode === tab.id ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                    {viewMode === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 bg-background flex flex-col overflow-hidden">
+              <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Braces className="size-4 text-muted-foreground" />
+                  <span className="text-sm font-medium capitalize">{viewMode}</span>
+                  {autoRefresh && <span className="text-xs text-muted-foreground">(updates every 500ms)</span>}
+                </div>
+                <Button variant="outline" size="sm" onClick={handleCopy} className="gap-2">
+                  {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                  {copied ? "Copied!" : "Copy JSON"}
+                </Button>
+              </div>
+
+              <div className="flex-1 p-6 overflow-auto">
+                {viewMode === "actions" ? (
+                  <div className="space-y-4">
+                    {processedData.actions.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No actions found</p>
+                    ) : (
+                      <>
+                        {processedData.actions.map(action => (
+                          <div key={action.name} className="border border-border rounded-lg overflow-hidden bg-card">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setExpandedActions(prev => {
+                                  const next = new Set(prev)
+                                  if (next.has(action.name)) {
+                                    next.delete(action.name)
+                                  } else {
+                                    next.add(action.name)
                                   }
-                                  className="gap-2"
+                                  return next
+                                })
+                              }}
+                              className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={cn(
+                                    "p-1.5 rounded",
+                                    action.isAsync ? "bg-blue-500/10 text-blue-500" : "bg-primary/10 text-primary",
+                                  )}
                                 >
-                                  <Play className="size-3" />
-                                  Execute
-                                </Button>
+                                  <Zap className="size-4" />
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-mono text-sm font-medium">{action.signature}</div>
+                                  {action.params.length > 0 && (
+                                    <div className="text-xs text-muted-foreground mt-0.5">
+                                      {action.params.length} parameter{action.params.length !== 1 ? "s" : ""}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            ) : (
-                              <Button size="sm" onClick={() => executeAction(action)} className="gap-2">
-                                <Play className="size-3" />
-                                Execute (no params)
-                              </Button>
+                              <div
+                                className={cn("transition-transform", expandedActions.has(action.name) && "rotate-180")}
+                              >
+                                <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 9l-7 7-7-7"
+                                  />
+                                </svg>
+                              </div>
+                            </button>
+
+                            {expandedActions.has(action.name) && (
+                              <div className="px-4 py-3 border-t border-border bg-muted/30">
+                                {action.params.length > 0 ? (
+                                  <div className="space-y-3">
+                                    <div className="space-y-2">
+                                      <label
+                                        htmlFor={`action-${action.name}`}
+                                        className="text-xs font-medium text-muted-foreground block"
+                                      >
+                                        Parameters (as JSON array)
+                                      </label>
+                                      <textarea
+                                        id={`action-${action.name}`}
+                                        value={actionInputs[action.name] || ""}
+                                        onChange={e =>
+                                          setActionInputs(prev => ({
+                                            ...prev,
+                                            [action.name]: e.target.value,
+                                          }))
+                                        }
+                                        placeholder={action.params.map(p => `/* ${p} */ "value"`).join(", ")}
+                                        rows={Math.min(action.params.length + 2, 6)}
+                                        className={cn(
+                                          "w-full px-3 py-2 text-sm border rounded bg-background font-mono resize-none",
+                                          actionInputs[action.name] && !isValidJSON(`[${actionInputs[action.name]}]`)
+                                            ? "border-red-500"
+                                            : "border-border",
+                                        )}
+                                      />
+                                      <div className="space-y-1">
+                                        <p className="text-xs text-muted-foreground">
+                                          Parameters:{" "}
+                                          {action.params.map(p => (
+                                            <code key={p} className="px-1 py-0.5 bg-muted rounded text-xs mx-0.5">
+                                              {p}
+                                            </code>
+                                          ))}
+                                        </p>
+                                        <details className="text-xs text-muted-foreground">
+                                          <summary className="cursor-pointer hover:text-foreground">Examples</summary>
+                                          <div className="mt-2 space-y-1 pl-2 border-l-2 border-border">
+                                            <div>
+                                              String: <code className="bg-muted px-1 rounded">&quot;text&quot;</code>
+                                            </div>
+                                            <div>
+                                              Number: <code className="bg-muted px-1 rounded">42</code>
+                                            </div>
+                                            <div>
+                                              Boolean: <code className="bg-muted px-1 rounded">true</code>
+                                            </div>
+                                            <div>
+                                              Object:{" "}
+                                              <code className="bg-muted px-1 rounded">
+                                                {"{key: &quot;value&quot;}"}
+                                              </code>
+                                            </div>
+                                            <div>
+                                              Array: <code className="bg-muted px-1 rounded">[1, 2, 3]</code>
+                                            </div>
+                                            <div>
+                                              Multiple:{" "}
+                                              <code className="bg-muted px-1 rounded">
+                                                &quot;arg1&quot;, {"{opt: true}"}
+                                              </code>
+                                            </div>
+                                          </div>
+                                        </details>
+                                      </div>
+                                    </div>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => executeAction(action)}
+                                      disabled={
+                                        !!actionInputs[action.name] && !isValidJSON(`[${actionInputs[action.name]}]`)
+                                      }
+                                      className="gap-2"
+                                    >
+                                      <Play className="size-3" />
+                                      Execute
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button size="sm" onClick={() => executeAction(action)} className="gap-2">
+                                    <Play className="size-3" />
+                                    Execute (no params)
+                                  </Button>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    ))}
+                        ))}
 
-                    {executions.length > 0 && (
-                      <div className="mt-8">
-                        <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                          <History className="size-4" />
-                          Execution History
-                        </h3>
-                        <div className="space-y-2">
-                          {executions.map(exec => (
-                            <div
-                              key={exec.id}
-                              className={cn(
-                                "p-3 rounded border text-sm",
-                                exec.status === "success"
-                                  ? "bg-green-500/5 border-green-500/20"
-                                  : "bg-red-500/5 border-red-500/20",
-                              )}
-                            >
-                              <div className="flex items-start justify-between gap-2 mb-2">
-                                <div className="flex items-center gap-2">
-                                  {exec.status === "success" ? (
-                                    <CheckCircle className="size-4 text-green-500 flex-shrink-0" />
-                                  ) : (
-                                    <AlertCircle className="size-4 text-red-500 flex-shrink-0" />
+                        {executions.length > 0 && (
+                          <div className="mt-8">
+                            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                              <History className="size-4" />
+                              Execution History
+                            </h3>
+                            <div className="space-y-2">
+                              {executions.map(exec => (
+                                <div
+                                  key={exec.id}
+                                  className={cn(
+                                    "p-3 rounded border text-sm",
+                                    exec.status === "success"
+                                      ? "bg-green-500/5 border-green-500/20"
+                                      : "bg-red-500/5 border-red-500/20",
                                   )}
-                                  <span className="font-mono font-medium">{exec.actionName}</span>
+                                >
+                                  <div className="flex items-start justify-between gap-2 mb-2">
+                                    <div className="flex items-center gap-2">
+                                      {exec.status === "success" ? (
+                                        <CheckCircle className="size-4 text-green-500 flex-shrink-0" />
+                                      ) : (
+                                        <AlertCircle className="size-4 text-red-500 flex-shrink-0" />
+                                      )}
+                                      <span className="font-mono font-medium">{exec.actionName}</span>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                      {exec.timestamp.toLocaleTimeString()}
+                                    </span>
+                                  </div>
+                                  {exec.params.length > 0 && (
+                                    <div className="text-xs text-muted-foreground mb-1">
+                                      Params: {JSON.stringify(exec.params)}
+                                    </div>
+                                  )}
+                                  {exec.status === "error" && exec.error && (
+                                    <div className="text-xs text-red-500 mt-1">Error: {exec.error}</div>
+                                  )}
+                                  {exec.status === "success" && exec.result !== undefined && (
+                                    <details className="text-xs mt-2">
+                                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                                        View result
+                                      </summary>
+                                      <pre className="mt-2 p-2 bg-muted rounded overflow-auto">
+                                        {JSON.stringify(exec.result, null, 2)}
+                                      </pre>
+                                    </details>
+                                  )}
                                 </div>
-                                <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                  {exec.timestamp.toLocaleTimeString()}
-                                </span>
-                              </div>
-                              {exec.params.length > 0 && (
-                                <div className="text-xs text-muted-foreground mb-1">
-                                  Params: {JSON.stringify(exec.params)}
-                                </div>
-                              )}
-                              {exec.status === "error" && exec.error && (
-                                <div className="text-xs text-red-500 mt-1">Error: {exec.error}</div>
-                              )}
-                              {exec.status === "success" && exec.result !== undefined && (
-                                <details className="text-xs mt-2">
-                                  <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                                    View result
-                                  </summary>
-                                  <pre className="mt-2 p-2 bg-muted rounded overflow-auto">
-                                    {JSON.stringify(exec.result, null, 2)}
-                                  </pre>
-                                </details>
-                              )}
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
+                        )}
+                      </>
                     )}
-                  </>
+                  </div>
+                ) : (
+                  <pre className="font-mono text-sm text-foreground whitespace-pre-wrap">{getCurrentViewData()}</pre>
                 )}
               </div>
-            ) : (
-              <pre className="font-mono text-sm text-foreground whitespace-pre-wrap">{getCurrentViewData()}</pre>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

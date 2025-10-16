@@ -877,7 +877,7 @@ export const MODEL_CATALOG: ModelEntry[] = [
     speed: "medium",
     intelligence: 7,
     pricingTier: "medium",
-    active: false,
+    active: true,
   },
 
   {
@@ -1258,9 +1258,11 @@ export const MODEL_CATALOG: ModelEntry[] = [
 
 /**
  * Helper: Get all active models
+ * In development mode, returns ALL models (ignores active flag)
  */
 export function getActiveModels(): ModelEntry[] {
-  return MODEL_CATALOG.filter(m => m.active)
+  const isDevelopment = process.env.NODE_ENV === "development"
+  return isDevelopment ? MODEL_CATALOG : MODEL_CATALOG.filter(m => m.active)
 }
 
 /**
@@ -1299,11 +1301,13 @@ export function getAllProviders(): string[] {
 
 /**
  * Helper: Get all providers that have at least one active model
+ * In development mode, returns ALL providers (ignores active flag)
  */
 export function getActiveProviders(): string[] {
+  const isDevelopment = process.env.NODE_ENV === "development"
   const providers = new Set<string>()
   for (const model of MODEL_CATALOG) {
-    if (model.active) {
+    if (isDevelopment || model.active) {
       providers.add(model.provider)
     }
   }

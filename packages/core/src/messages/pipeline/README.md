@@ -105,9 +105,10 @@ nodeConfig.maxSteps   →    maxStepsVercel          → min(result, 10)
 ## Key Files
 
 - `InvocationPipeline.ts` - Main orchestrator (prepare → execute → process)
-- `MultiStepLoopV2.ts` - Simple iterative tool execution
-- `MultiStepLoopV3.ts` - Advanced with self-checking
-- `selectToolStrategyV2/V3.ts` - AI decides next tool (receives `roundsLeft`)
+- `agentStepLoop/MultiStepLoopV2.ts` - Simple iterative tool execution
+- `agentStepLoop/MultiStepLoopV3.ts` - Advanced with self-checking
+- `agentStepLoop/utils.ts` - Pipeline utilities (`getEffectiveMaxSteps`, `toolUsageToString`)
+- `selectTool/selectToolStrategyV2/V3.ts` - AI decides next tool (receives `roundsLeft`)
 - `input.types.ts` - Context interface
 
 ## State Management

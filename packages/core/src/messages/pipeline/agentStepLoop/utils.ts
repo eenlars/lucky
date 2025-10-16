@@ -95,3 +95,15 @@ export const system = (content: string): ModelMessage[] => {
 }
 
 // moved StrategyResult to selectTool/toolstrategy.types.ts for cohesion
+
+/**
+ * Get effective maxSteps for a node with proper fallback chain.
+ * Priority: nodeConfig.maxSteps → globalDefault → 10 (hard cap)
+ * @param nodeMaxSteps - Optional maxSteps from node config
+ * @param globalDefault - Global default (maxStepsVercel or experimentalMultiStepLoopMaxRounds)
+ * @returns Effective maxSteps, capped at 10
+ */
+export function getEffectiveMaxSteps(nodeMaxSteps: number | undefined, globalDefault: number): number {
+  const effective = nodeMaxSteps ?? globalDefault ?? 10
+  return Math.min(effective, 10)
+}

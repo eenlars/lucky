@@ -19,6 +19,7 @@
 
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
+import { logException } from "@core/utils/error-tracking/errorLogger"
 import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 import pTimeout, { TimeoutError } from "p-timeout"
 import type { ZodTypeAny } from "zod"
@@ -81,6 +82,20 @@ export async function execStructured<S extends ZodTypeAny>(
       // TODO: implement partial result extraction from timeout errors
       if (err instanceof TimeoutError) {
         console.error("[execStructured] timeout", { model })
+
+        // Log timeout to backend for monitoring
+        logException(err, {
+          location: "core/execStructured/timeout",
+          context: {
+            model,
+            messageCount: messages.length,
+            timeoutMs: 120_000,
+          },
+          severity: "warn",
+        }).catch(logErr => {
+          console.error("Failed to log timeout to backend:", logErr)
+        })
+
         return {
           success: false,
           data: null,
@@ -125,6 +140,39 @@ export async function execStructured<S extends ZodTypeAny>(
     // TODO: add error reporting and analytics
     const { message, debug } = normalizeError(err)
     console.error("[execStructured] error", { message })
+
+    // Classify error for better tracking
+    let errorCategory = "unknown"
+    let severity: "error" | "warn" = "error"
+
+    if (typeof message === "string") {
+      if (message.toLowerCase().includes("quota") || message.toLowerCase().includes("insufficient credits")) {
+        errorCategory = "quota"
+      } else if (message.toLowerCase().includes("authentication") || message.toLowerCase().includes("api key")) {
+        errorCategory = "auth"
+      } else if (message.toLowerCase().includes("rate limit")) {
+        errorCategory = "rate_limit"
+        severity = "warn"
+      } else if (message.toLowerCase().includes("schema") || message.toLowerCase().includes("validation")) {
+        errorCategory = "schema_validation"
+      }
+    }
+
+    // Log to backend for tracking
+    logException(err, {
+      location: `core/execStructured/${errorCategory}`,
+      context: {
+        model,
+        messageCount: messages.length,
+        hasSchema: Boolean(schema),
+        errorCategory,
+        debug,
+      },
+      severity,
+    }).catch(logErr => {
+      console.error("Failed to log error to backend:", logErr)
+    })
+
     return {
       success: false,
       data: null,

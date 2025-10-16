@@ -16,6 +16,7 @@ import {
 import type { AgentStep, AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import { runMultiStepLoopV2Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV2"
 import { runMultiStepLoopV3Helper } from "@core/messages/pipeline/agentStepLoop/MultiStepLoopV3"
+import { getEffectiveMaxSteps } from "@core/messages/pipeline/agentStepLoop/utils"
 import { prepareIncomingMessage } from "@core/messages/pipeline/prepare/incomingMessage"
 import { createSummary } from "@core/messages/summaries/createSummary"
 import type { NodeInvocationResult } from "@core/node/WorkFlowNode"
@@ -26,24 +27,12 @@ import { makeLearning } from "@core/prompts/makeLearning"
 import { ClaudeSDKService } from "@core/tools/claude-sdk/ClaudeSDKService"
 import { saveInLoc, saveInLogging } from "@core/utils/fs/fileSaver"
 import { JSONN, isNir } from "@lucky/shared"
-import type { GenerateTextResult, ModelMessage, ToolChoice, ToolSet } from "ai"
+import type { GenerateTextResult, ToolChoice, ToolSet } from "ai"
 import type { NodeInvocationCallContext } from "./input.types"
 
 const maxRounds = getCoreConfig().tools.experimentalMultiStepLoopMaxRounds
 
 const verbose = isLoggingEnabled("InvocationPipeline")
-
-/**
- * Get effective maxSteps for a node with proper fallback chain.
- * Priority: nodeConfig.maxSteps → globalDefault → 10 (hard cap)
- * @param nodeMaxSteps - Optional maxSteps from node config
- * @param globalDefault - Global default (maxStepsVercel or experimentalMultiStepLoopMaxRounds)
- * @returns Effective maxSteps, capped at 10
- */
-function getEffectiveMaxSteps(nodeMaxSteps: number | undefined, globalDefault: number): number {
-  const effective = nodeMaxSteps ?? globalDefault ?? 10
-  return Math.min(effective, 10)
-}
 
 /* -------------------------------------------------------------------------- */
 /*                         🚀  INVOCATION  PIPELINE                           */
@@ -96,7 +85,6 @@ enum PipelineState {
 
 export class InvocationPipeline {
   /* ------------------------------- state --------------------------------- */
-  private sdkMessages: ModelMessage[] = []
   private tools: ToolSet = {}
   private toolChoice: ToolChoice<ToolSet> | null = null
 
