@@ -1,5 +1,5 @@
 import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
-import { createMockGenome, mockRuntimeConstantsForGP, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
+import { createMockGenome, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -10,7 +10,6 @@ describe("GPEvaluatorAdapter prompt-only handling", () => {
 
   beforeEach(() => {
     setupCoreTest()
-    mockRuntimeConstantsForGP()
     evolutionContext = {
       generationId: "gen-1",
       generationNumber: 1,
