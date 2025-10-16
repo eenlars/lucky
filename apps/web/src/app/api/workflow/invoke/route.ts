@@ -151,6 +151,27 @@ export async function POST(req: NextRequest) {
 
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
+    // Load MCP configuration for UI-based workflows
+    // For now, we use placeholder env values as specified in the implementation plan
+    // Future: integrate with lockbox for secure storage
+    let mcpToolkits: import("@lucky/shared").MCPToolkitMap | undefined
+    if (principal.auth_method === "session") {
+      try {
+        // TODO: Load from Supabase lockbox when MCP storage is implemented
+        // For now, we'll use an empty config to demonstrate the plumbing
+        // UI config is in localStorage (useMCPConfigStore), not accessible server-side
+        const uiMCPConfig = { mcpServers: {} } // Placeholder until DB storage
+
+        if (Object.keys(uiMCPConfig.mcpServers).length > 0) {
+          const { uiConfigToToolkits } = await import("@lucky/shared")
+          mcpToolkits = uiConfigToToolkits(uiMCPConfig.mcpServers)
+          console.log("[workflow/invoke] Loaded MCP toolkits from config:", Object.keys(mcpToolkits))
+        }
+      } catch (error) {
+        console.warn("[workflow/invoke] Failed to load MCP config, continuing without toolkits:", error)
+      }
+    }
+
     // Extract workflow config to determine required providers
     let workflowConfig: WorkflowConfig | null = null
     try {
@@ -196,12 +217,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
-      return invokeWorkflow({
-        ...input,
-        abortSignal: controller.signal,
-      })
-    })
+    const result = await withExecutionContext(
+      {
+        principal,
+        secrets,
+        apiKeys,
+        // Pass MCP toolkits in execution context (if available)
+        ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
+      },
+      async () => {
+        return invokeWorkflow({
+          ...input,
+          abortSignal: controller.signal,
+        })
+      },
+    )
 
     const finishedAt = new Date().toISOString()
 

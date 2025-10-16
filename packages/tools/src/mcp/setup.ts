@@ -205,19 +205,32 @@ const clientCache = new Map<string, any>()
  * `tools` object suitable for `generateText({ tools })` or `streamText({ tools })`.
  * Clients are cached per workflow to maintain persistent sessions (e.g., browser state).
  *
+ * Resolution order:
+ * 1. Context toolkits (from opts.toolkits, UI-configured)
+ * 2. Config file (configPath parameter or MCP_SECRET_PATH env var)
+ *
  * @param toolNames Array of MCP tool names to initialize
  * @param workflowId Workflow ID for client caching
  * @param configPath Optional path to mcp-secret.json (defaults to MCP_SECRET_PATH env var)
+ * @param opts Optional configuration including context toolkits
  * @returns ToolSet ready for AI SDK usage
  */
 export async function setupMCPForNode(
   toolNames: MCPToolName[] | null | undefined,
   workflowId: string,
   configPath?: string,
+  opts?: { toolkits?: import("@lucky/shared").MCPToolkitMap },
 ): Promise<ToolSet> {
   const safeToolNames: MCPToolName[] = Array.isArray(toolNames) ? toolNames : []
   if (safeToolNames.length === 0) {
     return {}
+  }
+
+  const contextToolkits = opts?.toolkits ?? {}
+  const hasContextToolkits = Object.keys(contextToolkits).length > 0
+
+  if (hasContextToolkits) {
+    console.log(`[setupMCPForNode] Context toolkits available: ${Object.keys(contextToolkits).join(", ")}`)
   }
 
   // 1. Get or create clients (reuse cached clients for session persistence)
@@ -228,20 +241,50 @@ export async function setupMCPForNode(
 
       // Check if we already have a client for this workflow+tool combination
       if (clientCache.has(cacheKey)) {
+        console.log(`[setupMCPForNode] Reusing cached client for ${name}`)
         return { name, client: clientCache.get(cacheKey) }
       }
 
-      const createTools = getCreateTools(configPath)
-      const cfg = createTools[name]
+      // RESOLUTION ORDER: Try context toolkits first, then config file
+      let cfg: { command: string; args: string[]; env?: Record<string, string> } | null = null
+
+      // 1. Check context toolkits (UI-configured, passed via execution context)
+      if (contextToolkits[name]?.transport?.kind === "stdio") {
+        const transportSpec = contextToolkits[name].transport?.spec
+        if (transportSpec) {
+          cfg = {
+            command: transportSpec.command,
+            args: transportSpec.args,
+            env: transportSpec.env,
+          }
+          console.log(`[setupMCPForNode] Using context toolkit for ${name}`)
+        }
+      }
+
+      // 2. Fall back to config file (local dev, mcp-secret.json)
       if (!cfg) {
-        const availableTools = Object.keys(createTools)
+        const createTools = getCreateTools(configPath)
+        cfg = createTools[name] || null
+        if (cfg) {
+          console.log(`[setupMCPForNode] Using config file for ${name}`)
+        }
+      }
+
+      // Not found in either context or config file
+      if (!cfg) {
+        const contextToolkitNames = Object.keys(contextToolkits)
+        const fileToolkitNames = Object.keys(getCreateTools(configPath))
         console.warn("\n⚠️  MCP Tool Not Found")
         console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         console.warn(`🔍 Requested: '${name}'`)
-        if (availableTools.length > 0) {
-          console.warn(`📋 Available: ${availableTools.join(", ")}`)
-        } else {
-          console.warn("📋 No MCP tools configured (check mcp-secret.json)")
+        if (contextToolkitNames.length > 0) {
+          console.warn(`📋 Available in context: ${contextToolkitNames.join(", ")}`)
+        }
+        if (fileToolkitNames.length > 0) {
+          console.warn(`📋 Available in config file: ${fileToolkitNames.join(", ")}`)
+        }
+        if (contextToolkitNames.length === 0 && fileToolkitNames.length === 0) {
+          console.warn("📋 No MCP tools configured (check execution context or mcp-secret.json)")
         }
         console.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
         return null

@@ -102,14 +102,14 @@ export async function POST(req: NextRequest) {
       coreInvocationInput = {
         evalInput: invocationInput.evalInput,
         dslConfig: config,
-        validation: 'none', // Skip validation for demo workflows (already validated)
+        validation: "none", // Skip validation for demo workflows (already validated)
       }
     } else if (workflowLoadResult.resolvedWorkflowVersionId) {
       coreInvocationInput.workflowVersionId = workflowLoadResult.resolvedWorkflowVersionId
     }
 
     // Use 'none' validation by default for immediate execution (workflows are validated on save)
-    coreInvocationInput.validation = 'none'
+    coreInvocationInput.validation = "none"
 
     // Create context-aware secret resolver for this user
     const secrets = createSecretResolver(principal.clerk_id, principal)

@@ -173,6 +173,25 @@ export type {
   Toolkit,
 } from "./contracts/mcp"
 
+// MCP Runtime contracts (execution context)
+export {
+  executionMCPContextSchema,
+  mcpToolkitMapSchema,
+  mcpToolkitSchema,
+  mcpTransportSpecSchema,
+  mcpTransportStdioSpecSchema,
+  uiConfigToToolkit,
+  uiConfigToToolkits,
+  validateToolkitMap,
+} from "./contracts/mcp-runtime"
+export type {
+  ExecutionMCPContext,
+  MCPToolkit,
+  MCPToolkitMap,
+  MCPTransportSpec,
+  MCPTransportStdioSpec,
+} from "./contracts/mcp-runtime"
+
 // Extended app database types for custom functions
 export type {
   DatabaseWithAppFunctions,

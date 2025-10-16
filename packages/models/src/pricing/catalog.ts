@@ -1357,9 +1357,7 @@ export function getCatalogStats() {
 
   for (const provider of providers) {
     const providerModels = getModelsByProvider(provider)
-    byProvider[provider] = isDevelopment
-      ? providerModels.length
-      : providerModels.filter(m => m.active).length
+    byProvider[provider] = isDevelopment ? providerModels.length : providerModels.filter(m => m.active).length
   }
 
   return {
