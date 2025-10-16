@@ -18,7 +18,7 @@
     "./clients/*": "./src/clients/*"
   },
   "scripts": {
-    "dev": "vitest --watch --project unit",
+    "dev": "vitest --watch",
     "build": "tsc --noEmit",
     "start": "bun run src/main.ts",
     "list": "node scripts/dev.js list",
@@ -26,10 +26,10 @@
     "gp": "node scripts/run-gp.js",
     "iterative": "rm -rf .core-data && bun run src/main.ts --mode=iterative",
     "clean": "bun run scripts/cleanup.ts",
-    "test": "bunx vitest --project unit",
-    "test:unit": "bunx vitest run --project unit",
-    "test:core": "bunx vitest --project unit",
-    "test:integration": "bunx vitest --project integration",
+    "test": "bunx vitest",
+    "test:unit": "bunx vitest run",
+    "test:core": "bunx vitest",
+    "test:integration": "bunx vitest run src/**/*.spec.test.{ts,tsx}",
     "coverage": "bunx vitest run --coverage",
     "tree": "tree -L 7 -I 'node_modules|.git|dist|build|public' src/core",
     "tsc": "tsc --noEmit",
