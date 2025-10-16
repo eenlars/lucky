@@ -2,13 +2,15 @@
 
 We integrated Lucky workflows with Claude Desktop via the Model Context Protocol (MCP), enabling Claude to discover, invoke, monitor, and cancel workflows through 4 MCP tools. The MCP server (`packages/mcp-server`) uses FastMCP to expose these tools over stdio transport.
 
-During manual testing with Claude Desktop, three critical issues prevented the integration from working:
+During manual testing with Claude Desktop and code review, five critical issues were discovered and resolved:
 
 1. **JSON-RPC Corruption**: Claude Desktop reported `Unexpected token 'F', "[FastMCP de"... is not valid JSON`
 2. **Empty Tool Schemas**: Tools registered but weren't visible in Claude Desktop due to empty JSON schemas
 3. **Server Crashes on Init**: MCP server exited immediately with `Either LUCKY_API_KEY or LUCKY_API_URL must be provided`
+4. **Response Body Double-Read**: Error handling attempted to read response body twice, causing secondary errors
+5. **Breaking Input Schema**: Over-constraining input to object-only blocked legitimate non-object workflow inputs
 
-All three issues were rooted in assumptions about how FastMCP, Zod, and stdio transport interact during initialization and runtime.
+All issues were rooted in assumptions about how FastMCP, Zod, stdio transport, and HTTP response handling interact.
 
 ### Hidden Assumptions
 
@@ -16,6 +18,8 @@ All three issues were rooted in assumptions about how FastMCP, Zod, and stdio tr
 - FastMCP v1.0.3 would work with Zod v4, but Zod v4 changed internal structure breaking schema conversion
 - Environment variables would be available during server initialization, but in stdio mode they're passed via config at tool invocation time
 - The `authenticate` callback should validate env vars on init, but in stdio mode it shouldn't block server startup
+- HTTP response bodies could be read multiple times, but they're streams consumed on first read
+- All workflows accept object inputs, but workflow `inputSchema` can be any JSON type
 
 ---
 
@@ -126,6 +130,83 @@ authenticate: async (request) => {
 
 ---
 
+## Issue #4: Response Body Double-Read (2025-10-16)
+
+**Context**: Error handling code attempted to read the response body twice, causing `TypeError: Body is unusable: Body has already been read`.
+
+**Root Cause**: After `response.json()` consumes the response body stream, subsequent `response.text()` in the catch block throws an error because HTTP response bodies can only be read once.
+
+**What happened**:
+```typescript
+try {
+  workflows = await response.json()  // ✅ Reads and consumes body
+} catch (parseError) {
+  const rawBody = await response.text()  // ❌ Body already consumed
+  throw new Error(`Backend returned invalid JSON response...`)
+}
+```
+
+**Why it happened**:
+- HTTP Response bodies are streams that can only be read once
+- Reading with `.json()` consumes the entire stream
+- Subsequent `.text()` attempts to read an already-drained stream
+- Error handling path itself throws an error, masking the original issue
+
+**Solution**: Read body as text first, then parse JSON:
+```typescript
+const rawBody = await response.text()  // ✅ Read once as text
+try {
+  workflows = JSON.parse(rawBody)  // ✅ Parse from string
+} catch (parseError) {
+  throw new Error(`Backend returned invalid JSON response (status ${response.status}). Body: ${rawBody}`)
+}
+```
+
+**Result**: Error handling now provides the actual response body for debugging, and doesn't throw secondary errors.
+
+**Affected tools**:
+- `lucky_list_workflows`
+- `lucky_run_workflow`
+- `lucky_check_status`
+- `lucky_cancel_workflow`
+
+---
+
+## Issue #5: Breaking Input Schema Constraint (2025-10-16)
+
+**Context**: The previous fix changed `input` from `z.unknown()` to `z.object({}).passthrough()`, which broke workflows with non-object inputs (strings, arrays, numbers).
+
+**Root Cause**: The validation error "data must be object" came from the **Lucky API backend**, not from the MCP tool schema validation. Restricting the tool schema to objects prevented legitimate non-object inputs from reaching the backend for proper validation.
+
+**What happened**:
+- Workflow `wf_demo` might accept string inputs: `"What is the capital of France?"`
+- Tool schema change enforced object-only inputs at the MCP layer
+- Users couldn't invoke workflows that expect non-object inputs
+- Breaking change to documented API behavior
+
+**Why it happened**:
+- The "data must be object" error was misattributed to MCP client serialization
+- Actual issue was backend validation expecting a specific workflow input format
+- Tool schema over-constrained the input, blocking valid use cases
+- Workflow `inputSchema` varies (can be string, object, array, number)
+
+**Previous (broken) fix**:
+```typescript
+// This blocks non-object workflow inputs
+input: z.object({}).passthrough()
+```
+
+**Correct solution**: Revert to `z.unknown()` to allow any JSON-serializable value:
+```typescript
+input: z.unknown().describe("Input data matching the workflow's inputSchema (can be any JSON value)")
+```
+
+**Result**: Tool schema now allows any JSON type (object, string, array, number), matching the workflow's actual `inputSchema` requirements. Validation happens at the backend where it belongs.
+
+**Lesson**: Don't over-constrain tool schemas based on single-instance errors. The MCP layer should accept any input that could be valid for *any* workflow, and let backend validation enforce specific workflow requirements.
+
+---
+
 # How We Fixed It
 
 ## Changes Made
@@ -146,6 +227,16 @@ authenticate: async (request) => {
    - Removed env var validation on init
    - Cloud mode still validates API keys in headers
    - Self-hosted mode defers validation to tool invocation
+
+4. **Response Body Handling** (all tool execute functions):
+   - Read body as `text()` first
+   - Parse JSON from string with `JSON.parse()`
+   - Error handling now has access to raw body for debugging
+
+5. **Input Schema** (lucky_run_workflow parameters):
+   - Reverted from `z.object({}).passthrough()` to `z.unknown()`
+   - Updated description to clarify "can be any JSON value"
+   - Allows all workflow input types (string, object, array, number)
 
 **New File**: `packages/mcp-server/test-mcp-tools.sh`
 - Test script for verifying tool registration
@@ -194,13 +285,27 @@ cd packages/mcp-server && ./test-mcp-tools.sh
    - Validation must be deferred to request time
    - Early exits prevent protocol handshake
 
+4. **HTTP Response Streams**:
+   - Response bodies can only be read once
+   - Error handling needs to preserve the body for debugging
+   - Read as text first, then parse for maximum flexibility
+   - Secondary errors in error handlers mask root causes
+
+5. **Schema Design Philosophy**:
+   - Don't over-constrain tool schemas based on single-instance errors
+   - Tool layer should accept all inputs valid for *any* workflow
+   - Backend validation enforces specific workflow requirements
+   - Premature optimization of schemas breaks flexibility
+
 ## Prevention Strategies
 
 1. **Always suppress console output in stdio mode** - Make it the first line of any stdio MCP server
 2. **Test tool discovery explicitly** - Don't assume registration == visibility
 3. **Verify schema completeness** - Check for `properties` and `required` fields, not just `$schema`
 4. **Never call process.exit in callbacks** - Return errors instead
-5. **Add integration tests for stdio transport** - Catch protocol violations early
+5. **Read response bodies as text first** - Then parse for error handling flexibility
+6. **Don't over-constrain tool schemas** - Let backend validation enforce specifics
+7. **Add integration tests for stdio transport** - Catch protocol violations early
 
 ## Questions for Future Work
 
@@ -208,6 +313,7 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 - Can we detect Zod/FastMCP version mismatches at build time?
 - Should authenticate callbacks be optional for non-cloud deployments?
 - Do we need a standard test suite for all MCP server deployments?
+- How can we better test error handling paths without mocking?
 
 ---
 
@@ -222,13 +328,13 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 **2025-10-16 14:30**: Server crashes on startup
 **2025-10-16 14:45**: Issue #3 identified (process.exit in authenticate), fix applied
 **2025-10-16 15:00**: All tests passing, manual verification successful
-**2025-10-16 15:30**: Workflow invocation fails with "Bad Request"
-**2025-10-16 15:35**: Enhanced error logging to capture response details
-**2025-10-16 15:40**: Issue #4 identified (input serialized as string), fix applied
-**2025-10-16 15:45**: All issues resolved, workflows executing successfully
+**2025-10-16 16:00**: Code review identifies two violations in error handling and schema design
+**2025-10-16 16:10**: Issue #4 identified (response body double-read in error paths)
+**2025-10-16 16:15**: Issue #5 identified (breaking input schema constraint)
+**2025-10-16 16:20**: Both issues fixed, tests passing
 
-**Total time**: 2.75 hours
-**Commits**: 7 (6 fixes + 1 documentation)
+**Total time**: 3.25 hours
+**Commits**: 9 (8 fixes + 1 documentation)
 
 ---
 
@@ -240,6 +346,7 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 - MCP server unusable in Claude Desktop (primary use case)
 - Tools not discoverable or callable
 - No workflows could be invoked via Claude
+- Error handling could mask root causes in production
 
 **Users affected**: All users attempting to use Lucky workflows with Claude Desktop
 
@@ -252,47 +359,7 @@ cd packages/mcp-server && ./test-mcp-tools.sh
 - MCP Protocol Spec: https://modelcontextprotocol.io/docs/concepts/transports#stdio
 - FastMCP Zod v4 Support: https://github.com/punkpeye/fastmcp (no explicit docs on Zod v4)
 - Zod v4 Breaking Changes: https://github.com/colinhacks/zod/releases/tag/v4.0.0
-
----
-
-## Issue #4: Input Parameter Serialized as String (2025-10-16)
-
-**Context**: After fixing Issues #1-3, tools were callable but `lucky_run_workflow` failed with validation error: `Input validation failed: data must be object`.
-
-**Root Cause**: The `input` parameter was defined as `z.unknown()`, which allowed any type. The MCP client interpreted this as "string is acceptable" and serialized the input object as a JSON string instead of passing it as an object.
-
-**What happened**:
-- User invoked workflow with input: `{"question": "What is the capital of France?"}`
-- MCP request sent: `input: "{\"question\": \"What is the capital of France?\"}"`
-- Lucky API received a string instead of an object
-- Validation failed: "data must be object"
-
-**Why it happened**:
-- Zod `z.unknown()` accepts any type (string, number, object, etc.)
-- FastMCP converts this to JSON Schema with no `type` constraint
-- The MCP client chooses string serialization for untyped parameters
-- The Lucky API's JSON-RPC endpoint expects `input` to be an object, not a string
-
-**Investigation path**:
-1. Enhanced error logging revealed full validation error with path and type info
-2. Error showed: `"path": "", "message": "must be object", "params": {"type": "object"}`
-3. Empty path indicated root-level validation failure
-4. MCP request inspection showed input was being passed as a string
-
-**Solution**: Changed input schema to explicitly require object type:
-```typescript
-// Before (accepts any type):
-input: z.unknown().describe("Input data matching the workflow's inputSchema")
-
-// After (enforces object type):
-input: z.object({}).passthrough().describe("Input data matching the workflow's inputSchema (must be a JSON object)")
-```
-
-The `.passthrough()` allows any additional properties while enforcing the base type is an object.
-
-**Result**: MCP client now passes input as a proper JSON object, and workflow invocations succeed.
-
-**Verification**: Workflow execution completes successfully with proper object input.
+- HTTP Response Body Consumption: https://developer.mozilla.org/en-US/docs/Web/API/Response/body
 
 ---
 
@@ -304,4 +371,5 @@ The `.passthrough()` allows any additional properties while enforcing the base t
 - `9bfeb006` - docs(mcp): add final status summary to Phase 3 completion report
 - `71ce3745` - docs(mcp): add comprehensive postmortem for MCP server integration issues
 - `7a427aad` - fix(mcp): add detailed error logging for API failures
-- `858ce7cd` - fix(mcp): change input parameter type from unknown to object
+- `858ce7cd` - fix(mcp): change input parameter type from unknown to object (REVERTED)
+- `4d78c349` - fix(mcp): resolve response body consumption and input schema issues
