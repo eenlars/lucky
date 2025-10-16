@@ -89,6 +89,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       ${identityPrompt}
 
       # the context of the current node
+      - Rounds left: ${roundsLeft} (if 0, terminate)
 
       ${
         !isNir(agentSteps)
