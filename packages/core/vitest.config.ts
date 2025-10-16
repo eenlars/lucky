@@ -1,11 +1,15 @@
+import tsconfigPaths from "vite-tsconfig-paths"
 /**
  * Package-specific Vitest config for @lucky/core
  * For DX: allows running `bunx vitest` inside the package directory
  */
-import { baseConfig } from "@repo/test-config/vitest.base"
+import { defineConfig } from "vitest/config"
 
-export default baseConfig({
+export default defineConfig({
+  plugins: [tsconfigPaths({ projects: ["../../tsconfig.paths.json"] })],
   test: {
-    include: ["packages/core/src/**/*.test.{ts,tsx}", "packages/core/src/**/*.spec.test.{ts,tsx}"],
+    globals: true,
+    include: ["src/**/*.test.{ts,tsx}", "src/**/*.spec.test.{ts,tsx}"],
+    environment: "node",
   },
 })
