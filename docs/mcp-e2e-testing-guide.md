@@ -361,7 +361,7 @@ grep "mcp-client" logs.txt
 - [ ] Config saved in `mcp.user_server_configs` table
 - [ ] `server_id IS NULL` for stdio servers
 - [ ] Config persists after page refresh
-- [ ] Can query via SQL and see encrypted `config_json`
+- [ ] Can query via SQL and see stored `config_json` values
 
 ### Workflow Execution
 - [ ] Workflow invocation loads MCP configs from database
