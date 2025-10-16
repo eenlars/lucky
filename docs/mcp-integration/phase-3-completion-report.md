@@ -276,6 +276,62 @@ Fixed TypeScript errors and mock setup issues in all unit test files. All 27 tes
 
 ---
 
+## Post-Completion Fixes
+
+### Issue #1: Console Output Suppression (2025-10-16)
+
+**Problem**: Claude Desktop reported JSON-RPC error: `Unexpected token 'F', "[FastMCP de"... is not valid JSON`
+
+**Root Cause**: FastMCP library outputs initialization logs to stdout, corrupting the JSON-RPC protocol stream in stdio transport mode.
+
+**Solution**: Added console suppression for stdio mode in `packages/mcp-server/src/index.ts`:
+```typescript
+// Suppress all console output in stdio mode to prevent JSON-RPC corruption
+if (process.env.CLOUD_SERVICE !== "true" && process.env.SSE_LOCAL !== "true" && process.env.HTTP_STREAMABLE_SERVER !== "true") {
+  const noop = () => {}
+  console.log = noop
+  console.info = noop
+  console.warn = noop
+  console.debug = noop
+  // Keep console.error for critical errors only
+}
+```
+
+**Verification**: MCP server now connects successfully to Claude Desktop with no JSON-RPC errors.
+
+### Issue #2: Empty JSON Schemas - Tools Not Visible (2025-10-16)
+
+**Problem**: Claude Desktop showed MCP server connected but no tools were visible. Tool schemas were empty: `{"$schema":"http://json-schema.org/draft-07/schema#"}`
+
+**Root Cause**: FastMCP v1.0.3 incompatible with Zod v4 - Zod v4 changed internal structure, breaking FastMCP's schema converter.
+
+**Investigation**:
+- Attempted Zod v3 downgrade → FastMCP v1.27.7 expects Zod v4 structure (`.vendor` property error)
+- Attempted manual `zodToJsonSchema` → FastMCP TypeScript types don't support `inputSchema` override
+
+**Solution**: Upgraded FastMCP to v3.20.0 which properly supports Zod v4:
+```bash
+bun remove zod && bun add zod@^4.1.5 fastmcp@latest
+```
+
+**Result**: All 4 tools now have proper JSON Schema 2020-12 format with correct `required` fields:
+- `lucky_list_workflows`: Empty params (no required fields)
+- `lucky_run_workflow`: Requires `workflow_id` and `input`
+- `lucky_check_status`: Requires `invocation_id`
+- `lucky_cancel_workflow`: Requires `invocation_id`
+
+**Verification**:
+```bash
+./test-mcp-tools.sh
+# ✓ All 4 tools returned with proper schemas
+```
+
+**Commits**:
+- `fix(mcp): suppress console output in stdio mode to prevent JSON-RPC corruption`
+- `fix(mcp): upgrade FastMCP to v3.20.0 for Zod v4 compatibility`
+
+---
+
 ## Outstanding Items
 
 ### Requires User Action

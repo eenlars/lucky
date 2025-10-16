@@ -7,6 +7,20 @@ import { z } from "zod"
 
 dotenv.config({ debug: false, quiet: true })
 
+// Suppress all console output in stdio mode to prevent JSON-RPC corruption
+if (
+  process.env.CLOUD_SERVICE !== "true" &&
+  process.env.SSE_LOCAL !== "true" &&
+  process.env.HTTP_STREAMABLE_SERVER !== "true"
+) {
+  const noop = () => {}
+  console.log = noop
+  console.info = noop
+  console.warn = noop
+  console.debug = noop
+  // Keep console.error for critical errors only
+}
+
 interface SessionData {
   luckyApiKey?: string
   [key: string]: unknown
