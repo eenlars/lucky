@@ -46,20 +46,20 @@ const allNavigationItems: NavItemData[] = [
   {
     type: "editor",
     href: "/edit",
-    label: "Create",
+    label: "Create Workflow",
     icon: <Sparkles className="w-4 h-4 text-orange-500" />,
     description: "Build workflows",
   },
   {
     type: "workflows",
     href: "/workflows",
-    label: "Workflows",
+    label: "My Workflows",
     icon: <Network className="w-4 h-4" />,
     description: "Your workflows",
     submenus: [
       {
         type: "workflows-list",
-        label: "Workflows",
+        label: "My Workflows",
         href: "/workflows",
       },
       {
@@ -100,7 +100,7 @@ const allNavigationItems: NavItemData[] = [
     description: "Configure app",
     submenus: [
       { type: "settings-profile", label: "Profile", href: "/settings/profile" },
-      { type: "settings-providers", label: "LLM Models", href: "/settings/providers" },
+      { type: "settings-providers", label: "LLMs", href: "/settings/providers" },
       { type: "settings-payment", label: "Payment", href: "/settings/payment" },
     ],
   },
