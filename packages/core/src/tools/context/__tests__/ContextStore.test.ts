@@ -88,6 +88,42 @@ describe("ContextStore", () => {
       expect(await store.get("workflow", "key1")).toBe("workflow-value")
       expect(await store.get("node", "key1")).toBe("node-value")
     })
+
+    it("should correctly report cache status with isCached", async () => {
+      const store = createContextStore("memory", "test-workflow")
+
+      // Initially not cached
+      expect(store.isCached("workflow", "config")).toBe(false)
+
+      // After setting, should be cached
+      await store.set("workflow", "config", { theme: "dark" })
+      expect(store.isCached("workflow", "config")).toBe(true)
+
+      // Different scope should not be cached
+      expect(store.isCached("node", "config")).toBe(false)
+
+      // After getting, should still be cached
+      await store.get("workflow", "config")
+      expect(store.isCached("workflow", "config")).toBe(true)
+
+      // After deleting, should not be cached
+      await store.delete("workflow", "config")
+      expect(store.isCached("workflow", "config")).toBe(false)
+    })
+
+    it("should handle cache status for multiple keys", async () => {
+      const store = createContextStore("memory", "test-workflow")
+
+      await store.set("workflow", "key1", "value1")
+      await store.set("workflow", "key2", "value2")
+      await store.set("node", "key3", "value3")
+
+      expect(store.isCached("workflow", "key1")).toBe(true)
+      expect(store.isCached("workflow", "key2")).toBe(true)
+      expect(store.isCached("node", "key3")).toBe(true)
+      expect(store.isCached("workflow", "key3")).toBe(false)
+      expect(store.isCached("node", "key1")).toBe(false)
+    })
   })
 
   describe("Factory function", () => {
