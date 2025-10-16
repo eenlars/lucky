@@ -1,10 +1,9 @@
 import type { SendAI, TResponse } from "@core/messages/api/sendAI/types"
-import { mockRuntimeConstants } from "@core/utils/__tests__/setup/runtimeConstantsMock"
 import type { AllToolNames } from "@lucky/tools"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
-vi.mock("@examples/settings/constants", () => mockRuntimeConstants())
+vi.mock("@examples/settings/constants", () => ({}))
 
 // Create typed mock instances
 const mockSendAIRequest = vi.fn<(req: Parameters<SendAI>[0]) => Promise<TResponse<unknown>>>()

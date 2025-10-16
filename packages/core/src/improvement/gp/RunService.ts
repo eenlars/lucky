@@ -6,7 +6,7 @@
  */
 
 import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import type { FlowEvolutionMode } from "@core/types"
 import { RunTrackingError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"

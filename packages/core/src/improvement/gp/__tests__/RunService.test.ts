@@ -1,10 +1,5 @@
 // tests for RunService - database persistence for evolution runs
-import {
-  createMockEvolutionSettings,
-  createMockGenome,
-  mockRuntimeConstantsForGP,
-  setupCoreTest,
-} from "@core/utils/__tests__/setup/coreMocks"
+import { createMockEvolutionSettings, createMockGenome, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // mock external dependencies without referencing outer vars (avoid hoist issues)
@@ -24,8 +19,6 @@ vi.mock("@core/utils/logging/Logger", () => ({
   },
 }))
 
-// Runtime constants mocked by mockRuntimeConstantsForGP
-
 describe("RunService", () => {
   let lgg: any
   let genShortId: any
@@ -33,7 +26,6 @@ describe("RunService", () => {
 
   beforeEach(async () => {
     setupCoreTest()
-    mockRuntimeConstantsForGP()
 
     // Access mocked modules via dynamic import to respect path aliases
     ;({ lgg } = await import("@core/utils/logging/Logger"))

@@ -37,7 +37,7 @@ import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWork
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { R, type RS } from "@lucky/shared"
-import type { EvolutionContext } from "../../resources/types"
+import type { EvolutionContext } from "../../resources/gp.types"
 
 const operatorsWithFeedback = getCoreConfig().improvement.flags.operatorsWithFeedback
 

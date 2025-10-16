@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
 import { logException } from "@/lib/error-logger"
-import { PROVIDER_CONFIGS, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
+import { getProviderConfigs, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
@@ -26,7 +26,7 @@ interface ProviderConfigPageProps {
  * Model preferences are auto-saved via Zustand store with optimistic updates.
  */
 export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
-  const config = PROVIDER_CONFIGS[provider]
+  const config = getProviderConfigs()[provider]
   const Icon = config.icon
 
   // Zustand store for model preferences (auto-saves on toggle)

@@ -97,18 +97,12 @@ export function getEnabledProviderSlugs(configs: Record<string, ProviderConfig> 
     .map(([slug]) => slug)
 }
 
-/**
- * Legacy export for backwards compatibility
- * @deprecated Use getProviderConfigs() instead for dynamic provider detection
- */
-export const PROVIDER_CONFIGS = getProviderConfigs()
-
 export function validateApiKey(provider: string, apiKey: string): { valid: boolean; error?: string } {
   if (!apiKey || !apiKey.trim()) {
     return { valid: false, error: "API key cannot be empty" }
   }
 
-  const config = PROVIDER_CONFIGS[provider]
+  const config = getProviderConfigs()[provider]
 
   if (!config) {
     return { valid: false, error: `Unknown provider: ${provider}` }

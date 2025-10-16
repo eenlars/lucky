@@ -2,7 +2,6 @@ import {
   createMockEvolutionSettings,
   createMockGenome,
   createMockWorkflowScore,
-  mockRuntimeConstantsForGP,
   setupCoreTest,
 } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -12,7 +11,6 @@ let Select: any
 describe("Select", () => {
   beforeEach(() => {
     setupCoreTest()
-    mockRuntimeConstantsForGP()
     vi.resetModules()
     vi.doUnmock("@core/improvement/gp/Select")
   })
