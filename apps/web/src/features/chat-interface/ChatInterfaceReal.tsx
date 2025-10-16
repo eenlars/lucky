@@ -7,13 +7,15 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Provider, useChat } from "@ai-sdk-tools/store"
+import { Provider, useChat, useChatActions } from "@ai-sdk-tools/store"
 import { DefaultChatTransport } from "ai"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ChatInput } from "./components/ChatInput/ChatInput"
+import type { ChatInterfaceProps } from "./ChatInterfaceSimulation"
 import { EmptyResponseError } from "./components/EmptyResponseError"
 import { MessagesArea } from "./components/MessagesArea"
-import type { ChatInterfaceProps } from "./types/types"
+import { copyToClipboard } from "./utils/message-utils"
+import { getMessageText } from "./utils/message-utils"
 
 interface ChatInterfaceRealInnerProps extends ChatInterfaceProps {
   nodeId: string
@@ -33,7 +35,7 @@ function ChatInterfaceRealInner({
   systemPrompt,
 }: ChatInterfaceRealInnerProps) {
   const {
-    messages: aiMessages,
+    messages,
     sendMessage,
     status,
     error,
@@ -47,29 +49,19 @@ function ChatInterfaceRealInner({
       },
     }),
   })
+  const { setMessages } = useChatActions()
   const [inputValue, setInputValue] = useState("")
   const previousMessagesLengthRef = useRef(0)
 
   const isLoading = status === "submitted" || status === "streaming"
 
-  // Convert AI SDK messages (with parts) to our Message format (with content)
-  const messages = aiMessages.map(msg => {
-    const textPart = msg.parts.find((p: any) => p.type === "text")
-    const content = (textPart as any)?.text || ""
-
-    return {
-      id: msg.id,
-      role: msg.role as "user" | "assistant",
-      content,
-      timestamp: new Date(),
-      status: "sent" as const,
-    }
-  })
-
   // Check if last message is empty assistant response
   const lastMessage = messages[messages.length - 1]
   const showEmptyResponseWarning =
-    !isLoading && lastMessage && lastMessage.role === "assistant" && lastMessage.content.trim().length === 0
+    !isLoading &&
+    lastMessage &&
+    lastMessage.role === "assistant" &&
+    getMessageText(lastMessage).trim().length === 0
 
   // Notify parent when new assistant messages arrive
   useEffect(() => {
@@ -113,9 +105,22 @@ function ChatInterfaceRealInner({
     const lastUserMessage = [...messages].reverse().find(msg => msg.role === "user")
 
     if (lastUserMessage) {
-      sendMessage({ text: lastUserMessage.content })
+      sendMessage({ text: getMessageText(lastUserMessage) })
     }
   }, [messages, sendMessage])
+
+  // Handle copy - Rams: honest, simple
+  const handleCopy = useCallback(async (_id: string, content: string) => {
+    await copyToClipboard(content)
+  }, [])
+
+  // Handle delete - Rams: minimal, functional
+  const handleDelete = useCallback(
+    (id: string) => {
+      setMessages(messages.filter(msg => msg.id !== id))
+    },
+    [messages, setMessages],
+  )
 
   return (
     <div className={cn("flex flex-col h-full w-full bg-white dark:bg-gray-950", className)} style={{ maxHeight }}>
@@ -128,6 +133,8 @@ function ChatInterfaceRealInner({
             statusMessage={isLoading ? "Thinking..." : null}
             error={error instanceof Error ? error : error ? new Error(String(error)) : null}
             onRetry={handleRetry}
+            onCopy={handleCopy}
+            onDelete={handleDelete}
           />
 
           {/* Empty response warning - show inline after messages */}
@@ -162,16 +169,8 @@ export function ChatInterfaceReal({
   systemPrompt,
   ...props
 }: ChatInterfaceProps) {
-  // Convert Message[] (with content) to UIMessage[] (with parts) for Provider
-  const uiMessages = (props.initialMessages || []).map(msg => ({
-    id: msg.id,
-    role: msg.role,
-    parts: [{ type: "text" as const, text: msg.content }],
-    timestamp: msg.timestamp || new Date(),
-  }))
-
   return (
-    <Provider initialMessages={uiMessages}>
+    <Provider initialMessages={props.initialMessages || []}>
       <ChatInterfaceRealInner {...props} nodeId={nodeId} modelName={modelName} systemPrompt={systemPrompt} />
     </Provider>
   )

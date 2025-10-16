@@ -6,8 +6,14 @@
 
 "use client"
 
-import type { ChatWelcomeProps } from "@/features/chat-interface/types/types"
 import { cn } from "@/lib/utils"
+
+export interface ChatWelcomeProps {
+  title?: string
+  subtitle?: string
+  icon?: React.ReactNode
+  className?: string
+}
 
 export function ChatWelcome({
   title = "Start a conversation",
