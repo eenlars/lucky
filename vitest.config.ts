@@ -1,8 +1,16 @@
+/**
+ * Root Vitest config - single-project for cross-repo integration tests only
+ *
+ * For multi-project workspace testing, use vitest.workspace.ts instead:
+ * - bunx vitest -w -p pkg-unit
+ * - bunx vitest -w -p pkg-int
+ * - bunx vitest -w -p xrepo
+ * - bunx vitest -w -p e2e
+ */
 import path from "node:path"
 import { defineConfig, loadEnv } from "vite"
 import { configDefaults } from "vitest/config"
 
-// Single-project Vitest config focused on integration tests only
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "")
   process.env = {
@@ -23,7 +31,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     test: {
-      // Keep it single-project to avoid “Test Projects” fan-out in editors
       include: ["tests/integration/**/*.test.ts", "tests/integration/**/*.spec.test.ts"],
       exclude: [...configDefaults.exclude, "**/e2e/**"],
       environment: "node",

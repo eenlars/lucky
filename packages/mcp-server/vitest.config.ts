@@ -1,12 +1,11 @@
-import { defineConfig } from "vitest/config"
+/**
+ * Package-specific Vitest config for @lucky/mcp-server
+ * For DX: allows running `bunx vitest` inside the package directory
+ */
+import { baseConfig } from "@lucky/test-config/vitest.base"
 
-export default defineConfig({
+export default baseConfig({
   test: {
-    globals: true,
-    environment: "node",
-    include: ["**/*.test.ts"],
-    setupFiles: ["./vitest.setup.ts"],
-    testTimeout: 30000,
-    passWithNoTests: true,
+    include: ["packages/mcp-server/src/**/*.test.{ts,tsx}", "packages/mcp-server/src/**/*.spec.test.{ts,tsx}"],
   },
 })

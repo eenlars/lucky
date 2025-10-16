@@ -1,10 +1,11 @@
-import { defineConfig } from "vitest/config"
+/**
+ * Package-specific Vitest config for @lucky/models
+ * For DX: allows running `bunx vitest` inside the package directory
+ */
+import { baseConfig } from "@lucky/test-config/vitest.base"
 
-export default defineConfig({
+export default baseConfig({
   test: {
-    globals: true,
-    environment: "node",
-    include: ["src/**/*.test.ts", "src/**/*.spec.test.ts"],
-    exclude: ["**/node_modules/**", "**/dist/**"],
+    include: ["packages/models/src/**/*.test.{ts,tsx}", "packages/models/src/**/*.spec.test.{ts,tsx}"],
   },
 })
