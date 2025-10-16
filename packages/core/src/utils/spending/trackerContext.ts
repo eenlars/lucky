@@ -29,16 +29,17 @@ export function getSpendingTracker(): SpendingTracker {
     return tracker
   }
 
-  // No context - log error in production for debugging
+  // No context - this is an error in production
   if (isProduction) {
-    console.error(
-      "[getSpendingTracker] ERROR: No execution context in production. " +
-        "Workflow should be invoked via API endpoint with withExecutionContext(). " +
-        "Falling back to global tracker for this request.",
+    throw new Error(
+      "[getSpendingTracker] FATAL: No execution context in production. " +
+        "Workflow must be invoked via API endpoint with withExecutionContext(). " +
+        "Cannot proceed without proper context to track costs accurately.",
     )
   }
 
   // Fallback for test/dev/isolated execution: use global tracker
+  // This is safe because test/dev environments don't have concurrent production workflows
   if (!globalTracker) {
     globalTracker = SpendingTracker.create(getCoreConfig().limits.maxCostUsdPerRun)
   }

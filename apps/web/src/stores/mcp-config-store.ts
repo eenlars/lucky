@@ -9,6 +9,7 @@ export interface MCPServerConfig {
 
 export interface MCPServers {
   mcpServers: Record<string, MCPServerConfig>
+  lastKnownUpdateAt?: string // For optimistic concurrency control
 }
 
 interface MCPConfigStore {
@@ -38,6 +39,11 @@ async function saveConfigToBackend(config: MCPServers): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json()
+    if (response.status === 409) {
+      // Conflict: configuration was modified by another client
+      toast.error(`Conflict: ${error.modifiedServers} was modified by another client. Please refresh and try again.`)
+      throw new Error("CONCURRENT_MODIFICATION")
+    }
     toast.error("Failed to save MCP config to database")
     throw new Error(error.error || "Failed to save MCP config")
   }
@@ -78,12 +84,13 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
       // Fetch current config from backend
       const currentConfig = await loadConfigFromBackend()
 
-      // Add new server to the list
+      // Add new server to the list, preserving lastKnownUpdateAt for concurrency control
       const updatedConfig: MCPServers = {
         mcpServers: {
           ...currentConfig.mcpServers,
           [name]: serverConfig,
         },
+        lastKnownUpdateAt: currentConfig.lastKnownUpdateAt,
       }
 
       // Save to backend
@@ -94,7 +101,7 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       set({ isSyncing: false, lastSyncError: errorMessage })
-      throw error
+      // Don't re-throw - error is already tracked in store state
     }
   },
 
@@ -108,10 +115,13 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
       // Fetch current config from backend
       const currentConfig = await loadConfigFromBackend()
 
-      // Remove server from the list
+      // Remove server from the list, preserving lastKnownUpdateAt for concurrency control
       const updatedServers = { ...currentConfig.mcpServers }
       delete updatedServers[name]
-      const updatedConfig: MCPServers = { mcpServers: updatedServers }
+      const updatedConfig: MCPServers = {
+        mcpServers: updatedServers,
+        lastKnownUpdateAt: currentConfig.lastKnownUpdateAt,
+      }
 
       // Save to backend
       await saveConfigToBackend(updatedConfig)
@@ -121,7 +131,7 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       set({ isSyncing: false, lastSyncError: errorMessage })
-      throw error
+      // Don't re-throw - error is already tracked in store state
     }
   },
 
@@ -140,7 +150,7 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       set({ isSyncing: false, lastSyncError: errorMessage })
-      throw error
+      // Don't re-throw - error is already tracked in store state
     }
   },
 
@@ -156,7 +166,7 @@ export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       set({ isSyncing: false, lastSyncError: errorMessage })
-      throw error
+      // Don't re-throw - error is already tracked in store state
     }
   },
 

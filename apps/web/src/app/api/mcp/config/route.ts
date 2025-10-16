@@ -15,6 +15,7 @@ const mcpServerConfigSchema = z.object({
 
 const mcpConfigSchema = z.object({
   mcpServers: z.record(z.string(), mcpServerConfigSchema),
+  lastKnownUpdateAt: z.string().datetime().optional(), // For optimistic concurrency control
 })
 
 /**
@@ -32,10 +33,11 @@ export async function GET(req: NextRequest) {
     const { data, error } = await supabase
       .schema("mcp")
       .from("user_server_configs")
-      .select("name, config_json, enabled")
+      .select("name, config_json, enabled, updated_at")
       .eq("user_id", clerkId)
       .is("server_id", null) // Only stdio servers (not marketplace servers)
       .eq("enabled", true)
+      .order("updated_at", { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: `Failed to fetch MCP configs: ${error.message}` }, { status: 500 })
@@ -43,11 +45,15 @@ export async function GET(req: NextRequest) {
 
     // Transform rows into { mcpServers: { name: config } } format
     const mcpServers: Record<string, any> = {}
+    let latestUpdateAt: string | null = null
     for (const row of data || []) {
       mcpServers[row.name] = row.config_json
+      if (!latestUpdateAt || row.updated_at > latestUpdateAt) {
+        latestUpdateAt = row.updated_at
+      }
     }
 
-    return NextResponse.json({ mcpServers })
+    return NextResponse.json({ mcpServers, lastKnownUpdateAt: latestUpdateAt })
   } catch (e: any) {
     logException(e, {
       location: "/api/mcp/config/GET",
@@ -84,14 +90,15 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { mcpServers } = validation.data
+  const { mcpServers, lastKnownUpdateAt } = validation.data
 
   try {
     // Get existing stdio configs (server_id IS NULL)
+    // Include both enabled and disabled servers to avoid deleting disabled ones
     const { data: existing, error: fetchErr } = await supabase
       .schema("mcp")
       .from("user_server_configs")
-      .select("usco_id, name")
+      .select("usco_id, name, enabled, updated_at")
       .eq("user_id", clerkId)
       .is("server_id", null)
 
@@ -99,7 +106,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Failed to fetch existing configs: ${fetchErr.message}` }, { status: 500 })
     }
 
-    const existingNames = new Set((existing || []).map(row => row.name))
+    // Optimistic concurrency control: Check if any enabled configs were modified since client last fetched
+    if (lastKnownUpdateAt) {
+      const modifiedSince = (existing || [])
+        .filter(row => row.enabled && row.updated_at > lastKnownUpdateAt)
+
+      if (modifiedSince.length > 0) {
+        const modifiedNames = modifiedSince.map(row => row.name).join(", ")
+        return NextResponse.json(
+          {
+            error: "Conflict: Configuration was modified by another client",
+            modifiedServers: modifiedNames,
+            code: "CONCURRENT_MODIFICATION"
+          },
+          { status: 409 }
+        )
+      }
+    }
+
+    const existingEnabled = new Set(
+      (existing || []).filter(row => row.enabled).map(row => row.name)
+    )
     const incomingNames = new Set(Object.keys(mcpServers))
 
     // Determine operations
@@ -109,22 +136,23 @@ export async function POST(req: NextRequest) {
 
     // Find inserts and updates
     for (const [name, config] of Object.entries(mcpServers)) {
-      if (existingNames.has(name)) {
+      if (existingEnabled.has(name)) {
         toUpdate.push({ name, config })
       } else {
         toInsert.push({ name, config })
       }
     }
 
-    // Find deletes (servers that were removed)
-    for (const name of existingNames) {
+    // Find deletes (only delete enabled servers that were removed)
+    // Preserve disabled servers to avoid unintentional deletion
+    for (const name of existingEnabled) {
       if (!incomingNames.has(name)) {
         toDelete.push(name)
       }
     }
 
     // Execute operations
-    const operations: Promise<any>[] = []
+    const operations: PromiseLike<any>[] = []
 
     // Insert new servers
     if (toInsert.length > 0) {
@@ -137,12 +165,7 @@ export async function POST(req: NextRequest) {
         enabled: true,
       }))
 
-      operations.push(
-        supabase
-          .schema("mcp")
-          .from("user_server_configs")
-          .insert(insertData)
-      )
+      operations.push(supabase.schema("mcp").from("user_server_configs").insert(insertData))
     }
 
     // Update existing servers
@@ -154,7 +177,7 @@ export async function POST(req: NextRequest) {
           .update({ config_json: config, updated_at: new Date().toISOString() })
           .eq("user_id", clerkId)
           .eq("name", name)
-          .is("server_id", null)
+          .is("server_id", null),
       )
     }
 
@@ -167,7 +190,7 @@ export async function POST(req: NextRequest) {
           .delete()
           .eq("user_id", clerkId)
           .in("name", toDelete)
-          .is("server_id", null)
+          .is("server_id", null),
       )
     }
 

@@ -4,8 +4,7 @@
 ## Prerequisites
 
 ```bash
-# Start the dev server
-cd /Users/here/conductor/lucky/.conductor/tirana-v1
+# Start the dev server from the repository root
 bun run dev
 ```
 
