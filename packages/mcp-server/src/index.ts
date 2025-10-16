@@ -69,11 +69,8 @@ const server = new FastMCP<SessionData>({
       }
       return { luckyApiKey: apiKey }
     }
-    // For self-hosted instances, API key is optional if LUCKY_API_URL is provided
-    if (!process.env.LUCKY_API_KEY && !process.env.LUCKY_API_URL) {
-      console.error("Either LUCKY_API_KEY or LUCKY_API_URL must be provided")
-      process.exit(1)
-    }
+    // For self-hosted/stdio mode, API key is optional
+    // LUCKY_API_URL will be checked when tools are invoked
     return { luckyApiKey: process.env.LUCKY_API_KEY }
   },
   // Lightweight health endpoint for LB checks
