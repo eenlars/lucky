@@ -268,7 +268,7 @@ function JsonEditor() {
     }
   }
 
-  const handleApply = () => {
+  const handleApply = async () => {
     if (!jsonText.trim()) return
 
     try {
@@ -288,9 +288,11 @@ function JsonEditor() {
         }
       }
 
-      updateConfig(parsed)
+      // Wait for the config to be saved and store to be updated
+      await updateConfig(parsed)
       setIsDirty(false)
       setSuccess(true)
+      toast.success("Configuration saved successfully")
       setTimeout(() => setSuccess(false), 2000)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid JSONC")

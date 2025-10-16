@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { toast } from "sonner"
 
 export interface MCPServerConfig {
   command: string
@@ -39,8 +40,11 @@ async function saveConfigToBackend(config: MCPServers): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json()
+    toast.error("Failed to save MCP config to database")
     throw new Error(error.error || "Failed to save MCP config")
   }
+
+  toast.success("MCP config saved to database")
 }
 
 /**
@@ -50,10 +54,13 @@ async function loadConfigFromBackend(): Promise<MCPServers> {
   const response = await fetch("/api/mcp/config")
 
   if (!response.ok) {
+    toast.error("Failed to load MCP config from database")
     throw new Error("Failed to load MCP config")
   }
 
-  return response.json()
+  const config = await response.json()
+  toast.success("MCP config loaded from database")
+  return config
 }
 
 export const useMCPConfigStore = create<MCPConfigStore>()(
