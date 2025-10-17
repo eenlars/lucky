@@ -1,7 +1,7 @@
 "use client"
 
-import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide"
 import { ChatInterface } from "@/features/chat-interface/ChatInterface"
+import { OnboardingGuide } from "@/features/onboarding/onboarding/OnboardingGuide"
 import { Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"

@@ -5,7 +5,7 @@ import {
   createMockWorkflowConfig,
   createMockWorkflowGenome,
   createMockWorkflowScore,
-} from "@core/utils/__tests__/setup/genomeTestUtils"
+} from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
@@ -139,16 +139,6 @@ vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
 }))
 
 // Mock database operations
-vi.mock("@core/utils/persistence/workflow/registerWorkflow", () => ({
-  registerWorkflowInDatabase: vi.fn().mockResolvedValue({
-    workflowVersionId: "test-version-id",
-    workflowInvocationId: "test-invocation-id",
-  }),
-  ensureWorkflowExists: vi.fn().mockResolvedValue(undefined),
-  createWorkflowVersion: vi.fn().mockResolvedValue(undefined),
-  createWorkflowInvocation: vi.fn().mockResolvedValue(undefined),
-}))
-
 // Mock ideaToWorkflow
 vi.mock("@core/workflow/actions/generate/ideaToWorkflow", () => ({
   ideaToWorkflow: vi.fn().mockResolvedValue({
@@ -170,6 +160,15 @@ vi.mock("@core/clients/supabase/client", () => ({
   },
 }))
 
+// Mock registerWorkflow functions
+vi.mock("@core/utils/persistence/workflow/registerWorkflow", () => ({
+  createWorkflowVersion: vi.fn().mockResolvedValue(undefined),
+  ensureWorkflowExists: vi.fn().mockResolvedValue(undefined),
+  updateWorkflowInvocationInDatabase: vi.fn().mockResolvedValue(undefined),
+  createWorkflowInvocation: vi.fn().mockResolvedValue(undefined),
+  updateWorkflowVersionWithIO: vi.fn().mockResolvedValue(undefined),
+}))
+
 // Don't mock Workflow class - let Genome inherit properly
 
 // Import after mocks to avoid hoisting issues
@@ -178,7 +177,6 @@ import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGen
 import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
-import { createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
 
 import type { EvaluationCSV, EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -212,12 +210,10 @@ describe("Genome", () => {
         workflowConfig,
         parentWorkflowVersionIds,
         evaluationInput,
-        _evolutionContext,
       }: {
         workflowConfig: WorkflowConfig
         parentWorkflowVersionIds: string[]
         evaluationInput: EvaluationInput
-        _evolutionContext: EvolutionContext
       }): Promise<RS<Genome>> => {
         const genomeData: WorkflowGenome = {
           nodes: workflowConfig.nodes,
@@ -394,7 +390,10 @@ describe("Genome", () => {
 
     beforeEach(() => {
       genomeData = createMockWorkflowGenome()
-      const evaluationInput = createMockEvaluationInputGeneric()
+      const evaluationInput = {
+        ...createMockEvaluationInputGeneric("text"),
+        goal: "Calculate the sum",
+      }
       genome = new Genome(genomeData, evaluationInput, evolutionContext)
     })
 
@@ -458,34 +457,6 @@ describe("Genome", () => {
         // should test the effect of addCost on evaluation results or total cost
         // cost is internal, verify through behavior
         expect(genome).toBeInstanceOf(Genome)
-      })
-    })
-
-    describe("Database Operations", () => {
-      it("should save to database with evolution metadata", async () => {
-        await createWorkflowVersion({
-          persistence: undefined,
-          workflowVersionId: "test-version-id",
-          workflowConfig: genome.getWorkflowConfig(),
-          commitMessage: "test commit",
-          generation: "test-gen-id",
-          operation: "init",
-          parent1Id: "parent1",
-          parent2Id: "parent2",
-          workflowId: genome.getWorkflowId(),
-        })
-
-        expect(vi.mocked(createWorkflowVersion)).toHaveBeenCalledWith({
-          persistence: undefined,
-          workflowVersionId: "test-version-id",
-          workflowConfig: genome.getWorkflowConfig(),
-          commitMessage: "test commit",
-          generation: "test-gen-id",
-          operation: "init",
-          parent1Id: "parent1",
-          parent2Id: "parent2",
-          workflowId: genome.getWorkflowId(),
-        })
       })
     })
   })

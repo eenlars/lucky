@@ -4,7 +4,7 @@ import { Background, ConnectionLineType, ReactFlow, useReactFlow } from "@xyflow
 import { useEffect, useRef } from "react"
 import { useShallow } from "zustand/react/shallow"
 
-import { AgentDialogInspect } from "@/app/components/agent-dialog-inspect/panel"
+import { AgentDialogInspect } from "@/app/components/agent-dialog/panel"
 import { ExecutionLogsPanel } from "@/features/cli-inspection/components/ExecutionLogsPanel"
 import { WorkflowEdge } from "@/features/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
 import { nodeTypes } from "@/features/react-flow-visualization/components/nodes/nodes"

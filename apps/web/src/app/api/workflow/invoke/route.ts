@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises"
+import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
-import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import {
   extractTraceId,
   extractWorkflowOutput,
@@ -12,6 +12,8 @@ import {
   formatWorkflowError,
 } from "@/lib/mcp-invoke/response"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
+import { loadMCPToolkitsFromDatabase } from "@/lib/mcp/database-toolkit-loader"
+import { mergeMCPToolkits } from "@/lib/mcp/merge-toolkits"
 import { deleteWorkflowState, setWorkflowState, subscribeToCancellation } from "@/lib/redis/workflow-state"
 import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import {
@@ -154,28 +156,40 @@ export async function POST(req: NextRequest) {
 
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
-    // Load MCP configuration for UI-based workflows from lockbox
+    // Load MCP configurations from both database and lockbox
     let mcpToolkits: import("@lucky/shared").MCPToolkitMap | undefined
     if (principal.auth_method === "session") {
       try {
-        // Fetch encrypted MCP config from lockbox
-        const mcpConfigJson = await secrets.get("servers", "mcp")
+        // Load from database
+        const databaseToolkits = await loadMCPToolkitsFromDatabase(principal.clerk_id)
 
-        if (mcpConfigJson) {
-          const mcpConfig = JSON.parse(mcpConfigJson) as {
-            mcpServers: Record<string, { command: string; args: string[]; env?: Record<string, string> }>
-          }
+        // Load from lockbox
+        let lockboxToolkits: import("@lucky/shared").MCPToolkitMap | undefined
+        try {
+          const mcpConfigJson = await secrets.get("servers", "mcp")
 
-          if (Object.keys(mcpConfig.mcpServers).length > 0) {
-            const { uiConfigToToolkits } = await import("@lucky/shared")
-            mcpToolkits = uiConfigToToolkits(mcpConfig.mcpServers)
-            console.log("[workflow/invoke] Loaded MCP toolkits from lockbox:", Object.keys(mcpToolkits))
+          if (mcpConfigJson) {
+            const mcpConfig = JSON.parse(mcpConfigJson) as {
+              mcpServers: Record<string, { command: string; args: string[]; env?: Record<string, string> }>
+            }
+
+            if (Object.keys(mcpConfig.mcpServers).length > 0) {
+              const { uiConfigToToolkits } = await import("@lucky/shared")
+              lockboxToolkits = uiConfigToToolkits(mcpConfig.mcpServers)
+            }
           }
-        } else {
-          console.log("[workflow/invoke] No MCP config found in lockbox")
+        } catch (error) {
+          console.warn("[workflow/invoke] Failed to load MCP config from lockbox:", error)
+        }
+
+        // Merge toolkits (database takes precedence over lockbox)
+        mcpToolkits = mergeMCPToolkits(databaseToolkits, lockboxToolkits)
+
+        if (!mcpToolkits) {
+          console.log("[workflow/invoke] No MCP configs found in database or lockbox")
         }
       } catch (error) {
-        console.warn("[workflow/invoke] Failed to load MCP config from lockbox, continuing without toolkits:", error)
+        console.warn("[workflow/invoke] Failed to load MCP configs, continuing without toolkits:", error)
       }
     }
 

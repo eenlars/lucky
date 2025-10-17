@@ -114,18 +114,9 @@ class CatalogValidator {
         this.addError(modelId, "intelligence", `Intelligence must be between 1-10, got: ${model.intelligence}`)
       }
 
-      // Warn if active model is also disabled
-      if (model.active && model.disabled) {
-        this.addWarning(modelId, "active/disabled", "Model is marked both active and disabled")
-      }
-
-      // Warn if disabled without active being false
-      if (model.disabled && model.active !== false) {
-        this.addWarning(
-          modelId,
-          "disabled",
-          "Model is disabled but active is not explicitly false (consider setting active: false)",
-        )
+      // Validate availability flags
+      if (model.runtimeEnabled === false && model.uiHiddenInProd === false) {
+        // allowed: runtime disabled but visible (for documentation)
       }
     }
 

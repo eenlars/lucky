@@ -7,6 +7,14 @@
 
 import type { AgentObserver } from "./AgentObserver"
 
+// Ensure a single shared instance across Next.js route chunks / HMR.
+// Using module statics can create multiple instances if the module is bundled
+// more than once. Storing on globalThis guarantees one per process.
+declare global {
+  // eslint-disable-next-line no-var
+  var __observerRegistry: ObserverRegistry | undefined
+}
+
 export class ObserverRegistry {
   private static instance: ObserverRegistry | null = null
   private observers = new Map<string, AgentObserver>()
@@ -14,10 +22,12 @@ export class ObserverRegistry {
   private constructor() {}
 
   static getInstance(): ObserverRegistry {
-    if (!ObserverRegistry.instance) {
-      ObserverRegistry.instance = new ObserverRegistry()
+    // Prefer global instance to avoid duplicates from bundling/HMR
+    if (!globalThis.__observerRegistry) {
+      globalThis.__observerRegistry = new ObserverRegistry()
     }
-    return ObserverRegistry.instance
+    ObserverRegistry.instance = globalThis.__observerRegistry
+    return globalThis.__observerRegistry
   }
 
   /**

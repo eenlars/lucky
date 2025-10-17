@@ -1,8 +1,9 @@
 import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { getActiveModelNames } from "@lucky/core/utils/spending/functions"
-import { findModelByName, getActiveModels, getModelsByProvider } from "@lucky/models"
+import { findModelByName, getModelsByProvider } from "@lucky/models"
+import { getRuntimeEnabledModels } from "@lucky/models/pricing/catalog"
+import { providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
-import { providerNameSchema } from "packages/shared/dist/client"
 
 export const runtime = "nodejs"
 
@@ -38,13 +39,13 @@ export async function POST(request: NextRequest) {
 
     if (action === "getModelsByProvider") {
       if (!provider) {
-        // Return all active models if no provider specified
-        const models = getActiveModels()
+        // Return all runtime-enabled models if no provider specified
+        const models = getRuntimeEnabledModels()
         return alrighty("models", { models })
       }
       // Return models for specific provider
       const validatedProvider = providerNameSchema.parse(provider)
-      const models = getModelsByProvider(validatedProvider).filter(m => m.active)
+      const models = getModelsByProvider(validatedProvider).filter(m => m.runtimeEnabled)
       return alrighty("models", { models })
     }
 

@@ -1,5 +1,5 @@
+import { decryptGCM, encryptGCM, normalizeNamespace } from "@/features/secret-management/lib/lockbox"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
-import { decryptGCM, encryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
   }
   const ns = normalizeNamespace(namespace)
 
-  // Encrypt
   try {
     const { ciphertext, iv, authTag } = encryptGCM(value)
 

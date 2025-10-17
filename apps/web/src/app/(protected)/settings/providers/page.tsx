@@ -1,8 +1,8 @@
 "use client"
 
-import { SyncStatusBadge } from "@/components/providers/sync-status-badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { SyncStatusBadge } from "@/features/provider-llm-setup/providers/sync-status-badge"
 import { getEnabledProviderSlugs, getProviderConfigs } from "@/lib/providers/provider-utils"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import { ArrowRight } from "lucide-react"

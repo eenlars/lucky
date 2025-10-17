@@ -123,11 +123,12 @@ export class Models {
       }
     }
 
-    // Fallback: If not in catalog and contains "/", try parsing
-    // This maintains backward compatibility for models not yet in catalog
-    if (spec.includes("/")) {
-      const [provider, model] = spec.split("/", 2)
-      return { provider, model }
+    // Fallback: If not in catalog, parse provider#model format
+    // Format: provider#model where model can contain slashes
+    // Example: "openrouter#google/gemini-2.5-flash-lite"
+    if (spec.includes("#")) {
+      const [provider, ...rest] = spec.split("#")
+      return { provider, model: rest.join("#") }
     }
 
     // Fallback to default tier

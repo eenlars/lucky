@@ -12,6 +12,7 @@ import { useShallow } from "zustand/react/shallow"
 import AppContextMenu from "@/features/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/features/react-flow-visualization/components/layouts/sidebar-layout/SidebarLayout"
 import Workflow from "@/features/react-flow-visualization/components/workflow/Workflow"
+import type { WorkflowValidationError } from "@/features/react-flow-visualization/store/app-store"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 
@@ -57,6 +58,47 @@ async function loadFromDSLClientDisplay(dslConfig: any) {
   return output.config
 }
 
+/**
+ * Parse validation errors from API response into WorkflowValidationError objects
+ */
+function parseValidationErrors(apiErrors: any): WorkflowValidationError[] {
+  if (!apiErrors) return []
+
+  // Handle array of error strings
+  if (Array.isArray(apiErrors)) {
+    return apiErrors
+      .filter((e: any) => e) // filter out empty
+      .map((e: any, i: number) => ({
+        id: `error-${i}-${Date.now()}`,
+        title: typeof e === "string" ? e.split(":")[0] || "Validation Error" : "Validation Error",
+        description: typeof e === "string" ? e : JSON.stringify(e),
+        severity: "error" as const,
+      }))
+  }
+
+  // Handle single error object
+  if (typeof apiErrors === "object") {
+    return [
+      {
+        id: `error-0-${Date.now()}`,
+        title: apiErrors.message || "Validation Error",
+        description: apiErrors.details || JSON.stringify(apiErrors),
+        severity: "error" as const,
+      },
+    ]
+  }
+
+  // Fallback
+  return [
+    {
+      id: `error-0-${Date.now()}`,
+      title: "Validation Error",
+      description: String(apiErrors),
+      severity: "error" as const,
+    },
+  ]
+}
+
 type EditMode = "graph" | "json" | "eval"
 
 interface EditModeSelectorProps {
@@ -86,6 +128,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     updateWorkflowJSON,
     syncJSONToGraph,
     organizeLayout,
+    addValidationErrors,
+    clearValidationErrors,
   } = useAppStore(
     useShallow(state => ({
       nodes: state.nodes,
@@ -98,6 +142,8 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       updateWorkflowJSON: state.updateWorkflowJSON,
       syncJSONToGraph: state.syncJSONToGraph,
       organizeLayout: state.organizeLayout,
+      addValidationErrors: state.addValidationErrors,
+      clearValidationErrors: state.clearValidationErrors,
     })),
   )
 
@@ -297,19 +343,32 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
   ])
 
   const handleModeChange = async (newMode: EditMode) => {
-    // Sync data when switching modes
-    if (mode === "graph" && (newMode === "json" || newMode === "eval")) {
-      // Switching from graph to JSON/Eval - export graph data (auto-updates store)
-      exportToJSON()
-    } else if (mode === "json" && (newMode === "graph" || newMode === "eval")) {
-      // Switching from JSON to graph/Eval - import JSON data
-      await syncJSONToGraph()
-    }
+    // Clear previous errors before switching modes
+    clearValidationErrors()
 
-    setMode(newMode)
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("mode", newMode)
-    router.push(`?${params.toString()}`)
+    try {
+      // Sync data when switching modes
+      if (mode === "graph" && (newMode === "json" || newMode === "eval")) {
+        // Switching from graph to JSON/Eval - export graph data (auto-updates store)
+        exportToJSON()
+      } else if (mode === "json" && (newMode === "graph" || newMode === "eval")) {
+        // Switching from JSON to graph/Eval - import JSON data
+        try {
+          await syncJSONToGraph()
+        } catch (error) {
+          // Sync validation errors (already handled by syncJSONToGraph via loadFromDSLClientDisplay)
+          console.error("Validation error during sync:", error)
+        }
+      }
+
+      setMode(newMode)
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("mode", newMode)
+      router.push(`?${params.toString()}`)
+    } catch (error) {
+      console.error("Error switching modes:", error)
+      // Error will be shown in validation panel
+    }
   }
 
   const handleSave = useCallback(async () => {

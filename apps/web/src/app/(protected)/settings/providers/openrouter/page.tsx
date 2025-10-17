@@ -1,4 +1,4 @@
-import { ProviderConfigPage } from "@/components/providers/provider-config-page"
+import { ProviderConfigPage } from "@/features/provider-llm-setup/providers/provider-config-page"
 
 export default function OpenRouterProviderPage() {
   return <ProviderConfigPage provider="openrouter" />

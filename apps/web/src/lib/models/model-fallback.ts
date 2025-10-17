@@ -66,7 +66,7 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
 
   for (const modelId of enabledModelIds) {
     const entry = findModel(modelId)
-    if (entry?.active) {
+    if (entry?.runtimeEnabled) {
       enabledModels.push(entry)
     }
   }

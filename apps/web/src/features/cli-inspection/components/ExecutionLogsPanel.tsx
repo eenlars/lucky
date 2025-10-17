@@ -1,7 +1,7 @@
 "use client"
 
 import { useExecutionStore } from "@/features/react-flow-visualization/store/execution-store"
-import { ArrowDown, PlayCircle } from "lucide-react"
+import { ArrowDown, ChevronDown, ChevronUp, PlayCircle } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useAutoScroll } from "../hooks/use-auto-scroll"
 import { useLogEngine } from "../hooks/use-log-engine"
@@ -28,6 +28,7 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
   const [searchQuery, setSearchQuery] = useState("")
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0)
   const [localLogs, setLocalLogs] = useState<LogEntryType[]>([])
+  const [isMinimized, setIsMinimized] = useState(false)
 
   // Log computation engine (pure functions + memoization)
   const engine = useLogEngine(events, {
@@ -97,17 +98,37 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
 
   return (
     <div
-      className="fixed bottom-0 left-[70px] right-0 bg-white dark:bg-[oklch(0.15_0_0)] border-t border-gray-200 dark:border-white/10 shadow-lg z-40"
-      style={{
-        height: "30vh",
-        minHeight: "200px",
-        maxHeight: "60vh",
-      }}
+      className="fixed bottom-0 left-[70px] right-0 bg-white dark:bg-[oklch(0.15_0_0)] border-t border-gray-200 dark:border-white/10 shadow-lg z-40 transition-all duration-200"
+      style={
+        isMinimized
+          ? {
+              height: "48px",
+            }
+          : {
+              height: "30vh",
+              minHeight: "200px",
+              maxHeight: "60vh",
+            }
+      }
     >
       {/* Toolbar */}
       <div className="h-12 px-4 flex items-center gap-3 bg-gray-50 dark:bg-[oklch(0.13_0_0)] border-b border-gray-200 dark:border-white/10">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Execution Logs</h2>
         {isExecuting && <span className="text-xs text-gray-500 dark:text-gray-400">(Running...)</span>}
+
+        {/* Minimize/Expand Button */}
+        <button
+          type="button"
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="p-1 hover:bg-gray-200 dark:hover:bg-white/10 rounded transition-colors"
+          title={isMinimized ? "Expand" : "Minimize"}
+        >
+          {isMinimized ? (
+            <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          )}
+        </button>
 
         <div className="flex-1" />
 
@@ -147,93 +168,95 @@ export function ExecutionLogsPanel({ isOpen, onClose }: ExecutionLogsPanelProps)
       </div>
 
       {/* Logs Content */}
-      <div
-        ref={scroll.scrollContainerRef}
-        onScroll={scroll.handleScroll}
-        className="overflow-y-auto relative"
-        style={{ height: "calc(100% - 48px)" }}
-      >
-        {displayLogs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <PlayCircle className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              {isEmpty ? "No execution logs yet" : "No logs match filters"}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {isEmpty ? "Run your workflow to see what happens" : "Try adjusting your filters"}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="divide-y divide-gray-100 dark:divide-white/5">
-              {displayLogs.map((log, index) => {
-                const isMatch = searchMatches.includes(index)
-                const isCurrentMatch = searchMatches[currentMatchIndex] === index
-                return (
-                  <div
-                    key={log.id}
-                    className={
-                      isMatch
-                        ? isCurrentMatch
-                          ? "bg-yellow-100 dark:bg-yellow-900/20"
-                          : "bg-yellow-50 dark:bg-yellow-900/10"
-                        : ""
-                    }
-                  >
-                    <LogEntry log={log} />
-                  </div>
-                )
-              })}
-
-              {/* Typing Indicator */}
-              {isExecuting && engine.activeNodeId && (
-                <div className="flex items-center gap-3 px-4 py-2.5">
-                  <div className="w-4 h-4 flex-shrink-0" />
-                  <span className="font-mono text-[11px] text-gray-500 dark:text-gray-400 w-[14ch] flex-shrink-0">
-                    ...
-                  </span>
-                  <span
-                    className="text-sm font-medium px-2 py-0.5 rounded border flex-shrink-0"
-                    style={{
-                      backgroundColor: "#8b5cf61A",
-                      borderColor: "#8b5cf64D",
-                      color: "#8b5cf6",
-                    }}
-                  >
-                    {engine.activeNodeId}
-                  </span>
-                  <div className="flex gap-1">
-                    <div
-                      className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"
-                      style={{ animationDelay: "0ms" }}
-                    />
-                    <div
-                      className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"
-                      style={{ animationDelay: "200ms" }}
-                    />
-                    <div
-                      className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"
-                      style={{ animationDelay: "400ms" }}
-                    />
-                  </div>
-                </div>
-              )}
+      {!isMinimized && (
+        <div
+          ref={scroll.scrollContainerRef}
+          onScroll={scroll.handleScroll}
+          className="overflow-y-auto relative"
+          style={{ height: "calc(100% - 48px)" }}
+        >
+          {displayLogs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <PlayCircle className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                {isEmpty ? "No execution logs yet" : "No logs match filters"}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {isEmpty ? "Run your workflow to see what happens" : "Try adjusting your filters"}
+              </p>
             </div>
+          ) : (
+            <>
+              <div className="divide-y divide-gray-100 dark:divide-white/5">
+                {displayLogs.map((log, index) => {
+                  const isMatch = searchMatches.includes(index)
+                  const isCurrentMatch = searchMatches[currentMatchIndex] === index
+                  return (
+                    <div
+                      key={log.id}
+                      className={
+                        isMatch
+                          ? isCurrentMatch
+                            ? "bg-yellow-100 dark:bg-yellow-900/20"
+                            : "bg-yellow-50 dark:bg-yellow-900/10"
+                          : ""
+                      }
+                    >
+                      <LogEntry log={log} />
+                    </div>
+                  )
+                })}
 
-            {/* Jump to Latest Button */}
-            {!scroll.autoScroll && !searchQuery && (
-              <button
-                type="button"
-                onClick={() => scroll.setAutoScroll(true)}
-                className="fixed bottom-[calc(30vh+16px)] right-6 flex items-center gap-2 px-3 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
-              >
-                <ArrowDown className="w-4 h-4" />
-                {scroll.newLogCount > 0 && <span className="text-xs font-medium">{scroll.newLogCount} new</span>}
-              </button>
-            )}
-          </>
-        )}
-      </div>
+                {/* Typing Indicator */}
+                {isExecuting && engine.activeNodeId && (
+                  <div className="flex items-center gap-3 px-4 py-2.5">
+                    <div className="w-4 h-4 flex-shrink-0" />
+                    <span className="font-mono text-[11px] text-gray-500 dark:text-gray-400 w-[14ch] flex-shrink-0">
+                      ...
+                    </span>
+                    <span
+                      className="text-sm font-medium px-2 py-0.5 rounded border flex-shrink-0"
+                      style={{
+                        backgroundColor: "#8b5cf61A",
+                        borderColor: "#8b5cf64D",
+                        color: "#8b5cf6",
+                      }}
+                    >
+                      {engine.activeNodeId}
+                    </span>
+                    <div className="flex gap-1">
+                      <div
+                        className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"
+                        style={{ animationDelay: "0ms" }}
+                      />
+                      <div
+                        className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"
+                        style={{ animationDelay: "200ms" }}
+                      />
+                      <div
+                        className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"
+                        style={{ animationDelay: "400ms" }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Jump to Latest Button */}
+              {!scroll.autoScroll && !searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => scroll.setAutoScroll(true)}
+                  className="fixed bottom-[calc(30vh+16px)] right-6 flex items-center gap-2 px-3 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+                >
+                  <ArrowDown className="w-4 h-4" />
+                  {scroll.newLogCount > 0 && <span className="text-xs font-medium">{scroll.newLogCount} new</span>}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

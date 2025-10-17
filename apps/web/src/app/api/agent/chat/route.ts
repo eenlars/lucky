@@ -1,6 +1,6 @@
+import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
-import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
@@ -260,11 +260,6 @@ export async function POST(request: NextRequest) {
               },
             })
 
-            console.log(`[Agent Chat] Starting stream conversion for node=${nodeId}`)
-
-            // Check if result has any immediate error indicators
-            console.log("[Agent Chat] Stream result keys:", Object.keys(result))
-
             const uiStream = result.toUIMessageStream()
             let chunkCount = 0
             let textChunkCount = 0
@@ -272,15 +267,9 @@ export async function POST(request: NextRequest) {
             try {
               for await (const chunk of uiStream) {
                 chunkCount++
-
-                // Log ALL chunk details
-                console.log(`[Agent Chat] Chunk ${chunkCount} FULL:`, JSON.stringify(chunk, null, 2))
-
-                if (chunk.type === "text-delta" && "delta" in chunk) {
+                if (chunk.type === "text-delta") {
                   textChunkCount++
-                  console.log(`[Agent Chat] TEXT chunk ${textChunkCount}: "${chunk.delta.substring(0, 50)}..."`)
                 }
-
                 writer.write(chunk)
               }
             } catch (streamError) {

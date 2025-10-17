@@ -19,8 +19,8 @@ import {
 } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
 import { tryNormalizeModelType } from "@lucky/models"
-import { R, type RS, withDescriptions } from "@lucky/shared"
 import type { ModelEntry, ModelPricingTier } from "@lucky/shared"
+import { R, type RS, withDescriptions } from "@lucky/shared"
 import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 
 // generate a single workflow from scratch based on a prompt
@@ -235,11 +235,33 @@ function normalizeWorkflowModels(
   }
 }
 
+// Limit user models to top 5 candidates (defensive against large model lists)
+// Ranking by: intelligence * speed_score
+function getLimitedUserModels(models: ModelEntry[], limit = 5): ModelEntry[] {
+  if (models.length <= limit) {
+    return models
+  }
+
+  const rank = (m: ModelEntry) => {
+    const speedScore = m.speed === "fast" ? 3 : m.speed === "medium" ? 2 : 1
+    return m.intelligence * 10 + speedScore
+  }
+
+  const sorted = models.slice().sort((a, b) => rank(b) - rank(a))
+  const limited = sorted.slice(0, limit)
+
+  console.log(`[formalizeWorkflow] limited user models from ${models.length} to ${limited.length}`, {
+    originalCount: models.length,
+    limitedCount: limited.length,
+    topModels: limited.map(m => ({ model: m.model, intelligence: m.intelligence, speed: m.speed })),
+  })
+
+  return limited
+}
+
 // Select a concrete model from the user's allowed models for a given pricing tier.
 // Policy: prefer highest intelligence within the tier; if none, fall back to best overall.
 function pickUserModelForTier(tier: ModelPricingTier, models: ModelEntry[]): string {
-  const byTier = models.filter(m => m.pricingTier === tier && m.active)
-
   const rank = (m: ModelEntry) => {
     // Higher intelligence preferred; speed order: fast > medium > slow
     const speedScore = m.speed === "fast" ? 3 : m.speed === "medium" ? 2 : 1
@@ -248,11 +270,16 @@ function pickUserModelForTier(tier: ModelPricingTier, models: ModelEntry[]): str
 
   const pick = (arr: ModelEntry[]) => arr.slice().sort((a, b) => rank(b) - rank(a))[0]
 
-  const preferred = pick(byTier)
+  // Filter by tier first, then limit to preserve tier-specific coverage
+  const byTier = models.filter(m => m.pricingTier === tier && m.runtimeEnabled)
+  const limitedByTier = getLimitedUserModels(byTier)
+
+  const preferred = pick(limitedByTier)
   if (preferred) return preferred.model // API-facing model string
 
-  // Fallback to best overall from user's models
-  const any = pick(models.filter(m => m.active))
+  // Fallback to best overall from limited models (applied after tier filter fails)
+  const limitedModels = getLimitedUserModels(models)
+  const any = pick(limitedModels.filter(m => m.runtimeEnabled))
   if (any) return any.model
 
   // Final fallback to core defaults (keeps system robust if user list is empty)

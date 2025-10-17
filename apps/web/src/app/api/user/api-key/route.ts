@@ -1,3 +1,4 @@
+import { getActiveApiKeyMetadata } from "@/features/secret-management/lib/api-key"
 import { alrighty, fail } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
@@ -15,15 +16,7 @@ export async function GET(_req: NextRequest) {
   const supabase = await createRLSClient()
 
   try {
-    const { data, error } = await supabase
-      .schema("lockbox")
-      .from("secret_keys")
-      .select("key_id, name, environment, scopes, created_at, last_used_at, expires_at")
-      .eq("clerk_id", userId)
-      .is("revoked_at", null)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const { data, error } = await getActiveApiKeyMetadata(supabase, userId)
 
     if (error) {
       console.error("[GET /api/user/api-key] Supabase error:", {

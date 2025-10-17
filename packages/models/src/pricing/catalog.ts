@@ -9,11 +9,12 @@
  */
 
 import { type ModelEntry, providerNameSchema } from "@lucky/shared"
+import { OPENROUTER_MODELS } from "./openrouter-models"
 
 /**
  * Model catalog - comprehensive list of all available models
  */
-export const MODEL_CATALOG: ModelEntry[] = [
+const RAW_MODEL_CATALOG: any[] = [
   // ============================================================================
   // OpenAI Direct API
   // ============================================================================
@@ -837,375 +838,8 @@ export const MODEL_CATALOG: ModelEntry[] = [
   // ============================================================================
   // OpenRouter API
   // ============================================================================
-
-  {
-    id: "openrouter#google/gemini-2.5-flash-lite",
-    provider: "openrouter",
-    model: "openrouter#google/gemini-2.5-flash-lite",
-    input: 0.15,
-    output: 0.6,
-    cachedInput: 0.06,
-    contextLength: 1048576,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 5,
-    pricingTier: "low",
-    active: true,
-  },
-
-  {
-    id: "openrouter#google/gemini-2.5-pro-preview",
-    provider: "openrouter",
-    model: "google/gemini-2.5-pro-preview",
-    input: 1.25,
-    output: 10,
-    cachedInput: 0.416667,
-    contextLength: 1048576,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 7,
-    pricingTier: "medium",
-    active: true,
-  },
-
-  {
-    id: "openrouter#anthropic/claude-sonnet-4",
-    provider: "openrouter",
-    model: "anthropic/claude-sonnet-4",
-    input: 3,
-    output: 15,
-    cachedInput: 1.166667,
-    contextLength: 1047576,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 8,
-    pricingTier: "medium",
-    active: true,
-  },
-
-  {
-    id: "openrouter#switchpoint/router",
-    provider: "openrouter",
-    model: "switchpoint/router",
-    input: 0.85,
-    output: 3.4,
-    cachedInput: 0.283333,
-    contextLength: 131072,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 8,
-    pricingTier: "medium",
-    active: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-4.1",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-4.1",
-    input: 12,
-    output: 48,
-    cachedInput: 4,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 8,
-    pricingTier: "medium",
-    active: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-4.1-mini",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-4.1-mini",
-    input: 0.4,
-    output: 1.6,
-    cachedInput: 0.1,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 7,
-    pricingTier: "medium",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-4.1-nano",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-4.1-nano",
-    input: 0.15,
-    output: 0.6,
-    cachedInput: 0.06,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 8,
-    pricingTier: "medium",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-4o-mini",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-4o-mini",
-    input: 0.15,
-    output: 0.6,
-    cachedInput: 0.075,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 7,
-    pricingTier: "low",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-3.5-turbo",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-3.5-turbo",
-    input: 0.5,
-    output: 0.4,
-    cachedInput: 0.025,
-    contextLength: 16385,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 6,
-    pricingTier: "low",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-4o",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-4o",
-    input: 2.5,
-    output: 10,
-    cachedInput: 1.25,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 8,
-    pricingTier: "medium",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#anthropic/claude-3-5-haiku",
-    provider: "openrouter",
-    model: "anthropic/claude-3-5-haiku",
-    input: 0.25,
-    output: 1.25,
-    cachedInput: 0.125,
-    contextLength: 200000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 7,
-    pricingTier: "low",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#meta-llama/llama-3.1-8b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.1-8b-instruct",
-    input: 0.055,
-    output: 0.055,
-    cachedInput: null,
-    contextLength: 131072,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 6,
-    pricingTier: "low",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#moonshotai/kimi-k2",
-    provider: "openrouter",
-    model: "moonshotai/kimi-k2",
-    input: 0.5,
-    output: 1.5,
-    cachedInput: 0.1,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 6,
-    pricingTier: "medium",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#moonshotai/kimi-k2-instruct",
-    provider: "openrouter",
-    model: "moonshotai/kimi-k2-instruct",
-    input: 0.5,
-    output: 1.5,
-    cachedInput: 0.1,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 6,
-    pricingTier: "medium",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#x-ai/grok-4",
-    provider: "openrouter",
-    model: "x-ai/grok-4",
-    input: 2.0,
-    output: 8.0,
-    cachedInput: 0.5,
-    contextLength: 131072,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 7,
-    pricingTier: "high",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#mistralai/mistral-small-3.2-24b-instruct",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-3.2-24b-instruct",
-    input: 0.055,
-    output: 0.055,
-    cachedInput: 0.018333,
-    contextLength: 131072,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: false,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "fast",
-    intelligence: 6,
-    pricingTier: "low",
-    active: false,
-    disabled: true,
-  },
-
-  {
-    id: "openrouter#openai/gpt-5",
-    provider: "openrouter",
-    model: "openrouter#openai/gpt-5",
-    input: 1.25,
-    output: 10,
-    cachedInput: 0.4,
-    contextLength: 128000,
-    supportsTools: true,
-    supportsJsonMode: true,
-    supportsStreaming: true,
-    supportsVision: true,
-    supportsReasoning: false,
-    supportsAudio: false,
-    supportsVideo: false,
-    speed: "medium",
-    intelligence: 9,
-    pricingTier: "medium",
-    active: false,
-    disabled: true,
-  },
+  // generated models from scripts/transform-openrouter-models.ts
+  ...OPENROUTER_MODELS,
 
   // ============================================================================
   // Groq API
@@ -1256,13 +890,42 @@ export const MODEL_CATALOG: ModelEntry[] = [
   },
 ]
 
+// Normalize legacy keys to clear naming on export
+export const MODEL_CATALOG: ModelEntry[] = RAW_MODEL_CATALOG.map((m: any) => {
+  const { active, disabled, ...rest } = m
+  const runtimeEnabled = active ?? true
+  const uiHiddenInProd = !!disabled
+
+  // Preserve legacy fields for backward compatibility while using new names internally.
+  // Some tests and call sites still read `active`/`disabled`.
+  return {
+    ...rest,
+    runtimeEnabled,
+    uiHiddenInProd,
+    // legacy mirrors (deprecated): keep in sync to avoid breaking old code/tests
+    active: runtimeEnabled,
+    disabled: uiHiddenInProd,
+  } as ModelEntry
+})
+
 /**
  * Helper: Get all active models
  * In development mode, returns ALL models (ignores active flag)
  */
-export function getActiveModels(): ModelEntry[] {
+/**
+ * Returns models eligible for runtime selection.
+ * In development, returns all models (ignores the flag to ease testing).
+ */
+export function getRuntimeEnabledModels(): ModelEntry[] {
   const isDevelopment = process.env.NODE_ENV === "development"
-  return isDevelopment ? MODEL_CATALOG : MODEL_CATALOG.filter(m => m.active)
+  return isDevelopment ? MODEL_CATALOG : MODEL_CATALOG.filter(m => m.runtimeEnabled)
+}
+
+/**
+ * @deprecated Use getRuntimeEnabledModels() instead.
+ */
+export function getActiveModels(): ModelEntry[] {
+  return getRuntimeEnabledModels()
 }
 
 /**
@@ -1303,15 +966,24 @@ export function getAllProviders(): string[] {
  * Helper: Get all providers that have at least one active model
  * In development mode, returns ALL providers (ignores active flag)
  */
-export function getActiveProviders(): string[] {
+/**
+ * Returns providers that have at least one runtime-enabled model.
+ * In development, returns all providers.
+ */
+export function getRuntimeEnabledProviders(): string[] {
   const isDevelopment = process.env.NODE_ENV === "development"
   const providers = new Set<string>()
   for (const model of MODEL_CATALOG) {
-    if (isDevelopment || model.active) {
-      providers.add(model.provider)
-    }
+    if (isDevelopment || model.runtimeEnabled) providers.add(model.provider)
   }
   return Array.from(providers).sort()
+}
+
+/**
+ * @deprecated Use getRuntimeEnabledProviders() instead.
+ */
+export function getActiveProviders(): string[] {
+  return getRuntimeEnabledProviders()
 }
 
 /**
@@ -1340,7 +1012,7 @@ export function getProviderInfo(): ProviderInfo[] {
     .map(([name, models]) => ({
       name,
       totalModels: models.length,
-      activeModels: models.filter(m => m.active).length,
+      activeModels: models.filter(m => m.runtimeEnabled).length,
       models,
     }))
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -1351,13 +1023,13 @@ export function getProviderInfo(): ProviderInfo[] {
  */
 export function getCatalogStats() {
   const isDevelopment = process.env.NODE_ENV === "development"
-  const active = getActiveModels()
+  const active = getRuntimeEnabledModels()
   const providers = getAllProviders()
   const byProvider: Record<string, number> = {}
 
   for (const provider of providers) {
     const providerModels = getModelsByProvider(provider)
-    byProvider[provider] = isDevelopment ? providerModels.length : providerModels.filter(m => m.active).length
+    byProvider[provider] = isDevelopment ? providerModels.length : providerModels.filter(m => m.runtimeEnabled).length
   }
 
   return {

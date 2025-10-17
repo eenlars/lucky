@@ -45,12 +45,17 @@ export interface PricingSnapshot {
  *
  * Allows manual adjustment of pricing without changing the catalog.
  * Useful for: discounts, promotions, experiments, cost adjustments.
+ *
+ * Note: Supports both `active` (legacy) and `runtimeEnabled` (new) for backward compatibility.
+ * When merging overrides, `runtimeEnabled` takes precedence if both are specified.
  */
 export interface PricingOverride {
   modelId: string
   input?: number
   output?: number
   cachedInput?: number | null
+  runtimeEnabled?: boolean
+  /** @deprecated Use `runtimeEnabled` instead. Kept for backward compatibility. */
   active?: boolean
   reason?: string
   expiresAt?: number
@@ -97,13 +102,29 @@ export class PricingService {
     }
 
     // Merge override with base entry
-    return {
+    // For runtimeEnabled: prefer override.runtimeEnabled, fall back to override.active (legacy),
+    // then use baseEntry.runtimeEnabled or baseEntry.active
+    const mergedEntry: ModelEntry = {
       ...baseEntry,
       input: override.input ?? baseEntry.input,
       output: override.output ?? baseEntry.output,
       cachedInput: override.cachedInput !== undefined ? override.cachedInput : baseEntry.cachedInput,
-      active: override.active !== undefined ? override.active : baseEntry.active,
     }
+
+    // Compute runtimeEnabled respecting both legacy and new fields
+    if (override.runtimeEnabled !== undefined) {
+      mergedEntry.runtimeEnabled = override.runtimeEnabled
+    } else if (override.active !== undefined) {
+      // Fall back to legacy active field if runtimeEnabled not specified
+      mergedEntry.runtimeEnabled = override.active
+    } else if (baseEntry.runtimeEnabled !== undefined) {
+      mergedEntry.runtimeEnabled = baseEntry.runtimeEnabled
+    } else if (baseEntry.active !== undefined) {
+      // Fall back to legacy active field from base entry
+      mergedEntry.runtimeEnabled = baseEntry.active
+    }
+
+    return mergedEntry
   }
 
   /**
@@ -114,7 +135,7 @@ export class PricingService {
   listModels(activeOnly = true): ModelEntry[] {
     const models = this.currentSnapshot.models.map(m => this.getPrice(m.id)).filter(Boolean) as ModelEntry[]
 
-    return activeOnly ? models.filter(m => m.active) : models
+    return activeOnly ? models.filter(m => m.runtimeEnabled) : models
   }
 
   /**
@@ -219,7 +240,7 @@ export class PricingService {
    */
   getStats() {
     const models = this.listModels(false)
-    const active = models.filter(m => m.active)
+    const active = models.filter(m => m.runtimeEnabled)
 
     return {
       total: models.length,

@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { InvocationPipeline } from "@core/messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
@@ -6,8 +7,8 @@ import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
-import { genShortId, type WorkflowNodeConfig } from "@lucky/shared"
-import { auth } from "@clerk/nextjs/server"
+import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
+import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 // Types for the API
@@ -21,6 +22,7 @@ interface PipelineTestRequest {
   message: string
   toolStrategy: "v2" | "v3" | "auto"
   mainGoal?: string
+  randomId?: string
 }
 
 export async function POST(request: Request) {
@@ -44,6 +46,8 @@ export async function POST(request: Request) {
     const startTime = Date.now()
     const invocationId = globalThis.crypto.randomUUID()
     const nodeId = `test-pipeline-${Date.now()}`
+    const workflowVersionId = `wf_dev_test_${Date.now()}`
+    const workflowId = "dev-test-workflow"
 
     // Build full model identifier: provider#model
     // Check if modelName already includes provider prefix (from catalog)
@@ -70,6 +74,9 @@ export async function POST(request: Request) {
       )
     }
 
+    // Create persistence adapter for database tracking
+    const persistence = createPersistence()
+
     // Build node config - cast to any to bypass tool name enums for dev testing
     const nodeConfig = {
       nodeId,
@@ -84,7 +91,8 @@ export async function POST(request: Request) {
     } as WorkflowNodeConfig
 
     // Create observer for real-time streaming
-    const randomId = genShortId()
+    // Use client-provided randomId if available so the UI can connect SSE first
+    const randomId = body.randomId && body.randomId.length > 0 ? body.randomId : genShortId()
     const observer = new AgentObserver()
     ObserverRegistry.getInstance().register(randomId, observer)
 
@@ -103,9 +111,38 @@ export async function POST(request: Request) {
       },
       async () => {
         return withObservationContext({ randomId, observer }, async () => {
-          // Create tool manager with all required arguments
-          // workflowVersionId doesn't matter for dev testing
-          const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, "dev-test-version")
+          // Create workflow version record for tracking
+          await persistence.ensureWorkflowExists(workflowId, "Dev pipeline testing")
+          await persistence.createWorkflowVersion({
+            workflowVersionId,
+            workflowId,
+            commitMessage: `Dev test: ${body.systemPrompt.substring(0, 50)}...`,
+            dsl: {
+              nodes: [
+                {
+                  nodeId,
+                  systemPrompt: body.systemPrompt,
+                  modelName: fullModelId,
+                  codeTools: body.codeTools,
+                  mcpTools: body.mcpTools,
+                },
+              ],
+            },
+          })
+
+          // Create workflow invocation record for observability
+          await persistence.createWorkflowInvocation({
+            workflowInvocationId: invocationId,
+            workflowVersionId,
+            metadata: {
+              provider: body.provider,
+              model: body.modelName,
+            },
+            workflowInput: body.message,
+          })
+
+          // Create tool manager
+          const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, workflowVersionId)
 
           // Build proper payload structure (sequential payload with text content)
           const payload = {
@@ -126,7 +163,6 @@ export async function POST(request: Request) {
             seq: 1,
             payload,
             wfInvId: invocationId,
-            skipDatabasePersistence: true,
           })
 
           // Build context - cast to NodeInvocationCallContext for dev testing
@@ -138,10 +174,9 @@ export async function POST(request: Request) {
             nodeMemory: {},
             toolStrategyOverride: body.toolStrategy,
             startTime: new Date().toISOString(),
-            workflowVersionId: "dev-test",
-            workflowId: "dev-test-workflow",
+            workflowVersionId,
+            workflowId,
             workflowInvocationId: invocationId,
-            skipDatabasePersistence: true,
           } as NodeInvocationCallContext
 
           // Create and execute pipeline

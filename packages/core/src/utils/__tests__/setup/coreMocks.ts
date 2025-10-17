@@ -120,6 +120,24 @@ const mockGenomeInstance = {
   }),
 }
 
+const genomeMockControl = vi.hoisted(() => ({
+  shouldMock: false,
+  mockedGenomeExport: undefined as any,
+}))
+
+vi.mock("@core/improvement/gp/Genome", async () => {
+  const actual = await vi.importActual<typeof import("@core/improvement/gp/Genome")>("@core/improvement/gp/Genome")
+
+  return {
+    get Genome() {
+      if (genomeMockControl.shouldMock && genomeMockControl.mockedGenomeExport) {
+        return genomeMockControl.mockedGenomeExport
+      }
+      return actual.Genome
+    },
+  }
+})
+
 const mockPopulationInstance = {
   // Core population methods
   getGenomes: vi.fn(),
@@ -345,6 +363,8 @@ export const setupCoreMocks = (): void => {
 // reset all core mocks
 export const resetCoreMocks = (): void => {
   vi.clearAllMocks()
+  genomeMockControl.shouldMock = false
+  genomeMockControl.mockedGenomeExport = undefined
   mockProcessExit.mockReset()
   mockConsoleLog.mockReset()
   mockConsoleError.mockReset()
@@ -744,27 +764,28 @@ export const mockLogger = () => {
 }
 
 export const mockGenomeClass = () => {
-  vi.mock("@core/improvement/gp/Genome", () => {
-    const GenomeMock = vi.fn().mockImplementation(() => mockGenomeInstance) as any
-    GenomeMock.createRandom = vi.fn().mockResolvedValue({
-      success: true,
-      data: mockGenomeInstance,
-      error: undefined,
-    })
-    GenomeMock.createPrepared = vi.fn().mockResolvedValue({
-      success: true,
-      data: mockGenomeInstance,
-      error: undefined,
-    })
-    GenomeMock.createWorkflowVersion = vi.fn().mockResolvedValue({
-      workflowVersionId: "test-version-id",
-      workflowInvocationId: "test-invocation-id",
-    })
-
-    return {
-      Genome: GenomeMock,
-    }
+  const GenomeMock = vi.fn().mockImplementation(() => mockGenomeInstance) as any
+  GenomeMock.createRandom = vi.fn().mockResolvedValue({
+    success: true,
+    data: mockGenomeInstance,
+    error: undefined,
   })
+  GenomeMock.createPrepared = vi.fn().mockResolvedValue({
+    success: true,
+    data: mockGenomeInstance,
+    error: undefined,
+  })
+  GenomeMock.createWorkflowVersion = vi.fn().mockResolvedValue("test-version-id")
+  GenomeMock.toWorkflowConfig = vi
+    .fn()
+    .mockImplementation(({ nodes, entryNodeId }: { nodes: WorkflowConfig["nodes"]; entryNodeId: string }) => ({
+      nodes,
+      entryNodeId,
+    }))
+
+  genomeMockControl.shouldMock = true
+  genomeMockControl.mockedGenomeExport = GenomeMock
+
   return mockGenomeInstance
 }
 
@@ -870,7 +891,13 @@ export const setupGPTestMocks = (_runtimeOverrides?: Record<string, unknown>, op
   const verificationCache = mockVerificationCache()
   const logger = mockLogger()
   const shouldMockGenome = options?.mockGenome ?? true
-  const genome = shouldMockGenome ? mockGenomeClass() : getMockGenome()
+  const genome = shouldMockGenome
+    ? mockGenomeClass()
+    : (() => {
+        genomeMockControl.shouldMock = false
+        genomeMockControl.mockedGenomeExport = undefined
+        return getMockGenome()
+      })()
   const population = mockPopulationClass()
 
   mockWorkflowGeneration()
@@ -945,3 +972,23 @@ export const createMockEvolutionConfig = createMockEvolutionSettings
 export const resetAllMocks = resetCoreMocks
 export const setupDefaultMocks = setupCoreMocks
 export const setupGPTest = setupCoreTest
+
+// ====== POPULATION TEST HELPERS ======
+/**
+ * Create a mock genome with configurable properties
+ * Used for Population and similar tests
+ */
+export const createSingleMockGenome = (id: string, fitnessScore: number, evaluated = true) => ({
+  getWorkflowVersionId: () => id,
+  getFitness: () => (evaluated ? { score: fitnessScore, valid: true } : null),
+  getFitnessScore: () => fitnessScore,
+  isEvaluated: evaluated,
+  setFitnessAndFeedback: vi.fn(),
+})
+
+/**
+ * Create multiple mock genomes at once
+ * Used for Population initialization tests
+ */
+export const createMockGenomes = (specs: Array<{ id: string; fitness: number; evaluated?: boolean }>) =>
+  specs.map(spec => createSingleMockGenome(spec.id, spec.fitness, spec.evaluated))

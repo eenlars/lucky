@@ -1,6 +1,6 @@
 "use client"
 
-import { EvolutionGraph } from "@/app/components/EvolutionGraph"
+import { EvolutionGraph } from "@/app/components/evolution/EvolutionGraph"
 import { DevOnly } from "@/components/DevOnly"
 
 export default function TestEvolutionGraphPage() {
