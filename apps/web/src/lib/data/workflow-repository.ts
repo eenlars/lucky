@@ -55,11 +55,7 @@ export async function fetchWorkflowVersion(
     return response
   }
 
-  return scoped.client
-    .from("WorkflowVersion")
-    .select("workflow_id, dsl")
-    .eq("wf_version_id", versionId)
-    .maybeSingle()
+  return scoped.client.from("WorkflowVersion").select("workflow_id, dsl").eq("wf_version_id", versionId).maybeSingle()
 }
 
 /**

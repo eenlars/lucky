@@ -7,11 +7,22 @@
 
 "use client"
 
-import type { ChatInputProps } from "@/features/chat-interface/types/types"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef } from "react"
 import { InputToolbar } from "./InputToolbar"
 import { SendButton } from "./SendButton"
+
+export interface ChatInputProps {
+  value: string
+  onChange: (value: string) => void
+  onSend: () => void
+  onKeyDown?: (e: React.KeyboardEvent) => void
+  placeholder?: string
+  disabled?: boolean
+  isLoading?: boolean
+  maxLength?: number
+  className?: string
+}
 
 export function ChatInput({
   value,
@@ -71,59 +82,56 @@ export function ChatInput({
   }
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div className="flex gap-2 sm:gap-3 items-end">
-        {/* Textarea */}
-        <div className="flex-1 relative">
-          <textarea
-            ref={textareaRef}
-            data-chat-input
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            disabled={disabled || isLoading}
-            maxLength={maxLength}
-            className={cn(
-              "w-full px-3 py-2.5 sm:px-4 sm:py-3",
-              "border border-chat-border rounded-2xl",
-              "resize-none overflow-y-auto",
-              "focus:outline-none focus:border-chat-foreground/40",
-              "transition-all",
-              "text-sm font-light",
-              "placeholder:text-chat-muted",
-              "bg-chat-background text-chat-foreground",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              isLoading && "animate-pulse",
-            )}
-            rows={1}
-            style={{
-              minHeight: "44px",
-              maxHeight: "200px",
-              transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
-              transitionDuration: "200ms",
-            }}
-          />
+    <div
+      className={cn(
+        "flex flex-col bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg",
+        className,
+      )}
+    >
+      {/* Textarea */}
+      <textarea
+        ref={textareaRef}
+        data-chat-input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        disabled={disabled || isLoading}
+        maxLength={maxLength}
+        className={cn(
+          "flex-1 bg-transparent text-gray-900 dark:text-gray-100",
+          "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+          "text-[15px] leading-[22px]",
+          "resize-none outline-none focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2",
+          "disabled:opacity-50",
+          "px-5 pt-4 pb-1",
+          isLoading && "animate-pulse",
+        )}
+        rows={3}
+        style={{
+          minHeight: "80px",
+          maxHeight: "200px",
+        }}
+      />
 
-          {/* Character count (when approaching limit) */}
-          {value.length > maxLength * 0.8 && (
-            <div className="absolute bottom-2.5 right-3 sm:bottom-3 text-xs text-chat-muted">
-              {value.length}/{maxLength}
-            </div>
-          )}
+      {/* Character count (when approaching limit) */}
+      {value.length > maxLength * 0.8 && (
+        <div className="px-5 pb-1 text-xs text-gray-400 dark:text-gray-500">
+          {value.length}/{maxLength}
         </div>
+      )}
 
-        {/* Send button */}
+      {/* Bottom toolbar and send button */}
+      <div className="flex items-center justify-between px-4 pb-4 pt-1">
+        <InputToolbar
+          disabled={disabled || isLoading}
+          onAttach={() => console.log("Attach clicked")}
+          onVoice={() => console.log("Voice clicked")}
+          onAudio={() => console.log("Audio clicked")}
+        />
+
         <SendButton onClick={handleSend} disabled={!value.trim() || disabled || isLoading} isLoading={isLoading} />
       </div>
-
-      {/* Toolbar */}
-      <InputToolbar
-        disabled={disabled || isLoading}
-        onAttach={() => console.log("Attach clicked")}
-        onVoice={() => console.log("Voice clicked")}
-        onAudio={() => console.log("Audio clicked")}
-      />
     </div>
   )
 }

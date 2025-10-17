@@ -83,7 +83,7 @@ export interface RunResult {
  * - 'ai': AI-powered repair and enhancement (slower, costs money)
  * - 'none': Skip validation entirely (fastest, use for pre-validated workflows)
  */
-export type ValidationMethod = 'strict' | 'ai' | 'none'
+export type ValidationMethod = "strict" | "ai" | "none"
 
 /**
  * Union of supported ways to invoke a workflow.

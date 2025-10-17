@@ -1,13 +1,13 @@
 import { retrieveLatestWorkflowVersions } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
-import { type NextRequest } from "next/server"
+import { auth } from "@clerk/nextjs/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
     const { searchParams } = new URL(request.url)

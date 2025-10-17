@@ -4,30 +4,15 @@ import { z } from "zod"
 // IMPORT EXISTING CONTRACTS (REUSE, DON'T DUPLICATE)
 // ============================================================================
 
-import {
-  JsonRpcInvokeRequest,
-  JsonRpcInvokeResponse,
-  InvokeOptions,
-} from "@lucky/shared/contracts/invoke"
+import { InvokeOptions, JsonRpcInvokeRequest, JsonRpcInvokeResponse } from "@lucky/shared/contracts/invoke"
 
-import {
-  WorkflowConfigSchema,
-  WorkflowNodeConfigSchema,
-} from "@lucky/shared/contracts/workflow"
+import { WorkflowConfigSchema, WorkflowNodeConfigSchema } from "@lucky/shared/contracts/workflow"
 
-import {
-  EvaluationInputSchema,
-  WorkflowIOSchema,
-} from "@lucky/shared/contracts/ingestion"
+import { EvaluationInputSchema, WorkflowIOSchema } from "@lucky/shared/contracts/ingestion"
 
-import {
-  ErrorReportSchema,
-} from "@lucky/shared/contracts/error"
+import { ErrorReportSchema } from "@lucky/shared/contracts/error"
 
-import {
-  modelEntrySchema,
-  enrichedModelInfoSchema,
-} from "@lucky/shared/contracts/models"
+import { enrichedModelInfoSchema, modelEntrySchema } from "@lucky/shared/contracts/models"
 
 // ============================================================================
 // STANDARDIZED RESPONSE ENVELOPES
@@ -81,7 +66,7 @@ export const apiSchemas = {
    * POST /api/invoke
    * Prompt-only workflow invocation (simplified invoke API)
    */
-  "invoke": {
+  invoke: {
     req: z.object({
       workflowVersionId: z.string().min(1),
       prompt: z.string().min(1),
@@ -107,11 +92,13 @@ export const apiSchemas = {
       workflowVersionId: z.string().min(1),
       evalInput: EvaluationInputSchema,
     }),
-    res: ApiResponse(z.object({
-      output: z.unknown(),
-      invocationId: z.string().optional(),
-      traceId: z.string().optional(),
-    })),
+    res: ApiResponse(
+      z.object({
+        output: z.unknown(),
+        invocationId: z.string().optional(),
+        traceId: z.string().optional(),
+      }),
+    ),
   },
 
   /**
@@ -200,10 +187,12 @@ export const apiSchemas = {
       data: z.unknown(), // Could be CSV, JSON, etc.
       type: z.enum(["csv", "json", "text"]),
     }),
-    res: ApiResponse(z.object({
-      datasetId: z.string(),
-      recordCount: z.number().int().nonnegative(),
-    })),
+    res: ApiResponse(
+      z.object({
+        datasetId: z.string(),
+        recordCount: z.number().int().nonnegative(),
+      }),
+    ),
   },
 
   /**
@@ -212,13 +201,15 @@ export const apiSchemas = {
    */
   "ingestions/list": {
     req: z.never().optional(),
-    res: z.array(z.object({
-      dataset_id: z.string(),
-      name: z.string(),
-      description: z.string().nullable(),
-      data_format: z.string(),
-      created_at: z.string(),
-    })),
+    res: z.array(
+      z.object({
+        dataset_id: z.string(),
+        name: z.string(),
+        description: z.string().nullable(),
+        data_format: z.string(),
+        created_at: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -270,11 +261,13 @@ export const apiSchemas = {
    */
   "user/api-key": {
     req: z.never().optional(),
-    res: ApiResponse(z.object({
-      apiKey: z.string(),
-      createdAt: z.string().datetime(),
-      expiresAt: z.string().datetime().optional(),
-    })),
+    res: ApiResponse(
+      z.object({
+        apiKey: z.string(),
+        createdAt: z.string().datetime(),
+        expiresAt: z.string().datetime().optional(),
+      }),
+    ),
   },
 
   /**
@@ -285,10 +278,12 @@ export const apiSchemas = {
     req: z.object({
       name: z.string().optional(),
     }),
-    res: ApiResponse(z.object({
-      apiKey: z.string(),
-      createdAt: z.string().datetime(),
-    })),
+    res: ApiResponse(
+      z.object({
+        apiKey: z.string(),
+        createdAt: z.string().datetime(),
+      }),
+    ),
   },
 
   /**
@@ -299,10 +294,12 @@ export const apiSchemas = {
     req: z.object({
       confirm: z.literal(true),
     }),
-    res: ApiResponse(z.object({
-      apiKey: z.string(),
-      createdAt: z.string().datetime(),
-    })),
+    res: ApiResponse(
+      z.object({
+        apiKey: z.string(),
+        createdAt: z.string().datetime(),
+      }),
+    ),
   },
 
   /**
@@ -311,11 +308,15 @@ export const apiSchemas = {
    */
   "user/env-keys": {
     req: z.never().optional(),
-    res: ApiResponse(z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      createdAt: z.string(),
-    }))),
+    res: ApiResponse(
+      z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          createdAt: z.string(),
+        }),
+      ),
+    ),
   },
 
   /**
@@ -327,9 +328,11 @@ export const apiSchemas = {
       key: z.string().regex(/^[A-Z_][A-Z0-9_]*$/),
       value: z.string(),
     }),
-    res: ApiResponse(z.object({
-      updated: z.boolean(),
-    })),
+    res: ApiResponse(
+      z.object({
+        updated: z.boolean(),
+      }),
+    ),
   },
 
   /**
@@ -370,14 +373,16 @@ export const apiSchemas = {
    */
   "user/workflows": {
     req: z.never().optional(),
-    res: z.array(z.object({
-      workflow_id: z.string(),
-      name: z.string(),
-      description: z.string().optional(),
-      inputSchema: z.unknown().optional(),
-      outputSchema: z.unknown().optional(),
-      created_at: z.string(),
-    })),
+    res: z.array(
+      z.object({
+        workflow_id: z.string(),
+        name: z.string(),
+        description: z.string().optional(),
+        inputSchema: z.unknown().optional(),
+        outputSchema: z.unknown().optional(),
+        created_at: z.string(),
+      }),
+    ),
   },
 
   // ============================================================================
@@ -388,7 +393,7 @@ export const apiSchemas = {
    * POST /api/models
    * Query model catalog with various actions
    */
-  "models": {
+  models: {
     req: z.object({
       action: z.enum(["getActiveModelNames", "getModelV2", "getModelsByProvider"]),
       model: z.string().optional(),
@@ -423,10 +428,12 @@ export const apiSchemas = {
       provider: z.string().min(1),
       apiKey: z.string().min(1),
     }),
-    res: ApiResponse(z.object({
-      connected: z.boolean(),
-      message: z.string().optional(),
-    })),
+    res: ApiResponse(
+      z.object({
+        connected: z.boolean(),
+        message: z.string().optional(),
+      }),
+    ),
   },
 
   // ============================================================================
@@ -488,7 +495,7 @@ export const apiSchemas = {
    * GET /api/network
    * Monitor network requests for a URL
    */
-  "network": {
+  network: {
     req: z.never().optional(),
     res: z.unknown(), // Network monitor returns dynamic structure
   },
@@ -506,10 +513,12 @@ export const apiSchemas = {
       message: z.string().min(1),
       conversationId: z.string().optional(),
     }),
-    res: ApiResponse(z.object({
-      reply: z.string(),
-      conversationId: z.string(),
-    })),
+    res: ApiResponse(
+      z.object({
+        reply: z.string(),
+        conversationId: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -521,9 +530,11 @@ export const apiSchemas = {
       prompt: z.string().min(1),
       model: z.string().optional(),
     }),
-    res: ApiResponse(z.object({
-      completion: z.string(),
-    })),
+    res: ApiResponse(
+      z.object({
+        completion: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -535,10 +546,12 @@ export const apiSchemas = {
       prompt: z.string().min(1),
       type: z.enum(["code", "text", "markdown", "json"]),
     }),
-    res: ApiResponse(z.object({
-      artifact: z.string(),
-      type: z.string(),
-    })),
+    res: ApiResponse(
+      z.object({
+        artifact: z.string(),
+        type: z.string(),
+      }),
+    ),
   },
 
   // ============================================================================
@@ -551,26 +564,30 @@ export const apiSchemas = {
    */
   "log-error": {
     req: ErrorReportSchema,
-    res: ApiResponse(z.object({
-      logged: z.boolean(),
-      errorId: z.string().optional(),
-    })),
+    res: ApiResponse(
+      z.object({
+        logged: z.boolean(),
+        errorId: z.string().optional(),
+      }),
+    ),
   },
 
   /**
    * POST /api/feedback
    * Submit user feedback
    */
-  "feedback": {
+  feedback: {
     req: z.object({
       message: z.string().min(1),
       type: z.enum(["bug", "feature", "improvement", "other"]),
       context: z.unknown().optional(),
     }),
-    res: ApiResponse(z.object({
-      submitted: z.boolean(),
-      feedbackId: z.string().optional(),
-    })),
+    res: ApiResponse(
+      z.object({
+        submitted: z.boolean(),
+        feedbackId: z.string().optional(),
+      }),
+    ),
   },
 
   /**
@@ -593,9 +610,11 @@ export const apiSchemas = {
       type: z.enum(["workflows", "traces", "logs", "all"]),
       olderThan: z.string().datetime().optional(),
     }),
-    res: ApiResponse(z.object({
-      cleaned: z.number().int().nonnegative(),
-    })),
+    res: ApiResponse(
+      z.object({
+        cleaned: z.number().int().nonnegative(),
+      }),
+    ),
   },
 
   /**
@@ -607,10 +626,12 @@ export const apiSchemas = {
       pipelineId: z.string().min(1),
       input: z.unknown(),
     }),
-    res: ApiResponse(z.object({
-      output: z.unknown(),
-      pipelineId: z.string(),
-    })),
+    res: ApiResponse(
+      z.object({
+        output: z.unknown(),
+        pipelineId: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -669,7 +690,7 @@ export const apiSchemas = {
    * GET /api/test
    * Test X.AI API connection
    */
-  "test": {
+  test: {
     req: z.never().optional(),
     res: z.object({
       message: z.string(),
@@ -689,11 +710,13 @@ export const apiSchemas = {
     req: z.object({
       message: z.string().min(1),
     }),
-    res: ApiResponse(z.object({
-      message: z.string(),
-      receivedMessage: z.string(),
-      timestamp: z.string(),
-    })),
+    res: ApiResponse(
+      z.object({
+        message: z.string(),
+        receivedMessage: z.string(),
+        timestamp: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -713,14 +736,21 @@ export const apiSchemas = {
    */
   "test/calculate-cost": {
     req: z.object({
-      inputTokens: z.number().int().nonnegative(),
-      outputTokens: z.number().int().nonnegative(),
       model: z.string(),
+      inputTokens: z.number().int().nonnegative().optional(),
+      outputTokens: z.number().int().nonnegative().optional(),
+      usage: z
+        .object({
+          inputTokens: z.number().int().nonnegative(),
+          outputTokens: z.number().int().nonnegative(),
+          cachedInputTokens: z.number().int().nonnegative().optional(),
+        })
+        .optional(),
     }),
-    res: ApiResponse(z.object({
+    res: z.object({
       cost: z.number().min(0),
       currency: z.literal("USD"),
-    })),
+    }),
   },
 
   /**
@@ -761,10 +791,12 @@ export const apiSchemas = {
     req: z.object({
       ids: z.array(z.string()).min(1),
     }),
-    res: ApiResponse(z.object({
-      success: z.literal(true),
-      deletedCount: z.number().int().nonnegative(),
-    })),
+    res: ApiResponse(
+      z.object({
+        success: z.literal(true),
+        deletedCount: z.number().int().nonnegative(),
+      }),
+    ),
   },
 
   /**
@@ -794,10 +826,12 @@ export const apiSchemas = {
       iterationBudget: z.number().int().positive().optional(),
       timeBudgetSeconds: z.number().int().positive().optional(),
     }),
-    res: ApiResponse(z.object({
-      success: z.literal(true),
-      data: z.unknown(), // WorkflowVersion
-    })),
+    res: ApiResponse(
+      z.object({
+        success: z.literal(true),
+        data: z.unknown(), // WorkflowVersion
+      }),
+    ),
   },
 
   /**
@@ -842,11 +876,13 @@ export const apiSchemas = {
    */
   "evolution/[run_id]/generations": {
     req: z.never().optional(),
-    res: z.array(z.object({
-      generation: z.unknown(),
-      versions: z.array(z.unknown()),
-      invocations: z.array(z.unknown()),
-    })),
+    res: z.array(
+      z.object({
+        generation: z.unknown(),
+        versions: z.array(z.unknown()),
+        invocations: z.array(z.unknown()),
+      }),
+    ),
   },
 
   /**
@@ -921,11 +957,13 @@ export const apiSchemas = {
    */
   "ingestions/[datasetId]/ios": {
     req: z.never().optional(),
-    res: z.array(z.object({
-      id: z.string(),
-      input: z.string(),
-      expected: z.string(),
-    })),
+    res: z.array(
+      z.object({
+        id: z.string(),
+        input: z.string(),
+        expected: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -984,9 +1022,9 @@ export type Endpoint = keyof typeof apiSchemas
 /**
  * Extract request schema type for an endpoint
  */
-export type Req<E extends Endpoint> = z.infer<typeof apiSchemas[E]["req"]>
+export type Req<E extends Endpoint> = z.infer<(typeof apiSchemas)[E]["req"]>
 
 /**
  * Extract response schema type for an endpoint
  */
-export type Res<E extends Endpoint> = z.infer<typeof apiSchemas[E]["res"]>
+export type Res<E extends Endpoint> = z.infer<(typeof apiSchemas)[E]["res"]>

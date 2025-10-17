@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic"
 export async function GET(req: NextRequest, { params }: { params: Promise<{ wf_version_id: string }> }) {
   // Require authentication
   const authResult = await requireAuthWithApiKey(req)
-  if (authResult) return authResult
+  if (authResult instanceof NextResponse) return authResult
 
   const supabase = await createRLSClient()
   const { wf_version_id } = await params
@@ -25,12 +25,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ wf_v
     }
 
     if (!data) {
-      return fail("workflow/version/[wf_version_id]", `Workflow version ${wf_version_id} not found`, { code: "NOT_FOUND", status: 404 })
+      return fail("workflow/version/[wf_version_id]", `Workflow version ${wf_version_id} not found`, {
+        code: "NOT_FOUND",
+        status: 404,
+      })
     }
 
     return alrighty("workflow/version/[wf_version_id]", data)
   } catch (error) {
     console.error("Error fetching workflow version:", error)
-    return fail("workflow/version/[wf_version_id]", "Failed to fetch workflow version", { code: "FETCH_ERROR", status: 500 })
+    return fail("workflow/version/[wf_version_id]", "Failed to fetch workflow version", {
+      code: "FETCH_ERROR",
+      status: 500,
+    })
   }
 }

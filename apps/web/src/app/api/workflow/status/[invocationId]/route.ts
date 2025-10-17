@@ -22,7 +22,7 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function GET(req: NextRequest, { params }: { params: { invocationId: string } }) {
   try {
     const authResult = await requireAuthWithApiKey(req)
-    if (authResult) return authResult
+    if (authResult instanceof NextResponse) return authResult
 
     const { invocationId } = params
 

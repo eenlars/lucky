@@ -1,13 +1,13 @@
-import { requireAuth } from "@/lib/api-auth"
 import { createClient } from "@/lib/supabase/server"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ run_id: string }> }) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createClient()
   const { run_id } = await params

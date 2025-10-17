@@ -1,9 +1,9 @@
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { decryptGCM, encryptGCM, normalizeNamespace } from "@/lib/crypto/lockbox"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { type NextRequest } from "next/server"
+import { auth } from "@clerk/nextjs/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -11,9 +11,8 @@ export const runtime = "nodejs"
 // Body: { name: string, namespace?: string, value: string }
 // Creates a new version (rotate) and marks it as current. Never returns plaintext back.
 export async function POST(req: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
-  const clerkId = authResult as string
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 
@@ -42,7 +41,7 @@ export async function POST(req: NextRequest) {
       .schema("lockbox")
       .from("user_secrets")
       .select("version")
-      .eq("clerk_id", clerkId)
+      .eq("clerk_id", userId)
       .eq("namespace", ns)
       .ilike("name", name)
       .order("version", { ascending: false })
@@ -60,7 +59,7 @@ export async function POST(req: NextRequest) {
       .schema("lockbox")
       .from("user_secrets")
       .update({ is_current: false })
-      .eq("clerk_id", clerkId)
+      .eq("clerk_id", userId)
       .eq("namespace", ns)
       .ilike("name", name)
       .eq("is_current", true)
@@ -79,7 +78,7 @@ export async function POST(req: NextRequest) {
       .from("user_secrets")
       .insert([
         {
-          clerk_id: clerkId,
+          clerk_id: userId,
           name,
           namespace: ns,
           version: nextVersion,
@@ -87,8 +86,8 @@ export async function POST(req: NextRequest) {
           iv,
           auth_tag: authTag,
           is_current: true,
-          created_by: clerkId,
-          updated_by: clerkId,
+          created_by: userId,
+          updated_by: userId,
         } as any,
       ])
       .select("user_secret_id, name, namespace, version, created_at")
@@ -119,9 +118,8 @@ export async function POST(req: NextRequest) {
 // GET /api/lockbox/secrets?name=...&namespace=...&reveal=0|1
 // By default, returns metadata only. If reveal=1, returns plaintext value and updates last_used_at.
 export async function GET(req: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
-  const clerkId = authResult as string
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
   const params = req.nextUrl.searchParams
@@ -135,7 +133,7 @@ export async function GET(req: NextRequest) {
     .schema("lockbox")
     .from("user_secrets")
     .select("user_secret_id, name, namespace, version, ciphertext, iv, auth_tag, last_used_at, created_at")
-    .eq("clerk_id", clerkId)
+    .eq("clerk_id", userId)
     .eq("namespace", ns)
     .ilike("name", name)
     .eq("is_current", true)
@@ -146,8 +144,7 @@ export async function GET(req: NextRequest) {
       code: "QUERY_ERROR",
       status: 500,
     })
-  if (!data)
-    return fail("lockbox/secrets:get", "Secret not found", { code: "NOT_FOUND", status: 404 })
+  if (!data) return fail("lockbox/secrets:get", "Secret not found", { code: "NOT_FOUND", status: 404 })
 
   if (!reveal) {
     return alrighty("lockbox/secrets:get", {

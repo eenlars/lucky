@@ -3,7 +3,7 @@ import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
 import type { Models } from "@lucky/models"
 import { providerConfigSchema as modelsProviderConfigSchema } from "@lucky/models"
-import { ZPrincipal } from "@lucky/shared"
+import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { z } from "zod"
 import { RuntimeContext } from "./runtime-context"
@@ -19,6 +19,8 @@ export const ZExecutionSchema = z.object({
   providerConfig: z.record(modelsProviderConfigSchema).optional(),
   modelsInstance: z.custom<Models>().optional(),
   spendingTracker: z.custom<SpendingTracker>().optional(),
+  // MCP toolkits available during this invocation (UI-configured or file-based)
+  mcp: executionMCPContextSchema.optional(),
 })
 
 export type ExecutionSchema = z.infer<typeof ZExecutionSchema>
@@ -64,7 +66,7 @@ export async function getApiKey(name: string): Promise<string | undefined> {
 
       const apiKeys = ctx.get("apiKeys") as Record<string, string> | undefined
       if (apiKeys?.[name]) {
-        console.log(`           ✅ Found in execution context apiKeys`)
+        console.log("           ✅ Found in execution context apiKeys")
         return apiKeys[name]
       }
 
@@ -72,14 +74,14 @@ export async function getApiKey(name: string): Promise<string | undefined> {
       const secrets = ctx.get("secrets")
       const secretValue = await secrets.get(name, "environment-variables")
       if (secretValue) {
-        console.log(`           ✅ Found in execution context secrets`)
+        console.log("           ✅ Found in execution context secrets")
         return secretValue
       }
 
       // Session auth should NOT fall back to process.env for security
       if (principal?.auth_method === "session") {
-        console.error(`           ❌ Not found in context and session auth blocks process.env fallback`)
-        console.error(`           💡 For dev/testing, ensure API keys are passed in execution context`)
+        console.error("           ❌ Not found in context and session auth blocks process.env fallback")
+        console.error("           💡 For dev/testing, ensure API keys are passed in execution context")
         return undefined
       }
     }
@@ -87,11 +89,11 @@ export async function getApiKey(name: string): Promise<string | undefined> {
     // Fall back to process.env if no context value found (except for session auth)
     const envVal = process.env[name]
     if (envVal) {
-      console.log(`           ✅ Found in process.env`)
+      console.log("           ✅ Found in process.env")
       return envVal
     }
 
-    console.error(`           ❌ Not found anywhere (checked: context, secrets, process.env)`)
+    console.error("           ❌ Not found anywhere (checked: context, secrets, process.env)")
     return undefined
   }
 
@@ -106,7 +108,7 @@ export async function getApiKey(name: string): Promise<string | undefined> {
 
   const apiKeys = ctx.get("apiKeys") as Record<string, string> | undefined
   if (apiKeys?.[name]) {
-    console.log(`           ✅ Found in execution context apiKeys`)
+    console.log("           ✅ Found in execution context apiKeys")
     return apiKeys[name]
   }
 
@@ -116,10 +118,10 @@ export async function getApiKey(name: string): Promise<string | undefined> {
     console.error(
       `[getApiKey] ❌ ${providerName} API key not configured for user in production (auth_method: ${principal.auth_method})`,
     )
-    console.error(`           💡 User needs to add this API key in their account settings`)
+    console.error("           💡 User needs to add this API key in their account settings")
     return undefined
   }
-  console.log(`           ✅ Found in execution context secrets`)
+  console.log("           ✅ Found in execution context secrets")
   return secretValue
 }
 

@@ -2,22 +2,22 @@ import {
   retrieveLatestWorkflowVersions,
   saveWorkflowVersion,
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
+import { auth } from "@clerk/nextjs/server"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import {
   loadFromDatabaseForDisplay,
   loadSingleWorkflow,
   saveWorkflowConfig,
 } from "@lucky/core/workflow/setup/WorkflowLoader"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -101,8 +101,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -117,7 +117,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-
     // Optional metadata for DB mode
     const workflowId = bodyData?.workflowId as string | undefined
     const commitMessage = bodyData?.commitMessage as string | undefined

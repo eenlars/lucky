@@ -1,18 +1,18 @@
 import { mkdirSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { createClient } from "@/lib/supabase/server"
+import { auth } from "@clerk/nextjs/server"
 import { IngestionLayer } from "@lucky/core/workflow/ingestion/IngestionLayer"
 import type { EvaluationInput } from "@lucky/core/workflow/ingestion/ingestion.types"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-
     const bucket = "input"
     const manifestPath = `ingestions/${datasetId}.json`
     const { data: manifestBlob, error: manifestError } = await supabase.storage.from(bucket).download(manifestPath)

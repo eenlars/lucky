@@ -9,11 +9,11 @@ import { createRLSClient } from "@/lib/supabase/server-rls"
  * - Session auth: Uses RLS client (Clerk JWT provides user context)
  */
 export async function createContextAwareClient(principal: Principal) {
-	if (principal.auth_method === "api_key") {
-		console.log("[context-client] Using service role for API key auth")
-		return await createClient({ keyType: "service" })
-	}
+  if (principal.auth_method === "api_key") {
+    console.log("[context-client] Using service role for API key auth")
+    return await createClient({ keyType: "service" })
+  }
 
-	console.log("[context-client] Using RLS client for session auth")
-	return await createRLSClient()
+  console.log("[context-client] Using RLS client for session auth")
+  return await createRLSClient()
 }

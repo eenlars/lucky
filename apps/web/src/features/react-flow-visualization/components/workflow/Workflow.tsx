@@ -38,11 +38,7 @@ function AutoFitView({ nodeCount }: { nodeCount: number }) {
   return null
 }
 
-export default function Workflow({
-  workflowVersionId,
-}: {
-  workflowVersionId: string | undefined
-}) {
+export default function Workflow({ workflowVersionId }: { workflowVersionId: string | undefined }) {
   const {
     nodes,
     edges,

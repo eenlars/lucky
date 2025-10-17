@@ -56,11 +56,7 @@ export function encryptGCM(plaintext: string): {
   }
 }
 
-export function decryptGCM(params: {
-  ciphertext: string
-  iv: string
-  authTag: string
-}): string {
+export function decryptGCM(params: { ciphertext: string; iv: string; authTag: string }): string {
   const key = getKEK()
   // PostgREST returns bytea as \x prefixed hex strings, strip the prefix
   const stripPrefix = (s: string) => (s.startsWith("\\x") ? s.slice(2) : s)

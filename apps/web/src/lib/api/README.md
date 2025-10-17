@@ -16,8 +16,7 @@ A zero-boilerplate, end-to-end type-safe API pattern for Next.js using Zod schem
 
 - `schemas.ts` - Single source of truth for all API endpoint contracts
 - `api-client.ts` - Client-side typed fetch wrapper with validation
-- `server.ts` - Server-side request validation and response helpers
-- `handleBody.ts` - Alternative flexible body handler with overloads
+- `server.ts` - Server-side request validation and response helpers (includes handleBody)
 
 ## How It Works
 

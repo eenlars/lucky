@@ -5,25 +5,39 @@
  */
 
 import { logException } from "@/lib/error-logger"
-import type { Message, MessageRole } from "../types/types"
+import type { UIMessage } from "@ai-sdk-tools/store"
+
+type MessageRole = "user" | "assistant" | "system"
 
 // ============================================================================
 // Message Creation
 // ============================================================================
 
-export function createMessage(content: string, role: MessageRole = "user", overrides?: Partial<Message>): Message {
+export function createMessage(content: string, role: MessageRole = "user", overrides?: Partial<UIMessage>): UIMessage {
   return {
     id: generateMessageId(),
     role,
-    content,
-    timestamp: new Date(),
-    status: "sent",
+    parts: [{ type: "text", text: content }],
     ...overrides,
   }
 }
 
 export function generateMessageId(): string {
   return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+// ============================================================================
+// Message Text Extraction
+// ============================================================================
+
+/**
+ * Extract text content from UIMessage parts
+ */
+export function getMessageText(message: UIMessage): string {
+  return message.parts
+    .filter(part => part.type === "text")
+    .map(part => (part as any).text)
+    .join("")
 }
 
 // ============================================================================
@@ -63,10 +77,10 @@ export function truncateContent(content: string, maxLength = 100): string {
 // Message Validation
 // ============================================================================
 
-export function isValidMessage(message: unknown): message is Message {
+export function isValidMessage(message: unknown): message is UIMessage {
   if (!message || typeof message !== "object") return false
-  const msg = message as Partial<Message>
-  return !!(msg.id && msg.role && msg.content && msg.timestamp && ["user", "assistant", "system"].includes(msg.role))
+  const msg = message as Partial<UIMessage>
+  return !!(msg.id && msg.role && Array.isArray(msg.parts) && ["user", "assistant", "system"].includes(msg.role))
 }
 
 export function validateMessageContent(content: string): {
@@ -120,14 +134,17 @@ export function extractCodeLanguage(codeBlock: string): string | null {
 
 export interface MessageGroup {
   date: string
-  messages: Message[]
+  messages: UIMessage[]
 }
 
-export function groupMessagesByDate(messages: Message[]): MessageGroup[] {
-  const groups = new Map<string, Message[]>()
+export function groupMessagesByDate(messages: UIMessage[]): MessageGroup[] {
+  const groups = new Map<string, UIMessage[]>()
 
   messages.forEach(message => {
-    const dateKey = message.timestamp.toLocaleDateString()
+    const metadata = message.metadata as any
+    const timestamp = metadata?.timestamp || new Date()
+    const dateKey =
+      timestamp instanceof Date ? timestamp.toLocaleDateString() : new Date(timestamp).toLocaleDateString()
     if (!groups.has(dateKey)) {
       groups.set(dateKey, [])
     }
@@ -136,7 +153,13 @@ export function groupMessagesByDate(messages: Message[]): MessageGroup[] {
 
   return Array.from(groups.entries()).map(([date, messages]) => ({
     date,
-    messages: messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()),
+    messages: messages.sort((a, b) => {
+      const aMetadata = a.metadata as any
+      const bMetadata = b.metadata as any
+      const aTime = aMetadata?.timestamp instanceof Date ? aMetadata.timestamp : new Date(aMetadata?.timestamp || 0)
+      const bTime = bMetadata?.timestamp instanceof Date ? bMetadata.timestamp : new Date(bMetadata?.timestamp || 0)
+      return aTime.getTime() - bTime.getTime()
+    }),
   }))
 }
 
@@ -144,9 +167,9 @@ export function groupMessagesByDate(messages: Message[]): MessageGroup[] {
 // Message Search
 // ============================================================================
 
-export function searchMessages(messages: Message[], query: string): Message[] {
+export function searchMessages(messages: UIMessage[], query: string): UIMessage[] {
   const lowerQuery = query.toLowerCase()
-  return messages.filter(msg => msg.content.toLowerCase().includes(lowerQuery))
+  return messages.filter(msg => getMessageText(msg).toLowerCase().includes(lowerQuery))
 }
 
 // ============================================================================

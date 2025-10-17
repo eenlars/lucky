@@ -4,14 +4,14 @@ import {
   retrieveWorkflowVersion,
   saveWorkflowVersion,
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
-import { requireAuth } from "@/lib/api-auth"
-import { handleBody, isHandleBodyError, alrighty, fail } from "@/lib/api/server"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { auth } from "@clerk/nextjs/server"
 import { genShortId } from "@lucky/shared/client"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const body = await handleBody("workflow/upsert-workflow", request)
   if (isHandleBodyError(body)) return body
@@ -20,7 +20,10 @@ export async function POST(request: NextRequest) {
     const { dsl, workflowVersionId, workflowName, commitMessage, iterationBudget, timeBudgetSeconds } = body
 
     if (!dsl || !commitMessage) {
-      return fail("workflow/upsert-workflow", "dsl and commitMessage are required", { code: "INVALID_INPUT", status: 400 })
+      return fail("workflow/upsert-workflow", "dsl and commitMessage are required", {
+        code: "INVALID_INPUT",
+        status: 400,
+      })
     }
 
     let workflowId: string
@@ -33,7 +36,10 @@ export async function POST(request: NextRequest) {
       try {
         const existingVersion = await retrieveWorkflowVersion(workflowVersionId)
         if (!existingVersion.workflow_id) {
-          return fail("workflow/upsert-workflow", "Workflow version has no associated workflow", { code: "INVALID_VERSION", status: 400 })
+          return fail("workflow/upsert-workflow", "Workflow version has no associated workflow", {
+            code: "INVALID_VERSION",
+            status: 400,
+          })
         }
         workflowId = existingVersion.workflow_id
         parentId = workflowVersionId
@@ -41,15 +47,21 @@ export async function POST(request: NextRequest) {
         if (iterationBudget === undefined) finalIterationBudget = existingVersion.iteration_budget
         if (timeBudgetSeconds === undefined) finalTimeBudgetSeconds = existingVersion.time_budget_seconds
       } catch (_versionError) {
-        return fail("workflow/upsert-workflow", "Workflow version not found", { code: "VERSION_NOT_FOUND", status: 404 })
+        return fail("workflow/upsert-workflow", "Workflow version not found", {
+          code: "VERSION_NOT_FOUND",
+          status: 404,
+        })
       }
     } else {
       // Creating new workflow
       if (!workflowName) {
-        return fail("workflow/upsert-workflow", "workflowName is required for new workflows", { code: "INVALID_INPUT", status: 400 })
+        return fail("workflow/upsert-workflow", "workflowName is required for new workflows", {
+          code: "INVALID_INPUT",
+          status: 400,
+        })
       }
       workflowId = `wf_id_${genShortId()}`
-      await createWorkflow(workflowId, workflowName, authResult)
+      await createWorkflow(workflowId, workflowName, userId)
 
       // Try to save the version, but rollback workflow creation if it fails
       try {
@@ -86,6 +98,9 @@ export async function POST(request: NextRequest) {
     return alrighty("workflow/upsert-workflow", { success: true, data: { success: true, data: newVersion } })
   } catch (error) {
     console.error("Error upserting workflow:", error)
-    return fail("workflow/upsert-workflow", error instanceof Error ? error.message : "Failed to save", { code: "UPSERT_ERROR", status: 500 })
+    return fail("workflow/upsert-workflow", error instanceof Error ? error.message : "Failed to save", {
+      code: "UPSERT_ERROR",
+      status: 500,
+    })
   }
 }

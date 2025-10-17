@@ -118,11 +118,62 @@ Make appropriate changes based on the user's request.`
       data: result.object,
     })
   } catch (error) {
-    console.error("AI handler error:", error)
+    // Handle AI SDK errors with better user messages
+    if (error && typeof error === "object" && "name" in error) {
+      const err = error as any
+
+      // Handle quota/billing errors (429)
+      if (err.name === "AI_RetryError" || err.name === "AI_APICallError") {
+        const statusCode = err.statusCode || err.lastError?.statusCode
+        const errorType = err.lastError?.responseBody ? JSON.parse(err.lastError.responseBody)?.error?.type : null
+
+        if (statusCode === 429 || errorType === "insufficient_quota") {
+          console.error("[AI artifact] Quota exceeded:", err.message)
+          return Response.json(
+            {
+              success: false,
+              error: "AI quota exceeded. Please check your OpenAI API key and billing settings.",
+              errorType: "quota_exceeded",
+            },
+            { status: 429 },
+          )
+        }
+
+        // Handle rate limits
+        if (statusCode === 429 || errorType === "rate_limit_exceeded") {
+          console.error("[AI artifact] Rate limit:", err.message)
+          return Response.json(
+            {
+              success: false,
+              error: "Rate limit exceeded. Please try again in a moment.",
+              errorType: "rate_limit",
+            },
+            { status: 429 },
+          )
+        }
+
+        // Handle authentication errors
+        if (statusCode === 401 || errorType === "invalid_api_key") {
+          console.error("[AI artifact] Auth error:", err.message)
+          return Response.json(
+            {
+              success: false,
+              error: "Invalid API key. Please check your OpenAI API key configuration.",
+              errorType: "auth_error",
+            },
+            { status: 401 },
+          )
+        }
+      }
+    }
+
+    // Generic error fallback
+    console.error("[AI artifact] Unexpected error:", error)
     return Response.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Internal server error",
+        error: error instanceof Error ? error.message : "AI request failed. Please try again.",
+        errorType: "unknown",
       },
       { status: 500 },
     )

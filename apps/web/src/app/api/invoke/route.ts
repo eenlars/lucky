@@ -1,15 +1,15 @@
 // app/src/app/api/invoke/route.ts
 
-import { requireAuth } from "@/lib/api-auth"
-import { handleBody, isHandleBodyError, alrighty, fail } from "@/lib/api/server"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { auth } from "@clerk/nextjs/server"
 import { genShortId } from "@lucky/shared/client"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   try {
     // Require authentication
-    const authResult = await requireAuth()
-    if (authResult) return authResult
+    const { isAuthenticated } = await auth()
+    if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
     // Validate request body using type-safe schema
     const body = await handleBody("invoke", req)
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     if ("error" in result && result.error) {
       return fail("invoke", result.error.message || "Workflow invocation failed", {
         code: "INVOKE_ERROR",
-        status: invokeResponse.status || 500
+        status: invokeResponse.status || 500,
       })
     }
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     console.error("Prompt-only API Error:", error)
     return fail("invoke", "Failed to process prompt-only request", {
       code: "INTERNAL_ERROR",
-      status: 500
+      status: 500,
     })
   }
 }

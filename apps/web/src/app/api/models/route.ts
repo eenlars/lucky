@@ -1,7 +1,7 @@
+import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { getActiveModelNames } from "@lucky/core/utils/spending/functions"
 import { findModelByName, getActiveModels, getModelsByProvider } from "@lucky/models"
-import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import { providerNameSchema } from "packages/shared/dist/client"
 
 export const runtime = "nodejs"
@@ -16,23 +16,22 @@ export async function POST(request: NextRequest) {
   try {
     const { action, model, provider } = body
 
-    const validatedProvider = providerNameSchema.parse(provider)
-    if (!validatedProvider) {
-      return fail("models", "Invalid provider", { code: "INVALID_PROVIDER", status: 400 })
-    }
-
     if (action === "getActiveModelNames") {
+      if (!provider) {
+        return NextResponse.json({ error: "Provider is required for getActiveModelNames" }, { status: 400 })
+      }
+      const validatedProvider = providerNameSchema.parse(provider)
       const models = getActiveModelNames(validatedProvider)
       return alrighty("models", { models })
     }
 
     if (action === "getModelV2") {
       if (!model) {
-        return fail("models", "Model name is required", { code: "MISSING_MODEL", status: 400 })
+        return NextResponse.json({ error: "Model name is required" }, { status: 400 })
       }
       const modelInfo = findModelByName(model)
       if (!modelInfo) {
-        return fail("models", "Model not found", { code: "MODEL_NOT_FOUND", status: 404 })
+        return NextResponse.json({ error: "Model not found" }, { status: 404 })
       }
       return alrighty("models", { model: modelInfo })
     }
@@ -44,18 +43,18 @@ export async function POST(request: NextRequest) {
         return alrighty("models", { models })
       }
       // Return models for specific provider
-      const models = getModelsByProvider(provider).filter(m => m.active)
+      const validatedProvider = providerNameSchema.parse(provider)
+      const models = getModelsByProvider(validatedProvider).filter(m => m.active)
       return alrighty("models", { models })
     }
 
-    return fail(
-      "models",
-      "Invalid action. Use 'getActiveModelNames', 'getModelV2', or 'getModelsByProvider'",
-      { code: "INVALID_ACTION", status: 400 },
+    return NextResponse.json(
+      { error: "Invalid action. Use 'getActiveModelNames', 'getModelV2', or 'getModelsByProvider'" },
+      { status: 400 },
     )
   } catch (error) {
     console.error("Models API error:", error)
     const message = error instanceof Error ? error.message : "Unknown error"
-    return fail("models", message, { code: "INTERNAL_ERROR", status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

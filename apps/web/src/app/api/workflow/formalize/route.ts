@@ -1,19 +1,18 @@
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
 import { getUserModels } from "@/lib/models/server-utils"
+import { auth } from "@clerk/nextjs/server"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { RS } from "@lucky/shared"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
-  const clerkId = authResult as string
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -34,9 +33,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-
     // Fetch user's available models from database
-    const availableModels = await getUserModels(clerkId)
+    const availableModels = await getUserModels(userId)
 
     // Merge user's available models into options
     const optionsWithModels: GenerationOptions & AfterGenerationOptions = {

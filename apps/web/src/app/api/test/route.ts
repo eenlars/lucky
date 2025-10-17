@@ -1,11 +1,11 @@
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
-import { type NextRequest } from "next/server"
+import { auth } from "@clerk/nextjs/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Check if API key is available
   if (!process.env.XAI_API_KEY) {
@@ -73,21 +73,17 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error("API Error:", error)
-    return fail(
-      "test:post",
-      error instanceof Error ? error.message : "Failed to process request",
-      {
-        code: "XAI_REQUEST_FAILED",
-        status: 500,
-      },
-    )
+    return fail("test:post", error instanceof Error ? error.message : "Failed to process request", {
+      code: "XAI_REQUEST_FAILED",
+      status: 500,
+    })
   }
 }
 
 export async function GET() {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
     // Check if API key is available

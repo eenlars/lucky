@@ -9,7 +9,7 @@ import { ZodError } from "zod"
 export async function GET() {
   try {
     const { isAuthenticated, userId } = await auth()
-    if (!isAuthenticated) return new NextResponse('Unauthorized', { status: 401 })
+    if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
     const supabase = await createRLSClient()
     const { data, error } = await supabase
@@ -21,7 +21,7 @@ export async function GET() {
 
     if (error) {
       console.error("Failed to fetch user profile:", error)
-      return fail("user/profile", "Failed to fetch profile", { code: "SUPABASE_ERROR", status: 500 })
+      return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 })
     }
 
     // If no profile exists yet, return empty profile
@@ -35,16 +35,13 @@ export async function GET() {
     return alrighty("user/profile", { profile: validatedProfile })
   } catch (error) {
     if (error instanceof ZodError) {
-      return fail("user/profile", "Invalid profile data", {
-        code: "VALIDATION_ERROR",
-        status: 400,
-      })
+      return NextResponse.json({ error: "Invalid profile data" }, { status: 400 })
     }
     logException(error, {
       location: "/api/user/profile/GET",
     })
     console.error("Profile GET error:", error)
-    return fail("user/profile", "Internal server error", { code: "INTERNAL_ERROR", status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
@@ -54,7 +51,7 @@ export async function PUT(req: NextRequest) {
 
   try {
     const { isAuthenticated, userId } = await auth()
-    if (!isAuthenticated) return new NextResponse('Unauthorized', { status: 401 })
+    if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
     // Validate and sanitize profile data using Zod (transforms will trim strings)
     const validatedProfile = personalProfileSchema.parse(body.profile)
@@ -76,24 +73,18 @@ export async function PUT(req: NextRequest) {
 
     if (error) {
       console.error("Failed to update user profile:", error)
-      return fail("user/profile:put", "Failed to update profile", {
-        code: "SUPABASE_ERROR",
-        status: 500,
-      })
+      return NextResponse.json({ error: "Failed to update profile" }, { status: 500 })
     }
 
     return alrighty("user/profile:put", { success: true, profile: validatedProfile })
   } catch (error) {
     if (error instanceof ZodError) {
-      return fail("user/profile:put", "Invalid profile data", {
-        code: "VALIDATION_ERROR",
-        status: 400,
-      })
+      return NextResponse.json({ error: "Invalid profile data" }, { status: 400 })
     }
     logException(error, {
       location: "/api/user/profile/PUT",
     })
     console.error("Profile PUT error:", error)
-    return fail("user/profile:put", "Internal server error", { code: "INTERNAL_ERROR", status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

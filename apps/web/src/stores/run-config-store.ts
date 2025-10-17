@@ -161,17 +161,11 @@ export const useRunConfigStore = create<RunConfigState>()(
                   record.ground_truth !== null &&
                   record.ground_truth !== undefined,
               )
-              .map(
-                (record: {
-                  dataset_record_id?: string
-                  workflow_input: unknown
-                  ground_truth: unknown
-                }) => ({
-                  id: record.dataset_record_id || newId(),
-                  input: String(record.workflow_input || ""),
-                  expected: String(record.ground_truth || ""),
-                }),
-              )
+              .map((record: { dataset_record_id?: string; workflow_input: unknown; ground_truth: unknown }) => ({
+                id: record.dataset_record_id || newId(),
+                input: String(record.workflow_input || ""),
+                expected: String(record.ground_truth || ""),
+              }))
 
             set({
               cases,

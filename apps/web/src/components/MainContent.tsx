@@ -4,11 +4,7 @@ import { useSidebar } from "@/contexts/SidebarContext"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@clerk/nextjs"
 
-export default function MainContent({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function MainContent({ children }: { children: React.ReactNode }) {
   const { isMobile } = useSidebar()
   const { isSignedIn } = useAuth()
 

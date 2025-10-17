@@ -99,7 +99,6 @@ export const DEFAULT_INACTIVE_TOOLS: AllToolNames[] = [
   "playwright",
   "browserAutomation",
   "proxy",
-  "filesystem",
   "csvReader",
   "csvInfo",
   "csvWriter",

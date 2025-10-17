@@ -17,12 +17,7 @@ export async function retryWithBackoff<T>(
     attempts: number
     backoffMs?: number
     shouldRetry?: (value: T) => boolean
-    onAttempt?: (info: {
-      attempt: number
-      attempts: number
-      value?: T
-      error?: unknown
-    }) => void
+    onAttempt?: (info: { attempt: number; attempts: number; value?: T; error?: unknown }) => void
   },
 ): Promise<T> {
   let lastError: unknown

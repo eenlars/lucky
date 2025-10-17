@@ -78,11 +78,7 @@ const formatNumberTrim = (value: number) => {
   return str.replace(/\.00$/, "").replace(/(\.[1-9])0$/, "$1")
 }
 
-const formatFitnessDisplay = (range: {
-  min: number
-  max: number
-  count: number
-}) => {
+const formatFitnessDisplay = (range: { min: number; max: number; count: number }) => {
   if (range.count === 1 || range.min === range.max) {
     return formatNumberTrim(range.min)
   }
@@ -135,11 +131,7 @@ const groupByWorkflowStructure = (
   return Array.from(structureGroups.values()).sort((a, b) => a.firstSeenGeneration - b.firstSeenGeneration)
 }
 
-export default function EvolutionRunPage({
-  params,
-}: {
-  params: Promise<{ run_id: string }>
-}) {
+export default function EvolutionRunPage({ params }: { params: Promise<{ run_id: string }> }) {
   const { run_id } = use(params)
 
   // TanStack Query hooks

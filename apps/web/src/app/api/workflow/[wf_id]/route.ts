@@ -1,13 +1,13 @@
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail } from "@/lib/api/server"
 import { createClient } from "@/lib/supabase/server"
-import { type NextRequest } from "next/server"
+import { auth } from "@clerk/nextjs/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(_request: NextRequest, context: { params: Promise<{ wf_id: string }> }) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createClient()
   const { wf_id } = await context.params

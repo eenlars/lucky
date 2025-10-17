@@ -3,15 +3,15 @@
  * Returns all provider settings with Zod validation
  */
 
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { checkMultipleProviderKeys } from "@/lib/lockbox/check-provider-keys"
 import { createRLSClient } from "@/lib/supabase/server-rls"
+import { auth } from "@clerk/nextjs/server"
 import { getAllProviders } from "@lucky/models"
 import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
 import { userModelPreferencesSchema } from "@lucky/shared"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -20,9 +20,8 @@ export const runtime = "nodejs"
  * Returns ALL provider settings with normalized and validated model IDs
  */
 export async function GET(_req: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
-  const clerkId = authResult as string
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 
@@ -31,7 +30,7 @@ export async function GET(_req: NextRequest) {
       .schema("app")
       .from("provider_settings")
       .select("provider, enabled_models, is_enabled, updated_at")
-      .eq("clerk_id", clerkId)
+      .eq("clerk_id", userId)
       .order("provider", { ascending: true })
 
     if (error) {
@@ -50,7 +49,7 @@ export async function GET(_req: NextRequest) {
 
     // Check API key status for all providers in parallel
     const providerNames = validData.map(row => row.provider)
-    const keyStatusMap = await checkMultipleProviderKeys(clerkId, providerNames)
+    const keyStatusMap = await checkMultipleProviderKeys(userId, providerNames)
 
     // Build provider settings - use model IDs as-is from database
     const providers = validData.map(row => {
@@ -96,9 +95,8 @@ export async function GET(_req: NextRequest) {
  * Body: UserModelPreferences
  */
 export async function PUT(req: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
-  const clerkId = authResult as string
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 
@@ -138,7 +136,7 @@ export async function PUT(req: NextRequest) {
         .schema("app")
         .from("provider_settings")
         .select("provider_setting_id")
-        .eq("clerk_id", clerkId)
+        .eq("clerk_id", userId)
         .eq("provider", providerSettings.provider)
         .maybeSingle()
 
@@ -160,7 +158,7 @@ export async function PUT(req: NextRequest) {
         .from("provider_settings")
         .insert([
           {
-            clerk_id: clerkId,
+            clerk_id: userId,
             provider: providerSettings.provider,
             enabled_models: providerSettings.enabledModels as ModelId[],
             is_enabled: providerSettings.isEnabled,

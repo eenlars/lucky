@@ -1,8 +1,8 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import { PATHS } from "@lucky/examples/settings/constants"
 import { alrighty } from "@/lib/api/server"
-import { type NextRequest } from "next/server"
+import { PATHS } from "@lucky/examples/settings/constants"
+import { type NextRequest, NextResponse } from "next/server"
 
 // Use shared runtime path so writers and readers agree
 const APPROVAL_STORAGE_PATH = path.join(PATHS.node.logging, "approvals")
@@ -89,8 +89,6 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error("Error in approve route:", error)
-    return alrighty("test/approve", {
-      text: "Error: Failed to process request",
-    })
+    return NextResponse.json({ text: "Error: Failed to process request" }, { status: 500 })
   }
 }

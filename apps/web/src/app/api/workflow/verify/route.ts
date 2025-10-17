@@ -1,13 +1,13 @@
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
 import { formatErrorResponse, formatSuccessResponse } from "@/lib/mcp-invoke/response"
+import { auth } from "@clerk/nextjs/server"
 import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow/verifyWorkflow"
 import { clientWorkflowLoader } from "@lucky/core/workflow/setup/WorkflowLoader.client"
 import { genShortId } from "@lucky/shared"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   const requestId = `workflow-verify-${genShortId()}`
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
 
   try {
     // Require authentication
-    const authResult = await requireAuth()
-    if (authResult) return authResult
+    const { isAuthenticated } = await auth()
+    if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
     // Ensure core is initialized
     ensureCoreInit()
@@ -27,10 +27,12 @@ export async function POST(request: NextRequest) {
     const { workflow, mode } = body as { workflow: any; mode?: string }
 
     if (!workflow) {
-      return fail(
+      return alrighty(
         "workflow/verify",
-        "Workflow configuration is required",
-        { code: "MISSING_WORKFLOW", status: 400 },
+        formatErrorResponse(requestId, {
+          code: ErrorCodes.INVALID_PARAMS,
+          message: "Workflow configuration is required",
+        }),
       )
     }
 
@@ -58,10 +60,13 @@ export async function POST(request: NextRequest) {
         )
       } catch (error) {
         const message = error instanceof Error ? error.message : "Invalid DSL configuration"
-        return fail("workflow/verify", message, {
-          code: "VALIDATION_FAILED",
-          status: 400,
-        })
+        return alrighty(
+          "workflow/verify",
+          formatErrorResponse(requestId, {
+            code: ErrorCodes.INVALID_PARAMS,
+            message,
+          }),
+        )
       }
     }
 
@@ -85,8 +90,13 @@ export async function POST(request: NextRequest) {
       location: "/api/workflow/verify",
     })
     console.error("Workflow verification error:", error)
-    const message =
-      error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"
-    return fail("workflow/verify", message, { code: "VERIFICATION_ERROR", status: 500 })
+    const message = error instanceof Error ? `Verification Error: ${error.message}` : "Unknown verification error"
+    return alrighty(
+      "workflow/verify",
+      formatErrorResponse(requestId, {
+        code: ErrorCodes.INTERNAL_ERROR,
+        message,
+      }),
+    )
   }
 }

@@ -1,7 +1,7 @@
-import { requireAuth } from "@/lib/api-auth"
-import { alrighty, fail } from "@/lib/api/server"
+import { alrighty } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
@@ -51,8 +51,8 @@ interface WorkflowInvocationSortOptions {
 
 export async function GET(request: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
   const searchParams = request.nextUrl.searchParams
@@ -169,7 +169,7 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query
 
     if (error) {
-      return fail("workflow/invocations", error.message, { code: "DB_ERROR", status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     // Compute aggregate statistics for the entire filtered dataset
@@ -277,14 +277,14 @@ export async function GET(request: NextRequest) {
       location: "/api/workflow/invocations/GET",
     })
     console.error("Error fetching workflow invocations:", error)
-    return fail("workflow/invocations", "Failed to fetch invocations", { code: "FETCH_ERROR", status: 500 })
+    return NextResponse.json({ error: "Failed to fetch invocations" }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 
@@ -293,13 +293,13 @@ export async function DELETE(request: NextRequest) {
     const { ids } = body
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return fail("workflow/invocations/delete", "No invocation IDs provided", { code: "INVALID_INPUT", status: 400 })
+      return NextResponse.json({ error: "No invocation IDs provided" }, { status: 400 })
     }
 
     const { error } = await supabase.from("WorkflowInvocation").delete().in("wf_invocation_id", ids)
 
     if (error) {
-      return fail("workflow/invocations/delete", error.message, { code: "DB_ERROR", status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return alrighty("workflow/invocations/delete", { success: true, data: { success: true, deletedCount: ids.length } })
@@ -308,9 +308,9 @@ export async function DELETE(request: NextRequest) {
       location: "/api/workflow/invocations/DELETE",
     })
     console.error("Error deleting workflow invocations:", error)
-    return fail("workflow/invocations/delete",
-      error instanceof Error ? error.message : "Failed to delete invocations",
-      { code: "DELETE_ERROR", status: 500 }
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to delete invocations" },
+      { status: 500 },
     )
   }
 }

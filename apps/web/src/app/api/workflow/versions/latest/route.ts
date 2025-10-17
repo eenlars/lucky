@@ -1,14 +1,14 @@
-import { requireAuth } from "@/lib/api-auth"
-import { alrighty, fail } from "@/lib/api/server"
+import { alrighty } from "@/lib/api/server"
 import { createClient } from "@/lib/supabase/server"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createClient()
   const searchParams = request.nextUrl.searchParams
@@ -22,12 +22,12 @@ export async function GET(request: NextRequest) {
       .limit(limit)
 
     if (error) {
-      return fail("workflow/versions/latest", error.message, { code: "DB_ERROR", status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return alrighty("workflow/versions/latest", data || [])
   } catch (error) {
     console.error("Error fetching latest workflow versions:", error)
-    return fail("workflow/versions/latest", "Failed to fetch workflow versions", { code: "FETCH_ERROR", status: 500 })
+    return NextResponse.json({ error: "Failed to fetch workflow versions" }, { status: 500 })
   }
 }

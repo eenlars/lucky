@@ -1,9 +1,9 @@
+import { alrighty } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
-import { alrighty, fail } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { getDemoWorkflow } from "@/lib/mcp-invoke/workflow-loader"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import type { NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     // Unified authentication: API key or Clerk session
     const principal = await authenticateRequest(req)
     if (!principal) {
-      return fail("user/workflows", "Unauthorized", { code: "UNAUTHORIZED", status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Use RLS client for automatic user isolation
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       console.error("[GET /api/user/workflows] Database error:", error)
-      return fail("user/workflows", error.message, { code: "DATABASE_ERROR", status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     // If user has no workflows, return demo workflow so they can get started
@@ -103,6 +103,6 @@ export async function GET(req: NextRequest) {
       location: "/api/user/workflows/GET",
     })
     console.error("[GET /api/user/workflows] Error:", error)
-    return fail("user/workflows", "Internal server error", { code: "INTERNAL_ERROR", status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

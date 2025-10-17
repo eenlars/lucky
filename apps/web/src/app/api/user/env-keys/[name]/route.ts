@@ -1,8 +1,8 @@
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail } from "@/lib/api/server"
 import { decryptGCM } from "@/lib/crypto/lockbox"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import { type NextRequest } from "next/server"
+import { auth } from "@clerk/nextjs/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -11,9 +11,8 @@ const ENV_NAMESPACE = "environment-variables"
 // GET /api/user/env-keys/[name]
 // Returns the decrypted value of a specific environment variable
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
-  const clerkId = authResult as string
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const { name } = await params
 
@@ -31,7 +30,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ nam
       .schema("lockbox")
       .from("user_secrets")
       .select("user_secret_id, name, ciphertext, iv, auth_tag, created_at")
-      .eq("clerk_id", clerkId)
+      .eq("clerk_id", userId)
       .eq("namespace", ENV_NAMESPACE)
       .ilike("name", name)
       .eq("is_current", true)

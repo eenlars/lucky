@@ -3,20 +3,27 @@ import {
   retrieveWorkflowVersion,
   saveWorkflowVersion,
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
-import { requireAuth } from "@/lib/api-auth"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
+import { auth } from "@clerk/nextjs/server"
 import type { Tables } from "@lucky/shared"
-import { type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult) return authResult
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const body = await handleBody("workflow/save", request)
   if (isHandleBodyError(body)) return body
 
-  const { dsl, commitMessage, parentId, workflowId: bodyWorkflowId, iterationBudget: bodyIterationBudget, timeBudgetSeconds: bodyTimeBudgetSeconds } = body as {
+  const {
+    dsl,
+    commitMessage,
+    parentId,
+    workflowId: bodyWorkflowId,
+    iterationBudget: bodyIterationBudget,
+    timeBudgetSeconds: bodyTimeBudgetSeconds,
+  } = body as {
     dsl?: unknown
     commitMessage?: string
     parentId?: string
@@ -38,7 +45,6 @@ export async function POST(request: NextRequest) {
   let timeBudgetSeconds = bodyTimeBudgetSeconds
 
   try {
-
     // If editing an existing version, prefer authoritative workflow_id + budgets from parent
     if (parentId) {
       const parent = await retrieveWorkflowVersion(parentId).catch(() => null)
@@ -67,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     // Ensure workflow exists (new workflows) or confirm ownership (existing)
     try {
-      await ensureWorkflowExists(commitMessage, workflowId, authResult as string)
+      await ensureWorkflowExists(commitMessage, workflowId, userId)
     } catch (e) {
       const err = e as any
       if (err?.code === "WORKFLOW_OWNERSHIP_CONFLICT") {
