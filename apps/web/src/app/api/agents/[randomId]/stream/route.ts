@@ -4,7 +4,7 @@ import type { AgentEvent } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
-export const maxDuration = 300 // 5 minutes
+export const maxDuration = 60 // 1 minute (Vercel hobby plan limit)
 
 /**
  * SSE endpoint for streaming agent execution events
@@ -57,16 +57,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ rand
         }
       })
 
-      // Auto-close after 5 minutes
-      const timeoutId = setTimeout(
-        () => {
-          unsubscribe()
-          const timeoutMsg = JSON.stringify({ type: "timeout" })
-          controller?.enqueue(encoder.encode(`data: ${timeoutMsg}\n\n`))
-          controller?.close()
-        },
-        5 * 60 * 1000,
-      )
+      // Auto-close after 1 minute (Vercel hobby plan limit)
+      const timeoutId = setTimeout(() => {
+        unsubscribe()
+        const timeoutMsg = JSON.stringify({ type: "timeout" })
+        controller?.enqueue(encoder.encode(`data: ${timeoutMsg}\n\n`))
+        controller?.close()
+      }, 60 * 1000)
 
       // Cleanup on client disconnect
       req.signal.addEventListener("abort", () => {
