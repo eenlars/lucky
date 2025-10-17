@@ -266,11 +266,15 @@ export async function GET(request: NextRequest) {
     })()
 
     return alrighty("workflow/invocations", {
-      data: data || [],
-      totalCount: count || 0,
-      page,
-      pageSize,
-      aggregates,
+      success: true,
+      data: {
+        data: data || [],
+        totalCount: count || 0,
+        page,
+        pageSize,
+        aggregates,
+      },
+      error: null,
     })
   } catch (error) {
     logException(error, {

@@ -91,9 +91,9 @@ export function useInvocationsQuery({
 
       const result = await response.json()
       return {
-        data: result.data as WorkflowInvocationWithScores[],
-        totalCount: result.totalCount as number,
-        aggregates: result.aggregates as {
+        data: result.data.data as WorkflowInvocationWithScores[],
+        totalCount: result.data.totalCount as number,
+        aggregates: result.data.aggregates as {
           totalSpent: number
           avgAccuracy: number | null
           failedCount: number

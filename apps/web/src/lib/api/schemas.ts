@@ -123,10 +123,7 @@ export const apiSchemas = {
       iterationBudget: z.number().optional(),
       timeBudgetSeconds: z.number().optional(),
     }),
-    res: z.object({
-      success: z.boolean(),
-      data: z.unknown(), // WorkflowVersion table record
-    }),
+    res: ApiResponse(z.unknown()), // WorkflowVersion table record
   },
 
   /**
@@ -770,17 +767,19 @@ export const apiSchemas = {
    */
   "workflow/invocations": {
     req: z.never().optional(), // Uses query params
-    res: z.object({
-      data: z.array(z.unknown()), // Complex joined data from WorkflowInvocation + WorkflowVersion + Workflow
-      totalCount: z.number().int().nonnegative(),
-      page: z.number().int().positive(),
-      pageSize: z.number().int().positive(),
-      aggregates: z.object({
-        totalSpent: z.number().min(0),
-        avgAccuracy: z.number().nullable(),
-        failedCount: z.number().int().nonnegative(),
+    res: ApiResponse(
+      z.object({
+        data: z.array(z.unknown()), // Complex joined data from WorkflowInvocation + WorkflowVersion + Workflow
+        totalCount: z.number().int().nonnegative(),
+        page: z.number().int().positive(),
+        pageSize: z.number().int().positive(),
+        aggregates: z.object({
+          totalSpent: z.number().min(0),
+          avgAccuracy: z.number().nullable(),
+          failedCount: z.number().int().nonnegative(),
+        }),
       }),
-    }),
+    ),
   },
 
   /**
