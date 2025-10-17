@@ -25,7 +25,7 @@ export function getAllToolkitNames(type: ToolType): string[] {
 export function getToolsInToolkit(toolkitName: string, type: ToolType): string[] {
   if (type === "mcp") {
     const toolkit = mcpToolkits.toolkits.find(t => t.toolkitName === toolkitName)
-    return toolkit?.tools.map(tool => tool.toolName) ?? []
+  return toolkit?.tools?.map(tool => tool.toolName) ?? []
   }
   const toolkit = TOOL_TOOLKITS.toolkits.find(t => t.toolkitName === toolkitName)
   return toolkit?.tools.map(tool => tool.toolName) ?? []
