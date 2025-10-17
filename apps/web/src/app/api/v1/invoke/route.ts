@@ -1,6 +1,6 @@
+import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
-import { createSecretResolver } from "@/lib/lockbox/secretResolver"
 import {
   extractTraceId,
   extractWorkflowOutput,

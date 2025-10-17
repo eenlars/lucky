@@ -16,8 +16,8 @@ export type { SelectionOptions } from "./facade"
 
 // Export Pricing
 export {
-  getActiveModels,
-  getActiveProviders,
+  getRuntimeEnabledModels,
+  getRuntimeEnabledProviders,
   getAllProviders,
   getCatalogStats,
   getModelsByProvider,
@@ -34,9 +34,9 @@ export {
   findModel,
   findModelByName,
   getActiveModelIds,
-  getActiveModelsByProvider,
+  getRuntimeEnabledModelsByProvider as getActiveModelsByProvider,
   getModel,
-  isModelActive,
+  isRuntimeEnabled as isModelActive,
 } from "./pricing/model-lookup"
 
 export {

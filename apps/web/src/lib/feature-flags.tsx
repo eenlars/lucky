@@ -8,8 +8,8 @@
  * - production: Flags disabled (stable experience)
  */
 
-import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
+import { useEffect, useState } from "react"
 
 /** Check if we're running on localhost (client-side only) */
 function isLocalhost(): boolean {

@@ -7,10 +7,10 @@ const mockLogException = vi.fn()
 
 // Mock modules - factories must not reference outer scope variables
 vi.mock("@/lib/supabase/server")
-vi.mock("@/lib/api-key-utils")
+vi.mock("@/features/secret-management/lib/api-key-utils")
 vi.mock("@/lib/error-logger")
 
-import * as apiKeyUtils from "@/lib/api-key-utils"
+import * as apiKeyUtils from "@/features/secret-management/lib/api-key-utils"
 import * as errorLogger from "@/lib/error-logger"
 import * as supabaseServer from "@/lib/supabase/server"
 // Import after mocks are set up

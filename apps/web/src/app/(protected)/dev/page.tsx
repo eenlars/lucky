@@ -31,7 +31,7 @@ import {
   User,
   Zap,
 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { PipelineTester } from "./components/PipelineTester"
 
@@ -74,7 +74,8 @@ type DevMode = "store-inspector" | "pipeline-tester"
 
 export default function DevPage() {
   const router = useRouter()
-  const [mode, setMode] = useState<DevMode>("store-inspector")
+  const searchParams = useSearchParams()
+  const [mode, setMode] = useState<DevMode>((searchParams.get("mode") as DevMode) || "store-inspector")
   const [selectedStore, setSelectedStore] = useState<StoreInspector | null>(null)
   const [processedData, setProcessedData] = useState<ProcessedStoreData>({
     state: {},
@@ -87,6 +88,13 @@ export default function DevPage() {
   const [executions, setExecutions] = useState<ActionExecution[]>([])
   const [actionInputs, setActionInputs] = useState<Record<string, string>>({})
   const [expandedActions, setExpandedActions] = useState<Set<string>>(new Set())
+
+  const updateMode = (newMode: DevMode) => {
+    setMode(newMode)
+    const params = new URLSearchParams(searchParams)
+    params.set("mode", newMode)
+    router.replace(`/dev?${params.toString()}`)
+  }
 
   // Only allow in development
   useEffect(() => {
@@ -341,7 +349,7 @@ export default function DevPage() {
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setMode("store-inspector")}
+            onClick={() => updateMode("store-inspector")}
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors",
               mode === "store-inspector"
@@ -354,7 +362,7 @@ export default function DevPage() {
           </button>
           <button
             type="button"
-            onClick={() => setMode("pipeline-tester")}
+            onClick={() => updateMode("pipeline-tester")}
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors",
               mode === "pipeline-tester"

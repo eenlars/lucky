@@ -4,7 +4,7 @@ import type {
   ModelFilters,
   ModelSpeed,
   SortBy,
-} from "@/components/providers/model-selection/types"
+} from "@/features/provider-llm-setup/providers/model-selection/types"
 import type { EnrichedModelInfo } from "@lucky/shared"
 
 /**

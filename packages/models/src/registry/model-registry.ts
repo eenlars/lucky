@@ -189,7 +189,7 @@ export class ModelRegistry {
    */
   findByCapabilities(required: string[]): ModelEntry[] {
     if (required.length === 0) {
-      return Array.from(this.byId.values()).filter(m => m.active)
+      return Array.from(this.byId.values()).filter(m => m.runtimeEnabled)
     }
 
     const sets = required.map(cap => this.byCapability.get(cap)).filter(Boolean) as Set<string>[]
@@ -202,7 +202,7 @@ export class ModelRegistry {
     const intersection = this.intersectSets(sets)
     return Array.from(intersection)
       .map(id => this.byId.get(id)!)
-      .filter(m => m.active)
+      .filter(m => m.runtimeEnabled)
   }
 
   /**
@@ -213,7 +213,7 @@ export class ModelRegistry {
     const result: ModelEntry[] = []
 
     for (const model of this.sortedByCost) {
-      if (activeOnly && !model.active) continue
+      if (activeOnly && !model.runtimeEnabled) continue
 
       const avgCost = (model.input + model.output) / 2
       if (avgCost <= maxAvgCost) {
@@ -235,7 +235,7 @@ export class ModelRegistry {
 
     // Use sorted list - find insertion point
     for (const model of this.sortedByContext) {
-      if (activeOnly && !model.active) continue
+      if (activeOnly && !model.runtimeEnabled) continue
       if (model.contextLength >= minLength) {
         result.push(model)
       }
@@ -251,7 +251,7 @@ export class ModelRegistry {
     const result: ModelEntry[] = []
 
     for (const model of this.sortedByIntelligence) {
-      if (activeOnly && !model.active) continue
+      if (activeOnly && !model.runtimeEnabled) continue
       if (model.intelligence >= minIntel) {
         result.push(model)
       }
@@ -319,7 +319,7 @@ export class ModelRegistry {
    */
   getStats(): RegistryStats {
     const models = Array.from(this.byId.values())
-    const active = models.filter(m => m.active)
+    const active = models.filter(m => m.runtimeEnabled)
 
     const byProvider: Record<string, number> = {}
     const bySpeed: Record<string, number> = {}
@@ -435,7 +435,7 @@ export class ModelRegistry {
    */
   private matchesQuery(model: ModelEntry, query: ModelQuery): boolean {
     // Active filter
-    if (query.activeOnly !== false && !model.active) {
+    if (query.activeOnly !== false && !model.runtimeEnabled) {
       return false
     }
 

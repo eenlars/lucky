@@ -1,6 +1,7 @@
 import { alrighty } from "@/lib/api/server"
 import { handleBody, isHandleBodyError } from "@/lib/api/server"
 import { getModelsByProvider } from "@lucky/models"
+import { isUIVisibleModel } from "@lucky/models/pricing/model-lookup"
 import { type EnrichedModelInfo, providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -73,12 +74,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
       const isDevelopment = process.env.NODE_ENV === "development"
 
       // In development: show all models from catalog
-      // In production: only show models that are not disabled
+      // In production: only show models that are UI-visible (not disabled)
       result = modelIds
         .map(modelId => {
           const catalogEntry = catalogMap.get(modelId)
-          // In development, show all catalog models; in production, filter disabled ones
-          if (catalogEntry && (isDevelopment || !catalogEntry.disabled)) {
+          // In development, show all; in production, hide UI-hidden models
+          if (catalogEntry && (isDevelopment || isUIVisibleModel(catalogEntry, process.env.NODE_ENV))) {
             return {
               id: catalogEntry.id,
               name: catalogEntry.model,

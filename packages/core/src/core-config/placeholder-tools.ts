@@ -4,34 +4,45 @@
  * In production, these would be imported from actual tool implementations.
  */
 
-import { defineTool } from "@lucky/tools"
 import { z } from "zod"
 
 /**
- * Placeholder tavily MCP tool (for test compatibility)
- * Note: Using 'as any' since this is a placeholder and doesn't match core tool types
+ * Generic placeholder tool factory - creates tools without requiring valid MCPToolName
+ * Used only for test compatibility, not for runtime tool execution
  */
-export const tavily = defineTool({
-  name: "tavily" as any,
-  description: "Search the web using Tavily API",
-  params: z.object({
+function createPlaceholderTool<T extends string>(name: T, description: string, params: z.ZodType) {
+  return {
+    name,
+    description,
+    params,
+    async execute() {
+      return {
+        success: false,
+        error: `${name} tool not implemented in standalone mode`,
+      }
+    },
+  }
+}
+
+/**
+ * Placeholder tavily MCP tool (for test compatibility)
+ * Type-safe placeholder without 'as any' cast
+ */
+export const tavily = createPlaceholderTool(
+  "tavily",
+  "Search the web using Tavily API",
+  z.object({
     query: z.string().describe("Search query"),
   }),
-  async execute() {
-    return {
-      success: false,
-      error: "Tavily tool not implemented in standalone mode",
-    }
-  },
-})
+)
 
 /**
  * Placeholder todoWrite tool (for test compatibility)
  */
-export const todoWrite = defineTool({
-  name: "todoWrite",
-  description: "Create and manage structured task lists for coding sessions",
-  params: z.object({
+export const todoWrite = createPlaceholderTool(
+  "todoWrite",
+  "Create and manage structured task lists for coding sessions",
+  z.object({
     todos: z.array(
       z.object({
         id: z.string(),
@@ -41,13 +52,7 @@ export const todoWrite = defineTool({
       }),
     ),
   }),
-  async execute() {
-    return {
-      success: false,
-      error: "TodoWrite tool not implemented in standalone mode",
-    }
-  },
-})
+)
 
 /**
  * Default export for dynamic imports

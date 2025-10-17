@@ -1,4 +1,4 @@
-import { hashSecret } from "@/lib/api-key-utils"
+import { hashSecret } from "@/features/secret-management/lib/api-key-utils"
 import { logException } from "@/lib/error-logger"
 import { createClient } from "@/lib/supabase/server"
 import { extractBearerToken, pickIdempotencyKey } from "@lucky/shared/contracts/invoke"

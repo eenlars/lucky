@@ -102,7 +102,10 @@ export class PricingService {
       input: override.input ?? baseEntry.input,
       output: override.output ?? baseEntry.output,
       cachedInput: override.cachedInput !== undefined ? override.cachedInput : baseEntry.cachedInput,
-      active: override.active !== undefined ? override.active : baseEntry.active,
+      runtimeEnabled:
+        (override as any).runtimeEnabled !== undefined
+          ? (override as any).runtimeEnabled
+          : (baseEntry as any).runtimeEnabled,
     }
   }
 
@@ -114,7 +117,7 @@ export class PricingService {
   listModels(activeOnly = true): ModelEntry[] {
     const models = this.currentSnapshot.models.map(m => this.getPrice(m.id)).filter(Boolean) as ModelEntry[]
 
-    return activeOnly ? models.filter(m => m.active) : models
+    return activeOnly ? models.filter(m => m.runtimeEnabled) : models
   }
 
   /**
@@ -219,7 +222,7 @@ export class PricingService {
    */
   getStats() {
     const models = this.listModels(false)
-    const active = models.filter(m => m.active)
+    const active = models.filter(m => m.runtimeEnabled)
 
     return {
       total: models.length,

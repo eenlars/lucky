@@ -51,7 +51,7 @@ export function getModel(catalogId: CatalogId | string): ModelEntry {
   const entry = findModel(catalogId)
 
   if (!entry) {
-    const availableModels = MODEL_CATALOG.filter(m => m.active)
+    const availableModels = MODEL_CATALOG.filter(m => m.runtimeEnabled)
       .map(m => m.id)
       .slice(0, 10)
       .join(", ")
@@ -71,8 +71,7 @@ export function getModel(catalogId: CatalogId | string): ModelEntry {
  * @returns true if model exists and is active, false otherwise
  */
 export function isModelActive(catalogId: CatalogId | string): boolean {
-  const entry = findModel(catalogId)
-  return entry?.active === true
+  return isRuntimeEnabled(catalogId)
 }
 
 /**
@@ -85,7 +84,7 @@ export function isModelActive(catalogId: CatalogId | string): boolean {
  * @returns Array of active ModelEntry objects
  */
 export function getActiveModelsByProvider(provider: string): ModelEntry[] {
-  return MODEL_CATALOG.filter(m => m.provider === provider && m.active)
+  return getRuntimeEnabledModelsByProvider(provider)
 }
 
 /**
@@ -94,5 +93,28 @@ export function getActiveModelsByProvider(provider: string): ModelEntry[] {
  * @returns Array of active catalog IDs
  */
 export function getActiveModelIds(): CatalogId[] {
-  return MODEL_CATALOG.filter(m => m.active).map(m => m.id) as CatalogId[]
+  return MODEL_CATALOG.filter(m => m.runtimeEnabled).map(m => m.id) as CatalogId[]
+}
+
+/**
+ * Returns true if a model is enabled for runtime execution.
+ */
+export function isRuntimeEnabled(catalogId: CatalogId | string): boolean {
+  const entry = findModel(catalogId)
+  return entry?.runtimeEnabled === true
+}
+
+/**
+ * Returns true if a model should be visible in UI model lists for the current env.
+ * Hidden in production when `disabled` is true; always visible in development.
+ */
+export function isUIVisibleModel(entry: ModelEntry, env: string = process.env.NODE_ENV || "development"): boolean {
+  return env === "development" ? true : !entry.uiHiddenInProd
+}
+
+/**
+ * Get all runtime-enabled models for a specific provider.
+ */
+export function getRuntimeEnabledModelsByProvider(provider: string): ModelEntry[] {
+  return MODEL_CATALOG.filter(m => m.provider === provider && m.runtimeEnabled)
 }

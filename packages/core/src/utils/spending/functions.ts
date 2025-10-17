@@ -10,6 +10,7 @@ export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T)
   if (isNir(provider)) return []
 
   return getActiveModelsByProvider(provider)
+    .filter(model => model.runtimeEnabled)
     .filter(model => !getCoreConfig().models.inactive.includes(model.id))
     .map(model => model.id)
 }
@@ -28,5 +29,5 @@ export function isActiveModel(model: string): boolean {
 
   // Check both the catalog active flag AND the getCoreConfig().models.inactive array
   // Note: inactive list uses catalog IDs (provider#model)
-  return modelEntry.active === true && !getCoreConfig().models.inactive.includes(modelEntry.id)
+  return modelEntry.runtimeEnabled === true && !getCoreConfig().models.inactive.includes(modelEntry.id)
 }

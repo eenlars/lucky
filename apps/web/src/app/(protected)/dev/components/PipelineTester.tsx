@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { getActiveModels, getActiveProviders } from "@lucky/models/pricing/catalog"
-import type { ModelEntry } from "@lucky/shared"
+import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models/pricing/catalog"
+import { ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION, ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 import {
   AlertCircle,
   CheckCircle,
@@ -19,7 +19,7 @@ import {
   Settings,
   Zap,
 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 
 interface PipelineTestRequest {
   systemPrompt: string
@@ -31,6 +31,7 @@ interface PipelineTestRequest {
   message: string
   toolStrategy: "v2" | "v3" | "auto"
   mainGoal?: string
+  randomId?: string
 }
 
 interface PipelineTestResult {
@@ -49,25 +50,23 @@ interface PipelineTestResponse {
   error?: string
 }
 
-// Available code tools (common ones)
-const AVAILABLE_CODE_TOOLS = ["math", "web-fetch", "web-search", "get-time", "file-read", "file-write", "file-list"]
-
-// Available MCP tools (common ones)
-const AVAILABLE_MCP_TOOLS = ["filesystem", "github", "brave-search", "fetch"]
+// Get available tools from registry
+const AVAILABLE_CODE_TOOLS = Object.keys(ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION)
+const AVAILABLE_MCP_TOOLS = Object.keys(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION)
 
 export function PipelineTester() {
   // Get active providers and models from catalog (source of truth)
-  const activeProviders = useMemo(() => getActiveProviders(), [])
-  const allActiveModels = useMemo(() => getActiveModels(), [])
+  const activeProviders = useMemo(() => getRuntimeEnabledProviders(), [])
+  const allActiveModels = useMemo(() => getRuntimeEnabledModels(), [])
 
   const [config, setConfig] = useState<PipelineTestRequest>({
     systemPrompt: "You are a helpful assistant. Use the available tools to answer questions accurately.",
-    provider: activeProviders[0] || "openai",
-    modelName: "",
+    provider: "openrouter",
+    modelName: "openrouter#google/gemini-2.5-flash-lite-preview-09-2025", // DO NOT CHANGE THIS MODEL
     maxSteps: 3,
-    codeTools: ["math"],
+    codeTools: ["todoRead", "todoWrite"],
     mcpTools: [],
-    message: "What is 5 + 3?",
+    message: "Create a todo list with 3 tasks for building a web app",
     toolStrategy: "auto",
     mainGoal: "Test pipeline execution",
   })
@@ -77,6 +76,7 @@ export function PipelineTester() {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set())
   const [streamEvents, setStreamEvents] = useState<any[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
+  const eventSourceRef = useRef<EventSource | null>(null)
 
   // Filter models by selected provider
   const availableModels = useMemo(() => {
@@ -106,10 +106,23 @@ export function PipelineTester() {
     setStreamEvents([])
 
     try {
+      // Generate a short randomId on the client so we can open SSE first
+      const randomId = Math.random().toString(16).slice(2, 10)
+
+      // Close an existing stream if present
+      if (eventSourceRef.current) {
+        try {
+          eventSourceRef.current.close()
+        } catch {}
+      }
+
+      // Connect to SSE before kicking off the pipeline so events appear in real-time
+      connectToStream(randomId)
+
       const response = await fetch("/api/dev/pipeline/invoke", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ ...config, randomId }),
       })
 
       // Handle non-OK responses
@@ -132,11 +145,6 @@ export function PipelineTester() {
       const data = (await response.json()) as PipelineTestResponse
       setResult(data)
       setIsRunning(false)
-
-      // Connect to SSE stream if randomId is present
-      if (data.randomId) {
-        connectToStream(data.randomId)
-      }
     } catch (error) {
       console.error("Pipeline test fetch error:", error)
       setResult({
@@ -149,7 +157,8 @@ export function PipelineTester() {
 
   const connectToStream = (randomId: string) => {
     setIsStreaming(true)
-    const eventSource = new EventSource(`/api/agents/${randomId}/stream`)
+    const eventSource = new EventSource(`/api/agents/${randomId}/stream?t=${Date.now()}`)
+    eventSourceRef.current = eventSource
 
     eventSource.onmessage = event => {
       try {
@@ -161,15 +170,21 @@ export function PipelineTester() {
     }
 
     eventSource.onerror = () => {
-      eventSource.close()
-      setIsStreaming(false)
+      try {
+        eventSource.close()
+      } finally {
+        setIsStreaming(false)
+      }
     }
 
     // Auto-close after 5 minutes
     setTimeout(
       () => {
-        eventSource.close()
-        setIsStreaming(false)
+        try {
+          eventSource.close()
+        } finally {
+          setIsStreaming(false)
+        }
       },
       5 * 60 * 1000,
     )
@@ -301,6 +316,11 @@ export function PipelineTester() {
                 <label
                   key={tool}
                   className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 p-2 rounded"
+                  title={
+                    ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION[
+                      tool as keyof typeof ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION
+                    ]
+                  }
                 >
                   <input
                     type="checkbox"
@@ -323,6 +343,9 @@ export function PipelineTester() {
                 <label
                   key={tool}
                   className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 p-2 rounded"
+                  title={
+                    ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION[tool as keyof typeof ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION]
+                  }
                 >
                   <input
                     type="checkbox"

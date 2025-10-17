@@ -261,7 +261,7 @@ export class PolicySelector {
     // If intent is explicit model ID
     if (intent.includes("/")) {
       const model = this.registry.get(intent)
-      return model?.active ? [model] : []
+      return model?.runtimeEnabled ? [model] : []
     }
 
     // Map tier intents to intelligence/cost filters

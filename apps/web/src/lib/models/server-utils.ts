@@ -50,7 +50,7 @@ export async function getUserModels(clerkId: string): Promise<ModelEntry[]> {
   const modelEntries: ModelEntry[] = []
   for (const modelId of allEnabledModelIds) {
     const entry = findModel(modelId)
-    if (entry?.active) {
+    if (entry?.runtimeEnabled) {
       modelEntries.push(entry)
     } else {
       console.warn(`[getUserModels] Model "${modelId}" not found in catalog or inactive`)

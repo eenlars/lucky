@@ -1,6 +1,6 @@
 "use client"
 
-import { WorkflowEvolutionVisualization } from "@/app/components/WorkflowEvolutionVisualization"
+import { WorkflowEvolutionVisualization } from "@/app/components/evolution/WorkflowEvolutionVisualization"
 import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
 import React, { useEffect, useState } from "react"
 import { traceWorkflowEvolution } from "./workflow-evolution-tracer"

@@ -945,3 +945,23 @@ export const createMockEvolutionConfig = createMockEvolutionSettings
 export const resetAllMocks = resetCoreMocks
 export const setupDefaultMocks = setupCoreMocks
 export const setupGPTest = setupCoreTest
+
+// ====== POPULATION TEST HELPERS ======
+/**
+ * Create a mock genome with configurable properties
+ * Used for Population and similar tests
+ */
+export const createSingleMockGenome = (id: string, fitnessScore: number, evaluated = true) => ({
+  getWorkflowVersionId: () => id,
+  getFitness: () => (evaluated ? { score: fitnessScore, valid: true } : null),
+  getFitnessScore: () => fitnessScore,
+  isEvaluated: evaluated,
+  setFitnessAndFeedback: vi.fn(),
+})
+
+/**
+ * Create multiple mock genomes at once
+ * Used for Population initialization tests
+ */
+export const createMockGenomes = (specs: Array<{ id: string; fitness: number; evaluated?: boolean }>) =>
+  specs.map(spec => createSingleMockGenome(spec.id, spec.fitness, spec.evaluated))

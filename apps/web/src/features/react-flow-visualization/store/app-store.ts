@@ -28,6 +28,13 @@ import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
+export type WorkflowValidationError = {
+  id: string
+  title: string
+  description: string
+  severity: "error" | "warning"
+}
+
 export type AppState = {
   nodes: AppNode[]
   edges: AppEdge[]
@@ -39,6 +46,8 @@ export type AppState = {
   draggedPaletteNodeType?: AppNodeType
   workflowLoading: boolean
   workflowError?: string
+  workflowValidationErrors: WorkflowValidationError[]
+  errorPanelOpen: boolean
   selectedNodeId?: string
   nodeDetailsOpen: boolean
   detailPanelExpanded: boolean
@@ -127,6 +136,12 @@ export type AppActions = {
   clearChatMessages: () => void
   toggleLogPanel: () => void
   setLogPanelOpen: (open: boolean) => void
+  addValidationError: (error: WorkflowValidationError) => void
+  addValidationErrors: (errors: WorkflowValidationError[]) => void
+  clearValidationErrors: () => void
+  removeValidationError: (errorId: string) => void
+  toggleErrorPanel: () => void
+  setErrorPanelOpen: (open: boolean) => void
 }
 
 export type AppStore = AppState & AppActions
@@ -142,6 +157,8 @@ export const defaultState: AppState = {
   draggedPaletteNodeType: undefined,
   workflowLoading: false,
   workflowError: undefined,
+  workflowValidationErrors: [],
+  errorPanelOpen: false,
   selectedNodeId: undefined,
   nodeDetailsOpen: false,
   detailPanelExpanded: false,
@@ -809,6 +826,32 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         },
         setLogPanelOpen: open => {
           set({ logPanelOpen: open })
+        },
+        addValidationError: error => {
+          set(state => ({
+            workflowValidationErrors: [...state.workflowValidationErrors, error],
+            errorPanelOpen: true,
+          }))
+        },
+        addValidationErrors: errors => {
+          set(state => ({
+            workflowValidationErrors: [...state.workflowValidationErrors, ...errors],
+            errorPanelOpen: errors.length > 0,
+          }))
+        },
+        clearValidationErrors: () => {
+          set({ workflowValidationErrors: [] })
+        },
+        removeValidationError: errorId => {
+          set(state => ({
+            workflowValidationErrors: state.workflowValidationErrors.filter(e => e.id !== errorId),
+          }))
+        },
+        toggleErrorPanel: () => {
+          set(state => ({ errorPanelOpen: !state.errorPanelOpen }))
+        },
+        setErrorPanelOpen: open => {
+          set({ errorPanelOpen: open })
         },
       })),
       {

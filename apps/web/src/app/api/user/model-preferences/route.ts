@@ -3,9 +3,9 @@
  * Returns all provider settings with Zod validation
  */
 
+import { checkMultipleProviderKeys } from "@/features/secret-management/lib/check-provider-keys"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
-import { checkMultipleProviderKeys } from "@/lib/lockbox/check-provider-keys"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
 import { getAllProviders } from "@lucky/models"

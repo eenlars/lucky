@@ -99,7 +99,23 @@ export const modelEntrySchema = z.object({
   pricingTier: modelPricingTierSchema,
 
   // Availability
-  active: z.boolean(),
+  /**
+   * When true, the model is eligible for runtime selection and pricing.
+   * Preferred name: runtimeEnabled. Legacy alias: active.
+   */
+  runtimeEnabled: z.boolean().optional(),
+  /**
+   * When true, hide the model from Provider Model Discovery in production UIs.
+   * Preferred name: uiHiddenInProd. Legacy alias: disabled.
+   */
+  uiHiddenInProd: z.boolean().optional(),
+  /**
+   * DEPRECATED: use runtimeEnabled instead. Kept for catalog backward compatibility.
+   */
+  active: z.boolean().optional(),
+  /**
+   * DEPRECATED: use uiHiddenInProd instead. Kept for catalog backward compatibility.
+   */
   disabled: z.boolean().optional(),
   regions: z.array(z.string()).optional(),
 

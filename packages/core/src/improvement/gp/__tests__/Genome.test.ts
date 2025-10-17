@@ -5,7 +5,7 @@ import {
   createMockWorkflowConfig,
   createMockWorkflowGenome,
   createMockWorkflowScore,
-} from "@core/utils/__tests__/setup/genomeTestUtils"
+} from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level

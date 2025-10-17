@@ -1,7 +1,7 @@
 "use client"
 
 import { StructureMiniMap } from "@/app/(protected)/(traces)/trace/[wf_inv_id]/structure/StructureMiniMap"
-import { EvolutionGraph } from "@/app/components/EvolutionGraph"
+import { EvolutionGraph } from "@/app/components/evolution/EvolutionGraph"
 import { Button } from "@/components/ui/button"
 import {
   type GenerationWithData,

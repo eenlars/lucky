@@ -1,12 +1,10 @@
+import { decryptEnvKey, getEnvKeyByName, updateEnvKeyLastUsed } from "@/features/secret-management/lib/env-keys"
 import { alrighty, fail } from "@/lib/api/server"
-import { decryptGCM } from "@/lib/crypto/lockbox"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
-
-const ENV_NAMESPACE = "environment-variables"
 
 // GET /api/user/env-keys/[name]
 // Returns the decrypted value of a specific environment variable
@@ -26,16 +24,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ nam
   const supabase = await createRLSClient()
 
   try {
-    const { data, error } = await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .select("user_secret_id, name, ciphertext, iv, auth_tag, created_at")
-      .eq("clerk_id", userId)
-      .eq("namespace", ENV_NAMESPACE)
-      .ilike("name", name)
-      .eq("is_current", true)
-      .is("deleted_at", null)
-      .maybeSingle()
+    const { data, error } = await getEnvKeyByName(supabase, userId, name)
 
     if (error) {
       console.error("[GET /api/user/env-keys/[name]] Supabase error:", error)
@@ -53,18 +42,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ nam
     }
 
     // Decrypt the value
-    const value = decryptGCM({
-      ciphertext: data.ciphertext as any,
-      iv: data.iv as any,
-      authTag: data.auth_tag as any,
-    })
+    const value = decryptEnvKey(data.ciphertext, data.iv, data.auth_tag)
 
     // Update last_used_at
-    await supabase
-      .schema("lockbox")
-      .from("user_secrets")
-      .update({ last_used_at: new Date().toISOString() })
-      .eq("user_secret_id", data.user_secret_id)
+    await updateEnvKeyLastUsed(supabase, data.user_secret_id)
 
     return alrighty("user/env-keys/[name]", {
       id: data.user_secret_id,
