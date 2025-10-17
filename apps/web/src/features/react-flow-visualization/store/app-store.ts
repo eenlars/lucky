@@ -836,7 +836,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
         addValidationErrors: errors => {
           set(state => ({
             workflowValidationErrors: [...state.workflowValidationErrors, ...errors],
-            errorPanelOpen: errors.length > 0,
+            ...(errors.length > 0 && { errorPanelOpen: true }),
           }))
         },
         clearValidationErrors: () => {

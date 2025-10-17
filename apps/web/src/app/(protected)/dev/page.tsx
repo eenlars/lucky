@@ -75,7 +75,7 @@ type DevMode = "store-inspector" | "pipeline-tester"
 export default function DevPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [mode, setMode] = useState<DevMode>((searchParams.get("mode") as DevMode) || "store-inspector")
+  const [mode, setMode] = useState<DevMode>("store-inspector")
   const [selectedStore, setSelectedStore] = useState<StoreInspector | null>(null)
   const [processedData, setProcessedData] = useState<ProcessedStoreData>({
     state: {},
@@ -95,6 +95,12 @@ export default function DevPage() {
     params.set("mode", newMode)
     router.replace(`/dev?${params.toString()}`)
   }
+
+  // Sync mode state from searchParams on each render
+  useEffect(() => {
+    const modeParam = (searchParams.get("mode") as DevMode) || "store-inspector"
+    setMode(modeParam)
+  }, [searchParams])
 
   // Only allow in development
   useEffect(() => {

@@ -81,6 +81,16 @@ export async function POST(req: NextRequest) {
     logException(e, {
       location: "/api/user/env-keys/POST",
     })
+
+    // Check if this is a validation error for invalid name
+    const isValidationError = e?.message?.includes("Invalid name:")
+    if (isValidationError) {
+      return fail("user/env-keys/set", e.message, {
+        code: "VALIDATION_ERROR",
+        status: 400,
+      })
+    }
+
     return fail("user/env-keys/set", e?.message ?? "Failed to save environment key", {
       code: "INTERNAL_ERROR",
       status: 500,

@@ -25,7 +25,7 @@ export default defineConfig({
           name: "pkg-unit",
           include: ["packages/*/src/**/*.test.{ts,tsx}"],
           exclude: ["packages/*/src/**/*.spec.test.{ts,tsx}"],
-          setupFiles: ["./packages/core/test/setup.unit.ts"],
+          setupFiles: ["./packages/test-config/src/setup.global.ts", "./packages/core/test/setup.unit.ts"],
         },
       },
       {

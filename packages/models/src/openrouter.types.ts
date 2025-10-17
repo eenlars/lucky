@@ -28,6 +28,7 @@ export interface OpenRouterModel {
     prompt_tokens?: string
     completion_tokens?: string
   }
+  supported_parameters?: string[]
 }
 
 export interface OpenRouterResponse {

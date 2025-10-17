@@ -262,11 +262,6 @@ function getLimitedUserModels(models: ModelEntry[], limit = 5): ModelEntry[] {
 // Select a concrete model from the user's allowed models for a given pricing tier.
 // Policy: prefer highest intelligence within the tier; if none, fall back to best overall.
 function pickUserModelForTier(tier: ModelPricingTier, models: ModelEntry[]): string {
-  // Limit to top 5 models (defensive against large model lists)
-  const limitedModels = getLimitedUserModels(models)
-
-  const byTier = limitedModels.filter(m => m.pricingTier === tier && m.runtimeEnabled)
-
   const rank = (m: ModelEntry) => {
     // Higher intelligence preferred; speed order: fast > medium > slow
     const speedScore = m.speed === "fast" ? 3 : m.speed === "medium" ? 2 : 1
@@ -275,10 +270,15 @@ function pickUserModelForTier(tier: ModelPricingTier, models: ModelEntry[]): str
 
   const pick = (arr: ModelEntry[]) => arr.slice().sort((a, b) => rank(b) - rank(a))[0]
 
-  const preferred = pick(byTier)
+  // Filter by tier first, then limit to preserve tier-specific coverage
+  const byTier = models.filter(m => m.pricingTier === tier && m.runtimeEnabled)
+  const limitedByTier = getLimitedUserModels(byTier)
+
+  const preferred = pick(limitedByTier)
   if (preferred) return preferred.model // API-facing model string
 
-  // Fallback to best overall from limited user's models
+  // Fallback to best overall from limited models (applied after tier filter fails)
+  const limitedModels = getLimitedUserModels(models)
   const any = pick(limitedModels.filter(m => m.runtimeEnabled))
   if (any) return any.model
 

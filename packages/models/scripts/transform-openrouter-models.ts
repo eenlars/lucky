@@ -153,6 +153,24 @@ function supportsReasoning(model: OpenRouterModel): boolean {
 }
 
 /**
+ * Check if model supports tools
+ * OpenRouter models expose this via the supported_parameters array
+ */
+function supportsTools(model: OpenRouterModel): boolean {
+  const supportedParams = model.supported_parameters || []
+  return supportedParams.includes("tools")
+}
+
+/**
+ * Check if model supports JSON mode
+ * OpenRouter models expose this via the supported_parameters array
+ */
+function supportsJsonMode(model: OpenRouterModel): boolean {
+  const supportedParams = model.supported_parameters || []
+  return supportedParams.includes("response_format") || supportedParams.includes("structured_outputs")
+}
+
+/**
  * Transform OpenRouter model to ModelEntry
  */
 function transformModel(model: OpenRouterModel): ModelEntry {
@@ -170,8 +188,8 @@ function transformModel(model: OpenRouterModel): ModelEntry {
     output: outputPrice,
     cachedInput,
     contextLength: model.context_length,
-    supportsTools: true, // most modern models support tools
-    supportsJsonMode: true, // most modern models support JSON mode
+    supportsTools: supportsTools(model), // check OpenRouter supported_parameters
+    supportsJsonMode: supportsJsonMode(model), // check OpenRouter supported_parameters
     supportsStreaming: true, // all models support streaming via OpenRouter
     supportsVision: supportsVision(model),
     supportsReasoning: supportsReasoning(model),

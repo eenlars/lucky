@@ -44,7 +44,7 @@ export async function GET(req: NextRequest, { params }: { params: { randomId: st
   const encoder = new TextEncoder()
   let controller: ReadableStreamDefaultController | null = null
 
-  const STREAM_MAX_MS = process.env.NODE_ENV === "development" ? 5 * 60 * 1000 : 60 * 1000
+  const STREAM_MAX_MS = process.env.NODE_ENV === "development" ? 5 * 60 * 1000 : 58 * 1000
 
   const stream = new ReadableStream({
     start(ctrl) {

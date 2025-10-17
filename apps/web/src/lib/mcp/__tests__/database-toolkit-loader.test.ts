@@ -31,9 +31,6 @@ describe("loadMCPToolkitsFromDatabase", () => {
 
   it("returns undefined when no configs found in database", async () => {
     const { createRLSClient } = await import("@/lib/supabase/server-rls")
-    const mockQuery = {
-      is: vi.fn().mockResolvedValue({ data: [], error: null }),
-    }
 
     vi.mocked(createRLSClient).mockResolvedValue({
       schema: vi.fn().mockReturnValue({
@@ -41,7 +38,7 @@ describe("loadMCPToolkitsFromDatabase", () => {
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               is: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue(mockQuery),
+                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
               }),
             }),
           }),
@@ -57,9 +54,6 @@ describe("loadMCPToolkitsFromDatabase", () => {
   it("returns undefined when database query fails", async () => {
     const { createRLSClient } = await import("@/lib/supabase/server-rls")
     const mockError = { message: "Database connection error" }
-    const mockQuery = {
-      is: vi.fn().mockResolvedValue({ data: null, error: mockError }),
-    }
 
     vi.mocked(createRLSClient).mockResolvedValue({
       schema: vi.fn().mockReturnValue({
@@ -67,7 +61,7 @@ describe("loadMCPToolkitsFromDatabase", () => {
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               is: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue(mockQuery),
+                eq: vi.fn().mockResolvedValue({ data: null, error: mockError }),
               }),
             }),
           }),
@@ -84,17 +78,13 @@ describe("loadMCPToolkitsFromDatabase", () => {
     // Test that we only load enabled configs
     const { createRLSClient } = await import("@/lib/supabase/server-rls")
 
-    const mockQuery = {
-      is: vi.fn().mockResolvedValue({ data: [], error: null }),
-    }
-
     vi.mocked(createRLSClient).mockResolvedValue({
       schema: vi.fn().mockReturnValue({
         from: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               is: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue(mockQuery),
+                eq: vi.fn().mockResolvedValue({ data: [], error: null }),
               }),
             }),
           }),

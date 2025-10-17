@@ -15,6 +15,7 @@ Generic template for right-side slide-in panels with elastic easing animation.
 ## Usage
 
 ```tsx
+import { useState } from "react"
 import { SidePanelTemplate, SidePanelHeader, CollapsibleSection } from "@/app/components/templates/side-panel-template"
 import { useDebouncedUpdate } from "@/app/hooks/use-debounced-update"
 

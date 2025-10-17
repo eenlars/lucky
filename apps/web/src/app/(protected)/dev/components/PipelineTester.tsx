@@ -62,7 +62,7 @@ export function PipelineTester() {
   const [config, setConfig] = useState<PipelineTestRequest>({
     systemPrompt: "You are a helpful assistant. Use the available tools to answer questions accurately.",
     provider: "openrouter",
-    modelName: "openrouter#google/gemini-2.5-flash-lite-preview-09-2025", // DO NOT CHANGE THIS MODEL
+    modelName: "", // Will be set to first runtime-enabled model by useMemo below
     maxSteps: 3,
     codeTools: ["todoRead", "todoWrite"],
     mcpTools: [],
