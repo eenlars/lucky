@@ -1,6 +1,7 @@
-import { requireAuth } from "@/lib/api-auth"
+import { alrighty } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
@@ -50,8 +51,8 @@ interface WorkflowInvocationSortOptions {
 
 export async function GET(request: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
   const searchParams = request.nextUrl.searchParams
@@ -264,12 +265,16 @@ export async function GET(request: NextRequest) {
       return { totalSpent, avgAccuracy, failedCount }
     })()
 
-    return NextResponse.json({
-      data: data || [],
-      totalCount: count || 0,
-      page,
-      pageSize,
-      aggregates,
+    return alrighty("workflow/invocations", {
+      success: true,
+      data: {
+        data: data || [],
+        totalCount: count || 0,
+        page,
+        pageSize,
+        aggregates,
+      },
+      error: null,
     })
   } catch (error) {
     logException(error, {
@@ -282,8 +287,8 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 
@@ -301,16 +306,14 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, deletedCount: ids.length })
+    return alrighty("workflow/invocations/delete", { success: true, data: { success: true, deletedCount: ids.length } })
   } catch (error) {
     logException(error, {
       location: "/api/workflow/invocations/DELETE",
     })
     console.error("Error deleting workflow invocations:", error)
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Failed to delete invocations",
-      },
+      { error: error instanceof Error ? error.message : "Failed to delete invocations" },
       { status: 500 },
     )
   }

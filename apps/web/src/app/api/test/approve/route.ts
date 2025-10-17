@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import type { ApproveData } from "@/app/(test)/approve/page"
+import { alrighty } from "@/lib/api/server"
 import { PATHS } from "@lucky/examples/settings/constants"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     console.log("Response:", response)
 
     if (!approvalId) {
-      return NextResponse.json<ApproveData>({
+      return alrighty("test/approve", {
         text: "Error: Missing approval ID",
       })
     }
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     // Sanitize approvalId to prevent path traversal attacks
     const sanitizedApprovalId = path.basename(approvalId).replace(/[^a-zA-Z0-9_-]/g, "")
     if (!sanitizedApprovalId || sanitizedApprovalId !== approvalId) {
-      return NextResponse.json<ApproveData>({
+      return alrighty("test/approve", {
         text: "Error: Invalid approval ID format",
       })
     }
@@ -78,17 +78,17 @@ export async function GET(request: NextRequest) {
       // save the updated request
       await fs.writeFile(requestFilePath, JSON.stringify(approvalRequest, null, 2))
 
-      return NextResponse.json<ApproveData>({
+      return alrighty("test/approve", {
         text: `Approval ${approvalRequest.status}: ${response}`,
       })
     } catch (error) {
       console.error("Error reading approval request:", error)
-      return NextResponse.json<ApproveData>({
+      return alrighty("test/approve", {
         text: "Error: Approval request not found or expired",
       })
     }
   } catch (error) {
     console.error("Error in approve route:", error)
-    return NextResponse.json({ success: false, error: "Failed to process request" }, { status: 500 })
+    return NextResponse.json({ text: "Error: Failed to process request" }, { status: 500 })
   }
 }

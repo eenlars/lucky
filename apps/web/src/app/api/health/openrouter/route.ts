@@ -1,6 +1,5 @@
-import { errorResponse } from "@/lib/api-errors"
+import { alrighty } from "@/lib/api/server"
 import { createCredentialError } from "@lucky/core/utils/config/credential-errors"
-import { NextResponse } from "next/server"
 
 type OpenRouterResponse = {
   data: {
@@ -17,13 +16,12 @@ export async function GET() {
 
     if (!key) {
       const error = createCredentialError("OPENROUTER_API_KEY")
-      return NextResponse.json(
+      return alrighty(
+        "health/openrouter",
         {
-          error: "OpenRouter not configured",
-          code: error.details.code,
-          credential: error.details.credential,
+          connected: false,
           message: error.details.userMessage,
-          docsUrl: error.details.setupUrl,
+          timestamp: new Date().toISOString(),
         },
         { status: 503 },
       )
@@ -37,13 +35,33 @@ export async function GET() {
     })
 
     if (!response.ok) {
-      return errorResponse(`OpenRouter API returned ${response.status}: ${response.statusText}`, response.status)
+      return alrighty(
+        "health/openrouter",
+        {
+          connected: false,
+          message: `OpenRouter API returned ${response.status}: ${response.statusText}`,
+          timestamp: new Date().toISOString(),
+        },
+        { status: response.status },
+      )
     }
 
     const data: OpenRouterResponse = await response.json()
 
-    return NextResponse.json(data)
+    return alrighty("health/openrouter", {
+      connected: true,
+      message: `Connected (${data.data.usage}/${data.data.limit || "∞"} credits used)`,
+      timestamp: new Date().toISOString(),
+    })
   } catch (error) {
-    return errorResponse(error instanceof Error ? error.message : "Failed to check OpenRouter status", 500)
+    return alrighty(
+      "health/openrouter",
+      {
+        connected: false,
+        message: error instanceof Error ? error.message : "Failed to check OpenRouter status",
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 },
+    )
   }
 }

@@ -2,16 +2,16 @@ import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  let userId: string | null = null
+  let isAuthenticated = false
   try {
     const result = await auth()
-    userId = result?.userId ?? null
+    isAuthenticated = result?.isAuthenticated ?? false
   } catch {
     // If Clerk middleware context is missing or misconfigured, treat as unauthenticated
-    userId = null
+    isAuthenticated = false
   }
 
-  if (!userId) {
+  if (!isAuthenticated) {
     redirect("/sign-in")
   }
 

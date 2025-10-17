@@ -54,7 +54,10 @@ export async function GET(request: NextRequest) {
       title = titleElement.text().trim()
     }
 
-    return NextResponse.json({ logo, banner, title })
+    // Return as simple string (SVG content would go here in actual implementation)
+    return new NextResponse(JSON.stringify({ logo, banner, title }), {
+      headers: { "Content-Type": "application/json" },
+    })
   } catch (error) {
     lgg.error("Error processing request:", error)
     return NextResponse.json({ error: "Failed to process the request" }, { status: 500 })

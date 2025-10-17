@@ -1,11 +1,11 @@
 import { loadDatasetMeta, saveDatasetMeta } from "@/app/api/ingestions/_lib/meta"
-import { requireAuth } from "@/lib/api-auth"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function PUT(req: NextRequest, { params }: { params: { datasetId: string; ioId: string } }) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
     const patch = (await req.json()) as Partial<{
@@ -35,8 +35,8 @@ export async function PUT(req: NextRequest, { params }: { params: { datasetId: s
 
 export async function DELETE(_req: NextRequest, { params }: { params: { datasetId: string; ioId: string } }) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
     const meta = await loadDatasetMeta(params.datasetId)

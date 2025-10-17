@@ -1,12 +1,12 @@
 import { nodeInvocations } from "@/features/trace-visualization/db/Workflow/nodeInvocations"
-import { requireAuth } from "@/lib/api-auth"
 import { createRLSClient } from "@/lib/supabase/server-rls"
+import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
 export async function GET(_request: Request, { params }: { params: Promise<{ wf_inv_id: string }> }) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 

@@ -1,13 +1,13 @@
-import { requireAuth } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
+import { auth } from "@clerk/nextjs/server"
 import type { EvaluationText } from "@lucky/core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
     const body = await req.json()

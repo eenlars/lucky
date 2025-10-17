@@ -1,9 +1,9 @@
+import { alrighty } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
 import { getDemoWorkflow } from "@/lib/mcp-invoke/workflow-loader"
 import { createRLSClient } from "@/lib/supabase/server-rls"
-import type { NextRequest } from "next/server"
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     // If user has no workflows, return demo workflow so they can get started
     if (!data || data.length === 0) {
       const demo = getDemoWorkflow()
-      return NextResponse.json([
+      return alrighty("user/workflows", [
         {
           workflow_id: "wf_demo",
           name: "Demo Workflow (Getting Started)",
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    return NextResponse.json(workflows)
+    return alrighty("user/workflows", workflows)
   } catch (error) {
     logException(error, {
       location: "/api/user/workflows/GET",

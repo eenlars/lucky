@@ -1,4 +1,5 @@
 import { requireAuthWithApiKey } from "@/lib/api-auth"
+import { alrighty, fail } from "@/lib/api/server"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -20,16 +21,22 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ wf_v
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return fail("workflow/version/[wf_version_id]", error.message, { code: "DB_ERROR", status: 500 })
     }
 
     if (!data) {
-      return NextResponse.json({ error: `Workflow version ${wf_version_id} not found` }, { status: 404 })
+      return fail("workflow/version/[wf_version_id]", `Workflow version ${wf_version_id} not found`, {
+        code: "NOT_FOUND",
+        status: 404,
+      })
     }
 
-    return NextResponse.json(data)
+    return alrighty("workflow/version/[wf_version_id]", data)
   } catch (error) {
     console.error("Error fetching workflow version:", error)
-    return NextResponse.json({ error: "Failed to fetch workflow version" }, { status: 500 })
+    return fail("workflow/version/[wf_version_id]", "Failed to fetch workflow version", {
+      code: "FETCH_ERROR",
+      status: 500,
+    })
   }
 }

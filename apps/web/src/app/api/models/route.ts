@@ -1,3 +1,4 @@
+import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { getActiveModelNames } from "@lucky/core/utils/spending/functions"
 import { findModelByName, getActiveModels, getModelsByProvider } from "@lucky/models"
 import { type NextRequest, NextResponse } from "next/server"
@@ -9,18 +10,19 @@ export const runtime = "nodejs"
 // Fetches available models from the provider's API and enriches with catalog metadata
 // Body: { action: "getActiveModelNames" | "getModelV2" | "getModelsByProvider", model?: string, provider: string }
 export async function POST(request: NextRequest) {
+  const body = await handleBody("models", request)
+  if (isHandleBodyError(body)) return body
+
   try {
-    const body = await request.json()
     const { action, model, provider } = body
 
-    const validatedProvider = providerNameSchema.parse(provider)
-    if (!validatedProvider) {
-      return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
-    }
-
     if (action === "getActiveModelNames") {
+      if (!provider) {
+        return NextResponse.json({ error: "Provider is required for getActiveModelNames" }, { status: 400 })
+      }
+      const validatedProvider = providerNameSchema.parse(provider)
       const models = getActiveModelNames(validatedProvider)
-      return NextResponse.json({ models })
+      return alrighty("models", { models })
     }
 
     if (action === "getModelV2") {
@@ -31,18 +33,19 @@ export async function POST(request: NextRequest) {
       if (!modelInfo) {
         return NextResponse.json({ error: "Model not found" }, { status: 404 })
       }
-      return NextResponse.json({ model: modelInfo })
+      return alrighty("models", { model: modelInfo })
     }
 
     if (action === "getModelsByProvider") {
       if (!provider) {
         // Return all active models if no provider specified
         const models = getActiveModels()
-        return NextResponse.json({ models })
+        return alrighty("models", { models })
       }
       // Return models for specific provider
-      const models = getModelsByProvider(provider).filter(m => m.active)
-      return NextResponse.json({ models })
+      const validatedProvider = providerNameSchema.parse(provider)
+      const models = getModelsByProvider(validatedProvider).filter(m => m.active)
+      return alrighty("models", { models })
     }
 
     return NextResponse.json(
@@ -51,11 +54,7 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error("Models API error:", error)
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    )
+    const message = error instanceof Error ? error.message : "Unknown error"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

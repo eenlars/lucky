@@ -1,7 +1,7 @@
-import { requireAuth } from "@/lib/api-auth"
 import { createDataSet, createDatasetRecord } from "@/lib/db/dataset"
 import { logException } from "@/lib/error-logger"
 import { createClient } from "@/lib/supabase/server"
+import { auth } from "@clerk/nextjs/server"
 import { genShortId } from "@lucky/shared/client"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -9,8 +9,8 @@ type IngestionType = "csv" | "text"
 
 export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createClient()
 

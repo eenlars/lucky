@@ -1,13 +1,13 @@
 import { traceWorkflowEvolution } from "@/features/evolution/lib/results/workflow-evolution-tracer"
-import { requireAuth } from "@/lib/api-auth"
 import { createEvolutionVisualizationData } from "@/lib/evolution-utils"
 import { createClient } from "@/lib/supabase/server"
+import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
 export async function GET(_request: Request, { params }: { params: Promise<{ run_id: string }> }) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createClient()
 

@@ -1,13 +1,13 @@
-import { requireAuth } from "@/lib/api-auth"
 import { getDataSet, getDatasetRecords } from "@/lib/db/dataset"
 import { logException } from "@/lib/error-logger"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 import { loadDatasetMeta } from "../_lib/meta"
 
 export async function GET(_req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
     // First try database

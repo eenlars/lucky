@@ -8,10 +8,10 @@ import { NextResponse } from "next/server"
  * Use authenticateRequest() for API key + session support
  */
 export async function requireAuth() {
-  const { userId } = await auth()
+  const { isAuthenticated, userId } = await auth()
 
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAuthenticated) {
+    return new NextResponse("Unauthorized", { status: 401 })
   }
 
   return userId

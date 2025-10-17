@@ -81,8 +81,8 @@ export default function EnvironmentKeysSettings() {
       setIsLoadingApiKey(true)
       const response = await fetch("/api/user/api-key")
       if (response.ok) {
-        const data = await response.json()
-        setApiKey(data.apiKey)
+        const result = await response.json()
+        setApiKey(result.data.apiKey)
         setIsFullKey(false) // GET only returns key ID, not full key
       }
     } catch (error) {
@@ -102,8 +102,8 @@ export default function EnvironmentKeysSettings() {
         method: "POST",
       })
       if (response.ok) {
-        const data = await response.json()
-        setApiKey(data.apiKey)
+        const result = await response.json()
+        setApiKey(result.data.apiKey)
         setIsFullKey(true) // This is the full key, shown only once
         toast.success("API key generated! Save it now - you won't see it again.")
       } else {
@@ -125,8 +125,8 @@ export default function EnvironmentKeysSettings() {
       setIsRollingKey(true)
       const response = await fetch("/api/user/api-key/roll", { method: "POST" })
       if (response.ok) {
-        const data = await response.json()
-        setApiKey(data.apiKey)
+        const result = await response.json()
+        setApiKey(result.data.apiKey)
         setIsFullKey(true) // This is the new full key, shown only once
         toast.success("New API key generated! Save it now - your old key is invalid.")
       } else {

@@ -2,21 +2,22 @@ import {
   retrieveLatestWorkflowVersions,
   saveWorkflowVersion,
 } from "@/features/trace-visualization/db/Workflow/retrieveWorkflow"
-import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
+import { auth } from "@clerk/nextjs/server"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import {
   loadFromDatabaseForDisplay,
   loadSingleWorkflow,
   saveWorkflowConfig,
 } from "@lucky/core/workflow/setup/WorkflowLoader"
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Ensure core is initialized
   ensureCoreInit()
@@ -61,7 +62,7 @@ export async function GET(req: Request) {
     }
 
     // Return only the workflow itself
-    return NextResponse.json(workflowConfig)
+    return alrighty("workflow/config", workflowConfig)
   } catch (error) {
     logException(error, {
       location: "/api/workflow/config/GET",
@@ -80,7 +81,7 @@ export async function GET(req: Request) {
 
           console.log("Successfully loaded latest workflow version:", latestVersion.wf_version_id)
 
-          return NextResponse.json({
+          return alrighty("workflow/config", {
             ...workflowConfig,
             _fallbackVersion: latestVersion.wf_version_id,
             _fallbackMessage: "Loaded latest workflow version from database",
@@ -91,31 +92,37 @@ export async function GET(req: Request) {
       }
     }
 
-    return NextResponse.json({ error: "Failed to load workflow configuration" }, { status: 500 })
+    return fail("workflow/config", "Failed to load workflow configuration", {
+      code: "LOAD_ERROR",
+      status: 500,
+    })
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   // Require authentication
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
+  const { isAuthenticated } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   // Ensure core is initialized
   ensureCoreInit()
 
-  try {
-    const body = await req.json()
-    const dsl = body?.dsl ?? body?.workflow ?? body
-    if (!dsl || typeof dsl !== "object") {
-      return NextResponse.json({ error: "Invalid DSL payload" }, { status: 400 })
-    }
+  const body = await handleBody("workflow/config", req)
+  if (isHandleBodyError(body)) return body
 
+  const bodyData = body as any
+  const dsl = bodyData?.dsl ?? bodyData?.workflow ?? bodyData
+  if (!dsl || typeof dsl !== "object") {
+    return fail("workflow/config", "Invalid DSL payload", { code: "INVALID_DSL", status: 400 })
+  }
+
+  try {
     // Optional metadata for DB mode
-    const workflowId = body?.workflowId as string | undefined
-    const commitMessage = body?.commitMessage as string | undefined
-    const parentId = body?.parentVersionId as string | undefined
-    const iterationBudget = body?.iterationBudget as number | undefined
-    const timeBudgetSeconds = body?.timeBudgetSeconds as number | undefined
+    const workflowId = bodyData?.workflowId as string | undefined
+    const commitMessage = bodyData?.commitMessage as string | undefined
+    const parentId = bodyData?.parentVersionId as string | undefined
+    const iterationBudget = bodyData?.iterationBudget as number | undefined
+    const timeBudgetSeconds = bodyData?.timeBudgetSeconds as number | undefined
 
     let result: { [key: string]: any }
 
@@ -144,12 +151,15 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ success: true, ...result })
+    return alrighty("workflow/config", { success: true, ...result })
   } catch (error) {
     logException(error, {
       location: "/api/workflow/config/POST",
     })
     console.error("Failed to save workflow config:", error)
-    return NextResponse.json({ error: "Failed to save workflow configuration" }, { status: 500 })
+    return fail("workflow/config", "Failed to save workflow configuration", {
+      code: "SAVE_ERROR",
+      status: 500,
+    })
   }
 }

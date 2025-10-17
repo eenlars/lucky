@@ -1,6 +1,7 @@
-import { requireAuth } from "@/lib/api-auth"
+import { alrighty, fail } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
+import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -8,9 +9,8 @@ export const runtime = "nodejs"
 // GET /api/user/api-key
 // Returns the user's active API key metadata (not the secret itself)
 export async function GET(_req: NextRequest) {
-  const authResult = await requireAuth()
-  if (authResult instanceof NextResponse) return authResult
-  const clerkId = authResult
+  const { isAuthenticated, userId } = await auth()
+  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
 
@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest) {
       .schema("lockbox")
       .from("secret_keys")
       .select("key_id, name, environment, scopes, created_at, last_used_at, expires_at")
-      .eq("clerk_id", clerkId)
+      .eq("clerk_id", userId)
       .is("revoked_at", null)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -31,31 +31,42 @@ export async function GET(_req: NextRequest) {
         details: error.details,
         hint: error.hint,
         code: error.code,
-        clerkId,
+        userId,
       })
-      return NextResponse.json({ error: `Failed to fetch API key: ${error.message}` }, { status: 500 })
+      return fail("user/api-key", `Failed to fetch API key: ${error.message}`, {
+        code: "DATABASE_ERROR",
+        status: 500,
+      })
     }
 
     if (!data) {
-      return NextResponse.json({ apiKey: null }, { status: 200 })
+      return alrighty("user/api-key", {
+        success: true,
+        data: {
+          apiKey: "",
+          createdAt: "",
+          expiresAt: undefined,
+        },
+        error: null,
+      })
     }
 
-    // Return the key_id as the displayable API key
-    return NextResponse.json({
-      apiKey: data.key_id,
-      metadata: {
-        name: data.name,
-        environment: data.environment,
-        scopes: data.scopes,
+    return alrighty("user/api-key", {
+      success: true,
+      data: {
+        apiKey: data.key_id,
         createdAt: data.created_at,
-        lastUsedAt: data.last_used_at,
-        expiresAt: data.expires_at,
+        expiresAt: data.expires_at || undefined,
       },
+      error: null,
     })
   } catch (e: any) {
     logException(e, {
       location: "/api/user/api-key",
     })
-    return NextResponse.json({ error: e?.message ?? "Failed to fetch API key" }, { status: 500 })
+    return fail("user/api-key", e?.message ?? "Failed to fetch API key", {
+      code: "INTERNAL_ERROR",
+      status: 500,
+    })
   }
 }

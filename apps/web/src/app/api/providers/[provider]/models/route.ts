@@ -1,3 +1,5 @@
+import { alrighty } from "@/lib/api/server"
+import { handleBody, isHandleBodyError } from "@/lib/api/server"
 import { getModelsByProvider } from "@lucky/models"
 import { type EnrichedModelInfo, providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
@@ -19,9 +21,9 @@ const modelCache = new Map<
 // Body: { apiKey: string, includeMetadata?: boolean }
 export async function POST(req: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
   const { provider } = await params
-  const body = await req.json()
-  const apiKey = body.apiKey
-  const includeMetadata = body.includeMetadata ?? true
+
+  const body = await handleBody("providers/[provider]/models", req)
+  if (isHandleBodyError(body)) return body
 
   const validationResult = providerNameSchema.safeParse(provider)
 
@@ -30,16 +32,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   }
 
   const validatedProvider = validationResult.data
-
-  if (!apiKey) {
-    return NextResponse.json({ error: "API key is required" }, { status: 400 })
-  }
+  const includeMetadata = body.includeMetadata ?? true
 
   // Check cache
-  const cacheKey = `${validatedProvider}:${apiKey.substring(0, 10)}:${includeMetadata}`
+  const cacheKey = `${validatedProvider}:${body.apiKey.substring(0, 10)}:${includeMetadata}`
   const cached = modelCache.get(cacheKey)
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
-    return NextResponse.json({ models: cached.models })
+    return alrighty("providers/[provider]/models", { models: cached.models })
   }
 
   try {
@@ -47,13 +46,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
 
     switch (validatedProvider) {
       case "openai":
-        modelIds = await fetchOpenAIModels(apiKey)
+        modelIds = await fetchOpenAIModels(body.apiKey)
         break
       case "groq":
-        modelIds = await fetchGroqModels(apiKey)
+        modelIds = await fetchGroqModels(body.apiKey)
         break
       case "openrouter":
-        modelIds = await fetchOpenRouterModels(apiKey)
+        modelIds = await fetchOpenRouterModels(body.apiKey)
         break
       default:
         return NextResponse.json({ error: "Unsupported provider" }, { status: 400 })
@@ -109,7 +108,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
       timestamp: Date.now(),
     })
 
-    return NextResponse.json({ models: result })
+    return alrighty("providers/[provider]/models", { models: result })
   } catch (error) {
     console.error(`Error fetching models for ${provider}:`, error)
     return NextResponse.json(
