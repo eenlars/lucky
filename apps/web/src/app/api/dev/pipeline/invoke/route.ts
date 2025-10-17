@@ -52,6 +52,26 @@ export async function POST(request: Request) {
     // If it does, use it as-is; otherwise add the prefix
     const fullModelId = body.modelName.includes("#") ? body.modelName : `${body.provider}#${body.modelName}`
 
+    // Simple execution context for dev testing
+    // Uses server environment variables for API keys
+    const devApiKeys: Record<string, string> = {}
+    if (process.env.OPENAI_API_KEY) devApiKeys.OPENAI_API_KEY = process.env.OPENAI_API_KEY
+    if (process.env.OPENROUTER_API_KEY) devApiKeys.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+    if (process.env.GROQ_API_KEY) devApiKeys.GROQ_API_KEY = process.env.GROQ_API_KEY
+    if (process.env.ANTHROPIC_API_KEY) devApiKeys.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+
+    // Validate that the required provider API key is available
+    const requiredProviderKey = `${body.provider.toUpperCase()}_API_KEY`
+    if (!devApiKeys[requiredProviderKey]) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Provider "${body.provider}" is not configured. Missing ${requiredProviderKey} in environment variables.`,
+        },
+        { status: 400 },
+      )
+    }
+
     // Build node config - cast to any to bypass tool name enums for dev testing
     const nodeConfig = {
       nodeId,
@@ -64,14 +84,6 @@ export async function POST(request: Request) {
       memory: null,
       maxSteps: body.maxSteps,
     } as WorkflowNodeConfig
-
-    // Simple execution context for dev testing
-    // Uses server environment variables for API keys
-    const devApiKeys: Record<string, string> = {}
-    if (process.env.OPENAI_API_KEY) devApiKeys.OPENAI_API_KEY = process.env.OPENAI_API_KEY
-    if (process.env.OPENROUTER_API_KEY) devApiKeys.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    if (process.env.GROQ_API_KEY) devApiKeys.GROQ_API_KEY = process.env.GROQ_API_KEY
-    if (process.env.ANTHROPIC_API_KEY) devApiKeys.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
     // Create observer for real-time streaming
     const randomId = genShortId()
