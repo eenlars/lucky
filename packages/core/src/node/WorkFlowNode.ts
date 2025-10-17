@@ -6,6 +6,7 @@ import { selfImproveHelper } from "@core/improvement/behavioral/self-improve/nod
 import type { Payload } from "@core/messages/MessagePayload"
 import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries/createSummary"
+import { emitAgentEnd, emitAgentError, emitAgentStart } from "@core/utils/observability/agentEvents"
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
@@ -170,6 +171,11 @@ export class WorkFlowNode
    * Uses the pipeline pattern for better organization and error handling.
    */
   public async invoke(context: NodeInvocationCallContext): Promise<NodeInvocationResult> {
+    const startTime = Date.now()
+
+    // Emit agent.start event
+    emitAgentStart(this.nodeId, this.config.description)
+
     try {
       // Ensure tools are initialized
       await this.toolManager.initializeTools()
@@ -202,9 +208,16 @@ export class WorkFlowNode
         this.persistenceManager.updateMemory(result.updatedMemory)
       }
 
+      // Emit agent.end event
+      const duration = Date.now() - startTime
+      emitAgentEnd(this.nodeId, duration, result.usdCost)
+
       return result
     } catch (error) {
       lgg.error(chalk.red("Error in invoke!"), error)
+
+      // Emit agent.error event
+      emitAgentError(this.nodeId, error instanceof Error ? error : new Error(String(error)))
 
       throw error
     }

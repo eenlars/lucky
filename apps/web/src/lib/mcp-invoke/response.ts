@@ -4,7 +4,12 @@ import type { InvocationMetadata } from "./types"
 /**
  * Formats successful JSON-RPC response
  */
-export function formatSuccessResponse(requestId: string | number, output: unknown, meta: InvocationMetadata) {
+export function formatSuccessResponse(
+  requestId: string | number,
+  output: unknown,
+  meta: InvocationMetadata,
+  randomId?: string,
+) {
   return {
     jsonrpc: "2.0" as const,
     id: requestId,
@@ -18,6 +23,7 @@ export function formatSuccessResponse(requestId: string | number, output: unknow
         finishedAt: meta.finishedAt,
         traceId: meta.traceId,
         invocationType: "http" as const,
+        ...(randomId && { randomId }),
       },
     },
   }

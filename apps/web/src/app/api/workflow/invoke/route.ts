@@ -21,6 +21,9 @@ import {
   validateProviderKeys,
 } from "@/lib/workflow/provider-validation"
 import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
+import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
+import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
+import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { genShortId, isNir } from "@lucky/shared"
@@ -221,6 +224,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Create observer for real-time event streaming
+    const randomId = genShortId()
+    const observer = new AgentObserver()
+    const registry = ObserverRegistry.getInstance()
+    registry.register(randomId, observer)
+
     const result = await withExecutionContext(
       {
         principal,
@@ -230,14 +239,25 @@ export async function POST(req: NextRequest) {
         ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
       },
       async () => {
-        return invokeWorkflow({
-          ...input,
-          abortSignal: controller.signal,
+        return withObservationContext({ randomId, observer }, async () => {
+          return invokeWorkflow({
+            ...input,
+            abortSignal: controller.signal,
+          })
         })
       },
     )
 
     const finishedAt = new Date().toISOString()
+
+    // Dispose observer after workflow completion (will auto-cleanup via TTL if not disposed)
+    setTimeout(
+      () => {
+        observer.dispose()
+        registry.dispose(randomId)
+      },
+      5 * 60 * 1000,
+    )
 
     // Cleanup: remove from active workflows map and Redis, unsubscribe from pub/sub
     activeWorkflows.delete(requestId)
@@ -253,13 +273,18 @@ export async function POST(req: NextRequest) {
     const traceId = extractTraceId(result)
 
     return NextResponse.json(
-      formatSuccessResponse(requestId, output, {
-        requestId: result.data?.[0]?.workflowInvocationId || requestId,
-        workflowId: input.workflowVersionId || input.filename || "dsl-config",
-        startedAt,
-        finishedAt,
-        traceId,
-      }),
+      formatSuccessResponse(
+        requestId,
+        output,
+        {
+          requestId: result.data?.[0]?.workflowInvocationId || requestId,
+          workflowId: input.workflowVersionId || input.filename || "dsl-config",
+          startedAt,
+          finishedAt,
+          traceId,
+        },
+        randomId,
+      ),
       { status: 200 },
     )
   } catch (error) {
@@ -267,6 +292,19 @@ export async function POST(req: NextRequest) {
     activeWorkflows.delete(requestId)
     await deleteWorkflowState(requestId)
     await unsubscribe()
+
+    // Dispose observer if it was created (randomId will be in scope if observer was registered)
+    try {
+      const randomId = getObservationContext()?.randomId
+      if (randomId) {
+        const registry = ObserverRegistry.getInstance()
+        const observer = registry.get(randomId)
+        observer?.dispose()
+        registry.dispose(randomId)
+      }
+    } catch (cleanupError) {
+      console.error("[/api/workflow/invoke] Error during observer cleanup:", cleanupError)
+    }
 
     logException(error, {
       location: "/api/workflow/invoke",

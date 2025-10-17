@@ -162,8 +162,17 @@ export class ProviderRegistry {
       )
     }
 
+    // Strip provider prefix from model name if present
+    // Catalog uses format "openrouter#google/gemini-2.5-flash-lite" but
+    // OpenRouter SDK expects just "google/gemini-2.5-flash-lite"
+    let modelName = spec.model
+    const providerPrefix = `${spec.provider}#`
+    if (modelName.startsWith(providerPrefix)) {
+      modelName = modelName.slice(providerPrefix.length)
+    }
+
     // Get language model from provider
-    const model = provider.languageModel(spec.model)
+    const model = provider.languageModel(modelName)
 
     return model as AiSdkModel
   }

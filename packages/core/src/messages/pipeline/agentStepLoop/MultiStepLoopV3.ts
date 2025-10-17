@@ -24,6 +24,7 @@ import { generateSummaryFromUnknownData } from "@core/messages/summaries/createS
 import { makeLearning } from "@core/prompts/makeLearning"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
+import { emitAgentToolEnd, emitAgentToolStart } from "@core/utils/observability/agentEvents"
 import { type MultiStepLoopContext, toolUsageToString } from "./utils"
 
 /**
@@ -198,6 +199,10 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
       )
     }
 
+    // Emit tool.start event
+    const toolStartTime = Date.now()
+    emitAgentToolStart(ctx.nodeConfig.nodeId, selected, { plan: strategy.plan })
+
     // execute the tool call
     const {
       data: toolUseResponse,
@@ -227,6 +232,8 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
       },
     })
 
+    const toolDuration = Date.now() - toolStartTime
+
     // Log multi-step tool call results
     if (verbose) {
       lgg.log(`[InvocationPipeline] Multi-step round ${round + 1}: Tool call success: ${success}`)
@@ -238,12 +245,18 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
     addCost(usdCost ?? 0)
 
     if (!success) {
+      // Emit tool.end event with error
+      emitAgentToolEnd(ctx.nodeConfig.nodeId, selected, toolDuration, undefined, error ?? "tool execution failed")
+
       agentSteps.push({
         type: "error",
         return: error ?? "tool execution failed",
       })
       continue
     }
+
+    // Emit tool.end event with success
+    emitAgentToolEnd(ctx.nodeConfig.nodeId, selected, toolDuration)
 
     const { agentSteps: processedAgentSteps, usdCost: processedUsdCost } = responseToAgentSteps({
       response: toolUseResponse,

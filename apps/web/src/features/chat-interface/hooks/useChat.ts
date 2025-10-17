@@ -154,9 +154,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
   const editMessage = useCallback((messageId: string, newContent: string) => {
     setMessages(prev =>
-      prev.map(msg =>
-        msg.id === messageId ? { ...msg, parts: [{ type: "text", text: newContent }] } : msg,
-      ),
+      prev.map(msg => (msg.id === messageId ? { ...msg, parts: [{ type: "text", text: newContent }] } : msg)),
     )
   }, [])
 

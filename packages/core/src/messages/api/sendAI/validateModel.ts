@@ -5,7 +5,7 @@
 
 import { lgg } from "@core/utils/logging/Logger"
 import { isActiveModel } from "@core/utils/spending/functions"
-import { getCurrentProvider } from "@core/utils/spending/provider"
+import { findModel } from "@lucky/models"
 
 /**
  * Validates and resolves a model name to ensure it's active for the current provider.
@@ -17,9 +17,17 @@ import { getCurrentProvider } from "@core/utils/spending/provider"
  */
 export function validateAndResolveModel(model: string | undefined, fallback: string): string {
   const resolved = model ?? fallback
-  const provider = getCurrentProvider()
+
+  // Skip validation in development to allow testing all models
+  if (process.env.NODE_ENV === "development") {
+    return resolved
+  }
 
   if (!isActiveModel(resolved)) {
+    // Extract provider from model entry for better error message
+    const modelEntry = findModel(resolved)
+    const provider = modelEntry?.provider || "unknown"
+
     const error = `Model "${resolved}" is not active for provider "${provider}". Check MODEL_CONFIG.inactive or model availability.`
     lgg.error(error, {
       model: resolved,

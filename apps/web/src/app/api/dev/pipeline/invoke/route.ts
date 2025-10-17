@@ -3,7 +3,10 @@ import { InvocationPipeline } from "@core/messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { ToolManager } from "@core/node/toolManager"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
-import type { WorkflowNodeConfig } from "@lucky/shared"
+import { withObservationContext } from "@lucky/core/context/observationContext"
+import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
+import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
+import { genShortId, type WorkflowNodeConfig } from "@lucky/shared"
 import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
@@ -16,7 +19,7 @@ interface PipelineTestRequest {
   codeTools: string[]
   mcpTools: string[]
   message: string
-  toolStrategy: "v2" | "v3"
+  toolStrategy: "v2" | "v3" | "auto"
   mainGoal?: string
 }
 
@@ -49,6 +52,26 @@ export async function POST(request: Request) {
     // If it does, use it as-is; otherwise add the prefix
     const fullModelId = body.modelName.includes("#") ? body.modelName : `${body.provider}#${body.modelName}`
 
+    // Simple execution context for dev testing
+    // Uses server environment variables for API keys
+    const devApiKeys: Record<string, string> = {}
+    if (process.env.OPENAI_API_KEY) devApiKeys.OPENAI_API_KEY = process.env.OPENAI_API_KEY
+    if (process.env.OPENROUTER_API_KEY) devApiKeys.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+    if (process.env.GROQ_API_KEY) devApiKeys.GROQ_API_KEY = process.env.GROQ_API_KEY
+    if (process.env.ANTHROPIC_API_KEY) devApiKeys.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+
+    // Validate that the required provider API key is available
+    const requiredProviderKey = `${body.provider.toUpperCase()}_API_KEY`
+    if (!devApiKeys[requiredProviderKey]) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Provider "${body.provider}" is not configured. Missing ${requiredProviderKey} in environment variables.`,
+        },
+        { status: 400 },
+      )
+    }
+
     // Build node config - cast to any to bypass tool name enums for dev testing
     const nodeConfig = {
       nodeId,
@@ -62,13 +85,10 @@ export async function POST(request: Request) {
       maxSteps: body.maxSteps,
     } as WorkflowNodeConfig
 
-    // Simple execution context for dev testing
-    // Uses server environment variables for API keys
-    const devApiKeys: Record<string, string> = {}
-    if (process.env.OPENAI_API_KEY) devApiKeys.OPENAI_API_KEY = process.env.OPENAI_API_KEY
-    if (process.env.OPENROUTER_API_KEY) devApiKeys.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
-    if (process.env.GROQ_API_KEY) devApiKeys.GROQ_API_KEY = process.env.GROQ_API_KEY
-    if (process.env.ANTHROPIC_API_KEY) devApiKeys.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+    // Create observer for real-time streaming
+    const randomId = genShortId()
+    const observer = new AgentObserver()
+    ObserverRegistry.getInstance().register(randomId, observer)
 
     const result = await withExecutionContext(
       {
@@ -84,56 +104,67 @@ export async function POST(request: Request) {
         apiKeys: devApiKeys,
       },
       async () => {
-        // Create tool manager with all required arguments
-        // workflowVersionId doesn't matter for dev testing
-        const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, "dev-test-version")
+        return withObservationContext({ randomId, observer }, async () => {
+          // Create tool manager with all required arguments
+          // workflowVersionId doesn't matter for dev testing
+          const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, "dev-test-version")
 
-        // Build proper payload structure (sequential payload with text content)
-        const payload = {
-          kind: "sequential" as const,
-          berichten: [
-            {
-              type: "text" as const,
-              text: body.message,
-            },
-          ],
-        }
+          // Build proper payload structure (sequential payload with text content)
+          const payload = {
+            kind: "sequential" as const,
+            berichten: [
+              {
+                type: "text" as const,
+                text: body.message,
+              },
+            ],
+          }
 
-        // Create WorkflowMessage instance
-        const workflowMessageIncoming = new WorkflowMessage({
-          originInvocationId: invocationId,
-          fromNodeId: "test-user",
-          toNodeId: nodeId,
-          seq: 1,
-          payload,
-          wfInvId: invocationId,
-          skipDatabasePersistence: true,
+          // Create WorkflowMessage instance
+          const workflowMessageIncoming = new WorkflowMessage({
+            originInvocationId: invocationId,
+            fromNodeId: "test-user",
+            toNodeId: nodeId,
+            seq: 1,
+            payload,
+            wfInvId: invocationId,
+            skipDatabasePersistence: true,
+          })
+
+          // Build context - cast to NodeInvocationCallContext for dev testing
+          const ctx = {
+            nodeConfig,
+            workflowMessageIncoming,
+            mainWorkflowGoal: body.mainGoal || "Pipeline test execution",
+            invocationId,
+            nodeMemory: {},
+            toolStrategyOverride: body.toolStrategy,
+            startTime: new Date().toISOString(),
+            workflowVersionId: "dev-test",
+            workflowId: "dev-test-workflow",
+            workflowInvocationId: invocationId,
+            skipDatabasePersistence: true,
+          } as NodeInvocationCallContext
+
+          // Create and execute pipeline
+          // Pipeline requires 3-step execution: prepare -> execute -> process
+          const pipeline = new InvocationPipeline(ctx, toolManager, true)
+          await pipeline.prepare()
+          await pipeline.execute()
+          const result = await pipeline.process()
+
+          return result
         })
-
-        // Build context - cast to NodeInvocationCallContext for dev testing
-        const ctx = {
-          nodeConfig,
-          workflowMessageIncoming,
-          mainWorkflowGoal: body.mainGoal || "Pipeline test execution",
-          invocationId,
-          nodeMemory: {},
-          toolStrategyOverride: body.toolStrategy,
-          startTime: new Date().toISOString(),
-          workflowVersionId: "dev-test",
-          workflowId: "dev-test-workflow",
-          workflowInvocationId: invocationId,
-          skipDatabasePersistence: true,
-        } as NodeInvocationCallContext
-
-        // Create and execute pipeline
-        // Pipeline requires 3-step execution: prepare -> execute -> process
-        const pipeline = new InvocationPipeline(ctx, toolManager, true)
-        await pipeline.prepare()
-        await pipeline.execute()
-        const result = await pipeline.process()
-
-        return result
       },
+    )
+
+    // Dispose observer after execution
+    setTimeout(
+      () => {
+        observer.dispose()
+        ObserverRegistry.getInstance().dispose(randomId)
+      },
+      5 * 60 * 1000,
     )
 
     const executionTime = Date.now() - startTime
@@ -170,6 +201,7 @@ export async function POST(request: Request) {
     // Pipeline succeeded
     return NextResponse.json({
       success: true,
+      randomId, // Include randomId for SSE streaming
       result: {
         content: result.nodeInvocationFinalOutput,
         agentSteps: result.agentSteps || [],
