@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       console.error("Failed to submit feedback:", error)
       return fail("feedback", "Failed to submit feedback", {
         code: "DATABASE_ERROR",
-        status: 500
+        status: 500,
       })
     }
 
@@ -37,21 +37,21 @@ export async function POST(req: Request) {
       success: true,
       data: {
         submitted: true,
-        feedbackId: undefined // Could return ID if we selected it
+        feedbackId: undefined, // Could return ID if we selected it
       },
-      error: null
+      error: null,
     })
   } catch (error) {
     if (error instanceof ZodError) {
       return fail("feedback", "Invalid feedback data", {
         code: "VALIDATION_ERROR",
-        status: 400
+        status: 400,
       })
     }
     console.error("Feedback POST error:", error)
     return fail("feedback", "Internal server error", {
       code: "INTERNAL_ERROR",
-      status: 500
+      status: 500,
     })
   }
 }

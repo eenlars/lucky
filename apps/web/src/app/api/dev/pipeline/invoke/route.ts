@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     // Check auth
     const { isAuthenticated, userId } = await auth()
-    if (!isAuthenticated) return new NextResponse('Unauthorized', { status: 401 })
+    if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
     const body = (await request.json()) as PipelineTestRequest
 

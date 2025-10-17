@@ -26,14 +26,14 @@ export async function POST(request: Request) {
       default:
         return fail("providers/test-connection", `Unsupported provider: ${provider}`, {
           code: "UNSUPPORTED_PROVIDER",
-          status: 400
+          status: 400,
         })
     }
 
     if (!testResult.success) {
       return fail("providers/test-connection", testResult.error || "Connection test failed", {
         code: "CONNECTION_FAILED",
-        status: 401
+        status: 401,
       })
     }
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         connected: true,
         message: `Connected successfully (${testResult.modelCount} models available)`,
       },
-      error: null
+      error: null,
     })
   } catch (error) {
     logException(error, {
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     console.error("Error testing provider connection:", error)
     return fail("providers/test-connection", "Internal server error", {
       code: "INTERNAL_ERROR",
-      status: 500
+      status: 500,
     })
   }
 }

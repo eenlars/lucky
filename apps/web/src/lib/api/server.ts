@@ -1,6 +1,6 @@
-import { type NextRequest, NextResponse } from 'next/server'
-import { type z } from 'zod'
-import { apiSchemas, type Endpoint, type Req, type Res } from './schemas'
+import { type NextRequest, NextResponse } from "next/server"
+import { type z } from "zod"
+import { apiSchemas, type Endpoint, type Req, type Res } from "./schemas"
 
 /**
  * Helper: turn FormData into a plain object of string | File
@@ -20,28 +20,28 @@ const formDataToObject = (fd: FormData) => Object.fromEntries(fd.entries())
 export async function handleBody<E extends Endpoint>(endpoint: E, req: NextRequest): Promise<Req<E> | NextResponse> {
   try {
     const { method } = req
-    if (method === 'OPTIONS' || method === 'HEAD') {
-      return NextResponse.json({ error: 'This method does not support request bodies' }, { status: 400 })
+    if (method === "OPTIONS" || method === "HEAD") {
+      return NextResponse.json({ error: "This method does not support request bodies" }, { status: 400 })
     }
 
-    const contentType = req.headers.get('Content-Type') || ''
+    const contentType = req.headers.get("Content-Type") || ""
     let raw: unknown
 
     try {
-      if (contentType.includes('multipart/form-data')) {
+      if (contentType.includes("multipart/form-data")) {
         const fd = await req.formData()
         raw = formDataToObject(fd)
-      } else if (contentType.includes('application/json')) {
+      } else if (contentType.includes("application/json")) {
         raw = await req.json()
-      } else if (contentType === '' && (req.method === 'GET' || req.method === 'DELETE')) {
+      } else if (contentType === "" && (req.method === "GET" || req.method === "DELETE")) {
         // No body expected, allow empty body if your schema is z.never() or optional
         raw = undefined
       } else {
-        throw new Error('Unsupported Content-Type')
+        throw new Error("Unsupported Content-Type")
       }
     } catch (e) {
-      if (e instanceof SyntaxError && e.message.includes('Unexpected end of JSON input')) {
-        return NextResponse.json({ error: 'Check the body, and check if this is a POST/PUT request' }, { status: 400 })
+      if (e instanceof SyntaxError && e.message.includes("Unexpected end of JSON input")) {
+        return NextResponse.json({ error: "Check the body, and check if this is a POST/PUT request" }, { status: 400 })
       }
       throw e
     }
@@ -58,23 +58,23 @@ export async function handleBody<E extends Endpoint>(endpoint: E, req: NextReque
     return NextResponse.json(
       {
         error: {
-          code: 'VALIDATION_ERROR',
-          message: 'Request body failed validation',
+          code: "VALIDATION_ERROR",
+          message: "Request body failed validation",
           issues: result.error.issues,
         },
       },
-      { status: 400 }
+      { status: 400 },
     )
   } catch (e) {
-    console.error('handleBody error:', e)
+    console.error("handleBody error:", e)
     return NextResponse.json(
       {
         error: {
-          code: 'HANDLE_BODY_ERROR',
-          message: e instanceof Error ? e.message : 'Unknown error during body handling',
+          code: "HANDLE_BODY_ERROR",
+          message: e instanceof Error ? e.message : "Unknown error during body handling",
         },
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -101,12 +101,12 @@ export function alrighty<E extends Endpoint>(endpoint: E, payload: Res<E>, init?
 export function fail<E extends Endpoint>(
   endpoint: E,
   message: string,
-  options?: { code?: string; status?: number }
+  options?: { code?: string; status?: number },
 ): NextResponse {
   const body: unknown = {
     success: false,
     error: {
-      code: options?.code ?? 'INTERNAL_ERROR',
+      code: options?.code ?? "INTERNAL_ERROR",
       message,
       timestamp: new Date().toISOString(),
     },

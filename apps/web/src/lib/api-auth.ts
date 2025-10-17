@@ -11,7 +11,7 @@ export async function requireAuth() {
   const { isAuthenticated, userId } = await auth()
 
   if (!isAuthenticated) {
-    return new NextResponse('Unauthorized', { status: 401 })
+    return new NextResponse("Unauthorized", { status: 401 })
   }
 
   return userId

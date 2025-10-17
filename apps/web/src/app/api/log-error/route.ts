@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       console.error("log-error upsert failed:", error)
       return fail("log-error", error.message, {
         code: "DATABASE_ERROR",
-        status: 500
+        status: 500,
       })
     }
 
@@ -131,16 +131,16 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         logged: true,
-        errorId: record?.id ? String(record.id) : undefined
+        errorId: record?.id ? String(record.id) : undefined,
       },
-      error: null
+      error: null,
     })
   } catch (err) {
     const error = err instanceof Error ? err : new Error("Unknown error")
     console.error("log-error failed:", error)
     return fail("log-error", error.message, {
       code: "INTERNAL_ERROR",
-      status: 400
+      status: 400,
     })
   }
 }
