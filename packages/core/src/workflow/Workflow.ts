@@ -299,10 +299,7 @@ export class Workflow {
    * @param options.abortSignal - Optional abort signal for graceful cancellation
    * @returns array of run results for each IO
    */
-  async run(options?: {
-    onProgress?: WorkflowEventHandler
-    abortSignal?: AbortSignal
-  }): Promise<RS<RunResult[]>> {
+  async run(options?: { onProgress?: WorkflowEventHandler; abortSignal?: AbortSignal }): Promise<RS<RunResult[]>> {
     throwIf(this.evaluated, "Workflow has already been evaluated")
     throwIf(this.hasRun, "Workflow has already been run")
 

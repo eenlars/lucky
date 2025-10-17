@@ -151,6 +151,31 @@ export async function POST(req: NextRequest) {
 
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
+    // Load MCP configuration for UI-based workflows from lockbox
+    let mcpToolkits: import("@lucky/shared").MCPToolkitMap | undefined
+    if (principal.auth_method === "session") {
+      try {
+        // Fetch encrypted MCP config from lockbox
+        const mcpConfigJson = await secrets.get("servers", "mcp")
+
+        if (mcpConfigJson) {
+          const mcpConfig = JSON.parse(mcpConfigJson) as {
+            mcpServers: Record<string, { command: string; args: string[]; env?: Record<string, string> }>
+          }
+
+          if (Object.keys(mcpConfig.mcpServers).length > 0) {
+            const { uiConfigToToolkits } = await import("@lucky/shared")
+            mcpToolkits = uiConfigToToolkits(mcpConfig.mcpServers)
+            console.log("[workflow/invoke] Loaded MCP toolkits from lockbox:", Object.keys(mcpToolkits))
+          }
+        } else {
+          console.log("[workflow/invoke] No MCP config found in lockbox")
+        }
+      } catch (error) {
+        console.warn("[workflow/invoke] Failed to load MCP config from lockbox, continuing without toolkits:", error)
+      }
+    }
+
     // Extract workflow config to determine required providers
     let workflowConfig: WorkflowConfig | null = null
     try {
@@ -196,12 +221,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
-      return invokeWorkflow({
-        ...input,
-        abortSignal: controller.signal,
-      })
-    })
+    const result = await withExecutionContext(
+      {
+        principal,
+        secrets,
+        apiKeys,
+        // Pass MCP toolkits in execution context (if available)
+        ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
+      },
+      async () => {
+        return invokeWorkflow({
+          ...input,
+          abortSignal: controller.signal,
+        })
+      },
+    )
 
     const finishedAt = new Date().toISOString()
 

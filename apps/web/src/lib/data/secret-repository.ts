@@ -1,12 +1,7 @@
 import type { Principal } from "@/lib/auth/principal"
 import { createScopedClient } from "@/lib/data/scoped-client"
 
-export async function fetchSecret(
-  clerkId: string,
-  name: string,
-  namespace: string,
-  principal?: Principal,
-) {
+export async function fetchSecret(clerkId: string, name: string, namespace: string, principal?: Principal) {
   const scoped = await createScopedClient(principal)
 
   console.log(`[secret-repository] Fetch single secret via ${scoped.mode} client`)
@@ -23,12 +18,7 @@ export async function fetchSecret(
   return query.eq("clerk_id", clerkId).maybeSingle()
 }
 
-export async function fetchSecrets(
-  clerkId: string,
-  names: string[],
-  namespace: string,
-  principal?: Principal,
-) {
+export async function fetchSecrets(clerkId: string, names: string[], namespace: string, principal?: Principal) {
   const scoped = await createScopedClient(principal)
 
   console.log(`[secret-repository] Fetch ${names.length} secret(s) via ${scoped.mode} client`)

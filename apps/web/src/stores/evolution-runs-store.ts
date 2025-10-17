@@ -51,10 +51,7 @@ type EvolutionRunsState = {
   setSortDirection: (dir: SortDirection) => void
 
   clearFilters: () => void
-  fetchRuns: (opts?: {
-    showLoading?: boolean
-    reset?: boolean
-  }) => Promise<void>
+  fetchRuns: (opts?: { showLoading?: boolean; reset?: boolean }) => Promise<void>
 }
 
 export const useEvolutionRunsStore = create<EvolutionRunsState>()(

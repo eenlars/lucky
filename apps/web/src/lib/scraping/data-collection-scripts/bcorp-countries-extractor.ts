@@ -227,13 +227,7 @@ async function processBatch<T, R>(
   const companyData = await processBatch<{ company_name: string; website: string }, CompanyCountryData>(
     uniqueRows, // use uniqueRows instead of rows
     BATCH_SIZE,
-    async ({
-      company_name,
-      website,
-    }: {
-      company_name: string
-      website: string
-    }): Promise<CompanyCountryData> => {
+    async ({ company_name, website }: { company_name: string; website: string }): Promise<CompanyCountryData> => {
       lgg.log(`countries-extractor: processing company: ${company_name}`)
       const slug = slugifyBCorp(company_name)
       const bCorpUrl = `${B_CORP_ROOT}${slug}/`

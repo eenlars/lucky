@@ -58,9 +58,7 @@ const server = new FastMCP<SessionData>({
   name: "lucky-mcp",
   version: "3.0.0",
   roots: { enabled: false },
-  authenticate: async (request: {
-    headers: IncomingHttpHeaders
-  }): Promise<SessionData> => {
+  authenticate: async (request: { headers: IncomingHttpHeaders }): Promise<SessionData> => {
     if (process.env.CLOUD_SERVICE === "true") {
       const apiKey = extractApiKey(request.headers)
 
