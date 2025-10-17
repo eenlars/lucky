@@ -48,8 +48,16 @@ vi.mock("@core/improvement/gp/resources/utils", () => ({
   },
 }))
 
-// Clear any existing Population mock from other test files
+// Clear any existing Population mock from other test files.
+// Import this module via a relative path to avoid alias-based mocks
+// defined elsewhere (e.g. in EvolutionEngine tests).
 vi.unmock("../Population")
+
+// Ensure a clean module registry before each dynamic import so prior
+// mocks don't leak across test files.
+beforeEach(() => {
+  vi.resetModules()
+})
 
 // Mock Genome class to avoid complex genome creation
 vi.mock("../Genome", () => ({
@@ -76,7 +84,7 @@ describe("Population", () => {
   })
 
   it("should instantiate with proper configuration", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -101,7 +109,7 @@ describe("Population", () => {
   })
 
   it("should initialize population container correctly", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -140,7 +148,7 @@ describe("Population", () => {
   })
 
   it("should handle population setup with different configurations", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -174,7 +182,7 @@ describe("Population", () => {
   })
 
   it("should support basic population operations (add, remove, clear)", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -215,7 +223,7 @@ describe("Population", () => {
   })
 
   it("should handle comprehensive genome operations", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -285,7 +293,7 @@ describe("Population", () => {
   })
 
   it("should handle unevaluated genomes correctly", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -324,7 +332,7 @@ describe("Population", () => {
   })
 
   it("should support diversity operations safely", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),
@@ -347,7 +355,7 @@ describe("Population", () => {
   })
 
   it("should handle edge cases and errors comprehensively", async () => {
-    const { Population } = await import("@core/improvement/gp/Population")
+    const { Population } = await vi.importActual<typeof import("../Population")>("../Population")
 
     const mockRunService = {
       getCurrentRunId: vi.fn().mockReturnValue("test-run-id"),

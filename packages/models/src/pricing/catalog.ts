@@ -893,10 +893,18 @@ const RAW_MODEL_CATALOG: any[] = [
 // Normalize legacy keys to clear naming on export
 export const MODEL_CATALOG: ModelEntry[] = RAW_MODEL_CATALOG.map((m: any) => {
   const { active, disabled, ...rest } = m
+  const runtimeEnabled = active ?? true
+  const uiHiddenInProd = !!disabled
+
+  // Preserve legacy fields for backward compatibility while using new names internally.
+  // Some tests and call sites still read `active`/`disabled`.
   return {
     ...rest,
-    runtimeEnabled: active ?? true,
-    uiHiddenInProd: !!disabled,
+    runtimeEnabled,
+    uiHiddenInProd,
+    // legacy mirrors (deprecated): keep in sync to avoid breaking old code/tests
+    active: runtimeEnabled,
+    disabled: uiHiddenInProd,
   } as ModelEntry
 })
 

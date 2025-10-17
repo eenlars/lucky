@@ -178,14 +178,14 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
         severity = "error"
         lgg.error(`💰 QUOTA ERROR: ${provider} - ${message}`)
         lgg.error(`   Model: ${modelName}`)
-        lgg.error(`   This usually means your API key has reached its usage limit.`)
-        lgg.error(`   Check your billing settings at your provider's dashboard.`)
+        lgg.error("   This usually means your API key has reached its usage limit.")
+        lgg.error("   Check your billing settings at your provider's dashboard.")
       } else if (message.toLowerCase().includes("authentication") || message.toLowerCase().includes("api key")) {
         errorCategory = "auth"
         severity = "error"
         lgg.error(`🔑 AUTH ERROR: ${provider} - ${message}`)
-        lgg.error(`   Model: ${modelName}`)
-        lgg.error(`   Check that your API key is set correctly and has the right permissions.`)
+        lgg.error("   Model: ${modelName}")
+        lgg.error("   Check that your API key is set correctly and has the right permissions.")
       } else if (message.includes("Overall timeout") || message.includes("Stall timeout")) {
         errorCategory = "timeout"
         severity = "warn"

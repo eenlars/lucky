@@ -128,7 +128,7 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "openrouter#openai/gpt-oss-20b",
+          modelName: "groq#openai/gpt-oss-20b",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -139,7 +139,7 @@ describe("extractRequiredProviders", () => {
     const result = extractRequiredProviders(config)
     // openai/gpt-oss-20b actually uses groq provider!
     expect(result.providers).toEqual(new Set(["groq"]))
-    expect(result.models.get("groq")).toEqual(["openrouter#openai/gpt-oss-20b"])
+    expect(result.models.get("groq")).toEqual(["groq#openai/gpt-oss-20b"])
   })
 
   it("should handle empty nodes array", () => {

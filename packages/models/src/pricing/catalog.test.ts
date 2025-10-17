@@ -176,7 +176,7 @@ describe("catalog provider utilities", () => {
 
     it("has consistent ID format (provider#model)", () => {
       for (const model of MODEL_CATALOG) {
-        expect(model.id).toMatch(/^[a-z0-9-]+#[a-z0-9-./]+$/i)
+        expect(model.id).toMatch(/^[a-z0-9-]+#[a-z0-9-./:]+$/i)
       }
     })
   })
