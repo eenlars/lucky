@@ -1,8 +1,5 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
   "files": {
     "ignore": [
       "**/node_modules/**",
@@ -21,7 +18,8 @@
       "apps/web/src/results/**",
       "apps/examples/logging_folder/**",
       "packages/core/logging_folder/**",
-      "packages/experiments/src/experiments-2/**"
+      "packages/experiments/src/experiments-2/**",
+      "apps/web/src/lib/scraping/manual-data-collection/**"
     ]
   },
   "overrides": [

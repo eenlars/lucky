@@ -83,7 +83,15 @@ export class ToolManager {
       // Initialize MCP tools eagerly; defer code tools until per-invocation context is available
       const config = getCoreConfig()
       const mcpConfigPath = path.join(config.paths.runtime, "mcp-secret.json")
-      const mcp = await setupMCPForNode(this.mcpToolNames, this.workflowVersionId, mcpConfigPath)
+
+      // Get context toolkits from execution context (UI-configured MCPs)
+      const { getExecutionContext } = await import("@core/context/executionContext")
+      const ctx = getExecutionContext()
+      const mcpContext = ctx?.get("mcp")
+
+      const mcp = await setupMCPForNode(this.mcpToolNames, this.workflowVersionId, mcpConfigPath, {
+        toolkits: mcpContext?.toolkits,
+      })
       this.mcpTools = mcp
       this.codeTools = {}
       this.toolsInitialized = true

@@ -55,13 +55,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 }
 
-function DefaultErrorFallback({
-  error,
-  reset,
-}: {
-  error: Error
-  reset: () => void
-}) {
+function DefaultErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">

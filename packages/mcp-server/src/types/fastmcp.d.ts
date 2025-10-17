@@ -41,12 +41,7 @@ declare module "fastmcp" {
       }
     })
 
-    addTool(tool: {
-      name: string
-      description?: string
-      parameters?: unknown
-      execute: ToolExecute<Session>
-    }): void
+    addTool(tool: { name: string; description?: string; parameters?: unknown; execute: ToolExecute<Session> }): void
 
     start(args?: TransportArgs): Promise<void>
   }

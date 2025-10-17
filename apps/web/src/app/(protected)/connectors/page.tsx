@@ -397,13 +397,7 @@ export default function ConnectorsPage() {
   )
 }
 
-function ConnectorCard({
-  connector,
-  onClick,
-}: {
-  connector: Connector
-  onClick: () => void
-}) {
+function ConnectorCard({ connector, onClick }: { connector: Connector; onClick: () => void }) {
   return (
     <Card className="group cursor-pointer transition-all hover:shadow-md hover:border-primary/50" onClick={onClick}>
       <div className="p-6">

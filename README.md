@@ -24,12 +24,26 @@ Provides real-time visualization of workflow execution graphs, evolutionary fitn
 
 ## Monorepo Layout
 
-- `apps/web/` — Next.js UI, pages, API routes.
-- `packages/core/` — Core TypeScript logic, CLI scripts, unit/integration tests.
-- `apps/examples/` — Example tools, settings, and workflows.
-- `packages/shared/` — Shared TypeScript utilities (built with tsup).
-- `tests/e2e-essential/` — Minimal smoke + gate tests with golden trace.
-- `docs/`, `resources/`, `mcp/` — Supporting assets and tools.
+```
+.
+├── apps/
+│   ├── web/              Next.js UI (port 3000+) - workflows, settings, connectors
+│   └── examples/         Example tools & workflow definitions
+│
+├── packages/
+│   ├── shared/          Zod contracts, types, utilities (BUILD FIRST)
+│   ├── models/          Multi-provider model registry (OpenAI, Anthropic, etc)
+│   ├── tools/           Tool framework (code tools + MCP integration)
+│   ├── core/            Workflow execution engine (DAG, nodes, evolution)
+│   └── adapter-supabase/ Persistence layer (optional, can use mock)
+│
+└── tests/
+    └── e2e-essential/   Smoke tests (pre-commit) & gate tests (pre-push)
+```
+
+**Build order**: `shared` → `models` → `tools` → `core` → `web`
+
+See `packages/*/README.md` for detailed package documentation.
 
 ## Installation
 
@@ -71,25 +85,93 @@ bunx tsx tests/e2e-essential/scripts/update-golden.ts
 
 Husky hooks: pre‑commit runs smoke; pre‑push runs typecheck + core unit + gate.
 
-## Environment Keys (UI)
-
-- Location: `Settings` page (`/settings`).
-- Purpose: Store API keys and environment-style variables locally in the browser for use by workflows on this device.
-- Storage: LocalStorage in the current browser; never synced to server or version control.
-- Behavior: Add/update/remove keys, then click `Save Changes`. Use `Reset` to discard unsaved edits.
-- Format: Keys must match `^[A-Z_][A-Z0-9_]*$` (e.g., `OPENAI_API_KEY`, `_DEBUG`).
-
 ## Configuration
 
-- Root env: `.env` and/or `.env.local` (see `.env.example`). Root scripts load both via Bun (`--env-file`) and all Turbo tasks inherit it. Optional per-app overrides can live in `apps/<name>/.env.local`.
+### Dual Environment System
 
-Tip: If you prefer running `next dev` inside `apps/web` directly, create a symlink so Next’s file-based loader picks up the root env without duplication:
+The system supports two execution contexts:
 
+**1. Local Development (SDK/CLI)**
+- Environment variables in `.env` / `.env.local`
+- MCP servers in `mcp-secret.json` (path via `MCP_SECRET_PATH`)
+- Direct file access, no authentication required
+
+**2. UI-Based Workflows (Production)**
+- API keys encrypted in Supabase lockbox (`lockbox.user_secrets`)
+- Accessed via `secretResolver` during workflow invocation
+- MCP servers: stored in browser localStorage, **not yet integrated** with workflow execution
+
+### Environment Setup
+
+**Local Development**:
 ```bash
-ln -s ../../.env.local apps/web/.env.local
+# Root configuration
+cp .env.example .env.local
+# Edit .env.local with your API keys
+
+# MCP configuration (optional)
+cp apps/examples/mcp-config.example.json mcp-secret.json
+export MCP_SECRET_PATH=./mcp-secret.json
 ```
-- Path aliases: prefer `@core`, `@shared` in tests and code where available.
-- Formatting/Linting: Biome config at `biome.json`; run `bun run format` at the root to format all files, or `bun run format:check` to check formatting.
+
+**UI Configuration**:
+- API Keys: Settings → Providers (encrypted, stored in lockbox)
+- MCP Servers: Settings → Connectors (localStorage, not yet connected to execution)
+- Format: Keys must match `^[A-Z_][A-Z0-9_]*$`
+
+### Code Style
+
+- **Path aliases**: Use `@core`, `@shared`, `@lucky/tools` instead of relative paths
+- **Formatting**: Biome (`biome.json`)
+  - Format all: `bun run format`
+  - Check only: `bun run format:check`
+
+## Tool Architecture
+
+### Two Tool Types
+
+**Code Tools** (24 tools)
+- TypeScript functions in `packages/tools/src/definitions/`
+- Registered explicitly in `packages/tools/src/registration/codeToolsRegistration.ts`
+- Defined in `packages/shared/src/contracts/tools.ts` (source of truth)
+- Examples: `csvReader`, `todoWrite`, `searchGoogleMaps`, `humanApproval`
+
+**MCP Tools** (8+ toolkits)
+- External servers via Model Context Protocol
+- Registered in `packages/tools/src/registration/mcpToolsRegistration.ts`
+- Configured via `mcp-secret.json` (command, args, env)
+- Examples: `tavily`, `firecrawl`, `playwright`, `browserUse`
+
+### Tool Registration Flow
+
+**Adding a new tool name:**
+1. Add to `packages/shared/src/contracts/tools.ts` → `TOOLS.code` or `TOOLS.mcp`
+2. TypeScript types auto-generated: `CodeToolName` | `MCPToolName`
+3. Import in `packages/tools/src/registry/types.ts` (filtered for active tools)
+4. Tool name now available in node configs: `node.tools.mcps: ["toolName"]`
+
+**MCP Registration Gap (UI → Execution):**
+
+Currently, there's a gap between UI configuration and execution:
+
+```
+UI (Browser)
+  └─ Settings → Connectors → MCP Servers
+     └─ Stored in localStorage (useMCPConfigStore)
+        └─ Key: "mcp_servers_config"
+           └─ ⚠️  NOT YET CONNECTED TO WORKFLOW EXECUTION
+
+Execution (Core)
+  └─ packages/core/src/node/toolManager.ts
+     └─ setupMCPForNode(toolNames, workflowId, configPath)
+        └─ Reads from: mcp-secret.json (via MCP_SECRET_PATH)
+           └─ packages/tools/src/mcp/setup.ts
+```
+
+**To connect UI → Execution**, need to:
+1. Store MCP configs in Supabase (like API keys in lockbox)
+2. Generate `mcp-secret.json` from DB during workflow invocation
+3. Pass dynamic path to `setupMCPForNode()`
 
 ## How It Works
 
