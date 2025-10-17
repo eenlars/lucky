@@ -105,64 +105,67 @@ export async function POST(request: Request) {
       },
       async () => {
         return withObservationContext({ randomId, observer }, async () => {
-        // Create tool manager with all required arguments
-        // workflowVersionId doesn't matter for dev testing
-        const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, "dev-test-version")
+          // Create tool manager with all required arguments
+          // workflowVersionId doesn't matter for dev testing
+          const toolManager = new ToolManager(nodeId, body.mcpTools as any, body.codeTools as any, "dev-test-version")
 
-        // Build proper payload structure (sequential payload with text content)
-        const payload = {
-          kind: "sequential" as const,
-          berichten: [
-            {
-              type: "text" as const,
-              text: body.message,
-            },
-          ],
-        }
+          // Build proper payload structure (sequential payload with text content)
+          const payload = {
+            kind: "sequential" as const,
+            berichten: [
+              {
+                type: "text" as const,
+                text: body.message,
+              },
+            ],
+          }
 
-        // Create WorkflowMessage instance
-        const workflowMessageIncoming = new WorkflowMessage({
-          originInvocationId: invocationId,
-          fromNodeId: "test-user",
-          toNodeId: nodeId,
-          seq: 1,
-          payload,
-          wfInvId: invocationId,
-          skipDatabasePersistence: true,
-        })
+          // Create WorkflowMessage instance
+          const workflowMessageIncoming = new WorkflowMessage({
+            originInvocationId: invocationId,
+            fromNodeId: "test-user",
+            toNodeId: nodeId,
+            seq: 1,
+            payload,
+            wfInvId: invocationId,
+            skipDatabasePersistence: true,
+          })
 
-        // Build context - cast to NodeInvocationCallContext for dev testing
-        const ctx = {
-          nodeConfig,
-          workflowMessageIncoming,
-          mainWorkflowGoal: body.mainGoal || "Pipeline test execution",
-          invocationId,
-          nodeMemory: {},
-          toolStrategyOverride: body.toolStrategy,
-          startTime: new Date().toISOString(),
-          workflowVersionId: "dev-test",
-          workflowId: "dev-test-workflow",
-          workflowInvocationId: invocationId,
-          skipDatabasePersistence: true,
-        } as NodeInvocationCallContext
+          // Build context - cast to NodeInvocationCallContext for dev testing
+          const ctx = {
+            nodeConfig,
+            workflowMessageIncoming,
+            mainWorkflowGoal: body.mainGoal || "Pipeline test execution",
+            invocationId,
+            nodeMemory: {},
+            toolStrategyOverride: body.toolStrategy,
+            startTime: new Date().toISOString(),
+            workflowVersionId: "dev-test",
+            workflowId: "dev-test-workflow",
+            workflowInvocationId: invocationId,
+            skipDatabasePersistence: true,
+          } as NodeInvocationCallContext
 
-        // Create and execute pipeline
-        // Pipeline requires 3-step execution: prepare -> execute -> process
-        const pipeline = new InvocationPipeline(ctx, toolManager, true)
-        await pipeline.prepare()
-        await pipeline.execute()
-        const result = await pipeline.process()
+          // Create and execute pipeline
+          // Pipeline requires 3-step execution: prepare -> execute -> process
+          const pipeline = new InvocationPipeline(ctx, toolManager, true)
+          await pipeline.prepare()
+          await pipeline.execute()
+          const result = await pipeline.process()
 
-        return result
+          return result
         })
       },
     )
 
     // Dispose observer after execution
-    setTimeout(() => {
-      observer.dispose()
-      ObserverRegistry.getInstance().dispose(randomId)
-    }, 5 * 60 * 1000)
+    setTimeout(
+      () => {
+        observer.dispose()
+        ObserverRegistry.getInstance().dispose(randomId)
+      },
+      5 * 60 * 1000,
+    )
 
     const executionTime = Date.now() - startTime
 

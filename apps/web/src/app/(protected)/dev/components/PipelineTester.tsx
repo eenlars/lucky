@@ -151,7 +151,7 @@ export function PipelineTester() {
     setIsStreaming(true)
     const eventSource = new EventSource(`/api/agents/${randomId}/stream`)
 
-    eventSource.onmessage = (event) => {
+    eventSource.onmessage = event => {
       try {
         const data = JSON.parse(event.data)
         setStreamEvents(prev => [...prev, data])
@@ -166,10 +166,13 @@ export function PipelineTester() {
     }
 
     // Auto-close after 5 minutes
-    setTimeout(() => {
-      eventSource.close()
-      setIsStreaming(false)
-    }, 5 * 60 * 1000)
+    setTimeout(
+      () => {
+        eventSource.close()
+        setIsStreaming(false)
+      },
+      5 * 60 * 1000,
+    )
   }
 
   const toggleStep = (index: number) => {
@@ -441,27 +444,24 @@ export function PipelineTester() {
                   </div>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {streamEvents.map((event, idx) => (
-                      <div
-                        key={idx}
-                        className="text-xs font-mono p-2 bg-muted/50 rounded border border-border"
-                      >
+                      <div key={idx} className="text-xs font-mono p-2 bg-muted/50 rounded border border-border">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={cn(
-                            "px-2 py-0.5 rounded text-[10px] font-semibold",
-                            event.type === "agent.start" && "bg-green-500/20 text-green-500",
-                            event.type === "agent.end" && "bg-blue-500/20 text-blue-500",
-                            event.type === "agent.error" && "bg-red-500/20 text-red-500",
-                            event.type === "agent.tool.start" && "bg-yellow-500/20 text-yellow-500",
-                            event.type === "agent.tool.end" && "bg-purple-500/20 text-purple-500",
-                            event.type === "connected" && "bg-gray-500/20 text-gray-500"
-                          )}>
+                          <span
+                            className={cn(
+                              "px-2 py-0.5 rounded text-[10px] font-semibold",
+                              event.type === "agent.start" && "bg-green-500/20 text-green-500",
+                              event.type === "agent.end" && "bg-blue-500/20 text-blue-500",
+                              event.type === "agent.error" && "bg-red-500/20 text-red-500",
+                              event.type === "agent.tool.start" && "bg-yellow-500/20 text-yellow-500",
+                              event.type === "agent.tool.end" && "bg-purple-500/20 text-purple-500",
+                              event.type === "connected" && "bg-gray-500/20 text-gray-500",
+                            )}
+                          >
                             {event.type}
                           </span>
                           {event.nodeId && <span className="text-muted-foreground">node: {event.nodeId}</span>}
                         </div>
-                        <div className="text-muted-foreground">
-                          {JSON.stringify(event, null, 2)}
-                        </div>
+                        <div className="text-muted-foreground">{JSON.stringify(event, null, 2)}</div>
                       </div>
                     ))}
                   </div>

@@ -42,7 +42,7 @@ describe("AgentObserver", () => {
   it("should notify subscribers when events are emitted", () => {
     const events: AgentEvent[] = []
 
-    const unsubscribe = observer.subscribe((event) => {
+    const unsubscribe = observer.subscribe(event => {
       events.push(event)
     })
 
@@ -71,7 +71,7 @@ describe("AgentObserver", () => {
   it("should allow unsubscribe", () => {
     const events: AgentEvent[] = []
 
-    const unsubscribe = observer.subscribe((event) => {
+    const unsubscribe = observer.subscribe(event => {
       events.push(event)
     })
 
@@ -148,7 +148,7 @@ describe("AgentObserver", () => {
   it("should not emit after disposal", () => {
     const events: AgentEvent[] = []
 
-    observer.subscribe((event) => {
+    observer.subscribe(event => {
       events.push(event)
     })
 

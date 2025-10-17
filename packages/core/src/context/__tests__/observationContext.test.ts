@@ -16,7 +16,7 @@ describe("ObservationContext Integration", () => {
     const observer = new AgentObserver()
     const events: any[] = []
 
-    observer.subscribe((event) => {
+    observer.subscribe(event => {
       events.push(event)
     })
 
@@ -34,7 +34,7 @@ describe("ObservationContext Integration", () => {
     const observer = new AgentObserver()
     const events: any[] = []
 
-    observer.subscribe((event) => {
+    observer.subscribe(event => {
       events.push(event)
     })
 
@@ -59,7 +59,7 @@ describe("ObservationContext Integration", () => {
     const observer = new AgentObserver()
     const events: any[] = []
 
-    observer.subscribe((event) => {
+    observer.subscribe(event => {
       events.push(event)
     })
 
@@ -88,7 +88,7 @@ describe("ObservationContext Integration", () => {
     registry.register(randomId, observer)
 
     const events: any[] = []
-    observer.subscribe((event) => {
+    observer.subscribe(event => {
       events.push(event)
     })
 
@@ -112,7 +112,7 @@ describe("ObservationContext Integration", () => {
     const observer = new AgentObserver()
     const events: any[] = []
 
-    observer.subscribe((event) => {
+    observer.subscribe(event => {
       events.push(event)
     })
 
@@ -129,19 +129,19 @@ describe("ObservationContext Integration", () => {
     const events1: any[] = []
     const events2: any[] = []
 
-    observer1.subscribe((event) => events1.push(event))
-    observer2.subscribe((event) => events2.push(event))
+    observer1.subscribe(event => events1.push(event))
+    observer2.subscribe(event => events2.push(event))
 
     // Run two workflows concurrently
     await Promise.all([
       withObservationContext({ randomId: "wf1", observer: observer1 }, async () => {
         emitAgentStart("node1", "Workflow 1")
-        await new Promise((resolve) => setTimeout(resolve, 10))
+        await new Promise(resolve => setTimeout(resolve, 10))
         emitAgentEnd("node1", 100, 0.001)
       }),
       withObservationContext({ randomId: "wf2", observer: observer2 }, async () => {
         emitAgentStart("node2", "Workflow 2")
-        await new Promise((resolve) => setTimeout(resolve, 5))
+        await new Promise(resolve => setTimeout(resolve, 5))
         emitAgentEnd("node2", 50, 0.0005)
       }),
     ])
