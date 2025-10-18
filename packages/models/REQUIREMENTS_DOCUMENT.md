@@ -190,7 +190,7 @@ const user2 = registry.forUser({
   models: [
     "openai#gpt-4o",                        // OpenAI direct
     "openai#gpt-4o-mini",                   // OpenAI direct
-    ""groq#openai/gpt-oss-20b"",            // Groq direct
+    "groq#openai/gpt-oss-20b",            // Groq direct
     "openrouter#openai/gpt-4o-mini"         // Same model via OpenRouter
   ]
 })
