@@ -28,16 +28,16 @@ import {
   getCrossoverVariability,
   selectCrossoverType,
 } from "@core/improvement/gp/operators/crossover/crossoverStrategy"
-import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
-import { failureTracker } from "@core/improvement/gp/resources/tracker"
-import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
+import { createDummyGenome } from "@core/improvement/gp/rsc/debug/dummyGenome"
+import { failureTracker } from "@core/improvement/gp/rsc/tracker"
+import { workflowConfigToGenome } from "@core/improvement/gp/rsc/wrappers"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { lgg } from "@core/utils/logging/Logger"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { R, type RS } from "@lucky/shared"
-import type { EvolutionContext } from "../../resources/gp.types"
+import type { EvolutionContext } from "../../rsc/gp.types"
 
 const operatorsWithFeedback = getCoreConfig().improvement.flags.operatorsWithFeedback
 

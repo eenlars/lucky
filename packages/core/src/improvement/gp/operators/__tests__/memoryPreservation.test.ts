@@ -5,7 +5,7 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
-import { createDummyGenome } from "../../resources/debug/dummyGenome"
+import { createDummyGenome } from "../../rsc/debug/dummyGenome"
 import { MemoryPreservation } from "../memoryPreservation"
 
 describe("MemoryPreservation", () => {

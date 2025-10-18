@@ -2,8 +2,8 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
-import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
+import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
 import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { FlowRuntimeConfig } from "@core/types"
 import { Workflow } from "@core/workflow/Workflow"
@@ -716,14 +716,14 @@ export const createMockFullFlowRuntimeConfig = (toolOverrides: Partial<FlowRunti
 // ====== INDIVIDUAL MOCK HELPERS ======
 
 export const mockRunService = () => {
-  vi.mock("@core/improvement/gp/resources/RunService", () => ({
+  vi.mock("@core/improvement/gp/rsc/RunService", () => ({
     RunService: vi.fn().mockImplementation(() => mockRunServiceInstance),
   }))
   return mockRunServiceInstance
 }
 
 export const mockVerificationCache = () => {
-  vi.mock("@core/improvement/gp/resources/wrappers", () => ({
+  vi.mock("@core/improvement/gp/rsc/wrappers", () => ({
     VerificationCache: vi.fn().mockImplementation(() => mockVerificationCacheInstance),
     workflowConfigToGenome: vi.fn(),
   }))

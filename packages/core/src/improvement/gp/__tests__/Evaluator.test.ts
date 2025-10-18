@@ -30,7 +30,7 @@ vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   })),
 }))
 
-vi.mock("@core/improvement/gp/resources/tracker", () => ({
+vi.mock("@core/improvement/gp/rsc/tracker", () => ({
   failureTracker: {
     trackEvaluationAttempt: vi.fn(),
     trackEvaluationFailure: vi.fn(),

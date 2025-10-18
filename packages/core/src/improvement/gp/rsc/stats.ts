@@ -1,5 +1,5 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
-import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
+import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
 import { lgg } from "@core/utils/logging/Logger"
 import type { Genome } from "../Genome"
 import type { Population } from "../Population"
