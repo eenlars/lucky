@@ -5,7 +5,8 @@
 
 import { getApiKey, getExecutionContext } from "@core/context/executionContext"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
-import { type Models, type ModelsConfig, type ProviderConfigOutput, createModels } from "@lucky/models"
+import { type ModelsConfig, type ProviderConfigOutput } from "@lucky/models"
+import { type Models, createModels } from "@lucky/models/server"
 import { PROVIDER_AVAILABILITY } from "@lucky/shared/contracts/config"
 import { buildTierConfigFromDefaults } from "./tier-config-builder"
 

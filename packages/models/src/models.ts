@@ -183,3 +183,10 @@ export class Models {
     return { provider, model }
   }
 }
+
+/**
+ * Create a new Models instance (SERVER-ONLY)
+ */
+export function createModels(config: ModelsConfig): Models {
+  return new Models(config)
+}

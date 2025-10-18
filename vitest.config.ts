@@ -61,7 +61,8 @@ export default defineConfig({
         test: {
           ...baseTestOptions,
           name: "xrepo",
-          include: ["tests/integration/**/*.test.{ts,tsx}"],
+          include: ["tests/integration/**/*.test.{ts,tsx}", "tests/integration/**/*.spec.test.{ts,tsx}"],
+          globalSetup: ["./tests/integration/setup/server.ts"],
           testTimeout: 45000,
         },
       },
