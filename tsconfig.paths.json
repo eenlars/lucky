@@ -16,6 +16,7 @@
       "@lucky/tools": ["packages/tools/src"],
       "@lucky/tools/*": ["packages/tools/src/*"],
       "@lucky/models": ["packages/models/src"],
+      "@lucky/models/server": ["packages/models/src/server"],
       "@lucky/models/*": ["packages/models/src/*"],
       "@lucky/examples": ["apps/examples"],
       "@lucky/examples/*": ["apps/examples/*"],
