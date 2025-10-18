@@ -5,6 +5,7 @@ Multi-provider AI model management with user isolation, BYOK support, and tier-b
 ## Overview
 
 Thin wrapper around Vercel AI SDK that handles:
+
 - Per-user model access control
 - BYOK (Bring Your Own Key) vs shared API keys
 - Tier-based model selection (cheap/fast/smart/balanced)
@@ -14,35 +15,35 @@ Thin wrapper around Vercel AI SDK that handles:
 ## Quick Start
 
 ```typescript
-import { createLLMRegistry } from '@lucky/models'
-import { generateText } from 'ai'
+import { createLLMRegistry } from "@lucky/models";
+import { generateText } from "ai";
 
 // 1. Initialize once at startup
 const registry = createLLMRegistry({
   fallbackKeys: {
     openai: process.env.OPENAI_API_KEY,
     groq: process.env.GROQ_API_KEY,
-    openrouter: process.env.OPENROUTER_API_KEY
-  }
-})
+    openrouter: process.env.OPENROUTER_API_KEY,
+  },
+});
 
 // 2. Create user instance per request
 const userModels = registry.forUser({
-  mode: "byok",  // or "shared"
+  mode: "byok", // or "shared"
   userId: "user-123",
   models: ["openai#gpt-4o", "groq#llama-3.1-70b-versatile"],
   apiKeys: {
     openai: "sk-user-provided-key",
-    groq: "gsk-user-provided-key"
-  }
-})
+    groq: "gsk-user-provided-key",
+  },
+});
 
 // 3. Get models
-const model = userModels.model("openai#gpt-4o")
-const result = await generateText({ model, prompt: "..." })
+const model = userModels.model("openai#gpt-4o");
+const result = await generateText({ model, prompt: "..." });
 
 // Or use tier selection
-const cheapest = userModels.tier("cheap")  // picks from user's models
+const cheapest = userModels.tier("cheap"); // picks from user's models
 ```
 
 ## Core Concepts
@@ -50,6 +51,7 @@ const cheapest = userModels.tier("cheap")  // picks from user's models
 ### User Isolation
 
 Each user gets their own `UserModels` instance with:
+
 - **Allowed models list** - User can only access these models
 - **Mode selection** - BYOK (user's keys) or shared (company keys)
 - **Tier selection** - Picks from user's models only, not entire catalog
@@ -78,25 +80,27 @@ userB.tier("cheap")  // → llama-3.1-8b-instant (cheapest in user B's list)
 ### BYOK vs Shared Modes
 
 **BYOK Mode** - User provides their own API keys:
+
 ```typescript
 const userModels = registry.forUser({
   mode: "byok",
   userId: "user-123",
   models: ["openai#gpt-4o"],
   apiKeys: {
-    openai: "sk-user-provided-key"  // User's own key
-  }
-})
+    openai: "sk-user-provided-key", // User's own key
+  },
+});
 ```
 
 **Shared Mode** - Uses company's fallback keys:
+
 ```typescript
 const userModels = registry.forUser({
   mode: "shared",
   userId: "user-456",
-  models: ["openai#gpt-4o-mini"]
+  models: ["openai#gpt-4o-mini"],
   // Uses fallbackKeys from registry initialization
-})
+});
 ```
 
 ### Tier Selection
@@ -164,16 +168,17 @@ Get a model by name. Returns AI SDK `LanguageModel`.
 
 ```typescript
 // With provider prefix (recommended)
-const model = userModels.model("openai#gpt-4o")
+const model = userModels.model("openai#gpt-4o");
 
 // Auto-detect from user's list
-const model = userModels.model("gpt-4o")  // finds openai#gpt-4o
+const model = userModels.model("gpt-4o"); // finds openai#gpt-4o
 
 // OpenRouter models use full path
-const model = userModels.model("openrouter#openai/gpt-4o")
+const model = userModels.model("openrouter#openai/gpt-4o");
 ```
 
 **Error cases:**
+
 - Model not in catalog → `"Model not found: {name}"`
 - Model not in user's list → `"Model \"{name}\" not in user's allowed models"`
 - Provider not configured → `"Provider not configured: {provider}"`
@@ -183,7 +188,7 @@ const model = userModels.model("openrouter#openai/gpt-4o")
 Select model by tier from user's models. Returns AI SDK `LanguageModel`.
 
 ```typescript
-const model = userModels.tier("cheap" | "fast" | "smart" | "balanced")
+const model = userModels.tier("cheap" | "fast" | "smart" | "balanced");
 ```
 
 ### `userModels.getCatalog()`
@@ -191,7 +196,7 @@ const model = userModels.tier("cheap" | "fast" | "smart" | "balanced")
 Get the full model catalog (all models, not just user's). Returns defensive copy.
 
 ```typescript
-const catalog = userModels.getCatalog()  // ModelEntry[]
+const catalog = userModels.getCatalog(); // ModelEntry[]
 ```
 
 ## Model Catalog
@@ -208,21 +213,21 @@ All models use the format: `{provider}#{model}`
 
 ```typescript
 interface ModelEntry {
-  id: string                    // "openai#gpt-4o"
-  provider: "openai" | "groq" | "openrouter"
-  model: string                 // API model name
-  input: number                 // $ per 1M input tokens
-  output: number                // $ per 1M output tokens
-  cachedInput?: number          // $ per 1M cached input tokens
-  contextLength: number
-  intelligence: number          // 1-10 scale
-  speed: "fast" | "medium" | "slow"
-  pricingTier: "low" | "medium" | "high"
-  supportsTools: boolean
-  supportsJsonMode: boolean
-  supportsStreaming: boolean
-  supportsVision: boolean
-  runtimeEnabled: boolean
+  id: string; // "openai#gpt-4o"
+  provider: "openai" | "groq" | "openrouter";
+  model: string; // API model name
+  input: number; // $ per 1M input tokens
+  output: number; // $ per 1M output tokens
+  cachedInput?: number; // $ per 1M cached input tokens
+  contextLength: number;
+  intelligence: number; // 1-10 scale
+  speed: "fast" | "medium" | "slow";
+  pricingTier: "low" | "medium" | "high";
+  supportsTools: boolean;
+  supportsJsonMode: boolean;
+  supportsStreaming: boolean;
+  supportsVision: boolean;
+  runtimeEnabled: boolean;
 }
 ```
 
@@ -234,21 +239,21 @@ import {
   findModelByName,
   getCatalog,
   getModelsByProvider,
-  getRuntimeEnabledModels
-} from '@lucky/models'
+  getRuntimeEnabledModels,
+} from "@lucky/models";
 
 // Find specific model
-const model = findModelById("openai#gpt-4o")
-const model = findModelByName("gpt-4o")  // searches across providers
+const model = findModelById("openai#gpt-4o");
+const model = findModelByName("gpt-4o"); // searches across providers
 
 // Get all models
-const allModels = getCatalog()
+const allModels = getCatalog();
 
 // Filter by provider
-const openaiModels = getModelsByProvider("openai")
+const openaiModels = getModelsByProvider("openai");
 
 // Only runtime-enabled models
-const activeModels = getRuntimeEnabledModels()
+const activeModels = getRuntimeEnabledModels();
 ```
 
 ## Provider Configuration
@@ -265,20 +270,20 @@ const activeModels = getRuntimeEnabledModels()
 import {
   validateProviderKeys,
   getRequiredProviderKeys,
-  formatMissingProviders
-} from '@lucky/models'
+  formatMissingProviders,
+} from "@lucky/models";
 
 // Check which providers need keys
-const required = getRequiredProviderKeys()  // ["openai", "groq", "openrouter"]
+const required = getRequiredProviderKeys(); // ["openai", "groq", "openrouter"]
 
 // Validate configuration
 const validation = validateProviderKeys({
   openai: process.env.OPENAI_API_KEY,
-  groq: undefined  // missing
-})
+  groq: undefined, // missing
+});
 
 if (!validation.isValid) {
-  console.error(formatMissingProviders(validation.missing))
+  console.error(formatMissingProviders(validation.missing));
   // "Missing API keys for: Groq (GROQ_API_KEY)"
 }
 ```
@@ -288,32 +293,32 @@ if (!validation.isValid) {
 ### Multi-User Application
 
 ```typescript
-import { createLLMRegistry } from '@lucky/models'
+import { createLLMRegistry } from "@lucky/models";
 
 // Initialize once
 const registry = createLLMRegistry({
   fallbackKeys: {
     openai: process.env.COMPANY_OPENAI_KEY,
-    groq: process.env.COMPANY_GROQ_KEY
-  }
-})
+    groq: process.env.COMPANY_GROQ_KEY,
+  },
+});
 
 // Request handler
-app.post('/api/chat', async (req, res) => {
-  const user = await getUserFromToken(req)
+app.post("/api/chat", async (req, res) => {
+  const user = await getUserFromToken(req);
 
   const userModels = registry.forUser({
     mode: user.hasOwnKeys ? "byok" : "shared",
     userId: user.id,
-    models: user.selectedModels,  // from user preferences
-    apiKeys: user.hasOwnKeys ? user.apiKeys : undefined
-  })
+    models: user.selectedModels, // from user preferences
+    apiKeys: user.hasOwnKeys ? user.apiKeys : undefined,
+  });
 
-  const model = userModels.tier(req.body.tier || "balanced")
-  const result = await generateText({ model, prompt: req.body.prompt })
+  const model = userModels.tier(req.body.tier || "balanced");
+  const result = await generateText({ model, prompt: req.body.prompt });
 
-  res.json({ result })
-})
+  res.json({ result });
+});
 ```
 
 ### Tier Selection with Fallback
@@ -322,17 +327,17 @@ app.post('/api/chat', async (req, res) => {
 const userModels = registry.forUser({
   mode: "shared",
   userId: "user-123",
-  models: ["openai#gpt-4o", "openai#gpt-4o-mini"]
-})
+  models: ["openai#gpt-4o", "openai#gpt-4o-mini"],
+});
 
 try {
   // Try smart tier first
-  const model = userModels.tier("smart")
-  const result = await generateText({ model, prompt })
+  const model = userModels.tier("smart");
+  const result = await generateText({ model, prompt });
 } catch (error) {
   // Fallback to cheapest
-  const model = userModels.tier("cheap")
-  const result = await generateText({ model, prompt })
+  const model = userModels.tier("cheap");
+  const result = await generateText({ model, prompt });
 }
 ```
 
@@ -341,17 +346,17 @@ try {
 ```typescript
 function getModelForTask(userModels: UserModels, task: string) {
   const taskTiers = {
-    'code-generation': 'smart',
-    'translation': 'balanced',
-    'summarization': 'cheap',
-    'real-time-chat': 'fast'
-  }
+    "code-generation": "smart",
+    translation: "balanced",
+    summarization: "cheap",
+    "real-time-chat": "fast",
+  };
 
-  const tier = taskTiers[task] || 'balanced'
-  return userModels.tier(tier)
+  const tier = taskTiers[task] || "balanced";
+  return userModels.tier(tier);
 }
 
-const model = getModelForTask(userModels, 'code-generation')
+const model = getModelForTask(userModels, "code-generation");
 ```
 
 ## Architecture

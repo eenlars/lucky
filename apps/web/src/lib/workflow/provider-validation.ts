@@ -4,17 +4,11 @@ import {
   getProviderDisplayName,
   getProviderKeyName,
 } from "@lucky/core/workflow/provider-extraction"
+import { FALLBACK_PROVIDER_KEYS } from "@lucky/models"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
-/**
- * Common provider API keys to check when workflow config extraction fails
- */
-export const FALLBACK_PROVIDER_KEYS = [
-  "OPENROUTER_API_KEY",
-  "OPENAI_API_KEY",
-  "ANTHROPIC_API_KEY",
-  "GROQ_API_KEY",
-] as const
+// Re-export for backward compatibility
+export { FALLBACK_PROVIDER_KEYS }
 
 /**
  * Extract required provider API keys from workflow config

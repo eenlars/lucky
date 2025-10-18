@@ -108,7 +108,7 @@ describe("findModelById", () => {
   })
 
   it("finds groq models", () => {
-    const model = findModelById(""groq#openai/gpt-oss-20b"")
+    const model = findModelById("groq#openai/gpt-oss-20b")
     expect(model).toBeDefined()
     expect(model?.provider).toBe("groq")
   })
