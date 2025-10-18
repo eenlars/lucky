@@ -22,10 +22,11 @@ describe("Catalog Queries", () => {
       }
     })
 
-    it("returns consistent reference across calls", () => {
+    it("returns consistent catalog data across calls", () => {
       const catalog1 = getCatalog()
       const catalog2 = getCatalog()
       expect(catalog1).toEqual(catalog2)
+      expect(catalog1.length).toBe(catalog2.length)
     })
   })
 
