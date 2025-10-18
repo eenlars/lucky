@@ -1,5 +1,9 @@
-import { openai } from "@ai-sdk/openai"
+import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
+import { requireAuthWithApiKey } from "@/lib/api-auth"
+import { withExecutionContext } from "@lucky/core/context/executionContext"
+import { createLLMRegistry } from "@lucky/models"
 import { generateObject } from "ai"
+import { type NextRequest } from "next/server"
 import { z } from "zod"
 
 // Schema for MCP server configuration
@@ -22,13 +26,28 @@ const mcpConfigResponseSchema = z.object({
   }),
 })
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await requireAuthWithApiKey(req)
+    if (authResult instanceof Response) return authResult
+    const principal = authResult
+
     const { contextType, prompt, currentState } = await req.json()
 
     if (!contextType || !prompt) {
       return Response.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
+
+    // Setup execution context
+    const secrets = createSecretResolver(principal.clerk_id, principal)
+    const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+
+    const llmRegistry = createLLMRegistry({
+      fallbackKeys: {
+        openai: apiKeys.OPENAI_API_KEY,
+      },
+    })
 
     // Create system prompt based on context type
     let systemPrompt = `You are an AI assistant helping to modify ${contextType} configurations.\n`
@@ -102,33 +121,49 @@ ${JSON.stringify(currentState, null, 2)}
 Make appropriate changes based on the user's request.`
     }
 
-    // Simple non-streaming call
-    const result = await generateObject({
-      model: openai("gpt-4o"),
-      schema: mcpConfigResponseSchema,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: prompt },
-      ],
-    })
+    // Execute within execution context
+    return withExecutionContext({ principal, secrets, apiKeys, llmRegistry }, async () => {
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: principal.clerk_id,
+        models: ["openai#gpt-4o"],
+      })
 
-    // Return simple JSON response like the workflow endpoint
-    return Response.json({
-      success: true,
-      data: result.object,
+      // Simple non-streaming call
+      const result = await generateObject({
+        model: userModels.model("openai#gpt-4o"),
+        schema: mcpConfigResponseSchema,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt },
+        ],
+      })
+
+      // Return simple JSON response like the workflow endpoint
+      return Response.json({
+        success: true,
+        data: result.object,
+      })
     })
   } catch (error) {
     // Handle AI SDK errors with better user messages
     if (error && typeof error === "object" && "name" in error) {
-      const err = error as any
+      const errorWithName = error as {
+        name: string
+        message?: string
+        statusCode?: number
+        lastError?: { statusCode?: number; responseBody?: string }
+      }
 
       // Handle quota/billing errors (429)
-      if (err.name === "AI_RetryError" || err.name === "AI_APICallError") {
-        const statusCode = err.statusCode || err.lastError?.statusCode
-        const errorType = err.lastError?.responseBody ? JSON.parse(err.lastError.responseBody)?.error?.type : null
+      if (errorWithName.name === "AI_RetryError" || errorWithName.name === "AI_APICallError") {
+        const statusCode = errorWithName.statusCode ?? errorWithName.lastError?.statusCode
+        const errorType = errorWithName.lastError?.responseBody
+          ? JSON.parse(errorWithName.lastError.responseBody)?.error?.type
+          : null
 
         if (statusCode === 429 || errorType === "insufficient_quota") {
-          console.error("[AI artifact] Quota exceeded:", err.message)
+          console.error("[AI artifact] Quota exceeded:", errorWithName.message)
           return Response.json(
             {
               success: false,
@@ -141,7 +176,7 @@ Make appropriate changes based on the user's request.`
 
         // Handle rate limits
         if (statusCode === 429 || errorType === "rate_limit_exceeded") {
-          console.error("[AI artifact] Rate limit:", err.message)
+          console.error("[AI artifact] Rate limit:", errorWithName.message)
           return Response.json(
             {
               success: false,
@@ -154,7 +189,7 @@ Make appropriate changes based on the user's request.`
 
         // Handle authentication errors
         if (statusCode === 401 || errorType === "invalid_api_key") {
-          console.error("[AI artifact] Auth error:", err.message)
+          console.error("[AI artifact] Auth error:", errorWithName.message)
           return Response.json(
             {
               success: false,

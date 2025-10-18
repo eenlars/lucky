@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
-import type { UserModels } from "@lucky/models"
+import type { LLMRegistry } from "@lucky/models"
 import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { z } from "zod"
@@ -14,8 +14,18 @@ export const ZExecutionSchema = z.object({
   principal: ZPrincipal,
   secrets: z.custom<SecretResolver>(),
   apiKeys: z.record(z.string()).optional(),
-  // UserModels instance for this workflow invocation
-  userModels: z.custom<UserModels>().optional(),
+  /**
+   * LLMRegistry instance for this workflow invocation
+   *
+   * The registry can be in one of two modes:
+   * - "shared": Uses company/system API keys (from process.env) as fallback for all users
+   * - "user": Uses individual user's API keys (BYOK - Bring Your Own Key)
+   *
+   * To get user-specific models, call: registry.forUser({ mode, userId, models, apiKeys })
+   *
+   * Access via: requireExecutionContext().get("llmRegistry") or use getRegistry() helper
+   */
+  llmRegistry: z.custom<LLMRegistry>().optional(),
   spendingTracker: z.custom<SpendingTracker>().optional(),
   // MCP toolkits available during this invocation (UI-configured or file-based)
   mcp: executionMCPContextSchema.optional(),
@@ -30,6 +40,8 @@ export function withExecutionContext<T>(values: ExecutionSchema, fn: () => Promi
   if (!parsed.success) {
     throw new Error(`Invalid execution context: ${parsed.error.message}`)
   }
+  // Type assertion needed here because Object.entries loses tuple type information
+  // RuntimeContext expects an iterable of [key, value] tuples
   const ctx = new RuntimeContext<ExecutionSchema>(Object.entries(parsed.data) as any)
   return executionContextStore.run(ctx, fn)
 }
@@ -121,6 +133,38 @@ export async function getApiKey(name: string): Promise<string | undefined> {
   }
   console.log("           ✅ Found in execution context secrets")
   return secretValue
+}
+
+/**
+ * Get the LLMRegistry instance from execution context
+ *
+ * The registry is used to create user-specific model instances throughout the workflow.
+ * It is configured at the start of workflow execution with either shared company keys
+ * or user-specific keys (BYOK).
+ *
+ * @throws Error if no execution context exists or registry not configured
+ * @returns LLMRegistry instance for this workflow execution
+ *
+ * @example
+ * ```typescript
+ * const registry = getRegistry()
+ * const userModels = registry.forUser({
+ *   mode: "shared",
+ *   userId: "user-123",
+ *   models: ["openai#gpt-4o", "groq#llama-3.1-70b"]
+ * })
+ * const model = userModels.model("openai#gpt-4o")
+ * ```
+ */
+export function getRegistry(): LLMRegistry {
+  const ctx = requireExecutionContext()
+  const registry = ctx.get("llmRegistry")
+  if (!registry) {
+    throw new Error(
+      "LLMRegistry not configured in execution context. Ensure registry is passed to withExecutionContext()",
+    )
+  }
+  return registry
 }
 
 // Re-export SecretResolver type for tests and consumers importing from core

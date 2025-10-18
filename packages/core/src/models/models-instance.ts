@@ -1,32 +1,42 @@
 /**
  * Models instance retrieval from execution context.
  *
- * This module provides access to the UserModels instance that's created
- * during workflow invocation. Each workflow gets its own UserModels instance
- * configured with appropriate API keys and model access.
+ * This module provides access to the UserModels instance created from the
+ * LLMRegistry stored in execution context. Each workflow gets access to models
+ * configured with appropriate API keys and access controls.
  */
 
-import { getExecutionContext, requireExecutionContext } from "@core/context/executionContext"
-import type { UserModels } from "@lucky/models"
+import { getExecutionContext, getRegistry, requireExecutionContext } from "@core/context/executionContext"
+import { getRuntimeEnabledModels, type UserModels } from "@lucky/models"
 
 /**
  * Get the UserModels instance from execution context.
  *
+ * Creates a UserModels instance from the LLMRegistry in execution context,
+ * configured for the current principal with all runtime-enabled models.
+ *
  * @throws {Error} If no execution context is available
- * @throws {Error} If no UserModels instance is in the context
+ * @throws {Error} If no LLMRegistry instance is in the context
  */
 export async function getModelsInstance(): Promise<UserModels> {
   const ctx = requireExecutionContext()
+  const principal = ctx.get("principal")
 
-  const userModels = ctx.get("userModels")
-  if (!userModels) {
+  if (!principal) {
     throw new Error(
-      "No UserModels instance in execution context. " +
-        "Ensure workflow is invoked through the API endpoint which sets up the models.",
+      "No principal in execution context. " +
+        "Ensure workflow is invoked through the API endpoint which sets up authentication.",
     )
   }
 
-  return userModels
+  const registry = getRegistry()
+  const allModelIds = getRuntimeEnabledModels().map(m => m.id)
+
+  return registry.forUser({
+    mode: "shared",
+    userId: `system-${principal.clerk_id}`,
+    models: allModelIds,
+  })
 }
 
 /**
@@ -36,6 +46,6 @@ export async function getModelsInstance(): Promise<UserModels> {
 export function resetModelsInstance(): void {
   const ctx = getExecutionContext()
   if (ctx) {
-    ctx.delete("userModels")
+    ctx.delete("llmRegistry")
   }
 }
