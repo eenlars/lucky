@@ -2,7 +2,7 @@
  * Node persistence implementation for Supabase.
  */
 
-import type { TablesInsert } from "@lucky/shared/types/supabase.types"
+import type { Json, TablesInsert } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { InvalidInputError, NodeVersionMissingError, PersistenceError } from "../errors/domain-errors"
 import type {
@@ -26,6 +26,7 @@ export class SupabaseNodePersistence implements INodePersistence {
   async createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }> {
     const insertable: TablesInsert<"NodeInvocation"> = {
       node_id: data.nodeId,
+      node_version_id: data.nodeVersionId,
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
       start_time: data.startTime,
@@ -153,17 +154,18 @@ export class SupabaseNodePersistence implements INodePersistence {
     // Manually build insertable with snake_case fields (fields going to extras are excluded)
     const insertable: TablesInsert<"NodeInvocation"> = {
       node_id: data.nodeId,
+      node_version_id: data.nodeVersionId,
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
       start_time: data.startTime,
       end_time: data.endTime,
       usd_cost: data.usdCost,
-      output: data.output as any,
+      output: data.output as Json,
       summary: data.summary,
       files: data.files,
       model: data.model,
       status: "completed",
-      extras: extras as any,
+      extras: extras as Json,
       metadata: {},
     }
 

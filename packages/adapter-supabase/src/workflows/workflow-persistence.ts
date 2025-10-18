@@ -3,6 +3,7 @@
  * Handles workflow versions, invocations, and config management.
  */
 
+import { getExecutionContext } from "@lucky/core/context/executionContext"
 import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { TablesInsert } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
@@ -18,10 +19,11 @@ import type {
 export class SupabaseWorkflowPersistence {
   constructor(private client: SupabaseClient) {}
 
-  async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
+  async ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void> {
     const workflowInsertable: TablesInsert<"Workflow"> = {
       wf_id: workflowId,
       description,
+      clerk_id: clerkId || null,
     }
 
     const { error } = await this.client.from("Workflow").upsert(workflowInsertable)
@@ -32,7 +34,11 @@ export class SupabaseWorkflowPersistence {
   }
 
   async createWorkflowVersion(data: WorkflowVersionData): Promise<void> {
-    await this.ensureWorkflowExists(data.workflowId, data.commitMessage)
+    // Extract clerk_id from execution context if available
+    const executionContext = getExecutionContext()
+    const clerkId = executionContext?.get("principal")?.clerk_id
+
+    await this.ensureWorkflowExists(data.workflowId, data.commitMessage, clerkId)
 
     // Ensure DSL includes schema version
     const dslWithVersion = this.ensureSchemaVersion(data.dsl)
@@ -104,8 +110,12 @@ export class SupabaseWorkflowPersistence {
 
     if (existing) return workflowVersionId
 
+    // Extract clerk_id from execution context if available
+    const executionContext = getExecutionContext()
+    const clerkId = executionContext?.get("principal")?.clerk_id
+
     // Ensure workflow exists first
-    await this.ensureWorkflowExists(workflowId, goal)
+    await this.ensureWorkflowExists(workflowId, goal, clerkId)
 
     // Ensure DSL includes schema version
     const dslWithVersion = this.ensureSchemaVersion(workflowConfig)
@@ -130,41 +140,19 @@ export class SupabaseWorkflowPersistence {
     return workflowVersionId
   }
 
-  async updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void> {
-    // ensure JSON-serializable data
-    const jsonSafeWorkflowIO = allWorkflowIO.map((io: any) => {
-      const output = io.workflowOutput?.output
-      let jsonSafeOutput: unknown = null
-      try {
-        jsonSafeOutput = JSON.parse(JSON.stringify(output ?? null))
-      } catch {
-        jsonSafeOutput = typeof output === "string" ? output : String(output)
-      }
-
-      return {
-        workflowInput: io.workflowInput,
-        workflowOutput: {
-          output: jsonSafeOutput,
-        },
-      }
-    })
-
-    const updateData = {
-      all_workflow_io: jsonSafeWorkflowIO,
-      updated_at: new Date().toISOString(),
-    }
-
-    const { error } = await this.client
-      .from("WorkflowVersion")
-      .update(updateData)
-      .eq("wf_version_id", workflowVersionId)
-
-    if (error) {
-      throw new PersistenceError(`Failed to update workflow version with IO: ${error.message}`, error)
-    }
+  async updateWorkflowVersionWithIO(_workflowVersionId: string, _allWorkflowIO: unknown[]): Promise<void> {
+    // no-op: all_workflow_io column has been removed from WorkflowVersion table
+    // workflow IO data is now stored per invocation in WorkflowInvocation table
+    // keeping this method for interface compatibility
+    return
   }
 
   async createWorkflowInvocation(data: WorkflowInvocationData): Promise<void> {
+    console.log("[SupabaseWorkflowPersistence] 🔍 DEBUG: createWorkflowInvocation called with:", {
+      workflowInvocationId: data.workflowInvocationId,
+      workflowVersionId: data.workflowVersionId,
+    })
+
     const workflowInvocationInsertable: TablesInsert<"WorkflowInvocation"> = {
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
@@ -172,7 +160,7 @@ export class SupabaseWorkflowPersistence {
       start_time: new Date().toISOString(),
       end_time: null,
       usd_cost: 0,
-      extras: {} as any,
+      extras: (typeof data.metadata === "object" ? data.metadata : {}) as any,
       run_id: data.runId || null,
       generation_id: data.generationId || null,
       fitness: (data.fitness || null) as any,
@@ -182,11 +170,15 @@ export class SupabaseWorkflowPersistence {
       expected_output_type: (data.expectedOutputType || null) as any,
     }
 
+    console.log("[SupabaseWorkflowPersistence] 🔍 DEBUG: Inserting into WorkflowInvocation table...")
     const { error } = await this.client.from("WorkflowInvocation").insert(workflowInvocationInsertable)
 
     if (error) {
+      console.error("[SupabaseWorkflowPersistence] 🔍 DEBUG: ❌ INSERT FAILED:", error.message)
       throw new PersistenceError(`Failed to insert workflow invocation: ${error.message}`, error)
     }
+
+    console.log("[SupabaseWorkflowPersistence] 🔍 DEBUG: ✅ INSERT SUCCESS - Invocation saved to database!")
   }
 
   async updateWorkflowInvocation(data: WorkflowInvocationUpdate): Promise<unknown> {

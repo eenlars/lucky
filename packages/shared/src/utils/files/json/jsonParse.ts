@@ -23,7 +23,20 @@ function extractJSON(input: unknown, throwIfError = false): Record<string, unkno
     return JSON.parse(JSON.stringify(input))
   }
 
-  const cleaned = removeCodeFences(input).trim()
+  // Handle multiple levels of escaping
+  let processedInput = input
+  // If the string contains escaped quotes and newlines, try to unescape it first
+  if (processedInput.includes('\\"') || processedInput.includes("\\n")) {
+    // Unescape quotes and newlines
+    processedInput = processedInput.replace(/\\"/g, '"').replace(/\\n/g, "\n")
+
+    // If it still has escaped backslashes before quotes, unescape those too
+    if (processedInput.includes('\\"')) {
+      processedInput = processedInput.replace(/\\"/g, '"')
+    }
+  }
+
+  const cleaned = removeCodeFences(processedInput).trim()
   const candidates = findJSONCandidates(cleaned)
 
   for (const chunk of candidates) {
@@ -69,9 +82,15 @@ function extractJSON(input: unknown, throwIfError = false): Record<string, unkno
   return JSON.parse(JSON.stringify(input))
 }
 
-/** Strip out ```…``` or ~~~…~~~ fences, but preserve their inner text. */
+/** Strip out ```…``` or ~~~…~~~ fences, and <json>...</json> tags, but preserve their inner text. */
 function removeCodeFences(text: string): string {
-  return text.replace(/(```|~~~)[ \w]*\n?([\s\S]*?)\1/g, (_match, _fence, inner) => inner)
+  // First remove markdown code fences
+  let result = text.replace(/(```|~~~)[ \w]*\n?([\s\S]*?)\1/g, (_match, _fence, inner) => inner)
+
+  // Then remove <json> tags
+  result = result.replace(/<json>\n?([\s\S]*?)<\/json>/g, (_match, inner) => inner)
+
+  return result
 }
 
 /**

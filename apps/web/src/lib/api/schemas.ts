@@ -61,18 +61,6 @@ export const apiSchemas = {
   // ============================================================================
 
   /**
-   * POST /api/invoke
-   * Prompt-only workflow invocation (simplified invoke API)
-   */
-  invoke: {
-    req: z.object({
-      workflowVersionId: z.string().min(1),
-      prompt: z.string().min(1),
-    }),
-    res: ApiResponse(z.unknown()), // Output depends on workflow
-  },
-
-  /**
    * POST /api/v1/invoke
    * Full JSON-RPC 2.0 workflow invocation (MCP-compliant)
    */
@@ -336,12 +324,14 @@ export const apiSchemas = {
    */
   "user/env-keys/[name]": {
     req: z.never().optional(),
-    res: z.object({
-      id: z.string(),
-      name: z.string(),
-      value: z.string(),
-      createdAt: z.string(),
-    }),
+    res: ApiResponse(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        value: z.string(),
+        createdAt: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -764,7 +754,15 @@ export const apiSchemas = {
    * List workflow invocations with filtering, sorting, and pagination
    */
   "workflow/invocations": {
-    req: z.never().optional(), // Uses query params
+    req: z.never().optional(),
+    query: z.object({
+      status: z.enum(["running", "completed", "failed", "cancelled"]).optional(),
+      workflowId: z.string().optional(),
+      page: z.coerce.number().int().positive().optional(),
+      limit: z.coerce.number().int().positive().max(100).optional(),
+      sortBy: z.enum(["created_at", "usd_cost", "accuracy"]).optional(),
+      sortOrder: z.enum(["asc", "desc"]).optional(),
+    }),
     res: ApiResponse(
       z.object({
         data: z.array(z.unknown()), // Complex joined data from WorkflowInvocation + WorkflowVersion + Workflow

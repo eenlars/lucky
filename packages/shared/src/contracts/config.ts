@@ -78,12 +78,12 @@ export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).defa
 export const ModelDefaultsSchema = z.object({
   summary: z.string().default("gpt-5-nano"),
   nano: z.string().default("gpt-5-nano"),
-  low: z.string().default("gpt-5-mini"),
-  medium: z.string().default("gpt-5-mini"),
-  high: z.string().default("gpt-5"),
+  low: z.string().default("gpt-5-nano"),
+  medium: z.string().default("gpt-5-nano"),
+  high: z.string().default("gpt-5-nano"),
   default: z.string().default("gpt-5-nano"),
   fitness: z.string().default("gpt-5-nano"),
-  reasoning: z.string().default("gpt-5"),
+  reasoning: z.string().default("gpt-5-nano"),
   fallback: z.string().default("gpt-5-nano"),
 })
 
@@ -102,14 +102,14 @@ export type ModelsConfig = z.infer<typeof ModelsConfigSchema>
 // ============================================================================
 
 export const HandoffContentSchema = z.enum(["summary", "full"]).default("full")
-export const PrepareProblemMethodSchema = z.enum(["ai", "workflow"]).default("ai")
+export const PrepareProblemMethodSchema = z.enum(["ai", "workflow", "none"]).default("none")
 
 export const WorkflowExecutionConfigSchema = z.object({
   maxTotalNodeInvocations: z.number().int().positive().default(14),
   maxPerNodeInvocations: z.number().int().positive().optional().default(14),
   maxNodes: z.number().int().positive().default(20),
   handoffContent: HandoffContentSchema,
-  prepareProblem: z.boolean().default(true),
+  prepareProblem: z.boolean().default(false),
   prepareProblemMethod: PrepareProblemMethodSchema,
   prepareProblemWorkflowVersionId: z.string().default(""),
   parallelExecution: z.boolean().default(false),

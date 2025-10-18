@@ -6,6 +6,7 @@ import { ModelGrid } from "@/features/provider-llm-setup/providers/model-selecti
 import { ProviderConfigSkeleton } from "@/features/provider-llm-setup/providers/provider-skeleton"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
+import { get, post } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
 import { getProviderConfigs, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
@@ -78,14 +79,18 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const loadConfiguration = async () => {
     setIsLoading(true)
     try {
-      const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`)
-      if (keyResponse.ok) {
-        const keyData: { value: string } = await keyResponse.json()
-        setApiKey(keyData.value)
-        setIsConfigured(true)
+      const response = await get("user/env-keys/[name]", {
+        url: `/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`,
+      })
 
-        await loadModels(keyData.value)
+      if (!response.success) {
+        throw new Error(response.error?.message || "Failed to load configuration")
       }
+
+      setApiKey(response.data.value)
+      setIsConfigured(true)
+
+      await loadModels(response.data.value)
     } catch (error) {
       logException(error, {
         location: window.location.pathname,
@@ -196,19 +201,13 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      const keyResponse = await fetch("/api/user/env-keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: config.apiKeyName,
+      await post("user/env-keys/set", {
+        body: {
+          key: config.apiKeyName,
           value: apiKey,
-        }),
+        },
+        url: "/api/user/env-keys",
       })
-
-      if (!keyResponse.ok) {
-        const errorDetails = await extractFetchError(keyResponse)
-        throw new Error(errorDetails)
-      }
 
       setIsConfigured(true)
       setHasUnsavedKeyChanges(false)

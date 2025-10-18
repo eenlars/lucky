@@ -372,6 +372,7 @@ export async function queueRun({
       try {
         const result = await persistence.nodes.createNodeInvocationStart({
           nodeId: targetNode.nodeId,
+          nodeVersionId: targetNode.getNodeVersionId(),
           workflowInvocationId,
           workflowVersionId: _workflowVersionId,
           startTime: nodeStartTimeISO,

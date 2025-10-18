@@ -66,7 +66,7 @@ export const lockboxServer = z.object({
   /**
    * 32-byte key for AES-256-GCM encryption of user secrets.
    * Accepts raw text, hex, or base64. For production, use a random 32-byte value.
-   * REQUIRED: Lockbox API endpoints will fail with 500 errors if this is not set.
+   * REQUIRED: Lockbox API endpoints will fail if this is not set.
    */
   LOCKBOX_KEK: z
     .string()

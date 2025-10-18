@@ -19,8 +19,8 @@ import { lgg } from "@core/utils/logging/Logger"
 import type { Workflow } from "@core/workflow/Workflow"
 import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
-import { R, type RS } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { R, type RS, isNir } from "@lucky/shared"
+import type { WorkflowEventHandler } from "packages/shared/dist"
 import type { AggregateEvaluationResult, EvaluationResult, RunResult } from "./types"
 
 /**
@@ -48,7 +48,7 @@ const verbose = false
 export async function runAllIO(
   workflow: Workflow,
   options?: {
-    onProgress?: import("@lucky/shared").WorkflowEventHandler
+    onProgress?: WorkflowEventHandler
     abortSignal?: AbortSignal
   },
 ): Promise<RS<RunResult[]>> {

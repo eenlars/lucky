@@ -1,5 +1,4 @@
-import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
-import { getDefaultModels } from "@core/core-config/coreConfig"
+import { getCoreConfig, getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
@@ -38,8 +37,9 @@ export const prepareProblem = async (
     goal: task.goal,
     question: task.type === "text" ? task.question : undefined,
     method,
+    configPrepareProblemMethod: config.workflow.prepareProblemMethod,
+    configPrepareProblem: config.workflow.prepareProblem,
   })
-
   // For prompt-only ingestion, skip enhancement entirely
   if (task.type === "prompt-only") {
     lgg.info("[prepareProblem] Skipping enhancement for prompt-only input")

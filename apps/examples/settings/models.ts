@@ -28,13 +28,13 @@ export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
   openai: {
     summary: "gpt-5-nano",
     nano: "gpt-5-nano",
-    low: "gpt-5-mini",
-    medium: "gpt-5-mini",
-    high: "gpt-5",
+    low: "gpt-5-nano",
+    medium: "gpt-5-nano",
+    high: "gpt-5-nano",
     default: "gpt-5-nano",
-    fitness: "gpt-5-mini",
-    reasoning: "gpt-5",
-    fallback: "gpt-5-mini",
+    fitness: "gpt-5-nano",
+    reasoning: "gpt-5-nano",
+    fallback: "gpt-5-nano",
   },
 }
 

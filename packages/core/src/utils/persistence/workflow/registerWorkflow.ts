@@ -15,9 +15,10 @@ export const ensureWorkflowExists = async (
   persistence: IPersistence | undefined,
   description: string,
   workflowId: string,
+  clerkId?: string,
 ): Promise<void> => {
   if (!persistence) return
-  await persistence.ensureWorkflowExists(workflowId, description)
+  await persistence.ensureWorkflowExists(workflowId, description, clerkId)
 }
 
 /**

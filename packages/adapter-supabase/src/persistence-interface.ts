@@ -93,6 +93,7 @@ export interface NodeVersionData {
 
 export interface NodeInvocationData {
   nodeId: string
+  nodeVersionId: string
   workflowInvocationId: string
   workflowVersionId: string
   startTime: string
@@ -113,6 +114,7 @@ export interface NodeInvocationData {
  */
 export interface NodeInvocationStartData {
   nodeId: string
+  nodeVersionId: string
   workflowInvocationId: string
   workflowVersionId: string
   startTime: string
@@ -219,7 +221,7 @@ export interface DatasetRecord {
  */
 export interface IPersistence {
   // Workflow management
-  ensureWorkflowExists(workflowId: string, description: string): Promise<void>
+  ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void>
   createWorkflowVersion(data: WorkflowVersionData): Promise<void>
   workflowVersionExists(workflowVersionId: string): Promise<boolean>
   updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void>

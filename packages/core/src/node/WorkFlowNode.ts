@@ -47,7 +47,12 @@ export class WorkFlowNode
 {
   // ————— Public identifiers —————
   public readonly nodeId: string
-  public readonly nodeVersionId: string
+  /**
+   * Database-assigned node version ID.
+   * Set during initialization in create() method.
+   * @internal - Should not be modified after initialization
+   */
+  public nodeVersionId: string
 
   // ————— Core components —————
   private readonly config: WorkflowNodeConfig
@@ -65,7 +70,7 @@ export class WorkFlowNode
     persistence?: IPersistence,
   ) {
     this.nodeId = config.nodeId
-    this.nodeVersionId = genShortId()
+    this.nodeVersionId = genShortId() // Temporary ID, will be replaced in create()
     this.config = config
 
     // Create managers
@@ -83,13 +88,10 @@ export class WorkFlowNode
     if (config.memory && Object.keys(config.memory).length > 0 && NodePersistenceManager.verbose) {
       lgg.log(`[WorkFlowNode] Created node ${config.nodeId} with memory: ${JSON.stringify(config.memory)}`)
     }
-
-    // Register node in database
-    this.persistenceManager.registerNode(workflowVersionId)
   }
 
   /**
-   * Create + fully initialize tools before returning.
+   * Create + fully initialize tools and register node before returning.
    */
   public static async create(
     config: WorkflowNodeConfig,
@@ -98,6 +100,12 @@ export class WorkFlowNode
     persistence?: IPersistence,
   ): Promise<WorkFlowNode> {
     const node = new WorkFlowNode(config, workflowVersionId, skipDatabasePersistence, persistence)
+
+    // Register node in database and get the actual nodeVersionId
+    const { nodeVersionId } = await node.persistenceManager.registerNode(workflowVersionId)
+    // Update with the database-assigned nodeVersionId (only modified during initialization)
+    node.nodeVersionId = nodeVersionId
+
     await node.toolManager.initializeTools()
     return node
   }
@@ -187,6 +195,7 @@ export class WorkFlowNode
         nodeMemory: context.nodeMemory ?? this.getMemory(),
         startTime: context.startTime ?? new Date().toISOString(),
         toolStrategyOverride: context.toolStrategyOverride ?? ("v3" as const),
+        nodeVersionId: context.nodeVersionId ?? this.nodeVersionId,
       }
 
       // Create pipeline with enhanced context

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { type z } from "zod"
-import { apiSchemas, type Endpoint, type Req, type Res } from "./schemas"
+import type { z } from "zod"
+import { type Endpoint, type Req, type Res, apiSchemas } from "./schemas"
 
 /**
  * Helper: turn FormData into a plain object of string | File
@@ -114,4 +114,18 @@ export function fail<E extends Endpoint>(
   const schema = apiSchemas[endpoint].res
   const parsed = schema.parse(body)
   return NextResponse.json(parsed, { status: options?.status ?? 500 })
+}
+
+type SuccessPayload<E extends Endpoint> = Extract<Res<E>, { success: true }> extends { data: infer D } ? D : never
+
+/**
+ * Convenience helper for `{ success: true, data, error: null }` responses.
+ */
+export function success<E extends Endpoint>(endpoint: E, data: SuccessPayload<E>, init?: ResponseInit): NextResponse {
+  const payload = {
+    success: true as const,
+    data,
+    error: null,
+  }
+  return alrighty(endpoint, payload as Res<E>, init)
 }
