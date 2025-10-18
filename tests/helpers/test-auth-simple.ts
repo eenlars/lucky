@@ -6,7 +6,7 @@ import { envi } from "../../apps/web/src/env.mjs"
  * Simplified test authentication helper that works with existing database setup
  * Uses the service role key properly to access Supabase
  */
-import { generateApiKey, hashSecret } from "../../apps/web/src/lib/api-key-utils"
+import { generateApiKey, hashSecret } from "../../apps/web/src/features/secret-management/lib/api-key-utils"
 import { createStandaloneClient } from "../../apps/web/src/lib/supabase/standalone"
 
 export interface TestUser {

@@ -5,7 +5,7 @@
  * based on your configuration, providing better abstraction.
  */
 
-import { createModels } from "@lucky/models"
+import { createModels } from "@lucky/models/server"
 import { generateText } from "ai"
 
 // Create models registry with tier configuration

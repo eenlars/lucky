@@ -1,18 +1,21 @@
 /**
  * Models - Multi-provider model configuration and registry for Vercel AI SDK
  * @module @lucky/models
+ *
+ * Browser-safe exports only. Server-only code (Models class, ConfigLoader, defineConfig)
+ * is available via '@lucky/models/server'
  */
 
-import { Models } from "./models"
 import type { ModelsConfig } from "./types"
 
-export { defineConfig, defineConfigUnsafe } from "./config/define"
-export { ConfigLoader } from "./config/loader"
+// Server-only exports (use node:fs/promises):
+//   import { Models, ConfigLoader, defineConfig } from '@lucky/models/server'
+
 export { ProviderRegistry } from "./providers/registry"
 
-// Export Facade (primary public API)
-export { getFacade, ModelsFacade, resetFacade } from "./facade"
-export type { SelectionOptions } from "./facade"
+// Facade is server-only (imports Models class which uses node:fs/promises)
+// Import from '@lucky/models/server' instead:
+//   import { getFacade, ModelsFacade, resetFacade } from '@lucky/models/server'
 
 // Export Pricing
 export {
@@ -132,14 +135,15 @@ export type {
   UserConfigOutput,
 } from "./types/schemas"
 
-export { Models }
+// Models class and createModels are server-only (use node:fs/promises)
+// Import from '@lucky/models/server' instead
 
 /**
- * Create a new models registry
+ * Create a new models registry (SERVER-ONLY)
  *
  * @example
  * ```ts
- * import { createModels } from '@lucky/models'
+ * import { createModels } from '@lucky/models/server'
  * import { generateText } from 'ai'
  *
  * const models = createModels({
@@ -155,6 +159,6 @@ export { Models }
  * const result = await generateText({ model, prompt: 'Hello!' })
  * ```
  */
-export function createModels(config: ModelsConfig): Models {
-  return new Models(config)
+export function createModels(config: ModelsConfig): never {
+  throw new Error("createModels() is server-only (uses node:fs/promises). Import from '@lucky/models/server' instead.")
 }

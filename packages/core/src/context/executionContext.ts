@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
-import type { Models } from "@lucky/models"
+import type { Models } from "@lucky/models/server"
 import { providerConfigSchema as modelsProviderConfigSchema } from "@lucky/models"
 import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
