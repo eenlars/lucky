@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "build:webpack": "next build",
     "start": "next start",
     "test": "bunx vitest",
     "test:integration": "bunx vitest run --config vite.integration.config.ts",

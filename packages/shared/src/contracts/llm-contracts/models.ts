@@ -38,15 +38,15 @@ export const providerEntrySchema = z.object({
 export type ProviderEntry = z.infer<typeof providerEntrySchema>
 
 export const ModelDefaultsSchema = z.object({
-  summary: z.string().default("gpt-5-nano"),
-  nano: z.string().default("gpt-5-nano"),
-  low: z.string().default("gpt-5-mini"),
-  medium: z.string().default("gpt-5-mini"),
-  high: z.string().default("gpt-5"),
-  default: z.string().default("gpt-5-nano"),
-  fitness: z.string().default("gpt-5-nano"),
-  reasoning: z.string().default("gpt-5"),
-  fallback: z.string().default("gpt-5-nano"),
+  summary: z.string().default("openai#gpt-5-nano"),
+  nano: z.string().default("openai#gpt-5-nano"),
+  low: z.string().default("openai#gpt-5-mini"),
+  balanced: z.string().default("openai#gpt-5-mini"),
+  high: z.string().default("openai#gpt-5"),
+  default: z.string().default("openai#gpt-5-nano"),
+  fitness: z.string().default("openai#gpt-5-nano"),
+  reasoning: z.string().default("openai#gpt-5"),
+  fallback: z.string().default("openai#gpt-5-nano"),
 })
 
 export const ModelsConfigSchema = z.object({

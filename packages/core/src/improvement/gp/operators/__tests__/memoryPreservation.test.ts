@@ -9,7 +9,7 @@ import { createDummyGenome } from "../../resources/debug/dummyGenome"
 import { MemoryPreservation } from "../memoryPreservation"
 
 describe("MemoryPreservation", () => {
-  const validModel = getDefaultModels().medium
+  const validModel = getDefaultModels().balanced
 
   const createTestGenome = (nodeMemories: Record<string, Record<string, string>>) => {
     const genome = createDummyGenome([], {

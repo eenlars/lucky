@@ -20,7 +20,7 @@ import { getModelsInstance } from "./models-instance"
  * - OpenAI: Standard model (reasoning support TBD)
  * - Groq: No reasoning support (SDK limitation)
  *
- * @param modelName - Model name or tier name
+ * @param modelName - Model name, tier name (cheap/fast/smart/balanced), or catalog ID
  * @param opts - Options including reasoning flag
  * @returns Promise resolving to AI SDK LanguageModel
  *
@@ -29,8 +29,11 @@ import { getModelsInstance } from "./models-instance"
  * // Get reasoning model
  * const model = await getLanguageModelWithReasoning('reasoning', { reasoning: true })
  *
- * // Regular model (reasoning flag off)
- * const model = await getLanguageModelWithReasoning('high')
+ * // Tier-based selection
+ * const model = await getLanguageModelWithReasoning('cheap')
+ *
+ * // Specific model
+ * const model = await getLanguageModelWithReasoning('openai#gpt-4o')
  * ```
  */
 export async function getLanguageModelWithReasoning(
@@ -45,38 +48,26 @@ export async function getLanguageModelWithReasoning(
   // we get the model and recreate it with reasoning parameters
 
   const models = await getModelsInstance()
-  const normalized = modelName
 
-  if (!normalized) {
+  if (!modelName) {
     throw new Error("Model name is not set")
   }
 
-  // Provider-specific reasoning configuration
-  if (provider === "openrouter") {
-    // Use async client factory for per-user API keys
-    const openrouterClient = await getOpenRouterClient()
-
-    const isAnthropic = normalized.startsWith("anthropic/")
-    const isGeminiThinking =
-      normalized.includes("gemini") && (normalized.includes("thinking") || normalized.includes("think"))
-
-    if ((isAnthropic || isGeminiThinking) && wantsReasoning) {
-      return openrouterClient(normalized, { reasoning: { max_tokens: 2048 } as any })
-    }
-    return openrouterClient(normalized, { reasoning: { effort: "medium" } as any })
+  // For non-reasoning requests, use models.resolve() which handles tier vs model routing
+  if (!wantsReasoning || provider !== "openrouter") {
+    return models.resolve(modelName)
   }
 
-  if (provider === "openai") {
-    // OpenAI reasoning support: for now, return standard model
-    // TODO: Implement OpenAI-specific reasoning parameters when SDK supports it
-    return models.model(normalized)
-  }
+  // OpenRouter reasoning: need to bypass models.resolve() and use custom client
+  // because reasoning config must be passed during model creation
+  const openrouterClient = await getOpenRouterClient()
 
-  if (provider === "groq") {
-    // Groq doesn't support reasoning parameters in their SDK
-    return models.model(normalized)
-  }
+  const isAnthropic = modelName.includes("anthropic/")
+  const isGeminiThinking =
+    modelName.includes("gemini") && (modelName.includes("thinking") || modelName.includes("think"))
 
-  // Fallback: use standard model
-  return models.model(normalized)
+  if (isAnthropic || isGeminiThinking) {
+    return openrouterClient(modelName, { reasoning: { max_tokens: 2048 } as any })
+  }
+  return openrouterClient(modelName, { reasoning: { effort: "medium" } as any })
 }

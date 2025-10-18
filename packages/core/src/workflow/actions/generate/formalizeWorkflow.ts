@@ -17,10 +17,41 @@ import {
   handleWorkflowCompletionUserModelsStrategy,
 } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { mapModelNameToEasyName } from "@lucky/models"
-import type { ModelEntry, ModelPricingTier } from "@lucky/shared"
+import { mapModelNameToEasyName, normalizeModelName } from "@lucky/models"
 import { R, type RS, withDescriptions } from "@lucky/shared"
 import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
+
+/**
+ * MODEL NAME FLOW IN FORMALIZEWORKFLOW
+ * =====================================
+ *
+ * This function handles a 3-step transformation of model names to enable AI workflow generation
+ * while preserving user's explicit model choices:
+ *
+ * STEP 1: SIMPLIFICATION (Before AI generation)
+ * - Input: Complex model names like "openrouter#openai/gpt-4", "anthropic#claude-opus"
+ * - Transform: mapModelNameToEasyName() converts to simple tier names ("cheap", "fast", "smart", "balanced")
+ * - Purpose: AI works with simple tier vocabulary instead of complex provider#model strings
+ * - Location: Line 49-54 (normalizedConfigNodes)
+ *
+ * STEP 2: AI GENERATION
+ * - AI receives workflow with simplified tier names
+ * - AI returns new/modified workflow with tier names or specific model choices
+ *
+ * STEP 3: RESTORATION (After AI generation)
+ * - For nodes that existed in the old workflow: RESTORE original model name
+ *   Example: Node "analyzer" had "openrouter#openai/gpt-4" → preserve this exact choice
+ * - For new nodes: Keep AI's choice (validated tier name or model ID)
+ *   Example: New node "summarizer" with "cheap" → keep "cheap" for execution-time resolution
+ *
+ * EDGE CASE (TODO):
+ * - If a NEW node has tier "cheap", should resolve to best available model for user
+ * - If user has no models, fallback to default
+ * - Currently marked as TODO - complex resolution logic needed
+ *
+ * This ensures users' explicit model selections are preserved across workflow iterations
+ * while allowing AI to work with a simplified model vocabulary.
+ */
 
 // generate a single workflow from scratch based on a prompt
 export async function formalizeWorkflow(
@@ -99,7 +130,7 @@ Create 1 workflow configuration for: ${prompt}
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: getDefaultModels().medium,
+    model: getDefaultModels().balanced,
     mode: "structured",
     schema: withDescriptions(WorkflowConfigSchemaEasy.shape, {
       __schema_version: "Schema version for migration (optional, defaults to 1)",
@@ -112,12 +143,12 @@ Create 1 workflow configuration for: ${prompt}
     success: response.success,
     durationMs: sendAIDurationMs,
     usdCost: response.usdCost ?? 0,
-    model: getDefaultModels().medium,
+    model: getDefaultModels().balanced,
   })
 
   if (!response.success) {
     // Provide helpful context for model-related errors
-    const requestedModel = getDefaultModels().medium
+    const requestedModel = getDefaultModels().balanced
     console.error("[formalizeWorkflow] sendAI error", {
       error: response.error,
       durationMs: sendAIDurationMs,
@@ -137,6 +168,9 @@ Create 1 workflow configuration for: ${prompt}
   } else {
     handledWorkflow = handleWorkflowCompletionUserModelsStrategy(options.workflowConfig ?? null, workflowConfig)
   }
+
+  // STEP 3: Restore original model names for existing nodes (see MODEL NAME FLOW comment above)
+  handledWorkflow = restoreOriginalModelNames(options.workflowConfig ?? null, handledWorkflow)
 
   // defensively sanitize any inactive/unknown tools that may have crept in
   const sanitizedHandledWorkflow = sanitizeConfigTools(handledWorkflow)
@@ -190,96 +224,57 @@ Create 1 workflow configuration for: ${prompt}
   return R.success(normalizedFinalConfig, response.usdCost + cost)
 }
 
+/**
+ * Restore original model names for nodes that existed in the old workflow.
+ * This preserves user's explicit model choices while allowing AI to work with simplified tier names.
+ *
+ * @param oldWorkflow - Original workflow before AI modification (null if generating from scratch)
+ * @param newWorkflow - Workflow returned by AI with simplified model names
+ * @returns Workflow with original model names restored for existing nodes
+ */
+function restoreOriginalModelNames(oldWorkflow: WorkflowConfig | null, newWorkflow: WorkflowConfig): WorkflowConfig {
+  if (!oldWorkflow) return newWorkflow
+
+  const nodes = newWorkflow.nodes.map(node => {
+    const oldNode = oldWorkflow.nodes.find(n => n.nodeId === node.nodeId)
+
+    if (oldNode) {
+      // Node existed in old workflow - restore its original model name
+      // This preserves user's explicit model choice (e.g., "openrouter#openai/gpt-4")
+      return { ...node, modelName: oldNode.modelName }
+    }
+
+    // New node - keep AI's choice (tier name like "cheap" or specific model ID)
+    // TODO: If modelName is a tier like "cheap", resolve to best available model for user
+    // This requires access to user's model configuration and fallback logic
+    return node
+  })
+
+  return {
+    ...newWorkflow,
+    nodes,
+  }
+}
+
 function normalizeWorkflowModels(
   config: WorkflowConfig,
-  modelSelectionStrategy: ModelSelectionStrategy,
+  _modelSelectionStrategy: ModelSelectionStrategy,
 ): WorkflowConfig {
-  let changed = false
-
   const nodes = config.nodes.map(node => {
     if (!node.modelName) return node
 
-    // If strategy is user-models and node uses a pricing tier keyword, map to user's available models
-    const modelNameLower = node.modelName.toLowerCase()
-    if (
-      modelSelectionStrategy.strategy === "user-models" &&
-      Array.isArray(modelSelectionStrategy.models) &&
-      modelSelectionStrategy.models.length > 0 &&
-      (modelNameLower === "low" || modelNameLower === "medium" || modelNameLower === "high")
-    ) {
-      const resolved = pickUserModelForTier(modelNameLower, modelSelectionStrategy.models)
-      if (resolved && resolved !== node.modelName) {
-        changed = true
-        return { ...node, modelName: resolved }
-      }
+    const normalizedModelName = normalizeModelName(node.modelName)
+
+    // If normalization changed the name, update the node
+    if (normalizedModelName !== node.modelName) {
+      return { ...node, modelName: normalizedModelName }
     }
 
-    const normalized = node.modelName
-    if (!normalized || normalized === node.modelName) {
-      return node
-    }
-
-    changed = true
-    return { ...node, modelName: normalized }
+    return node
   })
-
-  if (!changed) {
-    return config
-  }
 
   return {
     ...config,
     nodes,
   }
-}
-
-// Limit user models to top 5 candidates (defensive against large model lists)
-// Ranking by: intelligence * speed_score
-function getLimitedUserModels(models: ModelEntry[], limit = 5): ModelEntry[] {
-  if (models.length <= limit) {
-    return models
-  }
-
-  const rank = (m: ModelEntry) => {
-    const speedScore = m.speed === "fast" ? 3 : m.speed === "medium" ? 2 : 1
-    return m.intelligence * 10 + speedScore
-  }
-
-  const sorted = models.slice().sort((a, b) => rank(b) - rank(a))
-  const limited = sorted.slice(0, limit)
-
-  console.log(`[formalizeWorkflow] limited user models from ${models.length} to ${limited.length}`, {
-    originalCount: models.length,
-    limitedCount: limited.length,
-    topModels: limited.map(m => ({ model: m.model, intelligence: m.intelligence, speed: m.speed })),
-  })
-
-  return limited
-}
-
-// Select a concrete model from the user's allowed models for a given pricing tier.
-// Policy: prefer highest intelligence within the tier; if none, fall back to best overall.
-function pickUserModelForTier(tier: ModelPricingTier, models: ModelEntry[]): string {
-  const rank = (m: ModelEntry) => {
-    // Higher intelligence preferred; speed order: fast > medium > slow
-    const speedScore = m.speed === "fast" ? 3 : m.speed === "medium" ? 2 : 1
-    return m.intelligence * 10 + speedScore
-  }
-
-  const pick = (arr: ModelEntry[]) => arr.slice().sort((a, b) => rank(b) - rank(a))[0]
-
-  // Filter by tier first, then limit to preserve tier-specific coverage
-  const byTier = models.filter(m => m.pricingTier === tier && m.runtimeEnabled)
-  const limitedByTier = getLimitedUserModels(byTier)
-
-  const preferred = pick(limitedByTier)
-  if (preferred) return preferred.model // API-facing model string
-
-  // Fallback to best overall from limited models (applied after tier filter fails)
-  const limitedModels = getLimitedUserModels(models)
-  const any = pick(limitedModels.filter(m => m.runtimeEnabled))
-  if (any) return any.model
-
-  // Final fallback to core defaults (keeps system robust if user list is empty)
-  return getDefaultModels().default
 }

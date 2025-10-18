@@ -7,12 +7,12 @@ import { createOpenAI } from "@ai-sdk/openai"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import type { LanguageModel } from "ai"
 
-import type { TierName } from "@lucky/shared"
-import { providerNameSchema } from "@lucky/shared"
+import { type TierName, providerNameSchema, tierNameSchema } from "@lucky/shared"
 
 import type { ModelEntry } from "@lucky/shared"
 import { MODEL_CATALOG } from "./llm-catalog/catalog"
 import { findModelById, findModelByName } from "./llm-catalog/catalog-queries"
+import { selectModelForTier } from "./tier-selection"
 import type { FallbackKeys } from "./types"
 
 type ProviderInstance =
@@ -149,68 +149,83 @@ export class UserModels {
    * Picks from user's allowed models only
    */
   tier(tierName: TierName): LanguageModel {
-    if (this.allowedModels.length === 0) {
-      throw new Error("No models configured for tier selection")
-    }
-
-    // get catalog entries for user's models
-    const userModels = this.allowedModels.map(id => findModelById(id)).filter((m): m is ModelEntry => m !== undefined)
-
-    if (userModels.length === 0) {
-      throw new Error("No valid models found in user's configuration")
-    }
-
-    let selected: ModelEntry | undefined
-
-    switch (tierName) {
-      case "cheap":
-        // lowest cost (average of input/output)
-        selected = userModels.reduce((min, m) => ((m.input + m.output) / 2 < (min.input + min.output) / 2 ? m : min))
-        break
-
-      case "fast":
-        // fast speed, then cheapest among fast
-        {
-          const fastModels = userModels.filter(m => m.speed === "fast")
-          if (fastModels.length > 0) {
-            selected = fastModels.reduce((min, m) =>
-              (m.input + m.output) / 2 < (min.input + min.output) / 2 ? m : min,
-            )
-          } else {
-            // no fast models, pick cheapest overall
-            selected = userModels.reduce((min, m) =>
-              (m.input + m.output) / 2 < (min.input + min.output) / 2 ? m : min,
-            )
-          }
-        }
-        break
-
-      case "smart":
-        // highest intelligence
-        selected = userModels.reduce((max, m) => (m.intelligence > max.intelligence ? m : max))
-        break
-
-      case "balanced":
-        // balance between cost and intelligence
-        // score = intelligence / avgCost (higher is better)
-        selected = userModels.reduce((best, m) => {
-          const avgCost = (m.input + m.output) / 2
-          const score = m.intelligence / (avgCost || 0.1) // avoid division by zero
-          const bestCost = (best.input + best.output) / 2
-          const bestScore = best.intelligence / (bestCost || 0.1)
-          return score > bestScore ? m : best
-        })
-        break
-
-      default:
-        throw new Error(`Unknown tier: ${tierName}`)
-    }
-
-    if (!selected) {
-      throw new Error(`Could not select model for tier: ${tierName}`)
-    }
-
+    const selected = selectModelForTier(tierName, this.allowedModels)
     return this.model(selected.id)
+  }
+
+  /**
+   * Resolve a tier name or model name to either a LanguageModel or catalog ID string
+   * Automatically detects whether input is a tier or model name
+   *
+   * @param nameOrTier - Tier name (cheap/fast/smart/balanced) or model name/ID
+   * @param options - Optional configuration
+   *   - type: Enforce 'tier' or 'model', throws if type mismatch
+   *   - outputType: 'ai-sdk-model-func' (default) returns LanguageModel, 'string' returns catalog ID
+   * @returns LanguageModel instance or catalog ID string (provider#model format)
+   *
+   * @throws {Error} If type is specified and input doesn't match expected type
+   * @throws {Error} If model not found (passed through from model() method)
+   *
+   * @example
+   * // Return LanguageModel (default)
+   * models.resolve("cheap")                                        // → LanguageModel
+   * models.resolve("openai#gpt-4o")                                // → LanguageModel
+   * models.resolve("cheap", { type: "tier" })                      // → LanguageModel (enforced tier)
+   *
+   * // Return catalog ID string
+   * models.resolve("cheap", { outputType: "string" })              // → "openai#gpt-4o" (selected for cheap tier)
+   * models.resolve("gpt-4o", { outputType: "string" })             // → "openai#gpt-4o"
+   * models.resolve("openai#gpt-4o", { outputType: "string" })      // → "openai#gpt-4o"
+   */
+  resolve(nameOrTier: string, options: { outputType: "string"; type?: "tier" | "model" }): string
+  resolve(nameOrTier: string, options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model" }): LanguageModel
+  resolve(
+    nameOrTier: string,
+    options?: { outputType?: "ai-sdk-model-func" | "string"; type?: "tier" | "model" },
+  ): LanguageModel | string {
+    const tierOptions = tierNameSchema.options
+    const isTier = tierOptions.includes(nameOrTier.toLowerCase() as TierName)
+    const outputType = options?.outputType ?? "ai-sdk-model-func"
+    const enforcedType = options?.type
+
+    // Strict mode: enforce type if specified
+    if (enforcedType === "tier" && !isTier) {
+      throw new Error(
+        `Expected tier name (${tierOptions.join(", ")}), but got: "${nameOrTier}". Use models.model() for model names or remove the type parameter for auto-detection.`,
+      )
+    }
+
+    if (enforcedType === "model" && isTier) {
+      throw new Error(
+        `Expected model name, but got tier name: "${nameOrTier}". Use models.tier() for tier selection or remove the type parameter for auto-detection.`,
+      )
+    }
+
+    // Route based on detection and output type
+    if (outputType === "string") {
+      // Return catalog ID string (provider#model format)
+      if (isTier) {
+        // For tier: determine which model would be selected, return its ID
+        const selectedModel = selectModelForTier(nameOrTier.toLowerCase() as TierName, this.allowedModels)
+        return selectedModel.id
+      }
+      // For model name: normalize to catalog ID and validate against allowlist
+      const catalogEntry = findModelByName(nameOrTier)
+      if (!catalogEntry) {
+        throw new Error(`Model not found: ${nameOrTier}`)
+      }
+      // Check if model is in user's allowed list
+      if (!this.allowedModels.includes(catalogEntry.id)) {
+        throw new Error(`Model "${catalogEntry.id}" not in user's allowed models`)
+      }
+      return catalogEntry.id
+    }
+
+    // Return LanguageModel (default behavior)
+    if (isTier) {
+      return this.tier(nameOrTier.toLowerCase() as TierName)
+    }
+    return this.model(nameOrTier)
   }
 
   /**
