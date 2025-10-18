@@ -208,10 +208,14 @@ export class UserModels {
         const selectedModel = selectModelForTier(nameOrTier.toLowerCase() as TierName, this.allowedModels)
         return selectedModel.id
       }
-      // For model name: normalize to catalog ID
+      // For model name: normalize to catalog ID and validate against allowlist
       const catalogEntry = findModelByName(nameOrTier)
       if (!catalogEntry) {
         throw new Error(`Model not found: ${nameOrTier}`)
+      }
+      // Check if model is in user's allowed list
+      if (!this.allowedModels.includes(catalogEntry.id)) {
+        throw new Error(`Model "${catalogEntry.id}" not in user's allowed models`)
       }
       return catalogEntry.id
     }

@@ -149,7 +149,7 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
 
       await formalizeWorkflow("improve analyzer", {
         workflowConfig: baseConfig,
-        verifyWorkflow: "none",
+        // verifyWorkflow omitted to test default undefined behavior
       })
 
       // Verify sendAI was called with simplified tier name in the base workflow

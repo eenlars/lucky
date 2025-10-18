@@ -1,25 +1,30 @@
-import { findModelByName } from "@lucky/models"
+import { normalizeModelName } from "@lucky/models"
 import { describe, expect, it } from "vitest"
 
 describe("Model normalization logic", () => {
   it("converts model name to catalog ID", () => {
     const modelName = "gpt-5-mini"
-    const catalogEntry = findModelByName(modelName)
+    const normalized = normalizeModelName(modelName)
 
-    expect(catalogEntry).toBeDefined()
-    expect(catalogEntry?.id).toBe("openai#gpt-5-mini")
+    expect(normalized).toBe("openai#gpt-5-mini")
   })
 
   it("keeps tier names as-is", () => {
     const validTiers = ["cheap", "fast", "smart", "balanced"]
     for (const tier of validTiers) {
-      const modelNameLower = tier.toLowerCase()
-      expect(validTiers.includes(modelNameLower)).toBe(true)
+      const normalized = normalizeModelName(tier)
+      expect(normalized).toBe(tier)
     }
   })
 
   it("keeps catalog IDs unchanged", () => {
     const catalogId = "openai#gpt-4o"
-    expect(catalogId.includes("#")).toBe(true)
+    const normalized = normalizeModelName(catalogId)
+    expect(normalized).toBe(catalogId)
+  })
+
+  it("migrates legacy tier names", () => {
+    expect(normalizeModelName("medium")).toBe("balanced")
+    expect(normalizeModelName("fallback")).toBe("balanced")
   })
 })
