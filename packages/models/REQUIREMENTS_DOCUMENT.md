@@ -155,7 +155,7 @@ const byokUser = registry.forUser({
 const sharedUser = registry.forUser({
   mode: "shared",
   userId: "user-456",
-  models: ["openai#gpt-4o-mini", ""groq#openai/gpt-oss-20b""]
+  models: ["openai#gpt-4o-mini", "groq#openai/gpt-oss-20b"]
   // No apiKeys needed - uses fallbackKeys from registry
 })
 
@@ -190,12 +190,12 @@ const user2 = registry.forUser({
   models: [
     "openai#gpt-4o",                        // OpenAI direct
     "openai#gpt-4o-mini",                   // OpenAI direct
-    ""groq#openai/gpt-oss-20b"",            // Groq direct
+    "groq#openai/gpt-oss-20b",            // Groq direct
     "openrouter#openai/gpt-4o-mini"         // Same model via OpenRouter
   ]
 })
 
-const cheap = user2.tier("cheap")       // Returns llama-3.1-8b (lowest cost)
+const cheap = user2.tier("cheap")       // Returns groq#openai/gpt-oss-20b (lowest cost)
 const smart = user2.tier("smart")       // Returns gpt-4o (highest intelligence)
 const fast = user2.tier("fast")         // Returns cheapest "fast" model from list
 const balanced = user2.tier("balanced") // Best intelligence/cost ratio
