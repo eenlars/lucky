@@ -2,6 +2,7 @@
  * catalog query and filter functions
  */
 
+import { isNir } from "@lucky/shared"
 import type { ModelEntry, ModelId } from "@lucky/shared"
 import { MODEL_CATALOG } from "./catalog"
 
@@ -17,6 +18,9 @@ export function getCatalog(): ModelEntry[] {
  * case-insensitive
  */
 export function findModelById(id: string): ModelEntry | undefined {
+  if (isNir(id)) {
+    return undefined
+  }
   return MODEL_CATALOG.find(m => m.id.toLowerCase() === id.toLowerCase())
 }
 
@@ -25,6 +29,9 @@ export function findModelById(id: string): ModelEntry | undefined {
  * matches exact model name or suffix after #
  */
 export function findModelByName(inputName: ModelId): ModelEntry | undefined {
+  if (isNir(inputName)) {
+    return undefined
+  }
   const normalizedInputName = inputName.toLowerCase()
   for (const m of MODEL_CATALOG) {
     const modelIdMatches = m.id.split("#")[1]?.toLowerCase() === normalizedInputName
@@ -49,6 +56,9 @@ export function findModel(id: string): ModelEntry | undefined {
  * case-sensitive, returns empty array if not found
  */
 export function getModelsByProvider(provider: string): ModelEntry[] {
+  if (isNir(provider)) {
+    return []
+  }
   return MODEL_CATALOG.filter(m => m.provider === provider)
 }
 
@@ -57,6 +67,9 @@ export function getModelsByProvider(provider: string): ModelEntry[] {
  * filters out models where runtimeEnabled === false
  */
 export function getActiveModelsByProvider(provider: string): ModelEntry[] {
+  if (isNir(provider)) {
+    return []
+  }
   return MODEL_CATALOG.filter(m => m.provider === provider && m.runtimeEnabled !== false)
 }
 

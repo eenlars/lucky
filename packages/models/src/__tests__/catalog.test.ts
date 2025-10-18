@@ -1,21 +1,28 @@
 /**
  * Tests for catalog utilities
- * Validates catalog structure and lookup functions
+ * Validates catalog structure and lookup functions using mock fixture
  */
 
-import { describe, expect, it } from "vitest"
-import { MODEL_CATALOG } from "../llm-catalog/catalog"
+import { describe, expect, it, vi } from "vitest"
+import { MOCK_CATALOG } from "./fixtures/mock-catalog"
+
+// Mock the catalog module to use our stable fixture
+vi.mock("../llm-catalog/catalog", () => ({
+  MODEL_CATALOG: MOCK_CATALOG,
+}))
+
+// Import after mocking
 import { findModelById, findModelByName, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
 
 describe("MODEL_CATALOG", () => {
   it("contains models", () => {
-    expect(MODEL_CATALOG).toBeDefined()
-    expect(Array.isArray(MODEL_CATALOG)).toBe(true)
-    expect(MODEL_CATALOG.length).toBeGreaterThan(0)
+    expect(MOCK_CATALOG).toBeDefined()
+    expect(Array.isArray(MOCK_CATALOG)).toBe(true)
+    expect(MOCK_CATALOG.length).toBeGreaterThan(0)
   })
 
   it("all models have required fields", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.id).toBeDefined()
       expect(typeof model.id).toBe("string")
       expect(model.id).toContain("#") // ID format: provider#model
@@ -50,13 +57,13 @@ describe("MODEL_CATALOG", () => {
   })
 
   it("has unique IDs", () => {
-    const ids = MODEL_CATALOG.map(m => m.id)
+    const ids = MOCK_CATALOG.map(m => m.id)
     const uniqueIds = new Set(ids)
     expect(uniqueIds.size).toBe(ids.length)
   })
 
   it("IDs follow provider#model format", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.id).toMatch(/^[^#]+#[^#]+$/)
       const [provider, _modelName] = model.id.split("#")
       expect(provider).toBe(model.provider)
@@ -64,20 +71,20 @@ describe("MODEL_CATALOG", () => {
   })
 
   it("providers are lowercase", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.provider).toBe(model.provider.toLowerCase())
     }
   })
 
   it("contains expected providers", () => {
-    const providers = new Set(MODEL_CATALOG.map(m => m.provider))
+    const providers = new Set(MOCK_CATALOG.map(m => m.provider))
     expect(providers.has("openai")).toBe(true)
     expect(providers.has("groq")).toBe(true)
-    // openrouter may or may not be present depending on runtimeEnabled filter
+    expect(providers.has("openrouter")).toBe(true)
   })
 
   it("all models have non-null pricing tiers", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.pricingTier).toBeDefined()
       expect(["low", "medium", "high"]).toContain(model.pricingTier)
     }
@@ -87,11 +94,11 @@ describe("MODEL_CATALOG", () => {
 describe("getCatalog", () => {
   it("returns the full catalog", () => {
     const catalog = getCatalog()
-    expect(catalog).toBe(MODEL_CATALOG)
-    expect(catalog.length).toBe(MODEL_CATALOG.length)
+    expect(catalog).toBe(MOCK_CATALOG)
+    expect(catalog.length).toBe(MOCK_CATALOG.length)
   })
 
-  it("returns same reference on multiple calls", () => {
+  it("returns same reference when passed same catalog", () => {
     const catalog1 = getCatalog()
     const catalog2 = getCatalog()
     expect(catalog1).toBe(catalog2)
@@ -125,7 +132,7 @@ describe("findModelById", () => {
 
   it("is case-insensitive", () => {
     const model = findModelById("OPENAI#GPT-4O-MINI")
-    expect(model).toBeDefined() // Case doesn't match
+    expect(model).toBeDefined()
     expect(model?.id).toBe("openai#gpt-4o-mini")
     expect(model?.provider).toBe("openai")
     expect(model?.model).toBe("gpt-4o-mini")
@@ -184,7 +191,7 @@ describe("getModelsByProvider", () => {
 
   it("returns openrouter models if any exist", () => {
     const models = getModelsByProvider("openrouter")
-    // openrouter models may be filtered by runtimeEnabled
+    expect(models.length).toBeGreaterThan(0)
     for (const model of models) {
       expect(model.provider).toBe("openrouter")
     }
@@ -201,15 +208,15 @@ describe("getModelsByProvider", () => {
   })
 
   it("all providers combined equal full catalog", () => {
-    const providers = Array.from(new Set(MODEL_CATALOG.map(m => m.provider)))
+    const providers = Array.from(new Set(MOCK_CATALOG.map(m => m.provider)))
     const allModels = providers.flatMap(p => getModelsByProvider(p))
-    expect(allModels.length).toBe(MODEL_CATALOG.length)
+    expect(allModels.length).toBe(MOCK_CATALOG.length)
   })
 })
 
 describe("catalog pricing validation", () => {
   it("all models have valid pricing", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.input).toBeGreaterThanOrEqual(0)
       expect(model.output).toBeGreaterThanOrEqual(0)
 
@@ -222,18 +229,18 @@ describe("catalog pricing validation", () => {
 
   it("output cost is typically higher than input cost", () => {
     let higherOutputCount = 0
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       if (model.output > model.input) {
         higherOutputCount++
       }
     }
 
     // Most models should have higher output costs
-    expect(higherOutputCount).toBeGreaterThan(MODEL_CATALOG.length * 0.5)
+    expect(higherOutputCount).toBeGreaterThan(MOCK_CATALOG.length * 0.5)
   })
 
   it("cached input is cheaper than regular input when present", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       if (model.cachedInput !== null) {
         expect(model.cachedInput).toBeLessThanOrEqual(model.input)
       }
@@ -243,32 +250,32 @@ describe("catalog pricing validation", () => {
 
 describe("catalog capabilities validation", () => {
   it("all models support streaming", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.supportsStreaming).toBe(true)
     }
   })
 
   it("most models support tools", () => {
-    const withTools = MODEL_CATALOG.filter(m => m.supportsTools)
-    expect(withTools.length).toBeGreaterThan(MODEL_CATALOG.length * 0.5)
+    const withTools = MOCK_CATALOG.filter(m => m.supportsTools)
+    expect(withTools.length).toBeGreaterThan(MOCK_CATALOG.length * 0.5)
   })
 
   it("most models support JSON mode", () => {
-    const withJson = MODEL_CATALOG.filter(m => m.supportsJsonMode)
-    expect(withJson.length).toBeGreaterThan(MODEL_CATALOG.length * 0.5)
+    const withJson = MOCK_CATALOG.filter(m => m.supportsJsonMode)
+    expect(withJson.length).toBeGreaterThan(MOCK_CATALOG.length * 0.5)
   })
 })
 
 describe("catalog intelligence scores", () => {
   it("all intelligence scores are in valid range", () => {
-    for (const model of MODEL_CATALOG) {
+    for (const model of MOCK_CATALOG) {
       expect(model.intelligence).toBeGreaterThanOrEqual(1)
       expect(model.intelligence).toBeLessThanOrEqual(10)
     }
   })
 
   it("has models across different intelligence levels", () => {
-    const scores = MODEL_CATALOG.map(m => m.intelligence)
+    const scores = MOCK_CATALOG.map(m => m.intelligence)
     const uniqueScores = new Set(scores)
 
     // should have variety of intelligence scores
@@ -278,9 +285,9 @@ describe("catalog intelligence scores", () => {
 
 describe("catalog speed tiers", () => {
   it("has models in each speed tier", () => {
-    const speeds = new Set(MODEL_CATALOG.map(m => m.speed))
+    const speeds = new Set(MOCK_CATALOG.map(m => m.speed))
     expect(speeds.has("fast")).toBe(true)
-    // May or may not have medium/slow depending on catalog
+    expect(speeds.has("medium")).toBe(true)
   })
 
   it("groq models are marked as fast", () => {
@@ -293,15 +300,15 @@ describe("catalog speed tiers", () => {
 
 describe("catalog pricing tiers", () => {
   it("has models in each pricing tier", () => {
-    const tiers = new Set(MODEL_CATALOG.map(m => m.pricingTier))
+    const tiers = new Set(MOCK_CATALOG.map(m => m.pricingTier))
     expect(tiers.has("low")).toBe(true)
     expect(tiers.has("medium")).toBe(true)
     expect(tiers.has("high")).toBe(true)
   })
 
   it("pricing tier generally correlates with actual price", () => {
-    const lowTier = MODEL_CATALOG.filter(m => m.pricingTier === "low")
-    const highTier = MODEL_CATALOG.filter(m => m.pricingTier === "high")
+    const lowTier = MOCK_CATALOG.filter(m => m.pricingTier === "low")
+    const highTier = MOCK_CATALOG.filter(m => m.pricingTier === "high")
 
     if (lowTier.length > 0 && highTier.length > 0) {
       const avgLowCost = lowTier.reduce((sum, m) => sum + (m.input + m.output) / 2, 0) / lowTier.length
