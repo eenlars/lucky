@@ -37,7 +37,7 @@ export interface TokenUsage {
 export const TIER_NAMES = [
   "nano",
   "low",
-  "medium",
+  "balanced",
   "high",
   "default",
   "fitness",

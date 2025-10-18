@@ -138,7 +138,7 @@ Guidelines:
     const { data, success, error, usdCost } = await sendAI({
       mode: "structured",
       schema: ProblemAnalysisSchema,
-      model: getDefaultModels().medium,
+      model: getDefaultModels().balanced,
       messages: [
         {
           role: "system",

@@ -44,7 +44,7 @@ vi.mock("@core/core-config/coreConfig", async () => {
       summary: "gpt-5-nano",
       nano: "gpt-5-nano",
       low: "gpt-5-mini",
-      medium: "gpt-5-mini",
+      balanced: "gpt-5-mini",
       high: "gpt-5",
       default: "gpt-5-nano",
       fitness: "gpt-5-mini",

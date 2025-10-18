@@ -130,7 +130,7 @@ Create 1 workflow configuration for: ${prompt}
       { role: "system", content: llmify(systemPrompt) },
       { role: "user", content: llmify(userPrompt) },
     ],
-    model: getDefaultModels().medium,
+    model: getDefaultModels().balanced,
     mode: "structured",
     schema: withDescriptions(WorkflowConfigSchemaEasy.shape, {
       __schema_version: "Schema version for migration (optional, defaults to 1)",
@@ -143,12 +143,12 @@ Create 1 workflow configuration for: ${prompt}
     success: response.success,
     durationMs: sendAIDurationMs,
     usdCost: response.usdCost ?? 0,
-    model: getDefaultModels().medium,
+    model: getDefaultModels().balanced,
   })
 
   if (!response.success) {
     // Provide helpful context for model-related errors
-    const requestedModel = getDefaultModels().medium
+    const requestedModel = getDefaultModels().balanced
     console.error("[formalizeWorkflow] sendAI error", {
       error: response.error,
       durationMs: sendAIDurationMs,
