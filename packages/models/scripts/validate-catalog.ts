@@ -124,11 +124,23 @@ class CatalogValidator {
   }
 
   private addError(modelId: string, field: string, message: string): void {
-    this.errors.push({ modelId, field, message, severity: "error", location: this.getLocation(modelId) })
+    this.errors.push({
+      modelId,
+      field,
+      message,
+      severity: "error",
+      location: this.getLocation(modelId),
+    })
   }
 
   private addWarning(modelId: string, field: string, message: string): void {
-    this.warnings.push({ modelId, field, message, severity: "warning", location: this.getLocation(modelId) })
+    this.warnings.push({
+      modelId,
+      field,
+      message,
+      severity: "warning",
+      location: this.getLocation(modelId),
+    })
   }
 
   private printResults(): boolean {

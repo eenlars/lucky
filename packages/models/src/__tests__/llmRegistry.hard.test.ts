@@ -8,8 +8,15 @@
  *  - Evoke clear failures with precise error assertions
  */
 
-import { beforeEach, describe, expect, it } from "vitest"
-import { MODEL_CATALOG } from "../llm-catalog/catalog"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { MOCK_CATALOG } from "./fixtures/mock-catalog"
+
+// Mock the catalog module to return our mock catalog
+vi.mock("../llm-catalog/catalog", () => ({
+  MODEL_CATALOG: MOCK_CATALOG,
+}))
+
+// Import after mocking to ensure the mock is applied
 import { createLLMRegistry } from "../llm-registry"
 
 function expectToThrowMessage(fn: () => any, contains: string) {
@@ -36,15 +43,15 @@ const OAI_4O = "openai#gpt-4o"
 const OAI_4O_MINI = "openai#gpt-4o-mini"
 const OAI_35 = "openai#gpt-3.5-turbo"
 const OAI_4_TURBO = "openai#gpt-4-turbo"
-const GROQ_L31_8B = ""groq#openai/gpt-oss-20b""
+const GROQ_L31_8B = "groq#llama-3.1-8b-instant"
 
-// If any are not in the catalog these tests should fail loudly — that’s intended to surface drift.
-const catalogHas = (id: string) => MODEL_CATALOG.some((e: any) => e.id === id)
+// If any are not in the catalog these tests should fail loudly — that's intended to surface drift.
+const catalogHas = (id: string) => MOCK_CATALOG.some((e: any) => e.id === id)
 
 describe("Catalog invariants", () => {
   it("has unique ids and required fields for ALL entries", () => {
     const seen = new Set<string>()
-    for (const e of MODEL_CATALOG) {
+    for (const e of MOCK_CATALOG) {
       expect(e.id).toBeDefined()
       expect(typeof e.id).toBe("string")
       expect(e.id.length).toBeGreaterThan(2)
@@ -72,7 +79,11 @@ describe("Catalog invariants", () => {
 
   it("returns defensive copies from getCatalog() (no shared references)", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u1", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u1",
+      models: [OAI_4O_MINI],
+    })
 
     const a = user.getCatalog()
     const originalLength = a.length
@@ -119,7 +130,11 @@ describe("Registry construction & forUser() edge cases", () => {
   it("ignores caller-side later mutations to the models array (defensive copy)", () => {
     const registry = mkRegistry()
     const allowed = [OAI_4O_MINI]
-    const user = registry.forUser({ mode: "shared", userId: "u", models: allowed })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: allowed,
+    })
 
     // Mutate caller array AFTER creating the user
     allowed.length = 0
@@ -130,8 +145,16 @@ describe("Registry construction & forUser() edge cases", () => {
 
   it("different calls (even same userId) return isolated instances", () => {
     const registry = mkRegistry()
-    const a = registry.forUser({ mode: "shared", userId: "same", models: [OAI_4O_MINI] })
-    const b = registry.forUser({ mode: "shared", userId: "same", models: [OAI_4O] })
+    const a = registry.forUser({
+      mode: "shared",
+      userId: "same",
+      models: [OAI_4O_MINI],
+    })
+    const b = registry.forUser({
+      mode: "shared",
+      userId: "same",
+      models: [OAI_4O],
+    })
 
     expect(a).not.toBe(b)
     expect(() => a.model(OAI_4O_MINI)).not.toThrow()
@@ -147,7 +170,13 @@ describe("Registry construction & forUser() edge cases", () => {
       "BYOK mode requires apiKeys",
     )
     expectToThrowMessage(
-      () => registry.forUser({ mode: "byok", userId: "u", models: [OAI_4O], apiKeys: {} }),
+      () =>
+        registry.forUser({
+          mode: "byok",
+          userId: "u",
+          models: [OAI_4O],
+          apiKeys: {},
+        }),
       "BYOK mode requires apiKeys",
     )
   })
@@ -171,14 +200,22 @@ describe("UserModels.model() — resolution & errors", () => {
 
   it("resolves a fully-qualified id from the user's allowlist", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI],
+    })
     const model = user.model(OAI_4O_MINI)
     expect(model).toBeDefined()
   })
 
   it("auto-detects provider for unprefixed names that are present in the allowlist", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI],
+    })
 
     const model = user.model("gpt-4o-mini")
     expect(model).toBeDefined()
@@ -186,14 +223,22 @@ describe("UserModels.model() — resolution & errors", () => {
 
   it("throws when requesting a prefixed model that's not in the user's allowlist", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI],
+    })
 
     expectToThrowMessage(() => user.model(OAI_4O), "not in user's allowed models")
   })
 
   it("throws when requesting an unprefixed model not in the user's allowlist", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI],
+    })
 
     expectToThrowMessage(() => user.model("gpt-4o"), "not in user's allowed models")
   })
@@ -201,27 +246,47 @@ describe("UserModels.model() — resolution & errors", () => {
   it("throws when provider is not configured for a requested model", () => {
     // Only configure openai on purpose
     const registry = createLLMRegistry({ fallbackKeys: { openai: "sk" } })
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [GROQ_L31_8B] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [GROQ_L31_8B],
+    })
     expectToThrowMessage(() => user.model(GROQ_L31_8B), "Provider not configured: groq")
   })
 
   it("throws a clear error for malformed ids (missing '#')", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI],
+    })
     expectToThrowMessage(() => user.model("openai gpt-4o-mini" as any), "Model not found")
   })
 
   it("throws a clear error when the model id does not exist in the catalog", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: ["openai#definitely-not-a-real-model"] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: ["openai#definitely-not-a-real-model"],
+    })
 
     expectToThrowMessage(() => user.model("openai#definitely-not-a-real-model"), "Model not found")
   })
 
   it("user isolation: one user's allowlist MUST NOT grant another user access", () => {
     const registry = mkRegistry()
-    const u1 = registry.forUser({ mode: "shared", userId: "u1", models: [OAI_4O] })
-    const u2 = registry.forUser({ mode: "shared", userId: "u2", models: [OAI_4O_MINI] })
+    const u1 = registry.forUser({
+      mode: "shared",
+      userId: "u1",
+      models: [OAI_4O],
+    })
+    const u2 = registry.forUser({
+      mode: "shared",
+      userId: "u2",
+      models: [OAI_4O_MINI],
+    })
 
     expect(() => u1.model(OAI_4O)).not.toThrow()
     expectToThrowMessage(() => u1.model(OAI_4O_MINI), "not in user's allowed models")
@@ -232,8 +297,17 @@ describe("UserModels.model() — resolution & errors", () => {
 
   it("BYOK users are isolated from shared users (separate instances, same model)", () => {
     const registry = mkRegistry()
-    const byok = registry.forUser({ mode: "byok", userId: "byok", models: [OAI_4O], apiKeys: { openai: "sk-user" } })
-    const shared = registry.forUser({ mode: "shared", userId: "shared", models: [OAI_4O] })
+    const byok = registry.forUser({
+      mode: "byok",
+      userId: "byok",
+      models: [OAI_4O],
+      apiKeys: { openai: "sk-user" },
+    })
+    const shared = registry.forUser({
+      mode: "shared",
+      userId: "shared",
+      models: [OAI_4O],
+    })
 
     expect(() => byok.model(OAI_4O)).not.toThrow()
     expect(() => shared.model(OAI_4O)).not.toThrow()
@@ -271,31 +345,51 @@ describe("UserModels.tier() — selection semantics & constraints", () => {
 
   it("smart picks highest intelligence within the user's set", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O, OAI_4O_MINI, OAI_35] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O, OAI_4O_MINI, OAI_35],
+    })
     const m = user.tier("smart")
     expect(m).toBeDefined()
   })
 
   it("balanced returns a valid model without crossing allowlist boundaries", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O, OAI_4O_MINI, OAI_35] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O, OAI_4O_MINI, OAI_35],
+    })
     const m = user.tier("balanced")
     expect(m).toBeDefined()
   })
 
   it("throws on unknown tier names with exact message", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI],
+    })
     expectToThrowMessage(() => user.tier("mystery" as any), "Unknown tier: mystery")
   })
 
   it("throws meaningful errors when the user's models are empty or entirely invalid", () => {
     const registry = mkRegistry()
 
-    const empty = registry.forUser({ mode: "shared", userId: "empty", models: [] })
+    const empty = registry.forUser({
+      mode: "shared",
+      userId: "empty",
+      models: [],
+    })
     expectToThrowMessage(() => empty.tier("cheap"), "No models configured for tier selection")
 
-    const invalid = registry.forUser({ mode: "shared", userId: "bad", models: ["invalid#model"] })
+    const invalid = registry.forUser({
+      mode: "shared",
+      userId: "bad",
+      models: ["invalid#model"],
+    })
     expectToThrowMessage(() => invalid.tier("cheap"), "No valid models found in user's configuration")
   })
 })
@@ -303,7 +397,11 @@ describe("UserModels.tier() — selection semantics & constraints", () => {
 describe("Sync behavior & micro-performance (no async)", () => {
   it("model(), tier(), getCatalog() return synchronously in <10ms", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [OAI_4O_MINI, OAI_35] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [OAI_4O_MINI, OAI_35],
+    })
 
     let start = Date.now()
     const m = user.model(OAI_4O_MINI)
@@ -353,7 +451,11 @@ describe("Nasty configuration edge-cases (evoke errors)", () => {
 
   it("unprefixed name that is NOT in allowlist should fail even if present in catalog", () => {
     const registry = mkRegistry()
-    const user = registry.forUser({ mode: "shared", userId: "u", models: [GROQ_L31_8B] })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [GROQ_L31_8B],
+    })
 
     // Catalog likely has gpt-4o-mini, but allowlist does not
     expectToThrowMessage(() => user.model("gpt-4o-mini"), "not in user's allowed models")
@@ -361,8 +463,17 @@ describe("Nasty configuration edge-cases (evoke errors)", () => {
 
   it("switching modes does not magically grant access: BYOK user restricted to own allowlist", () => {
     const registry = mkRegistry()
-    const shared = registry.forUser({ mode: "shared", userId: "s", models: [OAI_4O_MINI] })
-    const byok = registry.forUser({ mode: "byok", userId: "b", models: [OAI_4O], apiKeys: { openai: "sk-user" } })
+    const shared = registry.forUser({
+      mode: "shared",
+      userId: "s",
+      models: [OAI_4O_MINI],
+    })
+    const byok = registry.forUser({
+      mode: "byok",
+      userId: "b",
+      models: [OAI_4O],
+      apiKeys: { openai: "sk-user" },
+    })
 
     expect(() => shared.model(OAI_4O_MINI)).not.toThrow()
     expectToThrowMessage(() => shared.model(OAI_4O), "not in user's allowed models")

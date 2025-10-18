@@ -1,11 +1,18 @@
 /**
  * Tests for catalog-queries functions
- * Validates query and filter functions with real catalog and edge cases
+ * Validates query and filter functions with mock catalog and edge cases
  */
 
 import type { LuckyProvider } from "@lucky/shared"
-import { describe, expect, it } from "vitest"
-import { MODEL_CATALOG } from "../llm-catalog/catalog"
+import { describe, expect, it, vi } from "vitest"
+import { MOCK_CATALOG } from "./fixtures/mock-catalog"
+
+// Mock the catalog module to use our stable fixture
+vi.mock("../llm-catalog/catalog", () => ({
+  MODEL_CATALOG: MOCK_CATALOG,
+}))
+
+// Import after mocking
 import {
   findModel,
   findModelById,
@@ -69,9 +76,9 @@ describe("findModelByName", () => {
   })
 
   it("finds model by suffix match", () => {
-    const model = findModelByName("openrouter#meta-llama/llama-4-maverick:free")
+    const model = findModelByName("openrouter#meta-llama/llama-3.1-8b-instruct:free")
     expect(model).toBeDefined()
-    expect(model?.id).toContain("openrouter#meta-llama/llama-4-maverick:free")
+    expect(model?.id).toContain("openrouter#meta-llama/llama-3.1-8b-instruct:free")
   })
 
   it("returns undefined for non-existent name", () => {
@@ -94,7 +101,7 @@ describe("findModelByName", () => {
     // This tests that findModelByName can handle model names with "/" in them
     // (common in OpenRouter where model names include the provider prefix)
     // We check against the actual catalog to find a model with "/" in the name
-    const modelWithSlash = MODEL_CATALOG.find(m => m.model.includes("/"))
+    const modelWithSlash = MOCK_CATALOG.find(m => m.model.includes("/"))
 
     // If no models with "/" exist in catalog, skip the test
     if (!modelWithSlash) {
@@ -114,7 +121,7 @@ describe("findModelByName with slash in model name", () => {
   it("handles model names containing slash (like OpenRouter provider/model format)", () => {
     // Find any model in the catalog that has a "/" in its name
     // This is common for OpenRouter models which use "provider/model" format
-    const testModel = MODEL_CATALOG.find(m => m.model.includes("/"))
+    const testModel = MOCK_CATALOG.find(m => m.model.includes("/"))
 
     if (!testModel) {
       // If no such model exists, create a minimal test to verify the logic works
@@ -182,7 +189,7 @@ describe("getModelsByProvider", () => {
   it("all providers combined equal full catalog", () => {
     const providers = getAllProviders()
     const allModels = providers.flatMap(p => getModelsByProvider(p))
-    expect(allModels.length).toBe(MODEL_CATALOG.length)
+    expect(allModels.length).toBe(MOCK_CATALOG.length)
   })
 })
 
@@ -239,7 +246,7 @@ describe("getRuntimeEnabledModels", () => {
 
   it("includes models where runtimeEnabled is true or undefined", () => {
     const models = getRuntimeEnabledModels()
-    const allModels = MODEL_CATALOG
+    const allModels = MOCK_CATALOG
 
     // Count expected active models
     const expectedActive = allModels.filter(m => m.runtimeEnabled !== false)
@@ -248,11 +255,11 @@ describe("getRuntimeEnabledModels", () => {
 
   it("returns subset or equal to full catalog", () => {
     const runtimeModels = getRuntimeEnabledModels()
-    expect(runtimeModels.length).toBeLessThanOrEqual(MODEL_CATALOG.length)
+    expect(runtimeModels.length).toBeLessThanOrEqual(MOCK_CATALOG.length)
   })
 
   it("validates filtering logic is correct", () => {
-    const allModels = MODEL_CATALOG
+    const allModels = MOCK_CATALOG
     const activeModels = getRuntimeEnabledModels()
 
     const disabledCount = allModels.filter(m => m.runtimeEnabled === false).length
@@ -262,8 +269,8 @@ describe("getRuntimeEnabledModels", () => {
   it("contains expected known models", () => {
     const models = getRuntimeEnabledModels()
     const ids = models.map(m => m.id)
-    expect(ids).toContain("openai#gpt-5-nano")
-    expect(ids).toContain("openrouter#meta-llama/llama-4-maverick:free")
+    expect(ids).toContain("openai#gpt-4o-mini")
+    expect(ids).toContain("openrouter#meta-llama/llama-3.1-8b-instruct:free")
   })
 })
 
@@ -307,7 +314,8 @@ describe("getRuntimeEnabledProviders", () => {
   it("contains expected providers", () => {
     const providers = getRuntimeEnabledProviders()
     expect(providers).toContain("openai")
-    expect(providers).not.toContain("groq")
+    expect(providers).toContain("groq")
+    expect(providers).toContain("openrouter")
   })
 })
 
@@ -329,7 +337,7 @@ describe("getAllProviders", () => {
 
   it("includes all providers from catalog regardless of runtimeEnabled", () => {
     const providers = getAllProviders()
-    const catalogProviders = new Set(MODEL_CATALOG.map(m => m.provider))
+    const catalogProviders = new Set(MOCK_CATALOG.map(m => m.provider))
 
     expect(providers.length).toBe(catalogProviders.size)
     for (const provider of catalogProviders) {
@@ -410,8 +418,8 @@ describe("getProviderInfo", () => {
 describe("getCatalog", () => {
   it("returns the full catalog", () => {
     const catalog = getCatalog()
-    expect(catalog).toBe(MODEL_CATALOG)
-    expect(catalog.length).toBe(MODEL_CATALOG.length)
+    expect(catalog).toBe(MOCK_CATALOG)
+    expect(catalog.length).toBe(MOCK_CATALOG.length)
   })
 
   it("returns same reference on multiple calls", () => {
@@ -445,6 +453,231 @@ describe("edge cases and error conditions", () => {
   })
 })
 
+describe("defensive input validation - null/undefined", () => {
+  it("findModelById handles null", () => {
+    // @ts-expect-error - testing invalid input
+    const model = findModelById(null)
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles undefined", () => {
+    // @ts-expect-error - testing invalid input
+    const model = findModelById(undefined)
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelByName handles null", () => {
+    // @ts-expect-error - testing invalid input
+    const model = findModelByName(null)
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelByName handles undefined", () => {
+    // @ts-expect-error - testing invalid input
+    const model = findModelByName(undefined)
+    expect(model).toBeUndefined()
+  })
+
+  it("getModelsByProvider handles null", () => {
+    // @ts-expect-error - testing invalid input
+    const models = getModelsByProvider(null)
+    expect(models).toEqual([])
+  })
+
+  it("getModelsByProvider handles undefined", () => {
+    // @ts-expect-error - testing invalid input
+    const models = getModelsByProvider(undefined)
+    expect(models).toEqual([])
+  })
+
+  it("getActiveModelsByProvider handles null", () => {
+    // @ts-expect-error - testing invalid input
+    const models = getActiveModelsByProvider(null)
+    expect(models).toEqual([])
+  })
+
+  it("getActiveModelsByProvider handles undefined", () => {
+    // @ts-expect-error - testing invalid input
+    const models = getActiveModelsByProvider(undefined)
+    expect(models).toEqual([])
+  })
+})
+
+describe("defensive input validation - malformed delimiters", () => {
+  it("findModelById handles only hash delimiter", () => {
+    const model = findModelById("#")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles hash at start only", () => {
+    const model = findModelById("#gpt-4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles hash at end only", () => {
+    const model = findModelById("openai#")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles wrong delimiter (slash)", () => {
+    const model = findModelById("openai/gpt-4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles wrong delimiter (colon)", () => {
+    const model = findModelById("openai:gpt-4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles wrong delimiter (dot)", () => {
+    const model = findModelById("openai.gpt-4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles multiple consecutive hashes", () => {
+    const model = findModelById("openai###gpt-4o")
+    expect(model).toBeUndefined()
+  })
+})
+
+describe("defensive input validation - whitespace", () => {
+  it("findModelById handles leading whitespace", () => {
+    const model = findModelById("   openai#gpt-4o-mini")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles trailing whitespace", () => {
+    const model = findModelById("openai#gpt-4o-mini   ")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles whitespace around hash", () => {
+    const model = findModelById("openai # gpt-4o-mini")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles only whitespace", () => {
+    const model = findModelById("   ")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles tabs and newlines", () => {
+    const model = findModelById("\t\nopenai#gpt-4o-mini\n\t")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelByName handles leading/trailing whitespace", () => {
+    const model = findModelByName("  gpt-4o-mini  ")
+    expect(model).toBeUndefined()
+  })
+
+  it("getModelsByProvider handles whitespace-only", () => {
+    const models = getModelsByProvider("   ")
+    expect(models).toEqual([])
+  })
+})
+
+describe("defensive input validation - special characters", () => {
+  it("findModelById handles XSS attempt", () => {
+    const model = findModelById("<script>alert('xss')</script>")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles SQL injection attempt", () => {
+    const model = findModelById("openai#gpt' OR '1'='1")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles HTML entities", () => {
+    const model = findModelById("openai&lt;#gpt&gt;4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles control characters", () => {
+    const model = findModelById("openai#gpt-4o\x00\x01\x02")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles unicode characters", () => {
+    const model = findModelById("openai#gpt-4o-🚀")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles unicode right-to-left override", () => {
+    const model = findModelById("openai#gpt\u202E4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelByName handles emoji", () => {
+    const model = findModelByName("gpt-4o-🔥💯")
+    expect(model).toBeUndefined()
+  })
+
+  it("getModelsByProvider handles special chars", () => {
+    const models = getModelsByProvider("openai!@#$%^&*()")
+    expect(models).toEqual([])
+  })
+})
+
+describe("defensive input validation - extremely long strings", () => {
+  it("findModelById handles very long string (10k chars)", () => {
+    const longString = "a".repeat(10000)
+    const model = findModelById(longString)
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles very long string with hash (10k chars)", () => {
+    const longString = `openai#${"a".repeat(10000)}`
+    const model = findModelById(longString)
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelByName handles very long string (10k chars)", () => {
+    const longString = "a".repeat(10000)
+    const model = findModelByName(longString)
+    expect(model).toBeUndefined()
+  })
+
+  it("getModelsByProvider handles very long string (10k chars)", () => {
+    const longString = "a".repeat(10000)
+    const models = getModelsByProvider(longString)
+    expect(models).toEqual([])
+  })
+
+  it("findModelById handles extremely long string (1M chars)", () => {
+    const extremelyLongString = "b".repeat(1000000)
+    const model = findModelById(extremelyLongString)
+    expect(model).toBeUndefined()
+  })
+})
+
+describe("defensive input validation - unusual delimiters and formats", () => {
+  it("findModelById handles double slashes", () => {
+    const model = findModelById("openai//gpt-4o")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles mixed delimiters", () => {
+    const model = findModelById("openai#gpt/4o:mini")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles reversed format", () => {
+    const model = findModelById("gpt-4o#openai")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles numeric-only ID", () => {
+    const model = findModelById("123#456")
+    expect(model).toBeUndefined()
+  })
+
+  it("findModelById handles single character", () => {
+    const model = findModelById("a")
+    expect(model).toBeUndefined()
+  })
+})
+
 describe("cross-validation of filtering logic", () => {
   it("active models by provider sum equals total active models", () => {
     const runtimeProviders = getRuntimeEnabledProviders()
@@ -462,7 +695,7 @@ describe("cross-validation of filtering logic", () => {
       return sum + getModelsByProvider(provider).length
     }, 0)
 
-    expect(totalByProvider).toBe(MODEL_CATALOG.length)
+    expect(totalByProvider).toBe(MOCK_CATALOG.length)
   })
 
   it("provider info activeModels sum equals total active models", () => {

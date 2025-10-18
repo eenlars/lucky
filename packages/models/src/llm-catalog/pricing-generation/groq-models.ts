@@ -8,7 +8,7 @@ export const GROQ_MODELS: ModelEntry[] = [
   {
     id: "groq#openai/gpt-oss-20b",
     provider: "groq",
-    model: "openrouter#openai/gpt-oss-20b",
+    model: "openai/gpt-oss-20b",
     input: 0.5,
     output: 0.8,
     cachedInput: 0.1,
@@ -30,7 +30,7 @@ export const GROQ_MODELS: ModelEntry[] = [
   {
     id: "groq#openai/gpt-oss-120b",
     provider: "groq",
-    model: "openrouter#openai/gpt-oss-120b",
+    model: "openai/gpt-oss-120b",
     input: 0.15,
     output: 0.75,
     cachedInput: 0.015,

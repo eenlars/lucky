@@ -15,6 +15,7 @@ export type { FallbackKeys, RegistryConfig, UserConfig } from "./types"
 
 // Catalog data export
 export { MODEL_CATALOG } from "./llm-catalog/catalog"
+export { PROVIDERS } from "./llm-catalog/providers"
 
 // Catalog query functions
 export {

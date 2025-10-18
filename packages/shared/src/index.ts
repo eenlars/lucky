@@ -121,6 +121,7 @@ export {
   modelPricingSchema,
   modelPricingTierSchema,
   modelSpeedSchema,
+  providerEntrySchema,
   tierNameSchema,
 } from "./contracts/llm-contracts/models"
 export type {
@@ -130,6 +131,7 @@ export type {
   ModelPricing,
   ModelPricingTier,
   ModelSpeed,
+  ProviderEntry,
   TierName,
 } from "./contracts/llm-contracts/models"
 

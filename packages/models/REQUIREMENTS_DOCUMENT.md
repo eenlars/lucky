@@ -1,9 +1,11 @@
 # Models Package Requirements
 
 ## Overview
+
 Simplified AI model management package providing a thin wrapper around the AI SDK, supporting multiple providers, user-specific model selection, and both BYOK (Bring Your Own Key) and shared API key scenarios.
 
 ## Core Design Principles
+
 - **Extremely simple** - Direct pass-through to AI SDK
 - **No validation** - Let AI SDK handle errors
 - **Sync methods** - Everything returns immediately
@@ -13,36 +15,43 @@ Simplified AI model management package providing a thin wrapper around the AI SD
 ## API Design
 
 ### Two-Step Pattern
+
 1. **Initialize Registry** - Create once at startup with fallback keys
 2. **Create User Instance** - Per-user instances with explicit mode selection
 
 ### Package Exports
+
 ```typescript
-export { createLLMRegistry, LLMRegistry }
-export { UserModels }
-export type { ModelEntry, FallbackKeys, RegistryConfig, UserConfig }
+export { createLLMRegistry, LLMRegistry };
+export { UserModels };
+export type { ModelEntry, FallbackKeys, RegistryConfig, UserConfig };
 ```
 
 ## Key Features
 
 ### Supported Providers
+
 - **OpenAI** - Direct API access
 - **Groq** - Fast inference models
 - **OpenRouter** - Multi-provider gateway
 
 ### Model Selection Methods
+
 1. **With provider prefix**: `"openai#gpt-4o-mini"` or `"openrouter#openai/gpt-4o-mini"` - Explicit selection
 2. **Auto-detect from name**: `"gpt-4o-mini"` - Finds matching model in user's list
 3. **Tier selection**: `tier("cheap")` - Picks from user's models only
 
 ### Tier Names
+
 - `cheap` - Lowest cost model from user's list
 - `fast` - Fastest model (prefers "fast" speed rating)
 - `smart` - Highest intelligence score
 - `balanced` - Best intelligence-to-cost ratio
 
 ### Error Handling
+
 Always throws errors immediately:
+
 - Model not found in catalog
 - Provider not configured
 - Model not in user's allowed list
@@ -50,6 +59,7 @@ Always throws errors immediately:
 - BYOK mode without apiKeys
 
 ### Model Catalog
+
 - **Build-time generation** from OpenRouter API and static definitions
 - **No runtime updates** (keeps methods synchronous)
 - **Pricing data** with input/output/cached costs per 1M tokens
@@ -60,11 +70,13 @@ Always throws errors immediately:
 ## Implementation Requirements
 
 ### Registry Configuration
+
 - `fallbackKeys` - Company API keys for shared mode
 - Clear naming to indicate fallback nature
 - Support partial key configuration
 
 ### User Configuration
+
 - **Explicit mode selection**: `"byok"` or `"shared"`
 - **User ID tracking** for analytics/debugging
 - **Model allowlist** - User can only access these models (format: `provider#modelname`)
@@ -74,6 +86,7 @@ Always throws errors immediately:
 - **API keys** - Required for BYOK, ignored for shared
 
 ### Method Signatures (All Synchronous)
+
 - `createLLMRegistry(config)` - Returns registry instance
 - `registry.forUser(config)` - Returns UserModels instance
 - `userModels.model(name)` - Returns AI SDK LanguageModel
@@ -83,6 +96,7 @@ Always throws errors immediately:
 - `userModels.getCatalog()` - Returns full model catalog array
 
 ### Important Constraints
+
 - **User isolation**: Each user's models list is independent
 - **Tier constraint**: Tiers select only from user's configured models
 - **No validation**: Don't validate API keys (let AI SDK handle it)
@@ -92,18 +106,19 @@ Always throws errors immediately:
 ## Code Examples
 
 ### Example 1: Basic Setup
+
 ```typescript
-import { createLLMRegistry } from '@lucky/models'
-import { generateText } from 'ai'
+import { createLLMRegistry } from "@lucky/models";
+import { generateText } from "ai";
 
 // Initialize once at startup
 const registry = createLLMRegistry({
   fallbackKeys: {
     openai: process.env.COMPANY_OPENAI_KEY,
     groq: process.env.COMPANY_GROQ_KEY,
-    openrouter: process.env.COMPANY_OPENROUTER_KEY
-  }
-})
+    openrouter: process.env.COMPANY_OPENROUTER_KEY,
+  },
+});
 
 // Per user request handler
 function handleUserRequest(userId: string, userConfig: UserConfig) {
@@ -112,17 +127,18 @@ function handleUserRequest(userId: string, userConfig: UserConfig) {
     mode: userConfig.hasOwnKeys ? "byok" : "shared",
     userId: userId,
     models: userConfig.selectedModels, // e.g., ["openai#gpt-4o", "groq#llama-3.1-8b", "openrouter#meta-llama/llama-3.1-70b"]
-    apiKeys: userConfig.apiKeys // Only if mode="byok"
-  })
+    apiKeys: userConfig.apiKeys, // Only if mode="byok"
+  });
 
   // Use the model
-  const model = userModels.model("openai#gpt-4o") // Explicit provider selection
+  const model = userModels.model("openai#gpt-4o"); // Explicit provider selection
   // OR: userModels.model("gpt-4o") - auto-detect finds openai#gpt-4o in user's list
-  return generateText({ model, prompt: userConfig.prompt })
+  return generateText({ model, prompt: userConfig.prompt });
 }
 ```
 
 ### Example 2: BYOK vs Shared Modes
+
 ```typescript
 // User with their OWN keys (BYOK)
 const byokUser = registry.forUser({
@@ -151,6 +167,7 @@ const model4 = sharedUser.model("openai#gpt-4o-mini")       // Always include pr
 ```
 
 ### Example 3: Tier Selection Logic
+
 ```typescript
 // IMPORTANT: Tiers ONLY select from the user's configured models
 // They do NOT access the full catalog
@@ -185,12 +202,14 @@ const balanced = user2.tier("balanced") // Best intelligence/cost ratio
 ```
 
 ## Files to Keep
+
 - ✅ OpenRouter model generation scripts (`scripts/`)
 - ✅ Build-time catalog generation (`src/catalog.ts`)
 - ✅ Model pricing data (`src/pricing-generation/`)
 - ✅ Test suite (`src/__tests__/`)
 
 ## Success Criteria
+
 1. All methods are synchronous
 2. Clear separation between registry and user instances
 3. Explicit mode selection (no implicit behavior)

@@ -25,6 +25,18 @@ export const PROVIDER_AVAILABILITY = {
 
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
 
+/**
+ * Provider entry schema - defines provider metadata for models package
+ */
+export const providerEntrySchema = z.object({
+  provider: providerNameSchema,
+  displayName: z.string(),
+  apiKeyName: z.string(),
+  apiKeyPrefix: z.string(),
+})
+
+export type ProviderEntry = z.infer<typeof providerEntrySchema>
+
 export const ModelDefaultsSchema = z.object({
   summary: z.string().default("gpt-5-nano"),
   nano: z.string().default("gpt-5-nano"),

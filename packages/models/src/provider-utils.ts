@@ -3,15 +3,15 @@
  */
 
 import { findModelById, findModelByName } from "./llm-catalog/catalog-queries"
+import { PROVIDERS } from "./llm-catalog/providers"
 
 /**
  * Common provider API keys to check as fallback
+ * Derived from PROVIDERS catalog + legacy Anthropic support
  */
 export const FALLBACK_PROVIDER_KEYS = [
-  "OPENROUTER_API_KEY",
-  "OPENAI_API_KEY",
-  "ANTHROPIC_API_KEY",
-  "GROQ_API_KEY",
+  ...PROVIDERS.map(p => p.apiKeyName),
+  "ANTHROPIC_API_KEY", // Legacy support - not in catalog
 ] as const
 
 /**
@@ -69,13 +69,12 @@ export function getRequiredProviderKeys(modelNames: string[]): string[] {
  * @returns API key name (e.g., "OPENAI_API_KEY")
  */
 export function getProviderKeyName(provider: string): string {
-  const mapping: Record<string, string> = {
-    openai: "OPENAI_API_KEY",
-    openrouter: "OPENROUTER_API_KEY",
-    anthropic: "ANTHROPIC_API_KEY",
-    groq: "GROQ_API_KEY",
+  const providerEntry = PROVIDERS.find(p => p.provider === provider.toLowerCase())
+  if (providerEntry) {
+    return providerEntry.apiKeyName
   }
-  return mapping[provider.toLowerCase()] || `${provider.toUpperCase()}_API_KEY`
+  // Fallback for unknown providers
+  return `${provider.toUpperCase()}_API_KEY`
 }
 
 /**
@@ -90,15 +89,15 @@ export function getProviderKeyName(provider: string): string {
  * getProviderDisplayName("HUGGING_FACE_API_KEY") // "Hugging Face"
  */
 export function getProviderDisplayName(keyName: string): string {
-  const mapping: Record<string, string> = {
-    OPENAI_API_KEY: "OpenAI",
-    OPENROUTER_API_KEY: "OpenRouter",
-    ANTHROPIC_API_KEY: "Anthropic",
-    GROQ_API_KEY: "Groq",
+  // Look up in PROVIDERS first
+  const providerEntry = PROVIDERS.find(p => p.apiKeyName === keyName)
+  if (providerEntry) {
+    return providerEntry.displayName
   }
 
-  if (mapping[keyName]) {
-    return mapping[keyName]
+  // Known legacy providers not in PROVIDERS
+  if (keyName === "ANTHROPIC_API_KEY") {
+    return "Anthropic"
   }
 
   // Fallback: convert HUGGING_FACE_API_KEY -> "Hugging Face"
