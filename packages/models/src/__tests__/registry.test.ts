@@ -3,7 +3,7 @@
  * Validates all requirements from REQUIREMENTS_DOCUMENT.md
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { MOCK_CATALOG } from "./fixtures/mock-catalog"
 
 // Mock the catalog module to return our mock catalog
@@ -610,7 +610,7 @@ describe("Defensive input validation - Registry creation", () => {
   })
 
   it("rejects very long API key (10k chars)", () => {
-    const longKey = "sk-" + "a".repeat(10000)
+    const longKey = `sk-${"a".repeat(10000)}`
     expect(() =>
       createLLMRegistry({
         fallbackKeys: {
@@ -674,7 +674,7 @@ describe("Defensive input validation - forUser userId", () => {
   })
 
   it("handles very long userId (10k chars)", () => {
-    const longUserId = "user-" + "a".repeat(10000)
+    const longUserId = `user-${"a".repeat(10000)}`
     const userModels = registry.forUser({
       mode: "shared",
       userId: longUserId,
@@ -757,7 +757,7 @@ describe("Defensive input validation - forUser models array", () => {
   })
 
   it("rejects very long model ID in array", () => {
-    const longModelId = "openai#" + "a".repeat(10000)
+    const longModelId = `openai#${"a".repeat(10000)}`
     expect(() =>
       registry.forUser({
         mode: "shared",
@@ -861,7 +861,7 @@ describe("Defensive input validation - forUser apiKeys", () => {
   })
 
   it("rejects very long API key in BYOK (10k chars)", () => {
-    const longKey = "sk-" + "a".repeat(10000)
+    const longKey = `sk-${"a".repeat(10000)}`
     expect(() =>
       registry.forUser({
         mode: "byok",
@@ -908,7 +908,6 @@ describe("Defensive input validation - forUser apiKeys", () => {
         userId: "test-user",
         models: ["openai#gpt-4o"],
         apiKeys: {
-          // @ts-expect-error - testing invalid input
           openai: undefined,
         },
       }),
@@ -962,7 +961,7 @@ describe("Defensive input validation - UserModels.model()", () => {
   })
 
   it("handles very long modelId (10k chars)", () => {
-    const longId = "openai#" + "a".repeat(10000)
+    const longId = `openai#${"a".repeat(10000)}`
     expect(() => userModels.model(longId)).toThrow()
   })
 
@@ -1147,7 +1146,7 @@ describe("Resource limits - DOS protection", () => {
   })
 
   it("rejects model ID that is too long (>200 chars)", () => {
-    const longModelId = "openai#" + "a".repeat(200)
+    const longModelId = `openai#${"a".repeat(200)}`
     expect(() =>
       registry.forUser({
         mode: "shared",
@@ -1158,7 +1157,7 @@ describe("Resource limits - DOS protection", () => {
   })
 
   it("accepts model ID at exactly 200 chars", () => {
-    const exactlyMaxLength = "openai#" + "a".repeat(192) // 7 + 193 = 200
+    const exactlyMaxLength = `openai#${"a".repeat(192)}` // 7 + 193 = 200
     const userModels = registry.forUser({
       mode: "shared",
       userId: "test-user",
@@ -1201,7 +1200,7 @@ describe("Resource limits - DOS protection", () => {
   })
 
   it("rejects API key that is too long (>500 chars) in BYOK", () => {
-    const longKey = "sk-" + "a".repeat(500)
+    const longKey = `sk-${"a".repeat(500)}`
     expect(() =>
       registry.forUser({
         mode: "byok",
@@ -1215,7 +1214,7 @@ describe("Resource limits - DOS protection", () => {
   })
 
   it("accepts API key at exactly 500 chars in BYOK", () => {
-    const exactlyMaxLength = "sk-" + "a".repeat(497) // 3 + 497 = 500
+    const exactlyMaxLength = `sk-${"a".repeat(497)}` // 3 + 497 = 500
     const userModels = registry.forUser({
       mode: "byok",
       userId: "test-user",
@@ -1251,7 +1250,7 @@ describe("Resource limits - DOS protection", () => {
   })
 
   it("rejects fallback key that is too long (>500 chars)", () => {
-    const longKey = "sk-" + "a".repeat(500)
+    const longKey = `sk-${"a".repeat(500)}`
     expect(() =>
       createLLMRegistry({
         fallbackKeys: {
@@ -1262,7 +1261,7 @@ describe("Resource limits - DOS protection", () => {
   })
 
   it("accepts fallback key at exactly 500 chars", () => {
-    const exactlyMaxLength = "sk-" + "a".repeat(497) // 3 + 497 = 500
+    const exactlyMaxLength = `sk-${"a".repeat(497)}` // 3 + 497 = 500
     const registry = createLLMRegistry({
       fallbackKeys: {
         openai: exactlyMaxLength,

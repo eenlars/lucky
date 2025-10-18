@@ -5,7 +5,7 @@ export function baseConfig(overrides: Parameters<typeof defineConfig>[0] = {}) {
   const baseSettings = defineConfig({
     plugins: [
       // Read both root paths and app tsconfig for "@/*"
-      tsPathsFor("./tsconfig.paths.json", "./apps/web/tsconfig.json"),
+      tsPathsFor("./tsconfig.paths.json", "./apps/web/tsconfig.json") as any,
     ],
     test: {
       environment: "node",
@@ -19,7 +19,13 @@ export function baseConfig(overrides: Parameters<typeof defineConfig>[0] = {}) {
         provider: "v8",
         reportsDirectory: "coverage",
         reporter: ["text", "html", "lcov", "json"],
-        exclude: [...configDefaults.coverage.exclude, "**/__tests__/**", "**/*.stories.*", "tests/**", "scripts/**"],
+        exclude: [
+          ...(configDefaults.coverage.exclude || []),
+          "**/__tests__/**",
+          "**/*.stories.*",
+          "tests/**",
+          "scripts/**",
+        ],
       },
 
       // Stability + performance
@@ -39,5 +45,5 @@ export function baseConfig(overrides: Parameters<typeof defineConfig>[0] = {}) {
     },
   })
 
-  return mergeConfig(baseSettings, overrides)
+  return mergeConfig(baseSettings, overrides as any)
 }

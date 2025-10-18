@@ -627,7 +627,7 @@ describe("defensive input validation - extremely long strings", () => {
   })
 
   it("findModelById handles very long string with hash (10k chars)", () => {
-    const longString = "openai#" + "a".repeat(10000)
+    const longString = `openai#${"a".repeat(10000)}`
     const model = findModelById(longString)
     expect(model).toBeUndefined()
   })
