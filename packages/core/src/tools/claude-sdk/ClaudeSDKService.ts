@@ -20,7 +20,7 @@ function hashApiKey(apiKey: string): string {
   const prefix = apiKey.slice(0, 4)
   const suffix = apiKey.slice(-4)
   const hash = apiKey.length.toString(16)
-  return `${prefix}...${hash}...${suffix}`
+  return apiKey.length <= 8 ? "[redacted]" : `${prefix}...${hash}...${suffix}`
 }
 
 export interface SDKRequest {
