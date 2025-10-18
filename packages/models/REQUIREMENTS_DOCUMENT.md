@@ -155,7 +155,7 @@ const byokUser = registry.forUser({
 const sharedUser = registry.forUser({
   mode: "shared",
   userId: "user-456",
-  models: ["openai#gpt-4o-mini", ""groq#openai/gpt-oss-20b""]
+  models: ["openai#gpt-4o-mini", "groq#openai/gpt-oss-20b"]
   // No apiKeys needed - uses fallbackKeys from registry
 })
 
