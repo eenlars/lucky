@@ -39,7 +39,7 @@ const TopProviderSchema = z.object({
 const PerRequestLimitsSchema = z.union([z.null(), z.object({}).passthrough()]).nullable()
 
 /** default_parameters vary widely; allow numbers/strings/null per key */
-const DefaultParametersSchema = z.object({}).catchall(z.union([z.number(), z.string(), z.null()]))
+const DefaultParametersSchema = z.union([z.null(), z.object({}).catchall(z.union([z.number(), z.string(), z.null()]))])
 
 /** one model entry */
 export const ModelSchemaOpenRouter = z.object({
