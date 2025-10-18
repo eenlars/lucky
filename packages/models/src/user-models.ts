@@ -209,7 +209,7 @@ export class UserModels {
         return selectedModel.id
       }
       // For model name: normalize to catalog ID
-      const catalogEntry = nameOrTier.includes("#") ? findModelById(nameOrTier) : findModelByName(nameOrTier)
+      const catalogEntry = findModelByName(nameOrTier)
       if (!catalogEntry) {
         throw new Error(`Model not found: ${nameOrTier}`)
       }

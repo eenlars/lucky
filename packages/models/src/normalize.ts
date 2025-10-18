@@ -34,21 +34,10 @@ export function normalizeModelName(modelName: string): string {
     return modelNameLower
   }
 
-  // Already normalized (has # separator) - validate it exists in catalog
-  if (modelName.includes("#")) {
-    const catalogEntry = findModelByName(modelName)
-    if (catalogEntry) {
-      return modelName
-    }
+  // Lookup and normalize model name to catalog ID
+  const catalogEntry = findModelByName(modelName)
+  if (!catalogEntry) {
     throw new Error(`Model not found in catalog: ${modelName}`)
   }
-
-  // Try to normalize to catalog ID format
-  const catalogEntry = findModelByName(modelName)
-  if (catalogEntry) {
-    return catalogEntry.id
-  }
-
-  // Model not found - throw error for early validation
-  throw new Error(`Model not found in catalog: ${modelName}`)
+  return catalogEntry.id
 }
