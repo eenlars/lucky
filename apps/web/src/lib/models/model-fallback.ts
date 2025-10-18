@@ -100,4 +100,3 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
 
   return sorted[0]?.id || null
 }
-
