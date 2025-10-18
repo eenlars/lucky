@@ -11,7 +11,7 @@
  * "Your keys stay YOUR keys and are never shared"
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 // Import mock catalog BEFORE mocking
 import { MOCK_CATALOG } from "@lucky/models/__tests__/fixtures/mock-catalog"
@@ -109,6 +109,17 @@ describe("BYOK Key Isolation - Security Critical", () => {
       OPENROUTER_API_KEY: "sk-or-process-env-SHOULD-NEVER-BE-USED",
       NODE_ENV: "production", // Force production mode
     }
+  })
+
+  afterEach(() => {
+    // Restore original process.env to prevent test pollution
+    process.env = originalEnv
+  })
+
+  afterAll(() => {
+    // Additional safeguard: restore original process.env after entire suite
+    // Ensures no cross-test contamination even if afterEach fails
+    process.env = originalEnv
   })
 
   describe("User Lockbox Keys Are Used (Not process.env)", () => {

@@ -195,12 +195,27 @@ export async function POST(request: NextRequest) {
 
     // Create registry with user's API keys as fallback
     // Keep env fallback for new users with no provider settings
+    // Forward all provider BYOK keys (including Anthropic and others)
+    const fallbackKeys: Record<string, string | undefined> = {}
+
+    // Add all keys from providerApiKeys if available
+    if (providerApiKeys) {
+      for (const [key, value] of Object.entries(providerApiKeys)) {
+        if (value && typeof value === "string") {
+          // Convert API key names back to provider names (e.g., OPENAI_API_KEY -> openai)
+          const providerName = key.replace(/_API_KEY$/, "").toLowerCase()
+          fallbackKeys[providerName] = value
+        }
+      }
+    }
+
+    // Add env fallbacks for any missing providers (for new users or shared flow)
+    if (!fallbackKeys.openai) fallbackKeys.openai = process.env.OPENAI_API_KEY
+    if (!fallbackKeys.groq) fallbackKeys.groq = process.env.GROQ_API_KEY
+    if (!fallbackKeys.openrouter) fallbackKeys.openrouter = process.env.OPENROUTER_API_KEY
+
     const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: providerApiKeys?.OPENAI_API_KEY || process.env.OPENAI_API_KEY,
-        groq: providerApiKeys?.GROQ_API_KEY || process.env.GROQ_API_KEY,
-        openrouter: providerApiKeys?.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY,
-      },
+      fallbackKeys,
     })
 
     // Execute the chat invocation within the execution context

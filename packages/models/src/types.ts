@@ -3,9 +3,7 @@
  */
 
 export interface FallbackKeys {
-  openai?: string
-  groq?: string
-  openrouter?: string
+  [provider: string]: string | undefined
 }
 
 export interface RegistryConfig {
@@ -17,8 +15,6 @@ export interface UserConfig {
   userId: string
   models: string[]
   apiKeys?: {
-    openai?: string
-    groq?: string
-    openrouter?: string
+    [provider: string]: string | undefined
   }
 }

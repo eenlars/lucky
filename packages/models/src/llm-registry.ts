@@ -53,9 +53,12 @@ export class LLMRegistry {
       throw new Error(`Too many models: maximum ${MAX_MODELS_PER_USER} models allowed per user`)
     }
 
-    // validate each model ID length
+    // validate each model ID is a string with valid length
     for (const modelId of config.models) {
-      if (typeof modelId === "string" && modelId.length > MAX_MODEL_ID_LENGTH) {
+      if (typeof modelId !== "string") {
+        throw new Error(`Model ID must be a string, got ${typeof modelId}`)
+      }
+      if (modelId.length > MAX_MODEL_ID_LENGTH) {
         throw new Error(`Model ID too long: maximum ${MAX_MODEL_ID_LENGTH} characters allowed`)
       }
     }
@@ -98,7 +101,12 @@ export class LLMRegistry {
     }
 
     // make defensive copy of models array and trim whitespace
-    const modelsCopy = config.models.map(m => m.trim())
+    const modelsCopy = config.models.map(m => {
+      if (typeof m !== "string") {
+        throw new Error(`Expected model to be a string, got ${typeof m}`)
+      }
+      return m.trim()
+    })
 
     return new UserModels(config.userId, config.mode, modelsCopy, config.apiKeys || {}, this.fallbackKeys)
   }

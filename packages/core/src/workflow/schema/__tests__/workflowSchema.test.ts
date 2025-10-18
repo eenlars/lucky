@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest"
+import { describe, expect, it, vi, beforeEach, afterAll } from "vitest"
 import {
   handleWorkflowCompletionTierStrategy,
   handleWorkflowCompletionUserModelsStrategy,
@@ -62,7 +62,6 @@ describe("workflowSchema - model name validation", () => {
         const testCases = ["CHEAP", "FAST", "SMART", "BALANCED"]
 
         for (const tier of testCases) {
-          vi.clearAllMocks()
           const workflow = createTestWorkflow(tier)
           const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
@@ -306,5 +305,9 @@ describe("workflowSchema - model name validation", () => {
       expect(result.nodes[2].modelName).toBe("cheap")
       expect(consoleWarnSpy).toHaveBeenCalledWith('Model "invalid" not found in catalog, falling back to tier: cheap')
     })
+  })
+
+  afterAll(() => {
+    consoleWarnSpy.mockRestore()
   })
 })
