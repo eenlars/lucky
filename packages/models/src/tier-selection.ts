@@ -19,7 +19,7 @@ import { findModelById } from "./llm-catalog/catalog-queries"
  * @returns Selected model entry
  * @throws {Error} If no models configured or tier unknown
  */
-export function selectModelForTier(tierName: TierName, allowedModelIds: string[]): ModelEntry {
+export function selectModelForTier(tierName: TierName, allowedModelIds: readonly string[]): ModelEntry {
   if (allowedModelIds.length === 0) {
     throw new Error("No models configured for tier selection")
   }
