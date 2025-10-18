@@ -1,8 +1,10 @@
+import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
 import { getUserModels } from "@/lib/models/server-utils"
 import { auth } from "@clerk/nextjs/server"
+import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
@@ -34,18 +36,34 @@ export async function POST(req: NextRequest) {
 
   try {
     // Fetch user's available models from database
-    const availableModels = await getUserModels(userId)
+    const userModelsInstance = await getUserModels(userId)
 
     // Merge user's available models into options
     const optionsWithModels: GenerationOptions & AfterGenerationOptions = {
       ...options,
       modelSelectionStrategy: {
         strategy: "user-models",
-        models: availableModels,
+        models: userModelsInstance,
       },
     }
 
-    const result: RS<WorkflowConfig> = await formalizeWorkflow(prompt, optionsWithModels)
+    // Create execution context with user's secrets for API key resolution
+    const secrets = createSecretResolver(userId, {
+      auth_method: "session",
+      clerk_id: userId,
+    })
+
+    const result: RS<WorkflowConfig> = await withExecutionContext(
+      {
+        principal: {
+          auth_method: "session",
+          clerk_id: userId,
+        },
+        secrets,
+        userModels: userModelsInstance,
+      },
+      async () => await formalizeWorkflow(prompt, optionsWithModels),
+    )
 
     return alrighty("workflow/formalize", result)
   } catch (error) {
