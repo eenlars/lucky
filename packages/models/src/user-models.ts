@@ -4,8 +4,8 @@
 
 import { createGroq } from "@ai-sdk/groq"
 import { createOpenAI } from "@ai-sdk/openai"
+import { type LanguageModelV2 } from "@ai-sdk/provider"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-import type { LanguageModel } from "ai"
 
 import { type TierName, providerNameSchema, tierNameSchema } from "@lucky/shared"
 
@@ -73,7 +73,7 @@ export class UserModels {
    * 2. "gpt-4o" - auto-detect provider
    * 3. Model must be in user's allowed list
    */
-  model(name: string): LanguageModel {
+  model(name: string): LanguageModelV2 {
     // First, check if the model exists in the catalog at all
     // This helps us give better error messages
     let catalogEntry = name.includes("#") ? findModelById(name) : findModelByName(name)
@@ -148,7 +148,7 @@ export class UserModels {
    * Select model by tier
    * Picks from user's allowed models only
    */
-  tier(tierName: TierName): LanguageModel {
+  tier(tierName: TierName): LanguageModelV2 {
     const selected = selectModelForTier(tierName, this.allowedModels)
     return this.model(selected.id)
   }
@@ -178,11 +178,11 @@ export class UserModels {
    * models.resolve("openai#gpt-4o", { outputType: "string" })      // → "openai#gpt-4o"
    */
   resolve(nameOrTier: string, options: { outputType: "string"; type?: "tier" | "model" }): string
-  resolve(nameOrTier: string, options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model" }): LanguageModel
+  resolve(nameOrTier: string, options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model" }): LanguageModelV2
   resolve(
     nameOrTier: string,
     options?: { outputType?: "ai-sdk-model-func" | "string"; type?: "tier" | "model" },
-  ): LanguageModel | string {
+  ): LanguageModelV2 | string {
     const tierOptions = tierNameSchema.options
     const isTier = tierOptions.includes(nameOrTier.toLowerCase() as TierName)
     const outputType = options?.outputType ?? "ai-sdk-model-func"
