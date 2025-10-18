@@ -6,6 +6,7 @@
 
 import type { LanguageModel } from "ai"
 import type { ProviderOptions } from "@ai-sdk/provider-utils"
+import { findModelById } from "@lucky/models"
 import { getModelsInstance } from "./models-instance"
 
 /**
@@ -48,18 +49,18 @@ export async function getLanguageModelWithReasoning(
   let providerOptions: ProviderOptions | undefined
 
   if (wantsReasoning) {
-    // Resolve to catalog ID to inspect provider and model name
+    // Resolve to catalog ID to get model metadata
     const modelId = models.resolve(modelName, { outputType: "string" })
+    const modelEntry = findModelById(modelId)
 
-    // Determine provider from model ID (format: "provider#model")
-    const provider = modelId.split("#")[0]
-
-    if (provider === "openrouter") {
+    if (modelEntry && modelEntry.provider === "openrouter" && modelEntry.supportsReasoning) {
       // OpenRouter reasoning configuration
-      const isAnthropic = modelId.includes("anthropic/")
-      const isGeminiThinking = modelId.includes("gemini") && (modelId.includes("thinking") || modelId.includes("think"))
+      // Use extended budget for thinking-oriented models (Anthropic, Gemini)
+      const isThinkingModel =
+        modelEntry.model.includes("anthropic/claude") ||
+        (modelEntry.model.includes("gemini") && modelEntry.model.includes("think"))
 
-      if (isAnthropic || isGeminiThinking) {
+      if (isThinkingModel) {
         providerOptions = { reasoning: { max_tokens: 2048 } as any }
       } else {
         providerOptions = { reasoning: { effort: "medium" } as any }
