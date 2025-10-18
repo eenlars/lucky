@@ -43,7 +43,7 @@ const OAI_4O = "openai#gpt-4o"
 const OAI_4O_MINI = "openai#gpt-4o-mini"
 const OAI_35 = "openai#gpt-3.5-turbo"
 const OAI_4_TURBO = "openai#gpt-4-turbo"
-const GROQ_L31_8B = "groq#openai/gpt-oss-20b"
+const GROQ_L31_8B = "groq#llama-3.1-8b-instant"
 
 // If any are not in the catalog these tests should fail loudly — that's intended to surface drift.
 const catalogHas = (id: string) => MOCK_CATALOG.some((e: any) => e.id === id)
