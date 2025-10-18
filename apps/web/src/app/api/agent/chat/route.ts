@@ -194,11 +194,12 @@ export async function POST(request: NextRequest) {
       requiredProviderKeys.length > 0 ? await secrets.getAll(requiredProviderKeys, "environment-variables") : undefined
 
     // Create registry with user's API keys as fallback
+    // Keep env fallback for new users with no provider settings
     const llmRegistry = createLLMRegistry({
       fallbackKeys: {
-        openai: providerApiKeys?.OPENAI_API_KEY,
-        groq: providerApiKeys?.GROQ_API_KEY,
-        openrouter: providerApiKeys?.OPENROUTER_API_KEY,
+        openai: providerApiKeys?.OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+        groq: providerApiKeys?.GROQ_API_KEY || process.env.GROQ_API_KEY,
+        openrouter: providerApiKeys?.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY,
       },
     })
 
