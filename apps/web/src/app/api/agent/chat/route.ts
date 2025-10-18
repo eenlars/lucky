@@ -15,15 +15,6 @@ import {
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
-// Initialize registry once with environment variables as fallback
-const modelRegistry = createLLMRegistry({
-  fallbackKeys: {
-    openai: process.env.OPENAI_API_KEY,
-    groq: process.env.GROQ_API_KEY,
-    openrouter: process.env.OPENROUTER_API_KEY,
-  },
-})
-
 // Allow streaming responses up to 60 seconds
 export const maxDuration = 60
 
@@ -202,13 +193,22 @@ export async function POST(request: NextRequest) {
     const providerApiKeys =
       requiredProviderKeys.length > 0 ? await secrets.getAll(requiredProviderKeys, "environment-variables") : undefined
 
+    // Create registry with user's API keys as fallback
+    const llmRegistry = createLLMRegistry({
+      fallbackKeys: {
+        openai: providerApiKeys?.OPENAI_API_KEY,
+        groq: providerApiKeys?.GROQ_API_KEY,
+        openrouter: providerApiKeys?.OPENROUTER_API_KEY,
+      },
+    })
+
     // Execute the chat invocation within the execution context
-    return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys }, async () => {
+    return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys, llmRegistry }, async () => {
       // Create user-specific models instance with allowed models list
       let model: LanguageModel
       let resolvedModelId: string
       try {
-        const userModels = modelRegistry.forUser({
+        const userModels = llmRegistry.forUser({
           mode: "shared", // Using fallback keys from registry
           userId: clerkId,
           models: allowlist.length > 0 ? allowlist : ["openai#gpt-4o-mini"], // Fallback to a default model

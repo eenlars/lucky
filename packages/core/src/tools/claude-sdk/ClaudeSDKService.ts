@@ -5,6 +5,7 @@
 
 import Anthropic from "@anthropic-ai/sdk"
 import type { Message, Tool } from "@anthropic-ai/sdk/resources"
+import { getApiKey } from "@core/context/executionContext"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { MissingConfigError } from "@core/utils/errors/data-errors"
@@ -39,7 +40,7 @@ export class ClaudeSDKService {
       type: string
     }>
   > {
-    const client = ClaudeSDKService.initializeClient()
+    const client = await ClaudeSDKService.initializeClient()
 
     try {
       const response = await client.models.list()
@@ -54,14 +55,14 @@ export class ClaudeSDKService {
    * Initialize SDK client (singleton pattern for efficiency).
    * Uses environment variable ANTH_API_KEY.
    */
-  private static initializeClient(): Anthropic {
-    // Always check for API key, even if client exists
-    const apiKey = process.env.ANTH_API_KEY
+  private static async initializeClient(): Promise<Anthropic> {
+    // Always check for API key from execution context
+    const apiKey = await getApiKey("ANTHROPIC_API_KEY")
 
     if (!apiKey) {
-      throw new MissingConfigError("ANTH_API_KEY", {
+      throw new MissingConfigError("ANTHROPIC_API_KEY", {
         requiredFor: "Anthropic Claude SDK usage",
-        suggestion: "Set ANTH_API_KEY in your environment variables with your Anthropic API key.",
+        suggestion: "Configure ANTHROPIC_API_KEY in Settings → Providers or set it in your environment variables.",
       })
     }
 
@@ -121,7 +122,7 @@ export class ClaudeSDKService {
       const startTime = Date.now()
 
       // Get client
-      const client = ClaudeSDKService.initializeClient()
+      const client = await ClaudeSDKService.initializeClient()
 
       // Determine model from config (map our simple names to official model IDs)
       const modelId = this.getModelId(request.config?.model)

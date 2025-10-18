@@ -21,7 +21,7 @@ import {
 import { WorkflowConfigurationError } from "@core/utils/errors/WorkflowErrors"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
-import { createLLMRegistry, getRuntimeEnabledModels } from "@lucky/models"
+import { createLLMRegistry } from "@lucky/models"
 import { isNir } from "@lucky/shared/utils/common/isNir"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -140,7 +140,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const registry = createLLMRegistry({
+    // Create registry with user/company API keys as fallback
+    const llmRegistry = createLLMRegistry({
       fallbackKeys: {
         openai: apiKeys.OPENAI_API_KEY,
         groq: apiKeys.GROQ_API_KEY,
@@ -148,15 +149,8 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const allModelIds = getRuntimeEnabledModels().map(m => m.id)
-    const userModels = registry.forUser({
-      mode: "shared",
-      userId: `system-${principal.clerk_id}`,
-      models: allModelIds,
-    })
-
-    // Execute workflow within execution context
-    const result = await withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
+    // Execute workflow within execution context with registry
+    const result = await withExecutionContext({ principal, secrets, apiKeys, llmRegistry }, async () => {
       return invokeWorkflow(coreInvocationInput)
     })
 
