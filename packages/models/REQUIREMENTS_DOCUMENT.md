@@ -195,7 +195,7 @@ const user2 = registry.forUser({
   ]
 })
 
-const cheap = user2.tier("cheap")       // Returns llama-3.1-8b (lowest cost)
+const cheap = user2.tier("cheap")       // Returns groq#openai/gpt-oss-20b (lowest cost)
 const smart = user2.tier("smart")       // Returns gpt-4o (highest intelligence)
 const fast = user2.tier("fast")         // Returns cheapest "fast" model from list
 const balanced = user2.tier("balanced") // Best intelligence/cost ratio
