@@ -30,6 +30,12 @@ export {
   getRuntimeEnabledProviders,
 } from "./llm-catalog/catalog-queries"
 
+// Normalization utilities
+export { normalizeModelName } from "./normalize"
+
+// Tier selection utilities
+export { selectModelForTier } from "./tier-selection"
+
 // Tier mapping exports
 export { mapModelNameToEasyName, mapModelToTier } from "./tier-mapping"
 

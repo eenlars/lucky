@@ -13,7 +13,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
           nodeId: "main",
           description: "desc",
           systemPrompt: "Do the thing",
-          modelName: "medium",
+          modelName: "gpt-5-mini",
           // simulate LLM echoing the inactive tool back
           mcpTools: [],
           codeTools: ["testInactiveTool"], // Using a fake tool we'll mark as inactive

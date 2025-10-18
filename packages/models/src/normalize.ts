@@ -1,0 +1,54 @@
+/**
+ * Model name normalization utilities
+ * These utilities handle conversion between different model name formats:
+ * - Tier names (cheap/fast/smart/balanced) → preserved as-is
+ * - Plain model names (gpt-4o) → catalog ID format (openai#gpt-4o)
+ * - Already normalized (openai#gpt-4o) → preserved as-is
+ */
+
+import { tierNameSchema } from "@lucky/shared"
+import { findModelByName } from "./llm-catalog/catalog-queries"
+
+/**
+ * Normalize a model name to its canonical form
+ * - Tier names are preserved as-is (for execution-time resolution)
+ * - Model names are normalized to catalog ID format (provider#model)
+ * - Already normalized IDs are validated and preserved as-is
+ *
+ * @param modelName - Tier name, model name, or catalog ID
+ * @returns Normalized model name
+ * @throws {Error} If model name is not a valid tier or catalog model
+ *
+ * @example
+ * normalizeModelName("cheap")              // → "cheap" (tier preserved)
+ * normalizeModelName("gpt-4o")             // → "openai#gpt-4o" (normalized)
+ * normalizeModelName("openai#gpt-4o")      // → "openai#gpt-4o" (already normalized)
+ * normalizeModelName("unknown-model")      // → throws Error
+ */
+export function normalizeModelName(modelName: string): string {
+  const modelNameLower = modelName.toLowerCase()
+
+  // Check if it's a tier name - preserve as-is for execution-time resolution
+  const validTiers = tierNameSchema.options
+  if (validTiers.includes(modelNameLower as any)) {
+    return modelNameLower
+  }
+
+  // Already normalized (has # separator) - validate it exists in catalog
+  if (modelName.includes("#")) {
+    const catalogEntry = findModelByName(modelName)
+    if (catalogEntry) {
+      return modelName
+    }
+    throw new Error(`Model not found in catalog: ${modelName}`)
+  }
+
+  // Try to normalize to catalog ID format
+  const catalogEntry = findModelByName(modelName)
+  if (catalogEntry) {
+    return catalogEntry.id
+  }
+
+  // Model not found - throw error for early validation
+  throw new Error(`Model not found in catalog: ${modelName}`)
+}
