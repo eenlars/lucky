@@ -1,5 +1,6 @@
 import http from "node:http"
 import type { AddressInfo } from "node:net"
+import { fileURLToPath } from "node:url"
 /**
  * Global setup for integration tests
  * Starts Next.js dev server on ephemeral port (OS-assigned)
@@ -15,7 +16,7 @@ export async function setup() {
   console.log("[integration-setup] Starting Next.js dev server...")
 
   // Resolve absolute path to ensure we're in the right workspace
-  const webDir = new URL("../../../apps/web", import.meta.url).pathname
+  const webDir = fileURLToPath(new URL("../../../apps/web", import.meta.url))
   console.log(`[integration-setup] Next.js dir: ${webDir}`)
 
   // Dev mode: instant feedback, no build required
