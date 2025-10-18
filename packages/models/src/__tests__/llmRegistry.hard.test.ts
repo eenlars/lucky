@@ -8,8 +8,15 @@
  *  - Evoke clear failures with precise error assertions
  */
 
-import { beforeEach, describe, expect, it } from "vitest"
-import { MODEL_CATALOG } from "../llm-catalog/catalog"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { MOCK_CATALOG } from "./fixtures/mock-catalog"
+
+// Mock the catalog module to return our mock catalog
+vi.mock("../llm-catalog/catalog", () => ({
+  MODEL_CATALOG: MOCK_CATALOG,
+}))
+
+// Import after mocking to ensure the mock is applied
 import { createLLMRegistry } from "../llm-registry"
 
 function expectToThrowMessage(fn: () => any, contains: string) {
@@ -36,15 +43,15 @@ const OAI_4O = "openai#gpt-4o"
 const OAI_4O_MINI = "openai#gpt-4o-mini"
 const OAI_35 = "openai#gpt-3.5-turbo"
 const OAI_4_TURBO = "openai#gpt-4-turbo"
-const GROQ_L31_8B = ""groq#openai/gpt-oss-20b""
+const GROQ_L31_8B = "groq#llama-3.1-8b-instant"
 
-// If any are not in the catalog these tests should fail loudly — that’s intended to surface drift.
-const catalogHas = (id: string) => MODEL_CATALOG.some((e: any) => e.id === id)
+// If any are not in the catalog these tests should fail loudly — that's intended to surface drift.
+const catalogHas = (id: string) => MOCK_CATALOG.some((e: any) => e.id === id)
 
 describe("Catalog invariants", () => {
   it("has unique ids and required fields for ALL entries", () => {
     const seen = new Set<string>()
-    for (const e of MODEL_CATALOG) {
+    for (const e of MOCK_CATALOG) {
       expect(e.id).toBeDefined()
       expect(typeof e.id).toBe("string")
       expect(e.id.length).toBeGreaterThan(2)

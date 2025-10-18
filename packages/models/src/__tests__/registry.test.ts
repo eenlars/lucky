@@ -3,8 +3,15 @@
  * Validates all requirements from REQUIREMENTS_DOCUMENT.md
  */
 
-import { describe, expect, it } from "vitest"
-import { MODEL_CATALOG } from "../llm-catalog/catalog"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { MOCK_CATALOG } from "./fixtures/mock-catalog"
+
+// Mock the catalog module to return our mock catalog
+vi.mock("../llm-catalog/catalog", () => ({
+  MODEL_CATALOG: MOCK_CATALOG,
+}))
+
+// Import after mocking to ensure the mock is applied
 import { createLLMRegistry } from "../llm-registry"
 
 describe("LLMRegistry", () => {
@@ -175,10 +182,10 @@ describe("UserModels", () => {
       const userModels = registry.forUser({
         mode: "shared",
         userId: "test-user",
-        models: ["groq#openai/gpt-oss-20b"],
+        models: ["groq#llama-3.1-8b-instant"],
       })
 
-      const model = userModels.model("groq#openai/gpt-oss-20b")
+      const model = userModels.model("groq#llama-3.1-8b-instant")
       expect(model).toBeDefined()
     })
 
@@ -212,10 +219,10 @@ describe("UserModels", () => {
       const userModels = registryNoGroq.forUser({
         mode: "shared",
         userId: "test-user",
-        models: ["groq#openai/gpt-oss-20b"],
+        models: ["groq#llama-3.1-8b-instant"],
       })
 
-      expect(() => userModels.model("groq#openai/gpt-oss-20b")).toThrow("Provider not configured: groq")
+      expect(() => userModels.model("groq#llama-3.1-8b-instant")).toThrow("Provider not configured: groq")
     })
   })
 
@@ -382,7 +389,7 @@ describe("UserModels", () => {
       const catalog = userModels.getCatalog()
       expect(catalog).toBeDefined()
       expect(Array.isArray(catalog)).toBe(true)
-      expect(catalog.length).toBe(MODEL_CATALOG.length)
+      expect(catalog.length).toBe(MOCK_CATALOG.length)
     })
 
     it("catalog is same for all users", () => {
@@ -553,5 +560,714 @@ describe("UserModels", () => {
       expect(smart).toBeDefined()
       expect(balanced).toBeDefined()
     })
+  })
+})
+
+describe("Defensive input validation - Registry creation", () => {
+  it("handles null fallbackKeys", () => {
+    expect(() =>
+      createLLMRegistry({
+        // @ts-expect-error - testing invalid input
+        fallbackKeys: null,
+      }),
+    ).toThrow()
+  })
+
+  it("handles undefined fallbackKeys", () => {
+    expect(() =>
+      createLLMRegistry({
+        // @ts-expect-error - testing invalid input
+        fallbackKeys: undefined,
+      }),
+    ).toThrow()
+  })
+
+  it("handles empty string as API key value", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: {
+        openai: "",
+      },
+    })
+    expect(registry).toBeDefined()
+  })
+
+  it("handles whitespace-only API key", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: {
+        openai: "   ",
+      },
+    })
+    expect(registry).toBeDefined()
+  })
+
+  it("handles special characters in API key", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: {
+        openai: "sk-!@#$%^&*(){}[]|\\:;\"'<>,.?/~`",
+      },
+    })
+    expect(registry).toBeDefined()
+  })
+
+  it("rejects very long API key (10k chars)", () => {
+    const longKey = "sk-" + "a".repeat(10000)
+    expect(() =>
+      createLLMRegistry({
+        fallbackKeys: {
+          openai: longKey,
+        },
+      }),
+    ).toThrow("Fallback API key too long")
+  })
+
+  it("rejects unicode in API key", () => {
+    expect(() =>
+      createLLMRegistry({
+        fallbackKeys: {
+          openai: "sk-🔥💯",
+        },
+      }),
+    ).toThrow("API keys must be ASCII-only")
+  })
+
+  it("handles null as API key value", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: {
+        // @ts-expect-error - testing invalid input
+        openai: null,
+      },
+    })
+    expect(registry).toBeDefined()
+  })
+})
+
+describe("Defensive input validation - forUser userId", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-test" },
+  })
+
+  it("handles empty string userId", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "",
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles whitespace-only userId", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "   ",
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles special characters in userId", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "user!@#$%^&*()",
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles very long userId (10k chars)", () => {
+    const longUserId = "user-" + "a".repeat(10000)
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: longUserId,
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles unicode in userId", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "user-🚀💯",
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles null userId", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        // @ts-expect-error - testing invalid input
+        userId: null,
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow()
+  })
+
+  it("handles undefined userId", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        // @ts-expect-error - testing invalid input
+        userId: undefined,
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow()
+  })
+
+  it("handles XSS attempt in userId", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "<script>alert('xss')</script>",
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles SQL injection attempt in userId", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "admin' OR '1'='1",
+      models: ["openai#gpt-4o-mini"],
+    })
+    expect(userModels).toBeDefined()
+  })
+})
+
+describe("Defensive input validation - forUser models array", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-test" },
+  })
+
+  it("handles malformed model IDs in array", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: ["invalid-no-hash", "also#invalid#too#many", ""],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles special characters in model IDs", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: ["openai#gpt!@#$", "<script>alert('xss')</script>#model"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("rejects very long model ID in array", () => {
+    const longModelId = "openai#" + "a".repeat(10000)
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "test-user",
+        models: [longModelId],
+      }),
+    ).toThrow("Model ID too long")
+  })
+
+  it("handles unicode in model IDs", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: ["openai#gpt-🚀", "groq#llama-💯"],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles null in models array", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "test-user",
+        // @ts-expect-error - testing invalid input
+        models: [null],
+      }),
+    ).toThrow()
+  })
+
+  it("handles undefined in models array", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "test-user",
+        // @ts-expect-error - testing invalid input
+        models: [undefined],
+      }),
+    ).toThrow()
+  })
+
+  it("handles mixed valid and invalid model IDs", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: ["openai#gpt-4o-mini", "invalid", "groq#llama-3.1-8b-instant", ""],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("handles whitespace in model IDs", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: ["  openai#gpt-4o-mini  ", "\topenai#gpt-4o\n"],
+    })
+    expect(userModels).toBeDefined()
+  })
+})
+
+describe("Defensive input validation - forUser apiKeys", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-fallback" },
+  })
+
+  it("handles empty string as API key in BYOK", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          openai: "",
+        },
+      }),
+    ).toThrow("BYOK mode requires apiKeys")
+  })
+
+  it("handles whitespace-only API key in BYOK", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          openai: "   ",
+        },
+      }),
+    ).toThrow("BYOK mode requires apiKeys")
+  })
+
+  it("handles special characters in BYOK API key", () => {
+    const userModels = registry.forUser({
+      mode: "byok",
+      userId: "test-user",
+      models: ["openai#gpt-4o"],
+      apiKeys: {
+        openai: "sk-!@#$%^&*()",
+      },
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("rejects very long API key in BYOK (10k chars)", () => {
+    const longKey = "sk-" + "a".repeat(10000)
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          openai: longKey,
+        },
+      }),
+    ).toThrow("API key too long")
+  })
+
+  it("rejects unicode in BYOK API key", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          openai: "sk-🔥💯",
+        },
+      }),
+    ).toThrow("API keys must be ASCII-only")
+  })
+
+  it("handles null as API key value in BYOK", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          // @ts-expect-error - testing invalid input
+          openai: null,
+        },
+      }),
+    ).toThrow()
+  })
+
+  it("handles undefined as API key value in BYOK", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          // @ts-expect-error - testing invalid input
+          openai: undefined,
+        },
+      }),
+    ).toThrow()
+  })
+})
+
+describe("Defensive input validation - UserModels.model()", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-test", groq: "gsk-test" },
+  })
+
+  const userModels = registry.forUser({
+    mode: "shared",
+    userId: "test-user",
+    models: ["openai#gpt-4o-mini", "groq#llama-3.1-8b-instant"],
+  })
+
+  it("handles null modelId", () => {
+    expect(() =>
+      // @ts-expect-error - testing invalid input
+      userModels.model(null),
+    ).toThrow()
+  })
+
+  it("handles undefined modelId", () => {
+    expect(() =>
+      // @ts-expect-error - testing invalid input
+      userModels.model(undefined),
+    ).toThrow()
+  })
+
+  it("handles empty string modelId", () => {
+    expect(() => userModels.model("")).toThrow()
+  })
+
+  it("handles whitespace-only modelId", () => {
+    expect(() => userModels.model("   ")).toThrow()
+  })
+
+  it("handles malformed modelId (no hash)", () => {
+    expect(() => userModels.model("gpt-4o-mini-no-hash")).toThrow()
+  })
+
+  it("handles malformed modelId (too many hashes)", () => {
+    expect(() => userModels.model("openai#gpt#4o#mini")).toThrow()
+  })
+
+  it("handles special characters in modelId", () => {
+    expect(() => userModels.model("openai#gpt!@#$")).toThrow()
+  })
+
+  it("handles very long modelId (10k chars)", () => {
+    const longId = "openai#" + "a".repeat(10000)
+    expect(() => userModels.model(longId)).toThrow()
+  })
+
+  it("handles unicode in modelId", () => {
+    expect(() => userModels.model("openai#gpt-🚀")).toThrow()
+  })
+
+  it("handles XSS attempt in modelId", () => {
+    expect(() => userModels.model("<script>alert('xss')</script>")).toThrow()
+  })
+
+  it("handles SQL injection in modelId", () => {
+    expect(() => userModels.model("openai#gpt' OR '1'='1")).toThrow()
+  })
+
+  it("handles whitespace around hash", () => {
+    expect(() => userModels.model("openai # gpt-4o-mini")).toThrow()
+  })
+
+  it("handles tabs and newlines", () => {
+    expect(() => userModels.model("\topenai#gpt-4o-mini\n")).toThrow()
+  })
+})
+
+describe("Defensive input validation - UserModels.tier()", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-test" },
+  })
+
+  const userModels = registry.forUser({
+    mode: "shared",
+    userId: "test-user",
+    models: ["openai#gpt-4o-mini", "openai#gpt-4o"],
+  })
+
+  it("handles null tier", () => {
+    expect(() =>
+      // @ts-expect-error - testing invalid input
+      userModels.tier(null),
+    ).toThrow()
+  })
+
+  it("handles undefined tier", () => {
+    expect(() =>
+      // @ts-expect-error - testing invalid input
+      userModels.tier(undefined),
+    ).toThrow()
+  })
+
+  it("handles empty string tier", () => {
+    expect(() => userModels.tier("" as any)).toThrow()
+  })
+
+  it("handles whitespace-only tier", () => {
+    expect(() => userModels.tier("   " as any)).toThrow()
+  })
+
+  it("handles invalid tier name", () => {
+    expect(() => userModels.tier("invalid-tier" as any)).toThrow("Unknown tier")
+  })
+
+  it("handles special characters in tier", () => {
+    expect(() => userModels.tier("cheap!@#$" as any)).toThrow("Unknown tier")
+  })
+
+  it("handles unicode in tier", () => {
+    expect(() => userModels.tier("cheap-🚀" as any)).toThrow("Unknown tier")
+  })
+
+  it("handles case sensitivity", () => {
+    expect(() => userModels.tier("CHEAP" as any)).toThrow("Unknown tier")
+  })
+
+  it("handles numeric tier", () => {
+    expect(() =>
+      // @ts-expect-error - testing invalid input
+      userModels.tier(123),
+    ).toThrow()
+  })
+
+  it("handles object as tier", () => {
+    expect(() =>
+      // @ts-expect-error - testing invalid input
+      userModels.tier({ tier: "cheap" }),
+    ).toThrow()
+  })
+})
+
+describe("Defensive input validation - forUser mode", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-test" },
+  })
+
+  it("handles null mode", () => {
+    expect(() =>
+      registry.forUser({
+        // @ts-expect-error - testing invalid input
+        mode: null,
+        userId: "test-user",
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow()
+  })
+
+  it("handles undefined mode", () => {
+    expect(() =>
+      registry.forUser({
+        // @ts-expect-error - testing invalid input
+        mode: undefined,
+        userId: "test-user",
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow()
+  })
+
+  it("handles empty string mode", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "" as any,
+        userId: "test-user",
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow('Mode must be "byok" or "shared"')
+  })
+
+  it("handles invalid mode string", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "invalid-mode" as any,
+        userId: "test-user",
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow('Mode must be "byok" or "shared"')
+  })
+
+  it("handles uppercase mode", () => {
+    expect(() =>
+      registry.forUser({
+        mode: "SHARED" as any,
+        userId: "test-user",
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow('Mode must be "byok" or "shared"')
+  })
+
+  it("handles numeric mode", () => {
+    expect(() =>
+      registry.forUser({
+        // @ts-expect-error - testing invalid input
+        mode: 123,
+        userId: "test-user",
+        models: ["openai#gpt-4o-mini"],
+      }),
+    ).toThrow()
+  })
+})
+
+describe("Resource limits - DOS protection", () => {
+  const registry = createLLMRegistry({
+    fallbackKeys: { openai: "sk-test" },
+  })
+
+  it("rejects too many models (>100)", () => {
+    const tooManyModels = Array.from({ length: 101 }, (_, i) => `openai#model-${i}`)
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "test-user",
+        models: tooManyModels,
+      }),
+    ).toThrow("Too many models: maximum 100 models allowed per user")
+  })
+
+  it("accepts exactly 100 models", () => {
+    const exactlyMax = Array.from({ length: 100 }, (_, i) => `openai#model-${i}`)
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: exactlyMax,
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("rejects model ID that is too long (>200 chars)", () => {
+    const longModelId = "openai#" + "a".repeat(200)
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "test-user",
+        models: [longModelId],
+      }),
+    ).toThrow("Model ID too long: maximum 200 characters allowed")
+  })
+
+  it("accepts model ID at exactly 200 chars", () => {
+    const exactlyMaxLength = "openai#" + "a".repeat(192) // 7 + 193 = 200
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "test-user",
+      models: [exactlyMaxLength],
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("rejects too many API keys in BYOK (>50)", () => {
+    const tooManyKeys: Record<string, string> = {}
+    for (let i = 0; i < 51; i++) {
+      tooManyKeys[`provider-${i}`] = `sk-key-${i}`
+    }
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: tooManyKeys,
+      }),
+    ).toThrow("Too many API keys: maximum 50 keys allowed")
+  })
+
+  it("accepts exactly 50 API keys in BYOK", () => {
+    const exactlyMaxKeys: Record<string, string> = {}
+    // Create 49 fake providers + 1 valid (openai) = exactly 50
+    for (let i = 0; i < 49; i++) {
+      exactlyMaxKeys[`provider-${i}`] = `sk-key-${i}`
+    }
+    // Need at least one valid provider
+    exactlyMaxKeys.openai = "sk-valid-key"
+
+    const userModels = registry.forUser({
+      mode: "byok",
+      userId: "test-user",
+      models: ["openai#gpt-4o"],
+      apiKeys: exactlyMaxKeys,
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("rejects API key that is too long (>500 chars) in BYOK", () => {
+    const longKey = "sk-" + "a".repeat(500)
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "test-user",
+        models: ["openai#gpt-4o"],
+        apiKeys: {
+          openai: longKey,
+        },
+      }),
+    ).toThrow("API key too long")
+  })
+
+  it("accepts API key at exactly 500 chars in BYOK", () => {
+    const exactlyMaxLength = "sk-" + "a".repeat(497) // 3 + 497 = 500
+    const userModels = registry.forUser({
+      mode: "byok",
+      userId: "test-user",
+      models: ["openai#gpt-4o"],
+      apiKeys: {
+        openai: exactlyMaxLength,
+      },
+    })
+    expect(userModels).toBeDefined()
+  })
+
+  it("rejects too many fallback keys (>50)", () => {
+    const tooManyFallbackKeys: Record<string, string> = {}
+    for (let i = 0; i < 51; i++) {
+      tooManyFallbackKeys[`provider-${i}`] = `sk-key-${i}`
+    }
+    expect(() =>
+      createLLMRegistry({
+        fallbackKeys: tooManyFallbackKeys,
+      }),
+    ).toThrow("Too many fallback API keys: maximum 50 keys allowed")
+  })
+
+  it("accepts exactly 50 fallback keys", () => {
+    const exactlyMaxKeys: Record<string, string> = {}
+    for (let i = 0; i < 50; i++) {
+      exactlyMaxKeys[`provider-${i}`] = `sk-key-${i}`
+    }
+    const registry = createLLMRegistry({
+      fallbackKeys: exactlyMaxKeys,
+    })
+    expect(registry).toBeDefined()
+  })
+
+  it("rejects fallback key that is too long (>500 chars)", () => {
+    const longKey = "sk-" + "a".repeat(500)
+    expect(() =>
+      createLLMRegistry({
+        fallbackKeys: {
+          openai: longKey,
+        },
+      }),
+    ).toThrow("Fallback API key too long")
+  })
+
+  it("accepts fallback key at exactly 500 chars", () => {
+    const exactlyMaxLength = "sk-" + "a".repeat(497) // 3 + 497 = 500
+    const registry = createLLMRegistry({
+      fallbackKeys: {
+        openai: exactlyMaxLength,
+      },
+    })
+    expect(registry).toBeDefined()
   })
 })
