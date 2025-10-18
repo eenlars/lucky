@@ -4,6 +4,7 @@
  */
 
 import type { LuckyProvider } from "@lucky/shared"
+import type { PrepareProblemMethod } from "@lucky/shared/contracts/config"
 
 /**
  * Filesystem paths configuration.
@@ -121,7 +122,7 @@ export interface CoreWorkflowConfig {
   /** Whether to prepare problem before execution */
   readonly prepareProblem: boolean
   /** Problem preparation method */
-  readonly prepareProblemMethod: "ai" | "workflow"
+  readonly prepareProblemMethod: PrepareProblemMethod
   /** Workflow version ID for problem preparation */
   readonly prepareProblemWorkflowVersionId: string
   /** Whether to enable parallel execution */

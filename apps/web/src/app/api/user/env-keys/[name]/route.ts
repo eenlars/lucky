@@ -1,5 +1,5 @@
 import { decryptEnvKey, getEnvKeyByName, updateEnvKeyLastUsed } from "@/features/secret-management/lib/env-keys"
-import { alrighty, fail } from "@/lib/api/server"
+import { fail, success } from "@/lib/api/server"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
@@ -10,7 +10,12 @@ export const runtime = "nodejs"
 // Returns the decrypted value of a specific environment variable
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   const { isAuthenticated, userId } = await auth()
-  if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
+  if (!isAuthenticated) {
+    return fail("user/env-keys/[name]", "Unauthorized", {
+      code: "UNAUTHORIZED",
+      status: 401,
+    })
+  }
 
   const { name } = await params
 
@@ -47,14 +52,15 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ nam
     // Update last_used_at
     await updateEnvKeyLastUsed(supabase, data.user_secret_id)
 
-    return alrighty("user/env-keys/[name]", {
+    return success("user/env-keys/[name]", {
       id: data.user_secret_id,
       name: data.name,
       value,
       createdAt: data.created_at,
     })
-  } catch (e: any) {
-    return fail("user/env-keys/[name]", e?.message ?? "Failed to fetch environment key", {
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Failed to fetch environment key"
+    return fail("user/env-keys/[name]", message, {
       code: "DECRYPT_ERROR",
       status: 500,
     })

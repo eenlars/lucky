@@ -28,7 +28,7 @@ import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
-import { genShortId, isNir } from "@lucky/shared"
+import { type MCPToolkitMap, genShortId, isNir } from "@lucky/shared"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { type NextRequest, NextResponse } from "next/server"
@@ -157,14 +157,14 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
     // Load MCP configurations from both database and lockbox
-    let mcpToolkits: import("@lucky/shared").MCPToolkitMap | undefined
+    let mcpToolkits: MCPToolkitMap | undefined
     if (principal.auth_method === "session") {
       try {
         // Load from database
         const databaseToolkits = await loadMCPToolkitsFromDatabase(principal.clerk_id)
 
         // Load from lockbox
-        let lockboxToolkits: import("@lucky/shared").MCPToolkitMap | undefined
+        let lockboxToolkits: MCPToolkitMap | undefined
         try {
           const mcpConfigJson = await secrets.get("servers", "mcp")
 

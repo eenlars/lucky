@@ -175,8 +175,15 @@ export async function handleSuccess(
     nodeInvocationId = context.nodeInvocationId
   } else {
     // Legacy pattern: create record at completion only (backwards compatibility)
+    if (!context.nodeVersionId) {
+      throw new Error(
+        `[handleSuccess] nodeVersionId is required but missing for node ${nodeConfig.nodeId}. This indicates the node was not properly registered in the database.`,
+      )
+    }
+
     const nodeInvocationData: NodeInvocationData = {
       nodeId: nodeConfig.nodeId,
+      nodeVersionId: context.nodeVersionId,
       workflowInvocationId: context.workflowInvocationId,
       workflowVersionId: context.workflowVersionId,
       startTime: context.startTime,
@@ -252,8 +259,15 @@ export async function handleError({
     nodeInvocationId = context.nodeInvocationId
   } else {
     // Legacy pattern: create record at completion only (backwards compatibility)
+    if (!context.nodeVersionId) {
+      throw new Error(
+        `[handleError] nodeVersionId is required but missing for node ${context.nodeConfig.nodeId}. This indicates the node was not properly registered in the database.`,
+      )
+    }
+
     const nodeInvocationData: NodeInvocationData = {
       nodeId: context.nodeConfig.nodeId,
+      nodeVersionId: context.nodeVersionId,
       workflowInvocationId: context.workflowInvocationId,
       workflowVersionId: context.workflowVersionId,
       startTime: context.startTime,

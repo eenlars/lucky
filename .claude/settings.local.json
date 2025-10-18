@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "MultiEdit",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "TodoWrite",
+      "Task",
+      "ExitPlanMode",
+      "NotebookEdit",
+      "BashOutput",
+      "KillShell",
+      "mcp__*",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__ide__getDiagnostics"
+    ],
+    "deny": ["Bash(rm -rf :*)"],
+    "ask": []
+  }
+}

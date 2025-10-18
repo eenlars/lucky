@@ -386,10 +386,19 @@ export class Workflow {
    * @returns The created workflowInvocationId
    */
   async createInvocationForIO(index: number, workflowIO: WorkflowIO): Promise<string> {
-    const workflowInvocationId = genShortId()
+    const workflowInvocationId = `wf_inv_${genShortId()}`
+
+    console.log(
+      "[Workflow.createInvocationForIO] 🔍 DEBUG: Creating invocation",
+      workflowInvocationId,
+      "for IO index",
+      index,
+    )
+    console.log("[Workflow.createInvocationForIO] 🔍 DEBUG: Persistence available?", this.persistence ? "YES" : "NO")
 
     if (this.persistence) {
       try {
+        console.log("[Workflow.createInvocationForIO] 🔍 DEBUG: Calling persistence.createWorkflowInvocation...")
         await this.persistence.createWorkflowInvocation({
           workflowInvocationId,
           workflowVersionId: this.workflowVersionId,
@@ -405,13 +414,17 @@ export class Workflow {
           workflowInput: workflowIO.workflowInput as any,
           workflowOutput: workflowIO.workflowOutput as any,
         })
+        console.log("[Workflow.createInvocationForIO] 🔍 DEBUG: ✅ Successfully created invocation in database!")
       } catch (error) {
+        console.error("[Workflow.createInvocationForIO] 🔍 DEBUG: ❌ Failed to create invocation:", error)
         lgg.error(
           `[Workflow] Failed to create workflow invocation ${workflowInvocationId} for version ${this.workflowVersionId}`,
           error,
         )
         throw new Error(`Failed to save workflow invocation: ${error instanceof Error ? error.message : String(error)}`)
       }
+    } else {
+      console.warn("[Workflow.createInvocationForIO] 🔍 DEBUG: ⚠️ Skipping invocation save - no persistence adapter!")
     }
 
     this.workflowInvocationIds.set(index, workflowInvocationId)

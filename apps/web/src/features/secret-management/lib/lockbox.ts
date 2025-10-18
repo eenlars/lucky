@@ -1,10 +1,11 @@
 import crypto from "node:crypto"
+import { envi } from "@/env.mjs"
 
 /**
  * Lockbox crypto utilities using AES-256-GCM.
  *
  * KEK handling:
- * - Reads `LOCKBOX_KEK` from process.env
+ * - Reads `LOCKBOX_KEK` from T3 env
  * - Accepts 32-byte raw, hex, or base64 strings
  * - If other length, derives a 32-byte key via SHA-256 of the input
  */
@@ -31,7 +32,7 @@ function normalizeKeyBytes(raw: string): Buffer {
 }
 
 function getKEK(): Buffer {
-  const raw = process.env.LOCKBOX_KEK
+  const raw = envi.LOCKBOX_KEK
   if (!raw) throw new Error("LOCKBOX_KEK is not set. Set a 32-byte key (hex/base64/utf8).")
   const bytes = normalizeKeyBytes(raw)
   // Ensure 32 bytes (AES-256)

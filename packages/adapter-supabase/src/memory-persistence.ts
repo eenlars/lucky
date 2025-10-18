@@ -277,12 +277,11 @@ export class InMemoryPersistence implements IPersistence {
     return workflowVersionId
   }
 
-  async updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void> {
-    const version = this.workflowVersions.get(workflowVersionId)
-    if (version) {
-      version.all_workflow_io = allWorkflowIO
-      version.updated_at = new Date().toISOString()
-    }
+  async updateWorkflowVersionWithIO(_workflowVersionId: string, _allWorkflowIO: unknown[]): Promise<void> {
+    // no-op: all_workflow_io column has been removed from WorkflowVersion table
+    // workflow IO data is now stored per invocation in WorkflowInvocation table
+    // keeping this method for interface compatibility
+    return
   }
 
   async createWorkflowInvocation(data: WorkflowInvocationData): Promise<void> {
