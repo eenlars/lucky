@@ -75,16 +75,15 @@ async function api<E extends Endpoint>(
     console.log(`[API Client] ${method} ${url}`, { status: res.status, json })
   }
 
-  // Validate response (both success and error responses)
+  // Check response status first
+  if (!res.ok) {
+    const err = (json ?? {}) as { error?: { message?: string; code?: string } }
+    throw new ApiError(err.error?.message ?? `HTTP ${res.status}`, res.status, err.error?.code ?? "HTTP_ERROR", json)
+  }
+
+  // Validate successful response against schema
   try {
     const validated = apiSchemas[endpoint].res.parse(json) as Res<E>
-
-    // If validation passed but res.ok is false, throw the error from the response
-    if (!res.ok) {
-      const err = (json ?? {}) as { error?: { message?: string; code?: string } }
-      throw new ApiError(err.error?.message ?? `HTTP ${res.status}`, res.status, err.error?.code ?? "HTTP_ERROR", json)
-    }
-
     return validated
   } catch (e) {
     if (e instanceof ZodError) {

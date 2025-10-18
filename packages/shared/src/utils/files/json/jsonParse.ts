@@ -23,20 +23,8 @@ function extractJSON(input: unknown, throwIfError = false): Record<string, unkno
     return JSON.parse(JSON.stringify(input))
   }
 
-  // Handle multiple levels of escaping
-  let processedInput = input
-  // If the string contains escaped quotes and newlines, try to unescape it first
-  if (processedInput.includes('\\"') || processedInput.includes("\\n")) {
-    // Unescape quotes and newlines
-    processedInput = processedInput.replace(/\\"/g, '"').replace(/\\n/g, "\n")
-
-    // If it still has escaped backslashes before quotes, unescape those too
-    if (processedInput.includes('\\"')) {
-      processedInput = processedInput.replace(/\\"/g, '"')
-    }
-  }
-
-  const cleaned = removeCodeFences(processedInput).trim()
+  // JSON parsers handle escape sequences correctly, so don't unescape before parsing
+  const cleaned = removeCodeFences(input).trim()
   const candidates = findJSONCandidates(cleaned)
 
   for (const chunk of candidates) {

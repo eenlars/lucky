@@ -215,8 +215,8 @@ export class InvocationPipeline {
     const config = getCoreConfig()
 
     try {
-      // Check if this node should use Claude SDK or if auto mode is selected
-      if (this.ctx.nodeConfig.useClaudeSDK || this.ctx.toolStrategyOverride === "auto") {
+      // Check if this node should use Claude SDK
+      if (this.ctx.nodeConfig.useClaudeSDK) {
         await this.runWithSDK()
       } else if (config.tools.experimentalMultiStepLoop && Object.keys(this.tools)?.length > 0) {
         if (this.ctx.toolStrategyOverride === "v3") {

@@ -3,31 +3,26 @@
  * Used for tests and local development without database.
  */
 
+import type { Tables } from "@lucky/shared"
+import type { Json, TablesInsert } from "@lucky/shared/types/public.types"
+import type { TablesUpdate } from "packages/shared/dist"
 import type {
   CleanupStats,
   DatasetRecord,
   EvolutionContext,
-  GenerationData,
-  GenerationUpdate,
   IEvolutionPersistence,
   IMessagePersistence,
   INodePersistence,
   IPersistence,
   MessageData,
-  NodeInvocationData,
   NodeInvocationEndData,
   NodeInvocationStartData,
-  NodeVersionData,
   PopulationStats,
-  RunData,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  WorkflowVersionData,
 } from "./persistence-interface"
 
 // helper to generate IDs
 function genId(prefix: string): string {
-  return `${prefix}_${Math.random().toString(36).substring(2, 15)}`
+  return `${prefix}_${Math.random().toString(36).substring(2, 8)}`
 }
 
 /**
@@ -35,53 +30,63 @@ function genId(prefix: string): string {
  * Stores all data in Maps for testing.
  */
 class InMemoryEvolutionPersistence implements IEvolutionPersistence {
-  private runs = new Map<string, any>()
-  private generations = new Map<string, any>()
-  private workflowVersions = new Map<string, any>()
+  private runs = new Map<string, Tables<"EvolutionRun">>()
+  private generations = new Map<string, Tables<"Generation">>()
+  private workflowVersions = new Map<string, Tables<"WorkflowVersion">>()
 
-  async createRun(data: RunData): Promise<string> {
-    const runId = genId("run")
+  async createRun(data: TablesInsert<"EvolutionRun">, clerkId?: string): Promise<string> {
+    const runId = data.run_id || genId("run")
     this.runs.set(runId, {
+      ...data,
       run_id: runId,
-      goal_text: data.goalText,
+      start_time: data.start_time || new Date().toISOString(),
+      status: (data.status as Tables<"EvolutionRun">["status"]) || "running",
+      clerk_id: clerkId ?? data.clerk_id ?? null,
+      end_time: data.end_time ?? null,
+      evolution_type: data.evolution_type ?? null,
+      notes: data.notes ?? null,
       config: data.config,
-      status: data.status,
-      start_time: new Date().toISOString(),
-      evolution_type: data.evolutionType,
-      notes: data.notes,
-    })
+      goal_text: data.goal_text,
+    } as Tables<"EvolutionRun">)
     return runId
   }
 
   async completeRun(runId: string, status: string, notes?: string): Promise<void> {
     const run = this.runs.get(runId)
     if (run) {
-      run.status = status
+      run.status = status === "cancelled" ? "interrupted" : (status as Tables<"EvolutionRun">["status"])
       run.end_time = new Date().toISOString()
       if (notes) run.notes = notes
     }
   }
 
-  async createGeneration(data: GenerationData): Promise<string> {
-    const generationId = genId("gen")
+  async createGeneration(data: TablesInsert<"Generation">, clerkId?: string): Promise<string> {
+    const generationId = data.generation_id || genId("gen")
     this.generations.set(generationId, {
+      ...data,
       generation_id: generationId,
-      number: data.generationNumber,
-      run_id: data.runId,
-      start_time: new Date().toISOString(),
-    })
+      clerk_id: clerkId ?? data.clerk_id ?? null,
+      start_time: data.start_time || new Date().toISOString(),
+      end_time: data.end_time ?? null,
+      best_workflow_version_id: data.best_workflow_version_id ?? null,
+      comment: data.comment ?? null,
+      feedback: data.feedback ?? null,
+      number: data.number,
+      run_id: data.run_id,
+    } as Tables<"Generation">)
     return generationId
   }
 
-  async completeGeneration(update: GenerationUpdate, stats?: PopulationStats): Promise<void> {
-    const generation = this.generations.get(update.generationId)
+  async completeGeneration(update: TablesUpdate<"Generation">, stats?: PopulationStats): Promise<void> {
+    if (!update.generation_id) return
+    const generation = this.generations.get(update.generation_id)
     if (generation) {
       generation.end_time = new Date().toISOString()
-      generation.best_workflow_version_id = update.bestWorkflowVersionId
+      generation.best_workflow_version_id = update.best_workflow_version_id ?? null
       generation.comment = stats
         ? `Best: ${stats.bestFitness.toFixed(3)}, Avg: ${stats.avgFitness.toFixed(3)}, Cost: $${stats.evaluationCost.toFixed(2)}`
-        : update.comment
-      generation.feedback = update.feedback
+        : (update.comment ?? null)
+      generation.feedback = update.feedback ?? null
     }
   }
 
@@ -115,68 +120,85 @@ class InMemoryEvolutionPersistence implements IEvolutionPersistence {
  * In-memory node persistence.
  */
 class InMemoryNodePersistence implements INodePersistence {
-  private nodeVersions = new Map<string, any>()
-  private nodeInvocations = new Map<string, any>()
+  saveNodeInvocation(data: TablesInsert<"NodeInvocation">, clerkId?: string): Promise<{ nodeInvocationId: string }> {
+    throw new Error("Method not implemented.")
+  }
 
-  async saveNodeVersion(data: NodeVersionData): Promise<{ nodeVersionId: string }> {
-    const nodeVersionId = genId("node_ver")
+  private nodeVersions = new Map<string, Tables<"NodeVersion">>()
+  private nodeInvocations = new Map<string, Tables<"NodeInvocation">>()
+
+  async saveNodeVersion(data: TablesInsert<"NodeVersion">, clerkId?: string): Promise<{ nodeVersionId: string }> {
+    const nodeVersionId = data.node_version_id || genId("node_ver")
     this.nodeVersions.set(nodeVersionId, {
+      ...data,
       node_version_id: nodeVersionId,
-      node_id: data.nodeId,
-      wf_version_id: data.workflowVersionId,
-      config: data.config,
-    })
+      created_at: data.created_at || new Date().toISOString(),
+      description: data.description ?? null,
+      extras: data.extras,
+      handoffs: data.handoffs ?? null,
+      llm_model: data.llm_model,
+      memory: data.memory ?? null,
+      node_id: data.node_id ?? "",
+      system_prompt: data.system_prompt,
+      tools: data.tools,
+      updated_at: data.updated_at || new Date().toISOString(),
+      version: data.version,
+      waiting_for: data.waiting_for ?? null,
+      wf_version_id: data.wf_version_id,
+    } as Tables<"NodeVersion">)
     return { nodeVersionId }
   }
-
   async createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }> {
-    const nodeInvocationId = genId("node_inv")
+    const nodeInvocationId = data.nodeInvocationId
     this.nodeInvocations.set(nodeInvocationId, {
       node_invocation_id: nodeInvocationId,
-      ...data,
       status: "running",
-      end_time: null,
+      start_time: data.startTime,
+      model: data.model,
+      attempt_no: data.attemptNo ?? 1,
       output: null,
-      summary: "",
+      summary: null,
       usd_cost: 0,
+      error: null,
+      extras: null,
+      metadata: null,
       updated_at: new Date().toISOString(),
-    })
+      wf_invocation_id: data.workflowInvocationId,
+      wf_version_id: data.workflowVersionId,
+      node_id: data.nodeId,
+      node_version_id: data.nodeVersionId,
+      end_time: null,
+      files: null,
+    } as Tables<"NodeInvocation">)
     return { nodeInvocationId }
   }
-
   async updateNodeInvocationEnd(data: NodeInvocationEndData): Promise<void> {
     const invocation = this.nodeInvocations.get(data.nodeInvocationId)
     if (invocation) {
-      Object.assign(invocation, {
-        end_time: data.endTime,
-        status: data.status,
-        output: data.output,
-        summary: data.summary,
-        usd_cost: data.usdCost,
-        agent_steps: data.agentSteps,
-        files: data.files,
-        updated_memory: data.updatedMemory,
-        error: data.error,
-        updated_at: new Date().toISOString(),
-      })
+      invocation.end_time = data.endTime
+      invocation.status = data.status
+      invocation.output = data.output as Json
+      invocation.summary = data.summary
+      invocation.usd_cost = data.usdCost
+      if (data.error !== undefined) invocation.error = data.error as Json
+      if (data.files !== undefined) invocation.files = data.files
+      // Store agent_steps and updated_memory in extras JSON
+      const extras: Record<string, unknown> = (
+        invocation.extras && typeof invocation.extras === "object" && !Array.isArray(invocation.extras)
+          ? invocation.extras
+          : {}
+      ) as Record<string, unknown>
+      if (data.agentSteps !== undefined) extras.agentSteps = data.agentSteps
+      if (data.updatedMemory !== undefined) extras.updatedMemory = data.updatedMemory
+      invocation.extras = extras as Json
+      invocation.updated_at = new Date().toISOString()
     }
-  }
-
-  async saveNodeInvocation(data: NodeInvocationData): Promise<{ nodeInvocationId: string }> {
-    const nodeInvocationId = genId("node_inv")
-    this.nodeInvocations.set(nodeInvocationId, {
-      node_invocation_id: nodeInvocationId,
-      ...data,
-      status: "completed",
-      updated_at: new Date().toISOString(),
-    })
-    return { nodeInvocationId }
   }
 
   async retrieveNodeSummaries(workflowInvocationId: string): Promise<Array<{ nodeId: string; summary: string }>> {
     return Array.from(this.nodeInvocations.values())
-      .filter(inv => inv.workflowInvocationId === workflowInvocationId)
-      .map(inv => ({ nodeId: inv.nodeId, summary: inv.summary || "" }))
+      .filter(inv => inv.wf_invocation_id === workflowInvocationId)
+      .map(inv => ({ nodeId: inv.node_id, summary: inv.summary || "" }))
   }
 
   async updateNodeMemory(nodeId: string, workflowVersionId: string, memory: Record<string, string>): Promise<void> {
@@ -193,16 +215,37 @@ class InMemoryNodePersistence implements INodePersistence {
  * In-memory message persistence.
  */
 class InMemoryMessagePersistence implements IMessagePersistence {
-  private messages = new Map<string, any>()
+  private messages = new Map<string, Tables<"Message">>()
 
   async save(message: MessageData): Promise<void> {
-    this.messages.set(message.messageId, { ...message })
+    this.messages.set(message.messageId, {
+      msg_id: message.messageId,
+      from_node_id: message.fromNodeId ?? null,
+      target_invocation_id: message.originInvocationId ?? null,
+      to_node_id: message.toNodeId ?? null,
+      origin_invocation_id: message.originInvocationId ?? null,
+      seq: message.seq ?? 0,
+      role: message.role,
+      payload: message.payload as unknown as Json,
+      created_at: message.createdAt,
+      wf_invocation_id: message.workflowInvocationId,
+    } as Tables<"Message">)
   }
 
   async update(messageId: string, updates: Partial<MessageData>): Promise<void> {
     const message = this.messages.get(messageId)
     if (message) {
-      Object.assign(message, updates)
+      if (updates.fromNodeId !== undefined) message.from_node_id = updates.fromNodeId || null
+      if (updates.toNodeId !== undefined) message.to_node_id = updates.toNodeId || null
+      if (updates.originInvocationId !== undefined) {
+        message.target_invocation_id = updates.originInvocationId || null
+        message.origin_invocation_id = updates.originInvocationId || null
+      }
+      if (updates.seq !== undefined) message.seq = updates.seq
+      if (updates.role !== undefined) message.role = updates.role
+      if (updates.payload !== undefined) message.payload = updates.payload as unknown as Json
+      if (updates.createdAt !== undefined) message.created_at = updates.createdAt
+      if (updates.workflowInvocationId !== undefined) message.wf_invocation_id = updates.workflowInvocationId
     }
   }
 }
@@ -212,9 +255,9 @@ class InMemoryMessagePersistence implements IMessagePersistence {
  * All data stored in memory, perfect for tests.
  */
 export class InMemoryPersistence implements IPersistence {
-  private workflows = new Map<string, any>()
-  private workflowVersions = new Map<string, any>()
-  private invocations = new Map<string, any>()
+  private workflows = new Map<string, Tables<"Workflow">>()
+  private workflowVersions = new Map<string, Tables<"WorkflowVersion"> & { all_workflow_io?: unknown[] }>()
+  private workflowInvocations = new Map<string, Tables<"WorkflowInvocation">>()
   public evolution: IEvolutionPersistence
   public nodes: INodePersistence
   public messages: IMessagePersistence
@@ -225,91 +268,53 @@ export class InMemoryPersistence implements IPersistence {
     this.messages = new InMemoryMessagePersistence()
   }
 
-  async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
+  async ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void> {
     if (!this.workflows.has(workflowId)) {
       this.workflows.set(workflowId, {
         wf_id: workflowId,
         description,
-      })
+        clerk_id: clerkId ?? null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as Tables<"Workflow">)
     }
   }
 
-  async createWorkflowVersion(data: WorkflowVersionData): Promise<void> {
-    await this.ensureWorkflowExists(data.workflowId, data.commitMessage)
-
-    this.workflowVersions.set(data.workflowVersionId, {
-      wf_version_id: data.workflowVersionId,
-      workflow_id: data.workflowId,
-      commit_message: data.commitMessage,
-      dsl: data.dsl,
-      generation_id: data.generationId,
-      operation: data.operation || "init",
-      parent1_id: data.parent1Id,
-      parent2_id: data.parent2Id,
-      created_at: new Date().toISOString(),
-    })
+  async createWorkflowVersion(data: Tables<"WorkflowVersion">): Promise<void> {
+    await this.ensureWorkflowExists(data.workflow_id, data.commit_message)
+    this.workflowVersions.set(data.wf_version_id, data)
   }
 
   async workflowVersionExists(workflowVersionId: string): Promise<boolean> {
     return this.workflowVersions.has(workflowVersionId)
   }
 
-  async ensureWorkflowVersion(
-    workflowVersionId: string,
-    workflowId: string,
-    workflowConfig: unknown,
-    generationId: string,
-    operation: string,
-    goal: string,
-  ): Promise<string> {
-    if (!this.workflowVersions.has(workflowVersionId)) {
-      await this.ensureWorkflowExists(workflowId, goal)
-      this.workflowVersions.set(workflowVersionId, {
-        wf_version_id: workflowVersionId,
-        workflow_id: workflowId,
-        commit_message: `GP Best Genome wf_version_id: ${workflowVersionId} (Gen ${generationId})`,
-        dsl: workflowConfig,
-        operation,
-        generation_id: generationId,
-        created_at: new Date().toISOString(),
-      })
+  async ensureWorkflowVersion(data: Tables<"WorkflowVersion">): Promise<void> {
+    this.workflowVersions.set(data.wf_version_id, data)
+  }
+
+  async updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void> {
+    const version = this.workflowVersions.get(workflowVersionId)
+    if (version) {
+      version.all_workflow_io = allWorkflowIO
+      version.updated_at = new Date().toISOString()
     }
-    return workflowVersionId
   }
 
-  async updateWorkflowVersionWithIO(_workflowVersionId: string, _allWorkflowIO: unknown[]): Promise<void> {
-    // no-op: all_workflow_io column has been removed from WorkflowVersion table
-    // workflow IO data is now stored per invocation in WorkflowInvocation table
-    // keeping this method for interface compatibility
-    return
+  async createWorkflowInvocation(data: Tables<"WorkflowInvocation">): Promise<void> {
+    this.workflowInvocations.set(data.wf_invocation_id, data)
   }
 
-  async createWorkflowInvocation(data: WorkflowInvocationData): Promise<void> {
-    this.invocations.set(data.workflowInvocationId, {
-      wf_invocation_id: data.workflowInvocationId,
-      wf_version_id: data.workflowVersionId,
-      status: "running",
-      start_time: new Date().toISOString(),
-      metadata: data.metadata,
-      run_id: data.runId,
-      generation_id: data.generationId,
-      fitness: data.fitness,
-      expected_output_type: data.expectedOutputType,
-      workflow_input: data.workflowInput,
-      expected_output: data.workflowOutput,
-    })
-  }
-
-  async updateWorkflowInvocation(data: WorkflowInvocationUpdate): Promise<unknown> {
-    const invocation = this.invocations.get(data.workflowInvocationId)
+  async updateWorkflowInvocation(data: TablesUpdate<"WorkflowInvocation">): Promise<void> {
+    if (!data.wf_invocation_id) return
+    const invocation = this.workflowInvocations.get(data.wf_invocation_id)
     if (invocation) {
-      Object.assign(invocation, data)
-      if (data.endTime) invocation.end_time = data.endTime
-      if (data.usdCost !== undefined) invocation.usd_cost = data.usdCost
-      if (data.accuracy !== undefined) invocation.accuracy = Math.round(data.accuracy)
-      if (data.fitnessScore !== undefined) invocation.fitness_score = Math.round(data.fitnessScore)
+      this.workflowInvocations.set(invocation.wf_invocation_id, {
+        ...invocation,
+        ...data,
+        end_time: new Date().toISOString(),
+      } as Tables<"WorkflowInvocation">)
     }
-    return invocation
   }
 
   async getWorkflowVersion(workflowVersionId: string): Promise<string | null> {
@@ -335,7 +340,7 @@ export class InMemoryPersistence implements IPersistence {
   async updateWorkflowMemory(workflowVersionId: string, workflowConfig: unknown): Promise<void> {
     const version = this.workflowVersions.get(workflowVersionId)
     if (version) {
-      version.dsl = workflowConfig
+      version.dsl = workflowConfig as Json
     }
   }
 
@@ -362,12 +367,12 @@ export class InMemoryPersistence implements IPersistence {
   }
 
   getInvocations() {
-    return Array.from(this.invocations.values())
+    return Array.from(this.workflowInvocations.values())
   }
 
   clear() {
     this.workflows.clear()
     this.workflowVersions.clear()
-    this.invocations.clear()
+    this.workflowInvocations.clear()
   }
 }

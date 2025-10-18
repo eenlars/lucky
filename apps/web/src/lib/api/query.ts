@@ -36,7 +36,7 @@ export function handleQuery<E extends Endpoint>(endpoint: E, req: NextRequest): 
     // Handle multiple values for same key as array
     for (const [key, value] of searchParams.entries()) {
       const existing = raw[key]
-      if (existing) {
+      if (existing !== undefined) {
         raw[key] = Array.isArray(existing) ? [...existing, value] : [existing, value]
       } else {
         raw[key] = value

@@ -8,6 +8,7 @@ import { getSupabaseClient } from "./client"
 import { SupabaseEvolutionPersistence } from "./evolution/evolution-persistence"
 import { SupabaseMessagePersistence } from "./messages/message-persistence"
 import { SupabaseNodePersistence } from "./nodes/node-persistence"
+import type { TablesInsert, TablesUpdate, Tables } from "@lucky/shared"
 import type {
   CleanupStats,
   DatasetRecord,
@@ -15,9 +16,6 @@ import type {
   IMessagePersistence,
   INodePersistence,
   IPersistence,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  WorkflowVersionData,
 } from "./persistence-interface"
 import { SupabaseWorkflowPersistence } from "./workflows/workflow-persistence"
 
@@ -72,7 +70,7 @@ export class SupabasePersistence implements IPersistence {
     return this.getWorkflows().ensureWorkflowExists(workflowId, description)
   }
 
-  async createWorkflowVersion(data: WorkflowVersionData): Promise<void> {
+  async createWorkflowVersion(data: TablesInsert<"WorkflowVersion">): Promise<void> {
     return this.getWorkflows().createWorkflowVersion(data)
   }
 
@@ -80,34 +78,48 @@ export class SupabasePersistence implements IPersistence {
     return this.getWorkflows().workflowVersionExists(workflowVersionId)
   }
 
-  async ensureWorkflowVersion(
-    workflowVersionId: string,
-    workflowId: string,
-    workflowConfig: unknown,
-    generationId: string,
-    operation: string,
-    goal: string,
-  ): Promise<string> {
-    return this.getWorkflows().ensureWorkflowVersion(
-      workflowVersionId,
-      workflowId,
-      workflowConfig,
-      generationId,
-      operation,
-      goal,
-    )
+  async ensureWorkflowVersion(data: Tables<"WorkflowVersion">): Promise<void> {
+    // Convert Tables row to TablesInsert for the workflow persistence layer
+    const insertData: TablesInsert<"WorkflowVersion"> = {
+      wf_version_id: data.wf_version_id,
+      workflow_id: data.workflow_id,
+      commit_message: data.commit_message,
+      dsl: data.dsl,
+      generation_id: data.generation_id,
+      operation: data.operation as TablesInsert<"WorkflowVersion">["operation"],
+      iteration_budget: data.iteration_budget,
+      time_budget_seconds: data.time_budget_seconds,
+      input_schema: data.input_schema,
+      knowledge: data.knowledge,
+    }
+    return this.getWorkflows().createWorkflowVersion(insertData)
   }
 
   async updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void> {
     return this.getWorkflows().updateWorkflowVersionWithIO(workflowVersionId, allWorkflowIO)
   }
 
-  async createWorkflowInvocation(data: WorkflowInvocationData): Promise<void> {
-    return this.getWorkflows().createWorkflowInvocation(data)
+  async createWorkflowInvocation(data: Tables<"WorkflowInvocation">): Promise<void> {
+    // Convert Tables row to TablesInsert for the workflow persistence layer
+    const insertData: TablesInsert<"WorkflowInvocation"> = {
+      wf_invocation_id: data.wf_invocation_id,
+      wf_version_id: data.wf_version_id,
+      status: data.status as TablesInsert<"WorkflowInvocation">["status"],
+      start_time: data.start_time,
+      end_time: data.end_time,
+      usd_cost: data.usd_cost,
+      extras: data.extras,
+      run_id: data.run_id,
+      generation_id: data.generation_id,
+      fitness: data.fitness,
+      workflow_input: data.workflow_input,
+      workflow_output: data.workflow_output,
+    }
+    return this.getWorkflows().createWorkflowInvocation(insertData)
   }
 
-  async updateWorkflowInvocation(data: WorkflowInvocationUpdate): Promise<unknown> {
-    return this.getWorkflows().updateWorkflowInvocation(data)
+  async updateWorkflowInvocation(data: TablesUpdate<"WorkflowInvocation">): Promise<void> {
+    await this.getWorkflows().updateWorkflowInvocation(data)
   }
 
   async getWorkflowVersion(workflowVersionId: string): Promise<string | null> {

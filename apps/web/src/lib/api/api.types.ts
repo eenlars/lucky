@@ -18,7 +18,7 @@ export type Res<E extends Endpoint> = ApiSchemas[E] extends { res: infer R }
 
 export type Query<E extends Endpoint> = ApiSchemas[E] extends { query: infer Q }
   ? Q extends z.ZodTypeAny
-    ? z.infer<Q>
+    ? z.input<Q>
     : never
   : never
 

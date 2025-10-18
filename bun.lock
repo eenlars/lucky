@@ -167,6 +167,7 @@
       "name": "@together/adapter-supabase",
       "version": "0.0.1",
       "dependencies": {
+        "@lucky/shared": "workspace:*",
         "@supabase/supabase-js": "^2.39.7",
         "pg-boss": "^10.1.4",
       },

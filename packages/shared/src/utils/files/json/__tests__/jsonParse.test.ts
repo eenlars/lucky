@@ -107,7 +107,7 @@ describe("extractJSON", () => {
       toolName: "todoWrite",
       reasoning:
         "The incoming input requires creating a todo list with 3 tasks for building a web app. The todoWrite tool allows me to create and manage a structured task list, which is exactly what is needed here. I will use this tool to create the todo list as per the requirements.",
-      plan: "I will use the todoWrite tool to create a todo list with the following 3 tasks:1. Design the user interface2. Implement the backend server 3. Test the applicationI will set the status of each task to 'pending' and the priority to 'medium' since the instructions do not specify otherwise. This will create a complete todo list for building the web app as requested.",
+      plan: "I will use the todoWrite tool to create a todo list with the following 3 tasks:\n1. Design the user interface\n2. Implement the backend server \n3. Test the application\n\nI will set the status of each task to 'pending' and the priority to 'medium' since the instructions do not specify otherwise. This will create a complete todo list for building the web app as requested.",
     }
 
     expect(JSONN.extract(input)).toEqual(expected)

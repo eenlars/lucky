@@ -752,16 +752,83 @@ export const apiSchemas = {
   /**
    * GET /api/workflow/invocations
    * List workflow invocations with filtering, sorting, and pagination
+   *
+   * Query params:
+   * - page: page number (default: 1)
+   * - pageSize: items per page (default: 20)
+   * - filters: JSON string with filtering options
+   * - sort: JSON string with sorting options
    */
   "workflow/invocations": {
     req: z.never().optional(),
     query: z.object({
-      status: z.enum(["running", "completed", "failed", "cancelled"]).optional(),
-      workflowId: z.string().optional(),
       page: z.coerce.number().int().positive().optional(),
-      limit: z.coerce.number().int().positive().max(100).optional(),
-      sortBy: z.enum(["created_at", "usd_cost", "accuracy"]).optional(),
-      sortOrder: z.enum(["asc", "desc"]).optional(),
+      pageSize: z.coerce.number().int().positive().optional(),
+      filters: z
+        .string()
+        .transform(str => {
+          try {
+            return JSON.parse(str)
+          } catch {
+            return {}
+          }
+        })
+        .pipe(
+          z.object({
+            status: z
+              .union([
+                z.enum(["running", "completed", "failed", "rolled_back"]),
+                z.array(z.enum(["running", "completed", "failed", "rolled_back"])),
+              ])
+              .optional(),
+            runId: z.string().optional(),
+            generationId: z.string().optional(),
+            wfVersionId: z.string().optional(),
+            dateRange: z
+              .object({
+                start: z.string(),
+                end: z.string(),
+              })
+              .optional(),
+            dateFrom: z.string().optional(),
+            dateTo: z.string().optional(),
+            hasFitnessScore: z.boolean().optional(),
+            hasAccuracy: z.boolean().optional(),
+            minCost: z.number().optional(),
+            maxCost: z.number().optional(),
+            minAccuracy: z.number().optional(),
+            maxAccuracy: z.number().optional(),
+            minFitness: z.number().optional(),
+            maxFitness: z.number().optional(),
+          }),
+        )
+        .optional(),
+      sort: z
+        .string()
+        .transform(str => {
+          try {
+            return JSON.parse(str)
+          } catch {
+            return { field: "start_time", order: "desc" }
+          }
+        })
+        .pipe(
+          z.object({
+            field: z.enum([
+              "start_time",
+              "end_time",
+              "status",
+              "usd_cost",
+              "accuracy",
+              "fitness",
+              "run_id",
+              "generation_id",
+              "wf_version_id",
+            ]),
+            order: z.enum(["asc", "desc"]),
+          }),
+        )
+        .optional(),
     }),
     res: ApiResponse(
       z.object({

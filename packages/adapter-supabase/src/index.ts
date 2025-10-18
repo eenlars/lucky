@@ -14,22 +14,14 @@ export type {
   CleanupStats,
   DatasetRecord,
   EvolutionContext,
-  GenerationData,
-  GenerationUpdate,
   IEvolutionPersistence,
   IMessagePersistence,
   INodePersistence,
   IPersistence,
   MessageData,
-  NodeInvocationData,
   NodeInvocationEndData,
   NodeInvocationStartData,
-  NodeVersionData,
   PopulationStats,
-  RunData,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  WorkflowVersionData,
 } from "./persistence-interface"
 
 // Error exports
