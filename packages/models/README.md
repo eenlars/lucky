@@ -68,7 +68,7 @@ const userA = registry.forUser({
 const userB = registry.forUser({
   mode: "byok",
   userId: "user-b",
-  models: ["openai#gpt-4o-mini", ""groq#openai/gpt-oss-20b""],
+  models: ["openai#gpt-4o-mini", "groq#openai/gpt-oss-20b"],
   apiKeys: { openai: "sk-...", groq: "gsk-..." }
 })
 
