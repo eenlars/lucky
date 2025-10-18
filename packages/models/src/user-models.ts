@@ -23,7 +23,7 @@ type ProviderInstance =
 export class UserModels {
   private userId: string
   private mode: "byok" | "shared"
-  private allowedModels: string[]
+  private allowedModels: readonly string[]
   private providers: Map<string, ProviderInstance>
 
   constructor(
@@ -35,7 +35,8 @@ export class UserModels {
   ) {
     this.userId = userId
     this.mode = mode
-    this.allowedModels = allowedModels
+    // Freeze array to prevent mutation attacks
+    this.allowedModels = Object.freeze([...allowedModels])
 
     // validate byok mode has keys
     if (mode === "byok" && (!apiKeys || Object.keys(apiKeys).length === 0)) {
