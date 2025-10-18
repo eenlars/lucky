@@ -115,7 +115,7 @@ describe("findModelById", () => {
   })
 
   it("finds groq models", () => {
-    const model = findModelById("groq#llama-3.3-70b-versatile")
+    const model = findModelById("groq#llama-3.1-8b-instant")
     expect(model).toBeDefined()
     expect(model?.provider).toBe("groq")
   })

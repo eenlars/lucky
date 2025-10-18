@@ -106,7 +106,10 @@ export function getAllProviders(): string[] {
  * returns provider names with count of active models
  * only includes providers with runtime-enabled models
  */
-export function getProviderInfo(): Array<{ name: string; activeModels: number }> {
+export function getProviderInfo(): Array<{
+  name: string
+  activeModels: number
+}> {
   const providers = getRuntimeEnabledProviders()
   return providers.map(provider => ({
     name: provider,

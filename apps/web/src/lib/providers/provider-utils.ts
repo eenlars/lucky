@@ -1,5 +1,5 @@
 import { logException } from "@/lib/error-logger"
-import { getProviderInfo } from "@lucky/models"
+import { getProviderInfo, PROVIDERS } from "@lucky/models"
 import type { LucideIcon } from "lucide-react"
 import { Bot } from "lucide-react"
 
@@ -24,12 +24,13 @@ export interface ProviderConfig {
  */
 const isDevelopment = process.env.NODE_ENV === "development"
 
-const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultModelsCount">> = {
+const PROVIDER_METADATA: Record<
+  string,
+  Omit<ProviderConfig, "slug" | "defaultModelsCount" | "apiKeyName" | "apiKeyPrefix">
+> = {
   openai: {
     name: "OpenAI",
     description: "Direct access to GPT models from OpenAI",
-    apiKeyName: "OPENAI_API_KEY",
-    apiKeyPrefix: "sk-",
     logo: "/logos/openai.svg",
     docsUrl: "https://platform.openai.com/docs",
     keysUrl: "https://platform.openai.com/api-keys",
@@ -37,8 +38,6 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
   groq: {
     name: "Groq",
     description: "Ultra-fast inference with Groq's LPU",
-    apiKeyName: "GROQ_API_KEY",
-    apiKeyPrefix: "gsk_",
     logo: "/logos/groq.svg",
     docsUrl: "https://console.groq.com/docs",
     keysUrl: "https://console.groq.com/keys",
@@ -47,8 +46,6 @@ const PROVIDER_METADATA: Record<string, Omit<ProviderConfig, "slug" | "defaultMo
   openrouter: {
     name: "OpenRouter",
     description: "Access to 100+ models from multiple providers",
-    apiKeyName: "OPENROUTER_API_KEY",
-    apiKeyPrefix: "sk-or-v1-",
     logo: "/logos/openrouter.svg",
     docsUrl: "https://openrouter.ai/docs",
     keysUrl: "https://openrouter.ai/keys",
@@ -66,10 +63,14 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
 
   for (const info of providerInfo) {
     const metadata = PROVIDER_METADATA[info.name]
-    if (metadata) {
+    const providerEntry = PROVIDERS.find(p => p.provider === info.name)
+
+    if (metadata && providerEntry) {
       configs[info.name] = {
         ...metadata,
         slug: info.name,
+        apiKeyName: providerEntry.apiKeyName,
+        apiKeyPrefix: providerEntry.apiKeyPrefix,
         defaultModelsCount: info.activeModels,
       }
     } else {
@@ -78,8 +79,8 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
         name: info.name.charAt(0).toUpperCase() + info.name.slice(1),
         slug: info.name,
         description: `${info.activeModels} models available`,
-        apiKeyName: `${info.name.toUpperCase()}_API_KEY`,
-        apiKeyPrefix: "",
+        apiKeyName: providerEntry?.apiKeyName || `${info.name.toUpperCase()}_API_KEY`,
+        apiKeyPrefix: providerEntry?.apiKeyPrefix || "",
         icon: Bot,
         docsUrl: "",
         keysUrl: "",
