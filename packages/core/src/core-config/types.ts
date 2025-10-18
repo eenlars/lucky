@@ -48,7 +48,7 @@ export interface CoreModelsConfig {
     readonly summary: string
     readonly nano: string
     readonly low: string
-    readonly medium: string
+    readonly balanced: string
     readonly high: string
     readonly default: string
     readonly fitness: string

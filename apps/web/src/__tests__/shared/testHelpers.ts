@@ -21,7 +21,6 @@ export const createMockToolExecutionContext = (
 // reset all vitest mocks - call this in beforeEach
 export const resetAllTestMocks = () => {
   vi.clearAllMocks()
-  vi.resetAllMocks()
 }
 
 // common beforeEach setup for vitest tests
