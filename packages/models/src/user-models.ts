@@ -4,7 +4,7 @@
 
 import { createGroq } from "@ai-sdk/groq"
 import { createOpenAI } from "@ai-sdk/openai"
-import { type LanguageModelV2 } from "@ai-sdk/provider"
+import type { LanguageModelV2 } from "@ai-sdk/provider"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 import { type TierName, providerNameSchema, tierNameSchema } from "@lucky/shared"
