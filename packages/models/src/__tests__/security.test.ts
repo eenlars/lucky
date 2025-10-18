@@ -435,3 +435,62 @@ describe("Security - Race Conditions", () => {
     expect(cat2[0].input).not.toBe(999999)
   })
 })
+
+describe("Security - Edge Case Configurations", () => {
+  let registry: ReturnType<typeof createLLMRegistry>
+
+  beforeAll(() => {
+    registry = createLLMRegistry({
+      fallbackKeys: { openai: "sk-fallback", groq: "gsk-fallback" },
+    })
+  })
+
+  it("allowlist with duplicates and whitespace still enforces boundaries", () => {
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: [
+        "openai#gpt-4o-mini",
+        "openai#gpt-4o-mini", // Duplicate
+        " openai#gpt-4o-mini ", // Whitespace
+      ],
+    })
+
+    // Asking for different model should fail
+    expect(() => user.model("openai#gpt-4o")).toThrow("not in user's allowed models")
+
+    // Valid model still works
+    expect(() => user.model("openai#gpt-4o-mini")).not.toThrow()
+  })
+
+  it("unprefixed name not in allowlist fails even if in catalog", () => {
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: ["groq#llama-3.1-8b-instant"],
+    })
+
+    // Catalog has gpt-4o-mini, but allowlist doesn't
+    expect(() => user.model("gpt-4o-mini")).toThrow("not in user's allowed models")
+  })
+
+  it("switching modes doesn't grant access across allowlists", () => {
+    const shared = registry.forUser({
+      mode: "shared",
+      userId: "s",
+      models: ["openai#gpt-4o-mini"],
+    })
+    const byok = registry.forUser({
+      mode: "byok",
+      userId: "b",
+      models: ["openai#gpt-4o"],
+      apiKeys: { openai: "sk-user" },
+    })
+
+    expect(() => shared.model("openai#gpt-4o-mini")).not.toThrow()
+    expect(() => shared.model("openai#gpt-4o")).toThrow("not in user's allowed models")
+
+    expect(() => byok.model("openai#gpt-4o")).not.toThrow()
+    expect(() => byok.model("openai#gpt-4o-mini")).toThrow("not in user's allowed models")
+  })
+})

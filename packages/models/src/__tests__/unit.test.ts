@@ -17,17 +17,38 @@ import { PROVIDERS } from "../llm-catalog/providers"
 import { getProviderDisplayName, getProviderKeyName } from "../provider-utils"
 
 describe("Model Catalog", () => {
-  it("contains models with required fields", () => {
+  it("has unique IDs and validates all invariants", () => {
     expect(MOCK_CATALOG).toBeDefined()
     expect(Array.isArray(MOCK_CATALOG)).toBe(true)
     expect(MOCK_CATALOG.length).toBeGreaterThan(0)
 
+    const seen = new Set<string>()
     for (const entry of MOCK_CATALOG) {
       expect(entry.id).toBeDefined()
+      expect(typeof entry.id).toBe("string")
+      expect(entry.id.length).toBeGreaterThan(2)
       expect(entry.provider).toBeDefined()
       expect(entry.model).toBeDefined()
       expect(typeof entry.input).toBe("number")
       expect(typeof entry.output).toBe("number")
+      expect(typeof entry.contextLength).toBe("number")
+      expect(typeof entry.intelligence).toBe("number")
+
+      // ID uniqueness
+      expect(seen.has(entry.id)).toBe(false)
+      seen.add(entry.id)
+
+      // ID format: provider#model
+      expect(entry.id.includes("#")).toBe(true)
+      const [p, m] = entry.id.split("#")
+      expect(p).toBeTruthy()
+      expect(m).toBeTruthy()
+
+      // Positivity checks
+      expect(entry.input).toBeGreaterThanOrEqual(0)
+      expect(entry.output).toBeGreaterThanOrEqual(0)
+      expect(entry.contextLength).toBeGreaterThan(0)
+      expect(entry.intelligence).toBeGreaterThanOrEqual(0)
     }
   })
 
@@ -36,6 +57,30 @@ describe("Model Catalog", () => {
     expect(catalog).toBeDefined()
     expect(Array.isArray(catalog)).toBe(true)
     expect(catalog.length).toBeGreaterThan(0)
+  })
+
+  it("getCatalog returns defensive copy preventing shared references", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: { openai: "sk-fallback" },
+    })
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u1",
+      models: ["openai#gpt-4o-mini"],
+    })
+
+    const a = user.getCatalog()
+    const originalLength = a.length
+    const aFirst = JSON.parse(JSON.stringify(a[0]))
+
+    // Mutate returned array & objects
+    a.pop()
+    ;(a[0] as any).id = "tampered#id"
+
+    // Fetch again - should be unaffected
+    const b = user.getCatalog()
+    expect(b.length).toBe(originalLength)
+    expect(b[0].id).toBe(aFirst.id)
   })
 
   it("finds models by ID when exists", () => {
@@ -90,6 +135,83 @@ describe("LLMRegistry", () => {
     expect(registry.forUser).toBeDefined()
   })
 
+  it("throws on invalid mode", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: { openai: "sk-test" },
+    })
+
+    expect(() =>
+      registry.forUser({
+        mode: "invalid" as any,
+        userId: "u",
+        models: [],
+      }),
+    ).toThrow('Mode must be "byok" or "shared"')
+  })
+
+  it("rejects non-array models input", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: { openai: "sk-test" },
+    })
+
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "u",
+        models: null as any,
+      }),
+    ).toThrow("models must be an array")
+
+    expect(() =>
+      registry.forUser({
+        mode: "shared",
+        userId: "u",
+        models: 123 as any,
+      }),
+    ).toThrow("models must be an array")
+  })
+
+  it("ignores caller mutations to models array after forUser", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: { openai: "sk-test" },
+    })
+    const allowed = ["openai#gpt-4o-mini"]
+    const user = registry.forUser({
+      mode: "shared",
+      userId: "u",
+      models: allowed,
+    })
+
+    // Mutate caller array AFTER creating user
+    allowed.length = 0
+
+    // Should still work with original list
+    expect(() => user.model("openai#gpt-4o-mini")).not.toThrow()
+  })
+
+  it("same userId returns isolated instances with different configs", () => {
+    const registry = createLLMRegistry({
+      fallbackKeys: { openai: "sk-test" },
+    })
+
+    const a = registry.forUser({
+      mode: "shared",
+      userId: "same",
+      models: ["openai#gpt-4o-mini"],
+    })
+    const b = registry.forUser({
+      mode: "shared",
+      userId: "same",
+      models: ["openai#gpt-4o"],
+    })
+
+    expect(a).not.toBe(b)
+    expect(() => a.model("openai#gpt-4o-mini")).not.toThrow()
+    expect(() => a.model("openai#gpt-4o")).toThrow("not in user's allowed models")
+    expect(() => b.model("openai#gpt-4o")).not.toThrow()
+    expect(() => b.model("openai#gpt-4o-mini")).toThrow("not in user's allowed models")
+  })
+
   it("creates user instance in shared mode", () => {
     const registry = createLLMRegistry({
       fallbackKeys: { openai: "sk-test" },
@@ -119,7 +241,7 @@ describe("LLMRegistry", () => {
     expect(userModels).toBeDefined()
   })
 
-  it("throws when BYOK mode without apiKeys", () => {
+  it("BYOK mode requires apiKeys and rejects empty objects", () => {
     const registry = createLLMRegistry({
       fallbackKeys: { openai: "sk-test" },
     })
@@ -128,9 +250,18 @@ describe("LLMRegistry", () => {
       registry.forUser({
         mode: "byok",
         userId: "user1",
-        models: ["openai#gpt-4o-mini"],
+        models: ["openai#gpt-4o"],
       }),
-    ).toThrow()
+    ).toThrow("BYOK mode requires apiKeys")
+
+    expect(() =>
+      registry.forUser({
+        mode: "byok",
+        userId: "user1",
+        models: ["openai#gpt-4o"],
+        apiKeys: {},
+      }),
+    ).toThrow("BYOK mode requires apiKeys")
   })
 
   it("isolates different users", () => {
@@ -246,5 +377,57 @@ describe("UserModels", () => {
 
     const cheap = userModels.tier("cheap")
     expect((cheap as any).modelId).toBe("openai#gpt-4o-mini")
+  })
+
+  it("all operations complete synchronously in under 10ms", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "user1",
+      models: ["openai#gpt-4o-mini", "openai#gpt-3.5-turbo"],
+    })
+
+    let start = Date.now()
+    const m = userModels.model("openai#gpt-4o-mini")
+    let duration = Date.now() - start
+    expect(m).toBeDefined()
+    expect(duration).toBeLessThan(10)
+
+    start = Date.now()
+    const t = userModels.tier("cheap")
+    duration = Date.now() - start
+    expect(t).toBeDefined()
+    expect(duration).toBeLessThan(10)
+
+    start = Date.now()
+    const c = userModels.getCatalog()
+    duration = Date.now() - start
+    expect(c).toBeDefined()
+    expect(duration).toBeLessThan(10)
+  })
+
+  it("throws on unknown tier name", () => {
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: "user1",
+      models: ["openai#gpt-4o-mini"],
+    })
+
+    expect(() => userModels.tier("mystery" as any)).toThrow("Unknown tier: mystery")
+  })
+
+  it("throws when empty allowlist or all invalid models", () => {
+    const empty = registry.forUser({
+      mode: "shared",
+      userId: "empty",
+      models: [],
+    })
+    expect(() => empty.tier("cheap")).toThrow("No models configured for tier selection")
+
+    const invalid = registry.forUser({
+      mode: "shared",
+      userId: "bad",
+      models: ["invalid#model"],
+    })
+    expect(() => invalid.tier("cheap")).toThrow("No valid models found in user's configuration")
   })
 })
