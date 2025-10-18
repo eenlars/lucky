@@ -7,6 +7,7 @@
  */
 
 import { z } from "zod"
+import { ModelsConfigSchema } from "./llm-contracts/models"
 
 // ============================================================================
 // LOGGING CONFIGURATION
@@ -55,47 +56,6 @@ export const ToolsConfigSchema = z.object({
 })
 
 export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
-
-// ============================================================================
-// MODELS CONFIGURATION
-// ============================================================================
-
-/**
- * Provider availability configuration - single source of truth.
- * Providers marked as disabled will not be initialized even if API keys are present.
- * In development mode, all providers are enabled for testing.
- */
-const isDevelopment = process.env.NODE_ENV === "development"
-
-export const PROVIDER_AVAILABILITY = {
-  openai: true,
-  openrouter: isDevelopment, // Enabled in development for testing
-  groq: isDevelopment, // Enabled in development for testing
-} as const
-
-export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
-
-export const ModelDefaultsSchema = z.object({
-  summary: z.string().default("gpt-5-nano"),
-  nano: z.string().default("gpt-5-nano"),
-  low: z.string().default("gpt-5-mini"),
-  medium: z.string().default("gpt-5-mini"),
-  high: z.string().default("gpt-5"),
-  default: z.string().default("gpt-5-nano"),
-  fitness: z.string().default("gpt-5-nano"),
-  reasoning: z.string().default("gpt-5"),
-  fallback: z.string().default("gpt-5-nano"),
-})
-
-export const ModelsConfigSchema = z.object({
-  provider: ModelProviderSchema,
-  inactive: z.array(z.string()).default(["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"]),
-  defaults: ModelDefaultsSchema.default({}),
-})
-
-export type ModelProvider = z.infer<typeof ModelProviderSchema>
-export type ModelDefaults = z.infer<typeof ModelDefaultsSchema>
-export type ModelsConfig = z.infer<typeof ModelsConfigSchema>
 
 // ============================================================================
 // WORKFLOW EXECUTION CONFIGURATION

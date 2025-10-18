@@ -57,7 +57,7 @@ export type {
 export type {
   StandardModels,
   TokenUsage,
-} from "./types/models"
+} from "./contracts/llm-contracts/models-old"
 
 // Memory schemas
 export * from "./utils/memory/memorySchema"
@@ -97,7 +97,7 @@ export {
   providerStatusSchema,
   userModelPreferencesSchema,
   userProviderSettingsSchema,
-} from "./contracts/providers"
+} from "./contracts/llm-contracts/providers"
 export type {
   ApiKeyValidation,
   CatalogId,
@@ -111,7 +111,7 @@ export type {
   ProviderConfig as ProviderStatusConfig,
   UserModelPreferences,
   UserProviderSettings,
-} from "./contracts/providers"
+} from "./contracts/llm-contracts/providers"
 
 // Model contracts
 export {
@@ -120,18 +120,18 @@ export {
   modelEntrySchema,
   modelPricingSchema,
   modelPricingTierSchema,
-  modelSelectionSchema,
   modelSpeedSchema,
-} from "./contracts/models"
+  tierNameSchema,
+} from "./contracts/llm-contracts/models"
 export type {
   EnrichedModelInfo,
   ModelCapabilities,
   ModelEntry,
   ModelPricing,
   ModelPricingTier,
-  ModelSelection,
   ModelSpeed,
-} from "./contracts/models"
+  TierName,
+} from "./contracts/llm-contracts/models"
 
 // Error contracts
 export { ErrorReportSchema, SeverityLevelSchema } from "./contracts/error"
@@ -207,12 +207,12 @@ export {
 
 // Agent event types
 export type {
-  AgentEvent,
-  AgentStartEvent,
   AgentEndEvent,
   AgentErrorEvent,
-  AgentToolStartEvent,
+  AgentEvent,
+  AgentStartEvent,
   AgentToolEndEvent,
+  AgentToolStartEvent,
 } from "./types/agentEvents"
 
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)

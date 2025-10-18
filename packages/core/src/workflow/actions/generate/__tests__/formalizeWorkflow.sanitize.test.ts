@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODEL_CATALOG, findModel } from "@lucky/models"
+import { MODEL_CATALOG, findModelByName } from "@lucky/models"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock the LLM call to return a config that erroneously includes an inactive code tool
@@ -111,10 +111,13 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
       ],
     }
 
-    const { success, data } = await formalizeWorkflow("Normalize models", {
+    const { success, data, error } = await formalizeWorkflow("Normalize models", {
       workflowConfig: baseConfig,
       verifyWorkflow: "none",
     })
+
+    console.log("data", data)
+    console.log("error", error)
 
     expect(success).toBe(true)
     expect(data).toBeDefined()
@@ -123,7 +126,7 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     const normalizedModels = data.nodes.map(node => node.modelName)
     for (const model of normalizedModels) {
       expect(model, `Model ${model} should resolve in catalog`).toBeDefined()
-      expect(findModel(model)).toBeTruthy()
+      expect(findModelByName(model)).toBeTruthy()
     }
 
     expect(normalizedModels).toContain("openai#gpt-5-mini")

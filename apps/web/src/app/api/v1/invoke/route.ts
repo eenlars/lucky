@@ -21,6 +21,7 @@ import {
 import { WorkflowConfigurationError } from "@core/utils/errors/WorkflowErrors"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
+import { createLLMRegistry, getRuntimeEnabledModels } from "@lucky/models"
 import { isNir } from "@lucky/shared/utils/common/isNir"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(formatErrorResponse(requestId, workflowLoadResult.error!), { status: 404 })
     }
 
+    // possibly, the inputschema is defined.
     const { inputSchema, config } = workflowLoadResult
 
     // Validate input against workflow's input schema (if defined)
@@ -138,8 +140,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const registry = createLLMRegistry({
+      fallbackKeys: {
+        openai: apiKeys.OPENAI_API_KEY,
+        groq: apiKeys.GROQ_API_KEY,
+        openrouter: apiKeys.OPENROUTER_API_KEY,
+      },
+    })
+
+    const allModelIds = getRuntimeEnabledModels().map(m => m.id)
+    const userModels = registry.forUser({
+      mode: "shared",
+      userId: `system-${principal.clerk_id}`,
+      models: allModelIds,
+    })
+
     // Execute workflow within execution context
-    const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
+    const result = await withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
       return invokeWorkflow(coreInvocationInput)
     })
 

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models/pricing/catalog"
+import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models"
 import { ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION, ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 import {
   AlertCircle,

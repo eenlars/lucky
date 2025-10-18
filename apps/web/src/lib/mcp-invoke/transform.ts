@@ -40,15 +40,19 @@ export function transformInvokeInput(rpcRequest: InvokeRequest): TransformResult
   // Extract goal (if provided)
   const goal = options?.goal || "Process the provided input"
 
+  const result: TransformedInvokeInput & {
+    inputData: unknown
+    inputSchema?: JsonSchemaDefinition
+  } = {
+    workflowVersionId: workflow_id,
+    prompt: goal, // Legacy field, kept for compatibility
+    workflowId,
+    inputData: input,
+  }
+
   return {
     success: true,
-    data: {
-      workflowVersionId: workflow_id,
-      prompt: goal, // Legacy field, kept for compatibility
-      workflowId,
-      inputData: input,
-      inputSchema: undefined, // Will be populated from workflow config later
-    },
+    data: result,
   }
 }
 

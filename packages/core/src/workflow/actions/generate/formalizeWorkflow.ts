@@ -1,7 +1,6 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { createWorkflowPrompt } from "@core/prompts/createWorkflow"
-import { mapModelNameToEasyName } from "@core/prompts/explainAgents"
 import { toolsExplanations } from "@core/prompts/explainTools"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"
 import { llmify, truncater } from "@core/utils/common/llmify"
@@ -18,7 +17,7 @@ import {
   handleWorkflowCompletionUserModelsStrategy,
 } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { tryNormalizeModelType } from "@lucky/models"
+import { mapModelNameToEasyName } from "@lucky/models"
 import type { ModelEntry, ModelPricingTier } from "@lucky/shared"
 import { R, type RS, withDescriptions } from "@lucky/shared"
 import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
@@ -208,15 +207,14 @@ function normalizeWorkflowModels(
       modelSelectionStrategy.models.length > 0 &&
       (modelNameLower === "low" || modelNameLower === "medium" || modelNameLower === "high")
     ) {
-      const resolved = pickUserModelForTier(modelNameLower as ModelPricingTier, modelSelectionStrategy.models)
+      const resolved = pickUserModelForTier(modelNameLower, modelSelectionStrategy.models)
       if (resolved && resolved !== node.modelName) {
         changed = true
         return { ...node, modelName: resolved }
       }
     }
 
-    // Otherwise, try to normalize the model type
-    const normalized = tryNormalizeModelType(node.modelName)
+    const normalized = node.modelName
     if (!normalized || normalized === node.modelName) {
       return node
     }

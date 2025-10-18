@@ -5,48 +5,9 @@
  */
 
 import { getCurrentProvider } from "@core/utils/spending/provider"
-import { getOpenRouterClient } from "@lucky/core/clients/openrouter/openrouterClient"
+import { getOpenRouterClient } from "@lucky/core/clients/gateways/openrouter/openrouterClient"
 import type { LanguageModel } from "ai"
 import { getModelsInstance } from "./models-instance"
-import { resolveTierOrModel, resolveTierToModel } from "./tier-resolver"
-
-/**
- * Get a basic language model without reasoning support.
- * Supports both direct model names (provider/model) and tier names (nano, low, etc.).
- *
- * Special handling for OpenRouter:
- * - When current provider is OpenRouter, all models route through OpenRouter
- * - Model names like "openrouter#openai/gpt-4" are passed as-is to OpenRouter
- *
- * @param modelName - Model name or tier name
- * @returns Promise resolving to AI SDK LanguageModel
- *
- * @example
- * ```ts
- * // Using tier name
- * const model = await getLanguageModel('high')
- *
- * // Using direct model name
- * const model = await getLanguageModel('openai/gpt-4')
- * ```
- */
-export async function getLanguageModel(modelName: string): Promise<LanguageModel> {
-  const currentProvider = getCurrentProvider()
-  const resolved = resolveTierOrModel(modelName)
-
-  // Special handling for OpenRouter: route all models through OpenRouter
-  if (currentProvider === "openrouter") {
-    // If resolved is a model name (contains /), pass it to OpenRouter directly
-    if (typeof resolved === "string" && resolved.includes("/")) {
-      const models = await getModelsInstance()
-      return await models.model({ provider: "openrouter", model: resolved })
-    }
-  }
-
-  // For other providers or tier references, use standard resolution
-  const models = await getModelsInstance()
-  return await models.model(resolved)
-}
 
 /**
  * Get a language model with optional reasoning support.
@@ -79,48 +40,43 @@ export async function getLanguageModelWithReasoning(
   const provider = getCurrentProvider()
   const wantsReasoning = Boolean(opts?.reasoning)
 
-  // If no reasoning needed, use basic retrieval
-  if (!wantsReasoning) {
-    return getLanguageModel(modelName)
-  }
-
   // For reasoning, we need provider-specific handling
   // Since @lucky/models doesn't yet support passing reasoning options,
   // we get the model and recreate it with reasoning parameters
 
   const models = await getModelsInstance()
-  const resolved = resolveTierOrModel(modelName)
+  const normalized = modelName
 
-  // Resolve tier to actual model name for provider-specific logic
-  const actualModelName = resolveTierToModel(String(modelName)) || modelName
-  const modelStr = String(actualModelName).toLowerCase()
+  if (!normalized) {
+    throw new Error("Model name is not set")
+  }
 
   // Provider-specific reasoning configuration
   if (provider === "openrouter") {
     // Use async client factory for per-user API keys
     const openrouterClient = await getOpenRouterClient()
 
-    const isAnthropic = modelStr.startsWith("anthropic/")
+    const isAnthropic = normalized.startsWith("anthropic/")
     const isGeminiThinking =
-      modelStr.includes("gemini") && (modelStr.includes("thinking") || modelStr.includes("think"))
+      normalized.includes("gemini") && (normalized.includes("thinking") || normalized.includes("think"))
 
-    if (isAnthropic || isGeminiThinking) {
-      return openrouterClient(actualModelName, { reasoning: { max_tokens: 2048 } as any })
+    if ((isAnthropic || isGeminiThinking) && wantsReasoning) {
+      return openrouterClient(normalized, { reasoning: { max_tokens: 2048 } as any })
     }
-    return openrouterClient(actualModelName, { reasoning: { effort: "medium" } as any })
+    return openrouterClient(normalized, { reasoning: { effort: "medium" } as any })
   }
 
   if (provider === "openai") {
     // OpenAI reasoning support: for now, return standard model
     // TODO: Implement OpenAI-specific reasoning parameters when SDK supports it
-    return models.model(resolved)
+    return models.model(normalized)
   }
 
   if (provider === "groq") {
     // Groq doesn't support reasoning parameters in their SDK
-    return models.model(resolved)
+    return models.model(normalized)
   }
 
   // Fallback: use standard model
-  return models.model(resolved)
+  return models.model(normalized)
 }

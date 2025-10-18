@@ -1,8 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
-import type { Models } from "@lucky/models"
-import { providerConfigSchema as modelsProviderConfigSchema } from "@lucky/models"
+import type { UserModels } from "@lucky/models"
 import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { z } from "zod"
@@ -15,9 +14,8 @@ export const ZExecutionSchema = z.object({
   principal: ZPrincipal,
   secrets: z.custom<SecretResolver>(),
   apiKeys: z.record(z.string()).optional(),
-  // Provider configuration used by @lucky/models instance
-  providerConfig: z.record(modelsProviderConfigSchema).optional(),
-  modelsInstance: z.custom<Models>().optional(),
+  // UserModels instance for this workflow invocation
+  userModels: z.custom<UserModels>().optional(),
   spendingTracker: z.custom<SpendingTracker>().optional(),
   // MCP toolkits available during this invocation (UI-configured or file-based)
   mcp: executionMCPContextSchema.optional(),

@@ -4,10 +4,25 @@ import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
-import { getFacade } from "@lucky/models"
-import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
+import { createLLMRegistry } from "@lucky/models"
+import {
+  type LanguageModel,
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  streamText,
+} from "ai"
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
+
+// Initialize registry once with environment variables as fallback
+const modelRegistry = createLLMRegistry({
+  fallbackKeys: {
+    openai: process.env.OPENAI_API_KEY,
+    groq: process.env.GROQ_API_KEY,
+    openrouter: process.env.OPENROUTER_API_KEY,
+  },
+})
 
 // Allow streaming responses up to 60 seconds
 export const maxDuration = 60
@@ -172,7 +187,9 @@ export async function POST(request: NextRequest) {
     const providerIds = new Set<string>()
     if (providerSettings) {
       for (const row of providerSettings) {
-        const enabledModels = (row.enabled_models as string[]) || []
+        const enabledModels = Array.isArray(row.enabled_models)
+          ? row.enabled_models.filter((m): m is string => typeof m === "string")
+          : []
         allowlist.push(...enabledModels)
         if (typeof row.provider === "string" && row.provider.length > 0) {
           providerIds.add(row.provider)
@@ -187,17 +204,19 @@ export async function POST(request: NextRequest) {
 
     // Execute the chat invocation within the execution context
     return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys }, async () => {
-      const models = getFacade()
-
-      // Select and get AI SDK compatible model with allowlist constraint
-      let modelSelection: Awaited<ReturnType<typeof models.resolve>>
-      let model: Awaited<ReturnType<typeof models.getModel>>
+      // Create user-specific models instance with allowed models list
+      let model: LanguageModel
+      let resolvedModelId: string
       try {
-        modelSelection = await models.resolve(modelName, {
-          allowlist: allowlist.length > 0 ? allowlist : undefined,
+        const userModels = modelRegistry.forUser({
+          mode: "shared", // Using fallback keys from registry
           userId: clerkId,
+          models: allowlist.length > 0 ? allowlist : ["openai#gpt-4o-mini"], // Fallback to a default model
         })
-        model = await models.getModel(modelSelection)
+
+        // Get the model directly by name
+        model = userModels.model(modelName)
+        resolvedModelId = modelName
       } catch (error) {
         console.error("[Agent Chat] Failed to load model:", error)
         const userError = getUserFriendlyError(error)
@@ -242,7 +261,7 @@ export async function POST(request: NextRequest) {
               onFinish: ({ finishReason, usage, text }) => {
                 const duration = Date.now() - startTime
                 console.log(
-                  `[Agent Chat] Stream completed for node=${nodeId} in ${duration}ms, tokens=${usage?.totalTokens || 0}, reason=${finishReason}, model=${modelSelection.modelId}`,
+                  `[Agent Chat] Stream completed for node=${nodeId} in ${duration}ms, tokens=${usage?.totalTokens || 0}, reason=${finishReason}, model=${resolvedModelId}`,
                 )
                 console.log(`[Agent Chat] Final text length: ${text.length} chars`)
                 console.log(`[Agent Chat] Text preview: ${text.substring(0, 100)}...`)

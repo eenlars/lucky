@@ -198,7 +198,8 @@ function transformModel(model: OpenRouterModel): ModelEntry {
     speed: estimateSpeed(model),
     intelligence: estimateIntelligence(model),
     pricingTier: getPricingTier(inputPrice, outputPrice),
-    active: false, // manually configure which models are active
+    runtimeEnabled: false, // manually configure which models are enabled
+    uiHiddenInProd: false, // manually configure which models are hidden in production
   }
 }
 
@@ -237,7 +238,8 @@ function generateCatalogCode(models: ModelEntry[]): string {
     lines.push(`    speed: "${model.speed}",`)
     lines.push(`    intelligence: ${model.intelligence},`)
     lines.push(`    pricingTier: "${model.pricingTier}",`)
-    lines.push(`    active: ${model.active},`)
+    lines.push(`    runtimeEnabled: ${model.runtimeEnabled},`)
+    lines.push(`    uiHiddenInProd: ${model.uiHiddenInProd},`)
     lines.push("  },")
     lines.push("")
   }
@@ -290,13 +292,14 @@ async function main() {
   // generate code
   const code = generateCatalogCode(filtered)
 
-  const outputPath = path.join(import.meta.dir, "../src/pricing/openrouter-models.ts")
+  const outputPath = path.join(import.meta.dir, "../src/pricing-generation/openrouter-models.ts")
   await fs.writeFile(outputPath, code, "utf-8")
 
   console.log(`\n✅ Generated ${filtered.length} model entries`)
   console.log(`📝 Written to: ${outputPath}`)
   console.log("\nNOTE: Review and manually configure:")
-  console.log("  - active: true for models you want to enable")
+  console.log("  - runtimeEnabled: true for models you want to enable")
+  console.log("  - uiHiddenInProd: true for models you want to hide in production")
   console.log("  - supportsVision/Audio/Video based on model capabilities")
   console.log("  - intelligence ratings based on benchmarks")
 }

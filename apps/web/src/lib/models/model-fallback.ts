@@ -3,7 +3,7 @@
  * Ensures workflows use models available in user's preferences
  */
 
-import { findModel } from "@lucky/models"
+import { findModelById } from "@lucky/models"
 import type { ModelEntry, UserModelPreferences } from "@lucky/shared"
 
 /**
@@ -38,7 +38,7 @@ export function isModelInPreferences(modelId: string, preferences: UserModelPref
   if (enabledIds.has(modelId)) return true
 
   // Try finding in catalog and checking with catalog ID
-  const catalogEntry = findModel(modelId)
+  const catalogEntry = findModelById(modelId)
   if (catalogEntry && enabledIds.has(catalogEntry.id)) return true
 
   // Try matching without provider prefix (e.g., "gpt-4o-mini" matches "openai#gpt-4o-mini")
@@ -58,14 +58,14 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
   if (!preferences) return null
 
   // Get original model's characteristics
-  const originalModel = findModel(originalModelId)
+  const originalModel = findModelById(originalModelId)
 
   // Get all enabled models as catalog entries
   const enabledModelIds = getAllEnabledModelIds(preferences)
   const enabledModels: ModelEntry[] = []
 
   for (const modelId of enabledModelIds) {
-    const entry = findModel(modelId)
+    const entry = findModelById(modelId)
     if (entry?.runtimeEnabled) {
       enabledModels.push(entry)
     }
@@ -101,30 +101,3 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
   return sorted[0]?.id || null
 }
 
-/**
- * Validate and resolve a model ID against user preferences
- * Returns the original model if valid, or a fallback if not
- */
-export function validateAndResolveModel(
-  modelId: string,
-  preferences: UserModelPreferences | null,
-): { modelId: string; wasFallback: boolean } {
-  // If model exists in preferences, use it
-  if (isModelInPreferences(modelId, preferences)) {
-    return { modelId, wasFallback: false }
-  }
-
-  // Otherwise, pick a fallback
-  const fallback = pickFallbackModel(modelId, preferences)
-
-  if (fallback) {
-    console.warn(`[model-fallback] Model "${modelId}" not in user preferences. Using fallback: "${fallback}"`)
-    return { modelId: fallback, wasFallback: true }
-  }
-
-  // Last resort: return original (will likely fail at runtime)
-  console.error(
-    `[model-fallback] Model "${modelId}" not in user preferences and no fallback available. Keeping original.`,
-  )
-  return { modelId, wasFallback: false }
-}

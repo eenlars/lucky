@@ -10,7 +10,7 @@ import { EvaluationInputSchema } from "@lucky/shared/contracts/ingestion"
 
 import { ErrorReportSchema } from "@lucky/shared/contracts/error"
 
-import { enrichedModelInfoSchema } from "@lucky/shared/contracts/models"
+import { enrichedModelInfoSchema } from "@lucky/shared/contracts/llm-contracts/models"
 
 // ============================================================================
 // STANDARDIZED RESPONSE ENVELOPES

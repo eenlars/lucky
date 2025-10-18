@@ -31,7 +31,6 @@ import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
 import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
-import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -80,19 +79,9 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
     }
   }
 
-  /* ---- normalize and validate model ---- */
-  // Validate model is active for current provider - throws if inactive
-  try {
-    req.model = validateAndResolveModel(req.model, getDefaultModels().default)
-  } catch (error) {
-    return {
-      success: false,
-      data: null,
-      error: error instanceof Error ? error.message : String(error),
-      debug_input: req.messages,
-      debug_output: null,
-    }
-  }
+  /* ---- normalize model ---- */
+  // Use default model if none specified
+  req.model = req.model ?? getDefaultModels().default
 
   /* ---- delegate to mode‑specific helper ---- */
   switch (req.mode) {
