@@ -4,8 +4,9 @@
 
 import { createGroq } from "@ai-sdk/groq"
 import { createOpenAI } from "@ai-sdk/openai"
-import { type LanguageModelV2 } from "@ai-sdk/provider"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import type { LanguageModel } from "ai"
+import type { ProviderOptions } from "@ai-sdk/provider-utils"
 
 import { type TierName, providerNameSchema, tierNameSchema } from "@lucky/shared"
 
@@ -72,8 +73,11 @@ export class UserModels {
    * 1. "openai#gpt-4o" - with provider prefix
    * 2. "gpt-4o" - auto-detect provider
    * 3. Model must be in user's allowed list
+   *
+   * @param name - Model name/ID to retrieve
+   * @param options - Optional provider-specific parameters (e.g., { reasoning: { effort: "medium" } })
    */
-  model(name: string): LanguageModelV2 {
+  model(name: string, options?: ProviderOptions): LanguageModel {
     // First, check if the model exists in the catalog at all
     // This helps us give better error messages
     let catalogEntry = name.includes("#") ? findModelById(name) : findModelByName(name)
@@ -133,7 +137,8 @@ export class UserModels {
     }
 
     // return ai sdk model with modelId property for testing/tracking
-    const model = provider(catalogEntry.model)
+    // Pass options through to provider (e.g., reasoning configuration for OpenRouter)
+    const model = options ? provider(catalogEntry.model, options) : provider(catalogEntry.model)
     // Add modelId for tracking without type assertion by using Object.defineProperty
     Object.defineProperty(model, "modelId", {
       value: catalogEntry.id,
@@ -147,10 +152,12 @@ export class UserModels {
   /**
    * Select model by tier
    * Picks from user's allowed models only
+   * @param tierName - Tier name (cheap/fast/smart/balanced)
+   * @param options - Optional provider-specific parameters
    */
-  tier(tierName: TierName): LanguageModelV2 {
+  tier(tierName: TierName, options?: ProviderOptions): LanguageModel {
     const selected = selectModelForTier(tierName, this.allowedModels)
-    return this.model(selected.id)
+    return this.model(selected.id, options)
   }
 
   /**
@@ -161,6 +168,7 @@ export class UserModels {
    * @param options - Optional configuration
    *   - type: Enforce 'tier' or 'model', throws if type mismatch
    *   - outputType: 'ai-sdk-model-func' (default) returns LanguageModel, 'string' returns catalog ID
+   *   - providerOptions: Provider-specific parameters (e.g., { reasoning: { effort: "medium" } })
    * @returns LanguageModel instance or catalog ID string (provider#model format)
    *
    * @throws {Error} If type is specified and input doesn't match expected type
@@ -176,17 +184,31 @@ export class UserModels {
    * models.resolve("cheap", { outputType: "string" })              // → "openai#gpt-4o" (selected for cheap tier)
    * models.resolve("gpt-4o", { outputType: "string" })             // → "openai#gpt-4o"
    * models.resolve("openai#gpt-4o", { outputType: "string" })      // → "openai#gpt-4o"
+   *
+   * // With reasoning configuration
+   * models.resolve("gpt-4o", { providerOptions: { reasoning: { effort: "medium" } } })
    */
-  resolve(nameOrTier: string, options: { outputType: "string"; type?: "tier" | "model" }): string
-  resolve(nameOrTier: string, options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model" }): LanguageModelV2
   resolve(
     nameOrTier: string,
-    options?: { outputType?: "ai-sdk-model-func" | "string"; type?: "tier" | "model" },
-  ): LanguageModelV2 | string {
+    options: { outputType: "string"; type?: "tier" | "model"; providerOptions?: ProviderOptions },
+  ): string
+  resolve(
+    nameOrTier: string,
+    options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model"; providerOptions?: ProviderOptions },
+  ): LanguageModel
+  resolve(
+    nameOrTier: string,
+    options?: {
+      outputType?: "ai-sdk-model-func" | "string"
+      type?: "tier" | "model"
+      providerOptions?: ProviderOptions
+    },
+  ): LanguageModel | string {
     const tierOptions = tierNameSchema.options
     const isTier = tierOptions.includes(nameOrTier.toLowerCase() as TierName)
     const outputType = options?.outputType ?? "ai-sdk-model-func"
     const enforcedType = options?.type
+    const providerOptions = options?.providerOptions
 
     // Strict mode: enforce type if specified
     if (enforcedType === "tier" && !isTier) {
@@ -223,9 +245,9 @@ export class UserModels {
 
     // Return LanguageModel (default behavior)
     if (isTier) {
-      return this.tier(nameOrTier.toLowerCase() as TierName)
+      return this.tier(nameOrTier.toLowerCase() as TierName, providerOptions)
     }
-    return this.model(nameOrTier)
+    return this.model(nameOrTier, providerOptions)
   }
 
   /**

@@ -5,6 +5,7 @@ import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.ty
 import { ToolManager } from "@core/node/toolManager"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
+import { createLLMRegistry } from "@lucky/models"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
@@ -96,6 +97,15 @@ export async function POST(request: Request) {
     const observer = new AgentObserver()
     ObserverRegistry.getInstance().register(randomId, observer)
 
+    // Create registry with dev API keys
+    const llmRegistry = createLLMRegistry({
+      fallbackKeys: {
+        openai: devApiKeys.OPENAI_API_KEY,
+        groq: devApiKeys.GROQ_API_KEY,
+        openrouter: devApiKeys.OPENROUTER_API_KEY,
+      },
+    })
+
     const result = await withExecutionContext(
       {
         principal: {
@@ -108,6 +118,7 @@ export async function POST(request: Request) {
           getAll: async () => ({}),
         },
         apiKeys: devApiKeys,
+        llmRegistry,
       },
       async () => {
         return withObservationContext({ randomId, observer }, async () => {

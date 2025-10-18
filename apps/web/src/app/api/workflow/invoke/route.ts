@@ -24,6 +24,7 @@ import {
 } from "@/lib/workflow/provider-validation"
 import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
 import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
+import { createLLMRegistry } from "@lucky/models"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
@@ -244,11 +245,21 @@ export async function POST(req: NextRequest) {
     const registry = ObserverRegistry.getInstance()
     registry.register(randomId, observer)
 
+    // Create registry with user's API keys as fallback
+    const llmRegistry = createLLMRegistry({
+      fallbackKeys: {
+        openai: apiKeys.OPENAI_API_KEY,
+        groq: apiKeys.GROQ_API_KEY,
+        openrouter: apiKeys.OPENROUTER_API_KEY,
+      },
+    })
+
     const result = await withExecutionContext(
       {
         principal,
         secrets,
         apiKeys,
+        llmRegistry,
         // Pass MCP toolkits in execution context (if available)
         ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
       },
