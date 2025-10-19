@@ -111,7 +111,10 @@ export function WorkflowPromptBar() {
     setShowLogs(true)
 
     // Edit Mode: Modify workflow structure with AI
-    const result = await executeEditMode(prompt.trim(), exportToJSON, addLog)
+    // If in "create-new" mode, pass null to create from scratch
+    // Otherwise, let executeEditMode use the current workflow
+    const baseWorkflow = editorMode === "create-new" ? null : undefined
+    const result = await executeEditMode(prompt.trim(), exportToJSON, addLog, baseWorkflow)
 
     if (result.success && result.workflowConfig) {
       await loadWorkflowFromData(result.workflowConfig)
