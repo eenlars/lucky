@@ -1,5 +1,4 @@
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import { OutputSchema } from "@examples/schemas/output.types"
 
 const QUESTIONS = {
   albertHeijn: {

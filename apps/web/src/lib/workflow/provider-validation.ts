@@ -1,11 +1,11 @@
 import { logException } from "@/lib/error-logger"
 import {
-  type RequiredProviders,
-  extractRequiredProviders,
+  FALLBACK_PROVIDER_IDS,
+  PROVIDER_API_KEYS,
   getProviderDisplayName,
   getProviderKeyName,
-} from "@lucky/core/workflow/provider-extraction"
-import { PROVIDER_API_KEYS } from "@lucky/models"
+} from "@lucky/core/providers"
+import { type RequiredProviders, extractRequiredProviders } from "@lucky/core/workflow/provider-extraction"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
 // Re-export for backward compatibility
@@ -18,7 +18,7 @@ export { PROVIDER_API_KEYS }
 export function getRequiredProviderKeys(config: WorkflowConfig, context: string): RequiredProviders {
   try {
     const { providers, models } = extractRequiredProviders(config)
-    const requiredKeys = Array.from(providers).map(getProviderKeyName)
+    const requiredKeys = Array.from(providers).map(p => getProviderKeyName(p))
     console.log(`[${context}] Workflow requires providers:`, Array.from(providers))
     console.log(`[${context}] Required API keys:`, requiredKeys)
     return { providers, models }
@@ -27,7 +27,7 @@ export function getRequiredProviderKeys(config: WorkflowConfig, context: string)
       location: "/lib/workflow/provider-validation",
     })
     console.error(`[${context}] Failed to extract providers:`, error)
-    return { providers: new Set(PROVIDER_API_KEYS), models: new Map() }
+    return { providers: new Set(FALLBACK_PROVIDER_IDS), models: new Map() }
   }
 }
 
@@ -44,5 +44,5 @@ export function validateProviderKeys(requiredKeys: string[], apiKeys: Record<str
  * e.g., ["OPENAI_API_KEY", "GROQ_API_KEY"] -> ["OpenAI", "Groq"]
  */
 export function formatMissingProviders(missingKeys: string[]): string[] {
-  return missingKeys.map(getProviderDisplayName)
+  return missingKeys.map(p => getProviderDisplayName(p))
 }

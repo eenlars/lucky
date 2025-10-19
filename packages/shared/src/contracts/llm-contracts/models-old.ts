@@ -46,8 +46,17 @@ export const TIER_NAMES = [
   "fallback",
 ] as const
 
-export type TierName = (typeof TIER_NAMES)[number]
+// @deprecated This file is deprecated. Use packages/shared/src/contracts/llm-contracts/models.ts instead.
+export type TierNameOld = (typeof TIER_NAMES)[number]
 
 export type StandardModels = {
-  [K in TierName]: string
-} & Record<TierName, string>
+  summary: string
+  nano: string
+  low: string
+  balanced: string
+  high: string
+  default: string
+  fitness: string
+  reasoning: string
+  fallback: string
+}

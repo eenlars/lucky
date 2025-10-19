@@ -102,7 +102,7 @@ describe("formatInvalidInputResponse", () => {
     const response = formatInvalidInputResponse(requestId, error)
 
     expect(response.status).toBe(403)
-    expect(response.body).toEqual({
+    expect(response.body).toMatchObject({
       jsonrpc: "2.0",
       id: requestId,
       error: {

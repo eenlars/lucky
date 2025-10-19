@@ -15,12 +15,20 @@ import { catalogIdSchema, providerNameSchema } from "./providers"
  * Providers marked as disabled will not be initialized even if API keys are present.
  * In development mode, all providers are enabled for testing.
  */
-const isDevelopment = process.env.NODE_ENV === "development"
+export function getProviderAvailability() {
+  const isDevelopment = process.env.NODE_ENV === "development"
+
+  return {
+    openai: true,
+    openrouter: isDevelopment, // Enabled in development for testing
+    groq: isDevelopment, // Enabled in development for testing
+  } as const
+}
 
 export const PROVIDER_AVAILABILITY = {
   openai: true,
-  openrouter: isDevelopment, // Enabled in development for testing
-  groq: isDevelopment, // Enabled in development for testing
+  openrouter: false,
+  groq: false,
 } as const
 
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")

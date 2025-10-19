@@ -1,9 +1,9 @@
-import { AsyncLocalStorage } from "node:async_hooks"
-import { getProviderDisplayName } from "@core/workflow/provider-extraction"
+import { getProviderDisplayName } from "@lucky/core/providers"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
 import type { UserModels } from "@lucky/models"
 import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
+import { AsyncLocalStorage } from "node:async_hooks"
 import { z } from "zod"
 import { RuntimeContext } from "./runtime-context"
 /**

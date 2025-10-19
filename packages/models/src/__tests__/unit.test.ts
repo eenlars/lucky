@@ -13,8 +13,6 @@ vi.mock("../llm-catalog/catalog", () => ({
 
 import { createLLMRegistry } from "../llm-registry"
 import { findModelById, findModelByName, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
-import { PROVIDERS } from "../llm-catalog/providers"
-import { getProviderDisplayName, getProviderKeyName } from "../provider-utils"
 
 describe("Model Catalog", () => {
   it("has unique IDs and validates all invariants", () => {
@@ -101,24 +99,6 @@ describe("Model Catalog", () => {
     const openaiModels = getModelsByProvider("openai")
     expect(openaiModels.length).toBeGreaterThan(0)
     expect(openaiModels.every(m => m.provider === "openai")).toBe(true)
-  })
-})
-
-describe("Provider Helpers", () => {
-  it("PROVIDERS is defined and contains providers", () => {
-    expect(PROVIDERS).toBeDefined()
-    expect(Array.isArray(PROVIDERS)).toBe(true)
-    expect(PROVIDERS.length).toBeGreaterThan(0)
-  })
-
-  it("getProviderDisplayName formats provider names", () => {
-    expect(getProviderDisplayName("openai")).toBeTruthy()
-    expect(getProviderDisplayName("anthropic")).toBeTruthy()
-  })
-
-  it("getProviderKeyName returns environment variable names", () => {
-    expect(getProviderKeyName("openai")).toContain("API_KEY")
-    expect(getProviderKeyName("anthropic")).toContain("API_KEY")
   })
 })
 

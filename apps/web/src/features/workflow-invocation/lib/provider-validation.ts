@@ -1,15 +1,7 @@
 import { logException } from "@/lib/error-logger"
-import {
-  type RequiredProviders,
-  extractRequiredProviders,
-  getProviderDisplayName,
-  getProviderKeyName,
-} from "@lucky/core/workflow/provider-extraction"
-import { PROVIDER_API_KEYS } from "@lucky/models"
+import { FALLBACK_PROVIDER_IDS, getProviderDisplayName, getProviderKeyName } from "@lucky/core/providers"
+import { type RequiredProviders, extractRequiredProviders } from "@lucky/core/workflow/provider-extraction"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
-
-// Re-export for backward compatibility
-export { PROVIDER_API_KEYS }
 
 /**
  * Extract required provider API keys from workflow config
@@ -27,7 +19,7 @@ export function getRequiredProviderKeys(config: WorkflowConfig, context: string)
       location: "/features/workflow-invocation/lib/provider-validation",
     })
     console.error(`[${context}] Failed to extract providers:`, error)
-    return { providers: new Set(PROVIDER_API_KEYS), models: new Map() }
+    return { providers: new Set(FALLBACK_PROVIDER_IDS), models: new Map() }
   }
 }
 

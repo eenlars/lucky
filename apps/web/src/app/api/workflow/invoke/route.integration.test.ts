@@ -1,5 +1,5 @@
+import { PROVIDER_API_KEYS } from "@lucky/core/providers"
 import { extractRequiredProviders, getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
-import { PROVIDER_API_KEYS } from "@lucky/models"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { describe, expect, it } from "vitest"
 

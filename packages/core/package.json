@@ -40,7 +40,6 @@
     "@lucky/models": "workspace:*",
     "@lucky/shared": "workspace:*",
     "@lucky/tools": "workspace:*",
-    "@typescript/native-preview": "^7.0.0-dev.20251009.1",
     "@supabase/supabase-js": "^2.50.5",
     "@t3-oss/env-nextjs": "^0.13.8",
     "bottleneck": "^2.19.5",

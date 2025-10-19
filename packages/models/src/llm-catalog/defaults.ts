@@ -2,7 +2,7 @@ import type { StandardModels } from "@lucky/shared/contracts/llm-contracts/model
 import type { LuckyProvider } from "@lucky/shared/contracts/llm-contracts/providers"
 
 /* ---------- DEFAULT MODELS ---------- */
-export const DEFAULT_MODELS = {
+export const DEFAULT_MODELS: Record<LuckyProvider, StandardModels> = {
   openrouter: {
     summary: "openrouter#google/gemini-2.5-flash-lite",
     nano: "openrouter#google/gemini-2.5-flash-lite",
@@ -36,4 +36,4 @@ export const DEFAULT_MODELS = {
     reasoning: "openai#gpt-5-nano",
     fallback: "openai#gpt-5-nano",
   },
-} satisfies Record<LuckyProvider, StandardModels>
+}

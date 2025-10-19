@@ -15,7 +15,6 @@ export type { FallbackKeys, RegistryConfig, UserConfig } from "./types"
 
 // Catalog data export
 export { MODEL_CATALOG } from "./llm-catalog/catalog"
-export { PROVIDERS } from "./llm-catalog/providers"
 
 // Catalog query functions
 export {
@@ -42,16 +41,6 @@ export { mapModelNameToEasyName, mapModelToTier } from "./tier-mapping"
 
 // UI utility exports
 export { isUIVisibleModel } from "./ui-utils"
-
-// Provider utility exports
-export {
-  formatMissingProviders,
-  getProviderDisplayName,
-  getProviderKeyName,
-  getRequiredProviderKeys,
-  PROVIDER_API_KEYS,
-  validateProviderKeys,
-} from "./provider-utils"
 
 // Default models export
 export { DEFAULT_MODELS } from "./llm-catalog/defaults"

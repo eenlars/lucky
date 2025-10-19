@@ -1,7 +1,8 @@
 import type { Principal } from "@/lib/auth/principal"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
+import { FALLBACK_PROVIDER_IDS, getProviderKeyName } from "@lucky/core/providers"
 import type { UserModels } from "@lucky/models"
-import { PROVIDER_API_KEYS, createLLMRegistry } from "@lucky/models"
+import { createLLMRegistry } from "@lucky/models"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { loadWorkflowConfigFromInput } from "./config-loader"
 import { MissingApiKeysError, NoEnabledModelsError } from "./errors"
@@ -66,7 +67,7 @@ export async function loadProvidersAndModels(
   // 3. Extract required providers/models from workflow config
   const { providers: requiredProviders, models: requiredModels } = workflowConfig
     ? getRequiredProviderKeys(workflowConfig, "provider-model-loader")
-    : { providers: new Set(PROVIDER_API_KEYS), models: new Map() }
+    : { providers: new Set(FALLBACK_PROVIDER_IDS), models: new Map() }
 
   // 3. Fetch user's enabled models from database
   const enabledModels = await fetchUserProviderSettings(principal.clerk_id, principal)
@@ -88,11 +89,12 @@ export async function loadProvidersAndModels(
   }
 
   // 5. Fetch API keys for required providers
-  const apiKeys = await secrets.getAll(Array.from(requiredProviders), "environment-variables")
+  const requiredApiKeyNames = Array.from(requiredProviders).map(getProviderKeyName)
+  const apiKeys = await secrets.getAll(requiredApiKeyNames, "environment-variables")
 
   // 6. Validate API keys (session auth only)
   if (principal.auth_method === "session") {
-    const missingKeys = validateProviderKeys(Array.from(requiredProviders), apiKeys)
+    const missingKeys = validateProviderKeys(requiredApiKeyNames, apiKeys)
 
     if (missingKeys.length > 0) {
       const missingProviders = formatMissingProviders(missingKeys)
@@ -100,13 +102,12 @@ export async function loadProvidersAndModels(
     }
   }
 
-  // 7. Create LLM registry and user models - dynamically map all providers
+  // 7. Create LLM registry and user models - map required providers to API keys
   const fallbackKeys: Record<string, string | undefined> = {}
   const byokKeys: Record<string, string | undefined> = {}
 
-  for (const keyName of PROVIDER_API_KEYS) {
-    // Convert "OPENAI_API_KEY" -> "openai"
-    const provider = keyName.replace(/_API_KEY$/, "").toLowerCase()
+  for (const provider of requiredProviders) {
+    const keyName = getProviderKeyName(provider)
     fallbackKeys[provider] = apiKeys[keyName]
     byokKeys[provider] = apiKeys[keyName]
   }

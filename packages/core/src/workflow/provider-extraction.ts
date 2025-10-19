@@ -1,5 +1,6 @@
-import { findModelByName, PROVIDERS } from "@lucky/models"
+import { findModelByName } from "@lucky/models"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import { getProviderDisplayName, getProviderKeyName, PROVIDERS } from "@core/providers"
 
 export type RequiredProviders = {
   providers: Set<string> // e.g., ["openai", "openrouter"]
@@ -42,41 +43,4 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
   }
 
   return { providers, models }
-}
-
-/**
- * Map provider names to their API key environment variable names
- */
-export function getProviderKeyName(provider: string): string {
-  const providerEntry = PROVIDERS.find(p => p.provider === provider.toLowerCase())
-  if (providerEntry) {
-    return providerEntry.apiKeyName
-  }
-  // Fallback for unknown providers (e.g., Anthropic)
-  return `${provider.toUpperCase()}_API_KEY`
-}
-
-/**
- * Map API key names to user-friendly provider display names
- * For unknown keys, converts HUGGING_FACE_API_KEY -> "Hugging Face"
- */
-export function getProviderDisplayName(keyName: string): string {
-  // Look up in PROVIDERS first
-  const providerEntry = PROVIDERS.find(p => p.apiKeyName === keyName)
-  if (providerEntry) {
-    return providerEntry.displayName
-  }
-
-  // Known legacy providers not in PROVIDERS
-  if (keyName === "ANTHROPIC_API_KEY") {
-    return "Anthropic"
-  }
-
-  // Fallback: convert HUGGING_FACE_API_KEY -> "Hugging Face"
-  // Remove _API_KEY suffix, split by underscore, capitalize each word, join with space
-  return keyName
-    .replace(/_API_KEY$/, "")
-    .split("_")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ")
 }

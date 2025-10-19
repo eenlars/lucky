@@ -15,6 +15,12 @@ export const PROVIDER_API_KEYS = [
 ] as const
 
 /**
+ * Fallback provider IDs to use when no workflow config is available
+ * These are provider identifiers, not API key names
+ */
+export const FALLBACK_PROVIDER_IDS = ["openai", "openrouter", "groq"] as const
+
+/**
  * Extract required provider API keys from a list of model names
  *
  * @param modelNames - Array of model IDs in format "provider#model" or just "model"
