@@ -52,7 +52,6 @@ export function createSecretResolver(clerk_id: string, principal?: Principal): S
 
       const foundNames = data.map(d => d.name)
       const missingNames = secretKeyNames.filter(n => !foundNames.includes(n))
-
       console.log(`[secretResolver.getAll] ✓ Found ${data.length}/${secretKeyNames.length} secret(s):`, {
         found: foundNames,
         missing: missingNames.length > 0 ? missingNames : undefined,

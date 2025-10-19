@@ -116,3 +116,6 @@ resilience/
 # Temporary files and directories
 **/*.tmp
 **/.tmp/
+
+# clerk configuration (can include secrets)
+/.clerk/
