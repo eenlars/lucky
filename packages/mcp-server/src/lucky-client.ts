@@ -1,6 +1,11 @@
 /**
- * Lucky Client - Native TypeScript implementation for Lucky web scraping API
- * Replaces @mendable/firecrawl-js with our own system
+ * Lucky Client - Workflow API interface
+ *
+ * This is a minimal client for the Lucky workflow API.
+ * Workflows are DAGs optimized via genetic programming to find the best agent collaboration patterns.
+ *
+ * For production use, workflows are managed through the MCP server (index.ts).
+ * This file provides type definitions for reference and potential SDK usage.
  */
 
 export interface LuckyConfig {
@@ -8,166 +13,83 @@ export interface LuckyConfig {
   apiUrl?: string
 }
 
-export interface LuckyDocument {
-  url?: string
-  title?: string
-  description?: string
-  markdown?: string
-  html?: string
-  rawHtml?: string
-  links?: string[]
-  screenshot?: string
-  actions?: any
-  metadata?: Record<string, any>
+export interface Workflow {
+  workflow_id: string
+  name: string
+  description: string
+  inputSchema: Record<string, unknown>
+  outputSchema: Record<string, unknown>
+  created_at: string
 }
 
-export interface ScrapeResponse {
-  success: boolean
-  data?: LuckyDocument
+export interface WorkflowInvocationResult {
+  invocation_id: string
+  state: "running" | "completed" | "failed" | "cancelled" | "cancelling" | "not_found"
+  createdAt: string
+  output?: unknown
   error?: string
 }
 
-export interface MapResponse {
-  success: boolean
-  links?: string[]
-  error?: string
-}
-
-export interface SearchResponse {
-  success: boolean
-  data?: LuckyDocument[]
-  error?: string
-}
-
-export interface CrawlResponse {
-  success: boolean
-  id?: string
-  url?: string
-  error?: string
-}
-
-export interface CrawlStatusResponse {
-  success: boolean
-  status?: "scraping" | "completed" | "failed"
-  completed?: number
-  total?: number
-  creditsUsed?: number
-  expiresAt?: Date
-  data?: LuckyDocument[]
-  error?: string
-}
-
-export interface ExtractResponse {
-  success: boolean
-  data?: any
-  error?: string
-}
-
-export interface BatchScrapeResponse {
-  success: boolean
-  id?: string
-  error?: string
-}
-
-export interface BatchScrapeStatusResponse {
-  success: boolean
-  status?: "processing" | "completed" | "failed"
-  completed?: number
-  total?: number
-  creditsUsed?: number
-  expiresAt?: Date
-  data?: LuckyDocument[]
-  error?: string
+export interface InvokeOptions {
+  timeoutMs?: number
+  trace?: boolean
 }
 
 /**
- * LuckyApp - Main client for Lucky web scraping API
- * Compatible interface with FirecrawlApp for easy migration
+ * LuckyClient - Interface for Lucky workflow API
+ *
+ * Provides type-safe access to workflow operations.
+ * Actual implementation is in the MCP server (index.ts).
  */
-export default class LuckyApp {
+export class LuckyClient {
   private apiKey?: string
   private apiUrl: string
 
   constructor(config?: LuckyConfig) {
     this.apiKey = config?.apiKey
-    this.apiUrl = config?.apiUrl || process.env.LUCKY_API_URL || "https://api.lucky.dev"
+    this.apiUrl = config?.apiUrl || process.env.LUCKY_API_URL || "http://localhost:3000"
   }
 
   /**
-   * Scrape a single URL
+   * List all workflows available to the user
    */
-  async scrape(url: string, options?: any): Promise<ScrapeResponse> {
-    return this.request("/scrape", {
-      url,
-      ...options,
+  async listWorkflows(): Promise<Workflow[]> {
+    return this.request("/api/user/workflows", {})
+  }
+
+  /**
+   * Invoke a workflow with input data
+   */
+  async invokeWorkflow(workflowId: string, input: unknown, options?: InvokeOptions): Promise<WorkflowInvocationResult> {
+    return this.request("/api/v1/invoke", {
+      jsonrpc: "2.0",
+      method: "workflow.invoke",
+      params: {
+        workflow_id: workflowId,
+        input,
+        options: options || {},
+      },
     })
   }
 
   /**
-   * Map a website to discover URLs
+   * Check the status of a workflow invocation
    */
-  async map(url: string, options?: any): Promise<MapResponse> {
-    return this.request("/map", {
-      url,
-      ...options,
-    })
+  async checkStatus(invocationId: string): Promise<WorkflowInvocationResult> {
+    return this.request(`/api/workflow/status/${invocationId}`, {})
   }
 
   /**
-   * Search the web
+   * Cancel a running workflow invocation
    */
-  async search(query: string, options?: any): Promise<SearchResponse> {
-    return this.request("/search", {
-      query,
-      ...options,
-    })
-  }
-
-  /**
-   * Start a crawl job
-   */
-  async crawl(url: string, options?: any): Promise<CrawlResponse> {
-    return this.request("/crawl", {
-      url,
-      ...options,
-    })
-  }
-
-  /**
-   * Check crawl job status
-   */
-  async getCrawlStatus(id: string): Promise<CrawlStatusResponse> {
-    return this.request(`/crawl/${id}`)
-  }
-
-  /**
-   * Extract structured data
-   */
-  async extract(options: any): Promise<ExtractResponse> {
-    return this.request("/extract", options)
-  }
-
-  /**
-   * Batch scrape multiple URLs
-   */
-  async asyncBatchScrapeUrls(urls: string[], options?: any): Promise<BatchScrapeResponse> {
-    return this.request("/batch/scrape", {
-      urls,
-      ...options,
-    })
-  }
-
-  /**
-   * Check batch scrape status
-   */
-  async checkBatchScrapeStatus(id: string): Promise<BatchScrapeStatusResponse> {
-    return this.request(`/batch/scrape/${id}`)
+  async cancelWorkflow(invocationId: string): Promise<{ success: boolean }> {
+    return this.request(`/api/workflow/cancel/${invocationId}`, {}, "POST")
   }
 
   /**
    * Internal request handler
    */
-  private async request(endpoint: string, body?: any): Promise<any> {
+  private async request(endpoint: string, body: unknown, method: "POST" = "POST"): Promise<any> {
     const url = `${this.apiUrl}${endpoint}`
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -178,26 +100,25 @@ export default class LuckyApp {
     }
 
     try {
+      const bodyStr =
+        body && typeof body === "object" && Object.keys(body as object).length > 0 ? JSON.stringify(body) : undefined
+
       const response = await fetch(url, {
-        method: body ? "POST" : "GET",
+        method,
         headers,
-        body: body ? JSON.stringify(body) : undefined,
+        body: bodyStr,
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        return {
-          success: false,
-          error: `HTTP ${response.status}: ${errorText}`,
-        }
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
 
       return await response.json()
     } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      }
+      throw error instanceof Error ? error : new Error(String(error))
     }
   }
 }
+
+export default LuckyClient

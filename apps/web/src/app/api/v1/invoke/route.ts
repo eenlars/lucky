@@ -1,4 +1,5 @@
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
+import { SchemaValidationError, validateWorkflowInputSchema } from "@/features/workflow-invocation/lib"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
 import {
@@ -9,7 +10,6 @@ import {
   formatSuccessResponse,
   formatWorkflowError,
 } from "@/lib/mcp-invoke/response"
-import { createSchemaValidationError, validateAgainstSchema } from "@/lib/mcp-invoke/schema-validator"
 import { createInvocationInput, transformInvokeInput } from "@/lib/mcp-invoke/transform"
 import { validateInvokeRequest } from "@/lib/mcp-invoke/validation"
 import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
@@ -70,15 +70,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(formatErrorResponse(requestId, workflowLoadResult.error!), { status: 404 })
     }
 
-    // possibly, the inputschema is defined.
-    const { inputSchema, config } = workflowLoadResult
-
     // Validate input against workflow's input schema (if defined)
-    if (inputSchema) {
-      const schemaValidationResult = validateAgainstSchema(rpcRequest.params.input, inputSchema)
-      if (!schemaValidationResult.valid) {
-        return NextResponse.json(createSchemaValidationError(requestId, schemaValidationResult), { status: 400 })
+    const { inputSchema, config } = workflowLoadResult
+    try {
+      validateWorkflowInputSchema(rpcRequest.params.input, inputSchema)
+    } catch (error) {
+      if (error instanceof SchemaValidationError) {
+        return NextResponse.json(
+          {
+            jsonrpc: "2.0" as const,
+            id: requestId,
+            error: {
+              code: -32602, // JSON-RPC invalid params error
+              message: "Input validation failed",
+              data: {
+                errors: error.details,
+                summary: error.errorMessage,
+              },
+            },
+          },
+          { status: 400 },
+        )
       }
+      throw error
     }
 
     if (isNir(config)) {

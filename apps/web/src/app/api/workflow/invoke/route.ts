@@ -4,10 +4,12 @@ import {
   MissingApiKeysError,
   NoEnabledModelsError,
   type ProviderModelResult,
+  SchemaValidationError,
   formatInvalidInputResponse,
   loadMCPToolkitsForWorkflow,
   loadProvidersAndModels,
   validateWorkflowInput,
+  validateWorkflowInputSchema,
 } from "@/features/workflow-invocation/lib"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
@@ -133,6 +135,22 @@ export async function POST(req: NextRequest) {
             code: ErrorCodes.MISSING_API_KEYS,
             message: `This workflow requires ${error.missingProviders.join(", ")} ${error.missingProviders.length === 1 ? "API key" : "API keys"} to run. Please configure ${error.missingProviders.length === 1 ? "it" : "them"} in Settings → Providers.`,
             data: { missingProviders: error.missingProviders, action: "configure_providers" },
+          }),
+          { status: 400 },
+        )
+      }
+
+      // Handle schema validation errors
+      if (error instanceof SchemaValidationError) {
+        console.error("[workflow/invoke] Schema validation failed:", error.errorMessage)
+        return NextResponse.json(
+          formatErrorResponse(requestId, {
+            code: ErrorCodes.INVALID_REQUEST,
+            message: "Input validation failed",
+            data: {
+              errors: error.details,
+              summary: error.errorMessage,
+            },
           }),
           { status: 400 },
         )

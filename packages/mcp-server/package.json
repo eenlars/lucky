@@ -1,7 +1,7 @@
 {
-  "name": "lucky-mcp",
-  "version": "3.4.0",
-  "description": "MCP server for Lucky web scraping integration. Supports both cloud and self-hosted instances. Features include web scraping, search, batch processing, structured data extraction, and LLM-powered content analysis.",
+  "name": "@eenlars/alive-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for workflow management and execution. Execute Lucky workflows programmatically with status tracking, cancellation, and async/sync execution modes.",
   "type": "module",
   "bin": {
     "lucky-mcp": "dist/index.js"
@@ -34,12 +34,12 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": ["mcp", "lucky", "web-scraping", "crawler", "content-extraction"],
-  "author": "lucky",
+  "keywords": ["mcp", "workflows", "automation", "lucky", "agent-execution"],
+  "author": "eenlars",
   "bugs": {
-    "url": "https://github.com/lucky/lucky-mcp-server/issues"
+    "url": "https://github.com/eenlars/alive-mcp/issues"
   },
-  "homepage": "https://github.com/lucky/lucky-mcp-server#readme",
+  "homepage": "https://github.com/eenlars/alive-mcp#readme",
   "devDependencies": {
     "@types/node": "^24.3.1",
     "vitest": "^2.1.8"

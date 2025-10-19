@@ -12,6 +12,7 @@ import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { loadWorkflowConfigFromInput } from "./config-loader"
 import { MissingApiKeysError, NoEnabledModelsError } from "./errors"
 import { type ResolvedModels, getAllAvailableModels, resolveAvailableModels } from "./model-resolver"
+import { validateWorkflowInputSchema } from "./schema-validator"
 import { fetchUserProviderSettings } from "./user-provider-settings"
 
 /**
@@ -35,17 +36,19 @@ export type ProviderModelResult = {
  *
  * Complete flow:
  * 1. Load workflow config from input
- * 2. Extract required providers/models from config
- * 3. Fetch user's enabled models from database
- * 4. Resolve available models (filter + fallback logic)
- * 5. Fetch API keys for required providers
- * 6. Validate API keys are present
- * 7. Create LLM registry and user models
+ * 2. Validate input data against workflow's input schema
+ * 3. Extract required providers/models from config
+ * 4. Fetch user's enabled models from database
+ * 5. Resolve available models (filter + fallback logic)
+ * 6. Fetch API keys for required providers
+ * 7. Validate API keys are present
+ * 8. Create LLM registry and user models
  *
  * @param input - Workflow invocation input
  * @param principal - Authenticated principal
  * @param secrets - Secret resolver for API keys
  * @returns Provider/model configuration ready for execution
+ * @throws {SchemaValidationError} When input data validation fails
  * @throws {MissingApiKeysError} When required API keys are missing (session auth only)
  * @throws {NoEnabledModelsError} When a required provider has no enabled models
  *
@@ -62,7 +65,12 @@ export async function loadProvidersAndModels(
   // 1. Load workflow config
   const { config: workflowConfig } = await loadWorkflowConfigFromInput(input)
 
-  // 2. Extract required providers/models from workflow config
+  // 2. Validate input against schema (if mcp-invoke type and schema defined)
+  if (input.evalInput?.type === "mcp-invoke" && workflowConfig?.inputSchema) {
+    validateWorkflowInputSchema(input.evalInput.inputData, workflowConfig.inputSchema)
+  }
+
+  // 3. Extract required providers/models from workflow config
   const { providers: requiredProviders, models: requiredModels } = workflowConfig
     ? getRequiredProviderKeys(workflowConfig, "provider-model-loader")
     : { providers: new Set(FALLBACK_PROVIDER_KEYS), models: new Map() }

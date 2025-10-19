@@ -129,10 +129,10 @@ function getApiUrl(): string {
 server.addTool({
   name: "lucky_list_workflows",
   description: `
-List all workflows available to the authenticated user.
+List all useful workflows available to the authenticated user.
 
 **Returns:** Array of workflows with metadata:
-- workflow_id: Unique workflow identifier (use this with lucky_run_workflow)
+- workflow_id: Unique workflow identifier (use this with invoke_lucky_agentic_workflow)
 - name: Human-readable workflow name
 - description: Workflow purpose and behavior
 - inputSchema: JSONSchema7 defining expected input structure
@@ -211,14 +211,14 @@ List all workflows available to the authenticated user.
 })
 
 server.addTool({
-  name: "lucky_run_workflow",
+  name: "invoke_lucky_agentic_workflow",
   description: `
 Execute a workflow with provided input data.
 
 **Usage:**
 1. Call lucky_list_workflows to discover available workflows
 2. Check the workflow's inputSchema to understand required input format
-3. Call lucky_run_workflow with workflow_id and properly formatted input
+3. Call invoke_lucky_agentic_workflow with workflow_id and properly formatted input
 
 **Execution Modes:**
 - **Sync mode** (timeoutMs ≤ 30s): Returns workflow output immediately
@@ -350,7 +350,7 @@ Check the status of a workflow execution.
 - **cancelling**: Cancellation in progress
 - **not_found**: Invalid invocation_id
 
-**Usage:** Poll this tool after calling lucky_run_workflow in async mode (timeoutMs > 30s).
+**Usage:** Poll this tool after calling invoke_lucky_agentic_workflow in async mode (timeoutMs > 30s).
 
 **Example Response:**
 \`\`\`json
@@ -366,10 +366,10 @@ Check the status of a workflow execution.
 \`\`\`
 
 **Parameters:**
-- invocation_id: Invocation identifier from lucky_run_workflow
+- invocation_id: Invocation identifier from invoke_lucky_agentic_workflow
   `,
   parameters: z.object({
-    invocation_id: z.string().describe("Invocation identifier from lucky_run_workflow"),
+    invocation_id: z.string().describe("Invocation identifier from invoke_lucky_agentic_workflow"),
   }),
   execute: async (args: unknown, { session }: { session?: SessionData }): Promise<string> => {
     const apiKey = session?.luckyApiKey
@@ -422,7 +422,7 @@ server.addTool({
   description: `
 Cancel a running workflow execution.
 
-**Usage:** Provide the invocation_id from lucky_run_workflow or lucky_check_status.
+**Usage:** Provide the invocation_id from invoke_lucky_agentic_workflow or lucky_check_status.
 
 **Note:** Cancellation is graceful and may take time to complete. Check status with lucky_check_status to confirm cancellation.
 

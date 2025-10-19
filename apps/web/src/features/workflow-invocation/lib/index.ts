@@ -38,3 +38,9 @@ export {
   NoEnabledModelsError,
   InvalidWorkflowInputError,
 } from "./errors"
+
+// Schema validation
+export {
+  validateWorkflowInputSchema,
+  SchemaValidationError,
+} from "./schema-validator"

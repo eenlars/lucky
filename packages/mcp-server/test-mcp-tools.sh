@@ -20,6 +20,6 @@ echo ""
 
 echo "=== Expected output: 4 tools with proper schemas ==="
 echo "✓ lucky_list_workflows (no required params)"
-echo "✓ lucky_run_workflow (requires: workflow_id, input)"
+echo "✓ invoke_lucky_agentic_workflow (requires: workflow_id, input)"
 echo "✓ lucky_check_status (requires: invocation_id)"
 echo "✓ lucky_cancel_workflow (requires: invocation_id)"

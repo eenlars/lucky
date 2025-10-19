@@ -61,18 +61,6 @@ export const apiSchemas = {
   // ============================================================================
 
   /**
-   * POST /api/invoke
-   * Prompt-only workflow invocation (simplified invoke API)
-   */
-  invoke: {
-    req: z.object({
-      workflowVersionId: z.string().min(1),
-      prompt: z.string().min(1),
-    }),
-    res: ApiResponse(z.unknown()), // Output depends on workflow
-  },
-
-  /**
    * POST /api/v1/invoke
    * Full JSON-RPC 2.0 workflow invocation (MCP-compliant)
    */

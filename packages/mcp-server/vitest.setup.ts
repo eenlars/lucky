@@ -1,61 +1,38 @@
-import { beforeEach, vi } from "vitest"
-import LuckyApp from "./src/lucky-client.js"
-import type {
-  BatchScrapeResponse,
-  BatchScrapeStatusResponse,
-  LuckyDocument,
-  SearchResponse,
-} from "./src/lucky-client.js"
+import { vi } from "vitest"
+import LuckyClient from "./src/lucky-client.js"
+import type { Workflow, WorkflowInvocationResult } from "./src/lucky-client.js"
 
 // Create mock responses
-const mockSearchResponse: SearchResponse = {
-  success: true,
-  data: [
-    {
-      url: "https://example.com",
-      title: "Test Page",
-      description: "Test Description",
-      markdown: "# Test Content",
-      actions: null as never,
-    },
-  ] as LuckyDocument[], // LuckyDocument from our own client
+const mockWorkflow: Workflow = {
+  workflow_id: "wf_test",
+  name: "Test Workflow",
+  description: "A test workflow",
+  inputSchema: { type: "object" },
+  outputSchema: { type: "object" },
+  created_at: new Date().toISOString(),
 }
 
-const mockBatchScrapeResponse: BatchScrapeResponse = {
-  success: true,
-  id: "test-batch-id",
-}
-
-const mockBatchStatusResponse: BatchScrapeStatusResponse = {
-  success: true,
-  status: "completed",
-  completed: 1,
-  total: 1,
-  creditsUsed: 1,
-  expiresAt: new Date(),
-  data: [
-    {
-      url: "https://example.com",
-      title: "Test Page",
-      description: "Test Description",
-      markdown: "# Test Content",
-      actions: null as never,
-    },
-  ] as LuckyDocument[], // LuckyDocument from our own client
+const mockInvocationResult: WorkflowInvocationResult = {
+  invocation_id: "inv_test",
+  state: "completed",
+  createdAt: new Date().toISOString(),
+  output: { result: "test" },
 }
 
 // Create mock instance methods
-const mockSearch = vi.fn().mockImplementation(async () => mockSearchResponse)
-const mockAsyncBatchScrapeUrls = vi.fn().mockImplementation(async () => mockBatchScrapeResponse)
-const mockCheckBatchScrapeStatus = vi.fn().mockImplementation(async () => mockBatchStatusResponse)
+const mockListWorkflows = vi.fn().mockImplementation(async () => [mockWorkflow])
+const mockInvokeWorkflow = vi.fn().mockImplementation(async () => mockInvocationResult)
+const mockCheckStatus = vi.fn().mockImplementation(async () => mockInvocationResult)
+const mockCancelWorkflow = vi.fn().mockImplementation(async () => ({ success: true }))
 
 // Create mock instance
 const mockInstance = {
   apiKey: "test-api-key",
   apiUrl: "test-api-url",
-  search: mockSearch,
-  asyncBatchScrapeUrls: mockAsyncBatchScrapeUrls,
-  checkBatchScrapeStatus: mockCheckBatchScrapeStatus,
+  listWorkflows: mockListWorkflows,
+  invokeWorkflow: mockInvokeWorkflow,
+  checkStatus: mockCheckStatus,
+  cancelWorkflow: mockCancelWorkflow,
 }
 
 // Mock the Lucky client
