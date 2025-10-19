@@ -45,7 +45,10 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(userId, principal)
 
     // Fetch all API keys from secrets
-    const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"], "environment-variables")
+    const apiKeys = await secrets.getAll(
+      ["OPENAI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"],
+      "environment-variables",
+    )
 
     // Create LLM registry with fetched API keys
     const registry = createLLMRegistry({
