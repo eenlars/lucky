@@ -7,10 +7,11 @@ import { auth } from "@clerk/nextjs/server"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
-import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { createLLMRegistry } from "@lucky/models"
-import type { RS } from "@lucky/shared"
+import { DEFAULT_MODELS, PROVIDERS, PROVIDER_API_KEYS, createLLMRegistry, findModelById } from "@lucky/models"
+import { type Principal, isNir } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
+
+const USER_PAYS_FOR_FORMALIZE = false
 
 export async function POST(req: NextRequest) {
   // Require authentication
@@ -36,59 +37,55 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Create execution context with user's secrets for API key resolution
-    const principal = {
-      auth_method: "session" as const,
+    const principal: Principal = {
+      auth_method: "session",
       clerk_id: userId,
-      scopes: [] as string[],
+      scopes: [],
     }
+
     const secrets = createSecretResolver(userId, principal)
 
-    // Fetch all API keys from secrets
-    const apiKeys = await secrets.getAll(
-      ["OPENAI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"],
-      "environment-variables",
+    // Fetch API keys (user's if paying, environment if free)
+    const providerKeyNames = PROVIDERS.map(p => p.apiKeyName)
+    const apiKeys = await secrets.getAll(providerKeyNames, "environment-variables")
+
+    // Fetch user models only if paying
+    let availableModels: Awaited<ReturnType<typeof getUserModels>> | undefined
+    if (USER_PAYS_FOR_FORMALIZE) {
+      availableModels = await getUserModels(userId)
+    }
+
+    // Build provider -> API key mapping for registry
+    const fallbackKeys = Object.fromEntries(
+      PROVIDER_API_KEYS.map(keyName => {
+        const provider = keyName.replace(/_API_KEY$/, "").toLowerCase()
+        return [provider, apiKeys[keyName]]
+      }),
     )
+    const registry = createLLMRegistry({ fallbackKeys })
 
-    // Create LLM registry with fetched API keys
-    const registry = createLLMRegistry({
-      fallbackKeys: {
-        openai: apiKeys.OPENAI_API_KEY,
-        groq: apiKeys.GROQ_API_KEY,
-        openrouter: apiKeys.OPENROUTER_API_KEY,
-      },
-    })
-
-    // Fetch user's available models from database
-    let availableModels = await getUserModels(userId)
-
-    // For new workflow creation (no base workflow), ensure we have a fallback model
-    const isNewWorkflow = options.workflowConfig === null || options.workflowConfig === undefined
-    if (isNewWorkflow && availableModels.length === 0) {
-      // Provide a bulletproof default model for first-time workflow creation
-      const { findModel } = await import("@lucky/models")
-      const defaultModel = findModel("openai#gpt-4o-mini")
-      if (defaultModel?.runtimeEnabled) {
-        availableModels = [defaultModel]
-      } else {
+    // Use default model if needed
+    if (isNir(availableModels)) {
+      const defaultModel = findModelById(DEFAULT_MODELS.openai.default)
+      if (!defaultModel?.runtimeEnabled) {
         return fail("workflow/formalize", "No models available. Please configure API keys in Settings.", {
           code: "NO_MODELS_AVAILABLE",
           status: 400,
         })
       }
+      availableModels = [defaultModel]
     }
 
-    // Extract model IDs for UserModels instance
     const modelIds = availableModels.map(m => m.id)
+    const userModelsMode = USER_PAYS_FOR_FORMALIZE ? "byok" : "shared"
+    const userModelsId = USER_PAYS_FOR_FORMALIZE ? userId : `system-${userId}`
 
-    // Create UserModels instance for execution context
     const userModelsInstance = registry.forUser({
-      mode: "shared",
-      userId: `system-${userId}`,
+      mode: userModelsMode,
+      userId: userModelsId,
       models: modelIds,
     })
 
-    // Merge user's available models into options (uses ModelEntry[] for strategy)
     const optionsWithModels: GenerationOptions & AfterGenerationOptions = {
       ...options,
       modelSelectionStrategy: {
@@ -97,21 +94,16 @@ export async function POST(req: NextRequest) {
       },
     }
 
-    const result: RS<WorkflowConfig> = await withExecutionContext(
-      {
-        principal,
-        secrets,
-        apiKeys,
-        userModels: userModelsInstance,
-      },
-      async () => await formalizeWorkflow(prompt, optionsWithModels),
+    const validApiKeys = Object.fromEntries(Object.entries(apiKeys).filter(([, v]) => v)) as Record<string, string>
+
+    const result = await withExecutionContext(
+      { principal, secrets, apiKeys: validApiKeys, userModels: userModelsInstance },
+      () => formalizeWorkflow(prompt, optionsWithModels),
     )
 
     return alrighty("workflow/formalize", result)
   } catch (error) {
-    logException(error, {
-      location: "/api/workflow/formalize",
-    })
+    logException(error, { location: "/api/workflow/formalize" })
     const message = error instanceof Error ? error.message : "Failed to formalize workflow"
     return fail("workflow/formalize", message, { code: "FORMALIZE_ERROR", status: 500 })
   }

@@ -6,7 +6,7 @@ vi.mock("../llm-catalog/catalog", () => ({
 }))
 
 import {
-  FALLBACK_PROVIDER_KEYS,
+  PROVIDER_API_KEYS,
   formatMissingProviders,
   getProviderDisplayName,
   getProviderKeyName,
@@ -138,9 +138,9 @@ describe("Provider Utils", () => {
     })
   })
 
-  describe("FALLBACK_PROVIDER_KEYS", () => {
+  describe("PROVIDER_API_KEYS", () => {
     it("includes ANTHROPIC_API_KEY for legacy support", () => {
-      expect(FALLBACK_PROVIDER_KEYS).toContain("ANTHROPIC_API_KEY")
+      expect(PROVIDER_API_KEYS).toContain("ANTHROPIC_API_KEY")
     })
   })
 })

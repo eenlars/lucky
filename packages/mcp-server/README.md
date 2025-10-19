@@ -1,6 +1,6 @@
 <div align="center">
   <a name="readme-top"></a>
-  <h1>@eenlars/mcp</h1>
+  <h1>@eenlars/alive-mcp</h1>
   <p>MCP Server for Workflow Management & Execution</p>
 </div>
 
@@ -23,20 +23,20 @@ A Model Context Protocol (MCP) server for executing workflows programmatically. 
 ### With npx
 
 ```bash
-npx @eenlars/mcp
+npx @eenlars/alive-mcp
 ```
 
 ### Global Installation
 
 ```bash
-npm install -g @eenlars/mcp
-mcp-workflow
+npm install -g @eenlars/alive-mcp
+lucky-mcp
 ```
 
 ### As a Dependency
 
 ```bash
-npm install @eenlars/mcp
+npm install @eenlars/alive-mcp
 ```
 
 ## Configuration
@@ -59,7 +59,7 @@ npm install @eenlars/mcp
 
 ```bash
 export LUCKY_API_KEY=your-api-key
-npx @eenlars/mcp
+npx @eenlars/alive-mcp
 ```
 
 #### HTTP Streaming
@@ -67,7 +67,7 @@ npx @eenlars/mcp
 ```bash
 export LUCKY_API_KEY=your-api-key
 export HTTP_STREAMABLE_SERVER=true
-npx @eenlars/mcp
+npx @eenlars/alive-mcp
 # Server runs on http://localhost:3000/mcp
 ```
 
@@ -76,7 +76,7 @@ npx @eenlars/mcp
 ```bash
 export LUCKY_API_KEY=your-api-key
 export SSE_LOCAL=true
-npx @eenlars/mcp
+npx @eenlars/alive-mcp
 ```
 
 ## Usage
@@ -104,7 +104,7 @@ Returns all workflows available to the authenticated user with metadata:
 
 ```json
 {
-  "name": "lucky_run_workflow",
+  "name": "invoke_lucky_agentic_workflow",
   "arguments": {
     "workflow_id": "wf_research_paper",
     "input": { "topic": "AI Safety" },
@@ -216,7 +216,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "workflows": {
       "command": "npx",
-      "args": ["@eenlars/mcp"],
+      "args": ["@eenlars/alive-mcp"],
       "env": {
         "LUCKY_API_KEY": "your-api-key"
       }
@@ -236,7 +236,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "workflows": {
       "command": "npx",
-      "args": ["-y", "@eenlars/mcp"],
+      "args": ["-y", "@eenlars/alive-mcp"],
       "env": {
         "LUCKY_API_KEY": "YOUR_API_KEY"
       }
@@ -255,7 +255,7 @@ Add to User Settings (JSON):
     "servers": {
       "workflows": {
         "command": "npx",
-        "args": ["-y", "@eenlars/mcp"],
+        "args": ["-y", "@eenlars/alive-mcp"],
         "env": {
           "LUCKY_API_KEY": "${input:apiKey}"
         }
@@ -272,7 +272,7 @@ Add to User Settings (JSON):
    ↓
 2. Review the workflow's inputSchema to understand required input
    ↓
-3. Call lucky_run_workflow with workflow_id and properly formatted input
+3. Call invoke_lucky_agentic_workflow with workflow_id and properly formatted input
    ↓
 4. If async mode (timeoutMs > 30s):
    - Receive invocation_id

@@ -1,18 +1,13 @@
 import type { Principal } from "@/lib/auth/principal"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
-import { createLLMRegistry } from "@lucky/models"
 import type { UserModels } from "@lucky/models"
+import { PROVIDER_API_KEYS, createLLMRegistry } from "@lucky/models"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { loadWorkflowConfigFromInput } from "./config-loader"
 import { MissingApiKeysError, NoEnabledModelsError } from "./errors"
 import { validateInvocationInputSchema } from "./input-schema-validation"
 import { type ResolvedModels, getAllAvailableModels, resolveAvailableModels } from "./model-resolver"
-import {
-  FALLBACK_PROVIDER_KEYS,
-  formatMissingProviders,
-  getRequiredProviderKeys,
-  validateProviderKeys,
-} from "./provider-validation"
+import { formatMissingProviders, getRequiredProviderKeys, validateProviderKeys } from "./provider-validation"
 import { fetchUserProviderSettings } from "./user-provider-settings"
 
 /**
@@ -71,7 +66,7 @@ export async function loadProvidersAndModels(
   // 3. Extract required providers/models from workflow config
   const { providers: requiredProviders, models: requiredModels } = workflowConfig
     ? getRequiredProviderKeys(workflowConfig, "provider-model-loader")
-    : { providers: new Set(FALLBACK_PROVIDER_KEYS), models: new Map() }
+    : { providers: new Set(PROVIDER_API_KEYS), models: new Map() }
 
   // 3. Fetch user's enabled models from database
   const enabledModels = await fetchUserProviderSettings(principal.clerk_id, principal)
@@ -105,24 +100,24 @@ export async function loadProvidersAndModels(
     }
   }
 
-  // 7. Create LLM registry and user models
-  const llmRegistry = createLLMRegistry({
-    fallbackKeys: {
-      openai: apiKeys.OPENAI_API_KEY,
-      groq: apiKeys.GROQ_API_KEY,
-      openrouter: apiKeys.OPENROUTER_API_KEY,
-    },
-  })
+  // 7. Create LLM registry and user models - dynamically map all providers
+  const fallbackKeys: Record<string, string | undefined> = {}
+  const byokKeys: Record<string, string | undefined> = {}
+
+  for (const keyName of PROVIDER_API_KEYS) {
+    // Convert "OPENAI_API_KEY" -> "openai"
+    const provider = keyName.replace(/_API_KEY$/, "").toLowerCase()
+    fallbackKeys[provider] = apiKeys[keyName]
+    byokKeys[provider] = apiKeys[keyName]
+  }
+
+  const llmRegistry = createLLMRegistry({ fallbackKeys })
 
   const userModels = llmRegistry.forUser({
     mode: "byok",
     userId: principal.clerk_id,
     models: Array.from(resolved.models.values()).flat(),
-    apiKeys: {
-      openai: apiKeys.OPENAI_API_KEY,
-      groq: apiKeys.GROQ_API_KEY,
-      openrouter: apiKeys.OPENROUTER_API_KEY,
-    },
+    apiKeys: byokKeys,
   })
 
   // Log fallback information

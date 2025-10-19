@@ -9,7 +9,7 @@ import { PROVIDERS } from "./llm-catalog/providers"
  * Common provider API keys to check as fallback
  * Derived from PROVIDERS catalog + legacy Anthropic support
  */
-export const FALLBACK_PROVIDER_KEYS = [
+export const PROVIDER_API_KEYS = [
   ...PROVIDERS.map(p => p.apiKeyName),
   "ANTHROPIC_API_KEY", // Legacy support - not in catalog
 ] as const

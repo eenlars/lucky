@@ -18,7 +18,7 @@ vi.mock("../lib/provider-validation", () => ({
   getRequiredProviderKeys: vi.fn(),
   validateProviderKeys: vi.fn().mockReturnValue([]),
   formatMissingProviders: vi.fn().mockImplementation((keys: string[]) => keys),
-  FALLBACK_PROVIDER_KEYS: ["openai", "groq", "openrouter"],
+  PROVIDER_API_KEYS: ["openai", "groq", "openrouter"],
 }))
 
 vi.mock("../lib/user-provider-settings", () => ({
@@ -111,7 +111,7 @@ describe("loadProvidersAndModels", () => {
 
   it("should use fallback providers when no workflow config", async () => {
     const { loadWorkflowConfigFromInput } = await import("../lib/config-loader")
-    const { FALLBACK_PROVIDER_KEYS } = await import("../lib/provider-validation")
+    const { PROVIDER_API_KEYS } = await import("../lib/provider-validation")
     const { fetchUserProviderSettings } = await import("../lib/user-provider-settings")
     const { getAllAvailableModels } = await import("../lib/model-resolver")
 
@@ -168,7 +168,7 @@ describe("loadProvidersAndModels", () => {
     const result = await loadProvidersAndModels(input, principal, secrets)
 
     expect(result.providers.size).toBe(2)
-    expect(secrets.getAll).toHaveBeenCalledWith(FALLBACK_PROVIDER_KEYS, "environment-variables")
+    expect(secrets.getAll).toHaveBeenCalledWith(PROVIDER_API_KEYS, "environment-variables")
   })
 
   it("should throw MissingApiKeysError for session auth when keys are missing", async () => {

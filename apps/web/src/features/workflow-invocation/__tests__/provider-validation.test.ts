@@ -1,7 +1,7 @@
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
-  FALLBACK_PROVIDER_KEYS,
+  PROVIDER_API_KEYS,
   formatMissingProviders,
   getRequiredProviderKeys,
   validateProviderKeys,
@@ -86,7 +86,7 @@ describe("getRequiredProviderKeys", () => {
 
     const result = getRequiredProviderKeys(mockConfig, "test-context")
 
-    expect(result.providers).toEqual(new Set(FALLBACK_PROVIDER_KEYS))
+    expect(result.providers).toEqual(new Set(PROVIDER_API_KEYS))
     expect(result.models).toEqual(new Map())
     expect(logException).toHaveBeenCalled()
   })
@@ -239,9 +239,9 @@ describe("formatMissingProviders", () => {
   })
 })
 
-describe("FALLBACK_PROVIDER_KEYS", () => {
+describe("PROVIDER_API_KEYS", () => {
   it("should export fallback provider keys from @lucky/models", async () => {
-    expect(FALLBACK_PROVIDER_KEYS).toBeDefined()
-    expect(Array.isArray(FALLBACK_PROVIDER_KEYS)).toBe(true)
+    expect(PROVIDER_API_KEYS).toBeDefined()
+    expect(Array.isArray(PROVIDER_API_KEYS)).toBe(true)
   })
 })

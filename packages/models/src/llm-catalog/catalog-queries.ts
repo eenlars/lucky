@@ -2,8 +2,8 @@
  * catalog query and filter functions
  */
 
-import { isNir } from "@lucky/shared"
 import type { ModelEntry, ModelId } from "@lucky/shared"
+import { isNir } from "@lucky/shared"
 import { MODEL_CATALOG } from "./catalog"
 
 /**

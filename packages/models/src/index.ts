@@ -45,10 +45,13 @@ export { isUIVisibleModel } from "./ui-utils"
 
 // Provider utility exports
 export {
-  FALLBACK_PROVIDER_KEYS,
   formatMissingProviders,
   getProviderDisplayName,
   getProviderKeyName,
   getRequiredProviderKeys,
+  PROVIDER_API_KEYS,
   validateProviderKeys,
 } from "./provider-utils"
+
+// Default models export
+export { DEFAULT_MODELS } from "./llm-catalog/defaults"
