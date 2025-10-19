@@ -11,8 +11,8 @@ import type { UserModels } from "@lucky/models"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { loadWorkflowConfigFromInput } from "./config-loader"
 import { MissingApiKeysError, NoEnabledModelsError } from "./errors"
+import { validateInvocationInputSchema } from "./input-schema-validation"
 import { type ResolvedModels, getAllAvailableModels, resolveAvailableModels } from "./model-resolver"
-import { validateWorkflowInputSchema } from "./schema-validator"
 import { fetchUserProviderSettings } from "./user-provider-settings"
 
 /**
@@ -66,9 +66,7 @@ export async function loadProvidersAndModels(
   const { config: workflowConfig } = await loadWorkflowConfigFromInput(input)
 
   // 2. Validate input against schema (if mcp-invoke type and schema defined)
-  if (input.evalInput?.type === "mcp-invoke" && workflowConfig?.inputSchema) {
-    validateWorkflowInputSchema(input.evalInput.inputData, workflowConfig.inputSchema)
-  }
+  validateInvocationInputSchema(input, workflowConfig)
 
   // 3. Extract required providers/models from workflow config
   const { providers: requiredProviders, models: requiredModels } = workflowConfig

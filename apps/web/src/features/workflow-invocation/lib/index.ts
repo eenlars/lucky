@@ -44,3 +44,5 @@ export {
   validateWorkflowInputSchema,
   SchemaValidationError,
 } from "./schema-validator"
+
+export { validateInvocationInputSchema } from "./input-schema-validation"
