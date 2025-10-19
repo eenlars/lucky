@@ -77,7 +77,6 @@ export async function POST(req: NextRequest) {
       {
         principal: { clerk_id: userId, auth_method: "session", scopes: [] },
         secrets,
-        apiKeys: {},
         userModels,
       },
       async () => {

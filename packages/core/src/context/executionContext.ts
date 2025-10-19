@@ -12,7 +12,22 @@ import { RuntimeContext } from "./runtime-context"
  */
 export const ZExecutionSchema = z.object({
   principal: ZPrincipal,
+  /**
+   * Secret resolver for this workflow invocation
+   *
+   * The secret resolver is used to resolve API keys for the current user.
+   * It does Supabase Calls.
+   *
+   * Access via: requireExecutionContext().get("secrets") or use getSecretResolver() helper
+   */
   secrets: z.custom<SecretResolver>(),
+  /**
+   * API keys for this workflow invocation
+   *
+   * The API keys are used to resolve API keys for the current user.
+   *
+   * Access via: requireExecutionContext().get("apiKeys") or use getApiKeys() helper
+   */
   apiKeys: z.record(z.string()).optional(),
   /**
    * UserModels instance for this workflow invocation
