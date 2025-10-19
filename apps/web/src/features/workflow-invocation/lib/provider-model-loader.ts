@@ -1,4 +1,5 @@
 import type { Principal } from "@/lib/auth/principal"
+import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import type { UserModels } from "@lucky/models"
 import { PROVIDER_API_KEYS, createLLMRegistry } from "@lucky/models"
@@ -88,11 +89,14 @@ export async function loadProvidersAndModels(
   }
 
   // 5. Fetch API keys for required providers
-  const apiKeys = await secrets.getAll(Array.from(requiredProviders), "environment-variables")
+  // Convert provider names ("openai") to API key names ("OPENAI_API_KEY")
+  const requiredKeyNames = Array.from(requiredProviders).map(getProviderKeyName)
+  console.log("[provider-model-loader] Fetching API keys:", requiredKeyNames)
+  const apiKeys = await secrets.getAll(requiredKeyNames, "environment-variables")
 
   // 6. Validate API keys (session auth only)
   if (principal.auth_method === "session") {
-    const missingKeys = validateProviderKeys(Array.from(requiredProviders), apiKeys)
+    const missingKeys = validateProviderKeys(requiredKeyNames, apiKeys)
 
     if (missingKeys.length > 0) {
       const missingProviders = formatMissingProviders(missingKeys)

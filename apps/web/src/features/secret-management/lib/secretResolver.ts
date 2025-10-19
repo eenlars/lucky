@@ -33,9 +33,11 @@ export function createSecretResolver(clerk_id: string, principal?: Principal): S
 
     async getAll(names: string[], namespace?: string): Promise<Record<string, string>> {
       const ns = normalizeNamespace(namespace)
-      console.log(
-        `[secretResolver.getAll] Fetching secrets for clerk_id=${clerk_id}, names=${names.join(", ")}, namespace=${ns}`,
-      )
+      console.log(`[secretResolver.getAll] Fetching ${names.length} secret(s):`, {
+        clerk_id,
+        namespace: ns,
+        requested: names,
+      })
       const { data, error } = await fetchSecrets(clerk_id, names, ns, principal)
 
       if (error) {
@@ -44,11 +46,17 @@ export function createSecretResolver(clerk_id: string, principal?: Principal): S
       }
 
       if (!data || data.length === 0) {
-        console.warn(`[secretResolver.getAll] No secrets found for names: ${names.join(", ")}`)
+        console.warn(`[secretResolver.getAll] ❌ No secrets found! Requested: [${names.join(", ")}]`)
         return {}
       }
 
-      console.log(`[secretResolver.getAll] Found ${data.length} secret(s): ${data.map(d => d.name).join(", ")}`)
+      const foundNames = data.map(d => d.name)
+      const missingNames = names.filter(n => !foundNames.includes(n))
+
+      console.log(`[secretResolver.getAll] ✓ Found ${data.length}/${names.length} secret(s):`, {
+        found: foundNames,
+        missing: missingNames.length > 0 ? missingNames : undefined,
+      })
 
       const secrets: Record<string, string> = {}
       const secretIds: string[] = []

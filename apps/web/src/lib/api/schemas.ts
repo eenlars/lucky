@@ -320,8 +320,8 @@ export const apiSchemas = {
    */
   "user/env-keys/set": {
     req: z.object({
-      key: z.string().regex(/^[A-Z_][A-Z0-9_]*$/),
-      value: z.string(),
+      key: z.string().min(1),
+      value: z.string().min(8, "API key must be at least 8 characters"),
     }),
     res: ApiResponse(
       z.object({

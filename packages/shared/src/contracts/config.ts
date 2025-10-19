@@ -62,7 +62,7 @@ export type ToolsConfig = z.infer<typeof ToolsConfigSchema>
 // ============================================================================
 
 export const HandoffContentSchema = z.enum(["summary", "full"]).default("full")
-export const PrepareProblemMethodSchema = z.enum(["ai", "workflow"]).default("ai")
+export const PrepareProblemMethodSchema = z.enum(["ai", "workflow", "none"]).default("none")
 
 export const WorkflowExecutionConfigSchema = z.object({
   maxTotalNodeInvocations: z.number().int().positive().default(14),

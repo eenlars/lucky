@@ -121,7 +121,7 @@ export interface CoreWorkflowConfig {
   /** Whether to prepare problem before execution */
   readonly prepareProblem: boolean
   /** Problem preparation method */
-  readonly prepareProblemMethod: "ai" | "workflow"
+  readonly prepareProblemMethod: "ai" | "workflow" | "none"
   /** Workflow version ID for problem preparation */
   readonly prepareProblemWorkflowVersionId: string
   /** Whether to enable parallel execution */

@@ -6,6 +6,7 @@ import { ModelGrid } from "@/features/provider-llm-setup/providers/model-selecti
 import { ProviderConfigSkeleton } from "@/features/provider-llm-setup/providers/provider-skeleton"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
+import { post } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
 import { getProviderConfigs, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
@@ -196,19 +197,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      const keyResponse = await fetch("/api/user/env-keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: config.apiKeyName,
-          value: apiKey,
-        }),
+      await post("user/env-keys/set", {
+        key: config.apiKeyName,
+        value: apiKey,
       })
-
-      if (!keyResponse.ok) {
-        const errorDetails = await extractFetchError(keyResponse)
-        throw new Error(errorDetails)
-      }
 
       setIsConfigured(true)
       setHasUnsavedKeyChanges(false)
