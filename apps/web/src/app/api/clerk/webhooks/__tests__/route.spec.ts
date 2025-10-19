@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { envi } from "@/env.mjs"
+import type { UserWebhookEvent } from "@clerk/backend"
 import { Webhook } from "svix"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { POST } from "../route"
@@ -30,7 +31,7 @@ describe("Clerk Webhook Unit Tests", () => {
     mockEq.mockResolvedValue({ error: null })
   })
 
-  function createRequest(payload: object, signed = true): Request {
+  function createRequest(payload: UserWebhookEvent, signed = true): Request {
     const body = JSON.stringify(payload)
     const headers: Record<string, string> = { "content-type": "application/json" }
 
@@ -51,7 +52,7 @@ describe("Clerk Webhook Unit Tests", () => {
     })
   }
 
-  function loadFixture(name: string) {
+  function loadFixture(name: string): UserWebhookEvent {
     return JSON.parse(readFileSync(join(__dirname, "resources", `${name}.json`), "utf-8"))
   }
 
