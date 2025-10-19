@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
-import type { LLMRegistry } from "@lucky/models"
+import type { UserModels } from "@lucky/models"
 import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { z } from "zod"
@@ -15,17 +15,17 @@ export const ZExecutionSchema = z.object({
   secrets: z.custom<SecretResolver>(),
   apiKeys: z.record(z.string()).optional(),
   /**
-   * LLMRegistry instance for this workflow invocation
+   * UserModels instance for this workflow invocation
    *
-   * The registry can be in one of two modes:
+   * The UserModels instance can be in one of two modes:
    * - "shared": Uses company/system API keys (from process.env) as fallback for all users
-   * - "user": Uses individual user's API keys (BYOK - Bring Your Own Key)
+   * - "byok": Uses individual user's API keys (BYOK - Bring Your Own Key)
    *
-   * To get user-specific models, call: registry.forUser({ mode, userId, models, apiKeys })
+   * This is a pre-configured instance created from the LLMRegistry for the current user.
    *
-   * Access via: requireExecutionContext().get("llmRegistry") or use getRegistry() helper
+   * Access via: requireExecutionContext().get("userModels") or use getUserModels() helper
    */
-  llmRegistry: z.custom<LLMRegistry>().optional(),
+  userModels: z.custom<UserModels>().optional(),
   spendingTracker: z.custom<SpendingTracker>().optional(),
   // MCP toolkits available during this invocation (UI-configured or file-based)
   mcp: executionMCPContextSchema.optional(),
@@ -147,7 +147,7 @@ export async function getApiKey(name: string): Promise<string | undefined> {
  *
  * @example
  * ```typescript
- * const registry = getRegistry()
+ * const userModels = getUserModels()
  * const userModels = registry.forUser({
  *   mode: "shared",
  *   userId: "user-123",
@@ -156,15 +156,15 @@ export async function getApiKey(name: string): Promise<string | undefined> {
  * const model = userModels.model("openai#gpt-4o")
  * ```
  */
-export function getRegistry(): LLMRegistry {
+export function getUserModels(): UserModels {
   const ctx = requireExecutionContext()
-  const registry = ctx.get("llmRegistry")
-  if (!registry) {
+  const userModels = ctx.get("userModels")
+  if (!userModels) {
     throw new Error(
-      "LLMRegistry not configured in execution context. Ensure registry is passed to withExecutionContext()",
+      "UserModels not configured in execution context. Ensure userModels is passed to withExecutionContext()",
     )
   }
-  return registry
+  return userModels
 }
 
 // Re-export SecretResolver type for tests and consumers importing from core

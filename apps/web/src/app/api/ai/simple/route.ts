@@ -20,12 +20,23 @@ export async function POST(req: NextRequest) {
 
     // Setup execution context
     const secrets = createSecretResolver(principal.clerk_id, principal)
-    const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+    const apiKeys = await secrets.getAll(
+      ["OPENAI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"],
+      "environment-variables",
+    )
 
     const llmRegistry = createLLMRegistry({
       fallbackKeys: {
         openai: apiKeys.OPENAI_API_KEY,
+        groq: apiKeys.GROQ_API_KEY,
+        openrouter: apiKeys.OPENROUTER_API_KEY,
       },
+    })
+
+    const userModels = llmRegistry.forUser({
+      mode: "shared",
+      userId: principal.clerk_id,
+      models: ["openai#gpt-4o-mini"],
     })
 
     // Create system prompt based on context type
@@ -81,15 +92,9 @@ Respond with a JSON object containing:
 - explanation: a brief explanation of what was changed`
     }
 
-    return withExecutionContext({ principal, secrets, apiKeys, llmRegistry }, async () => {
-      const userModels = llmRegistry.forUser({
-        mode: "shared",
-        userId: principal.clerk_id,
-        models: ["openai#gpt-4o"],
-      })
-
+    return withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
       const result = streamText({
-        model: userModels.model("openai#gpt-4o"),
+        model: userModels.model("openai#gpt-4o-mini"),
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt },

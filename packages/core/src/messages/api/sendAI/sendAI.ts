@@ -130,7 +130,7 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
 
   // log which file is requesting sendAI by inspecting the stack trace
   const stack = new Error().stack
-  let callerFile: string | undefined = undefined
+  let callerFile = ""
   if (stack) {
     // find the first stack line outside this file
     const lines = stack.split("\n")

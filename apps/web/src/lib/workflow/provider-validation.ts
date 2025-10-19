@@ -1,5 +1,6 @@
 import { logException } from "@/lib/error-logger"
 import {
+  type RequiredProviders,
   extractRequiredProviders,
   getProviderDisplayName,
   getProviderKeyName,
@@ -14,19 +15,19 @@ export { FALLBACK_PROVIDER_KEYS }
  * Extract required provider API keys from workflow config
  * Returns fallback keys if extraction fails
  */
-export function getRequiredProviderKeys(config: WorkflowConfig, context: string): string[] {
+export function getRequiredProviderKeys(config: WorkflowConfig, context: string): RequiredProviders {
   try {
-    const { providers } = extractRequiredProviders(config)
+    const { providers, models } = extractRequiredProviders(config)
     const requiredKeys = Array.from(providers).map(getProviderKeyName)
     console.log(`[${context}] Workflow requires providers:`, Array.from(providers))
     console.log(`[${context}] Required API keys:`, requiredKeys)
-    return requiredKeys
+    return { providers, models }
   } catch (error) {
     logException(error, {
       location: "/lib/workflow/provider-validation",
     })
     console.error(`[${context}] Failed to extract providers:`, error)
-    return [...FALLBACK_PROVIDER_KEYS]
+    return { providers: new Set(FALLBACK_PROVIDER_KEYS), models: new Map() }
   }
 }
 

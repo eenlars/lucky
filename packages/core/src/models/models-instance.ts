@@ -6,8 +6,8 @@
  * configured with appropriate API keys and access controls.
  */
 
-import { getExecutionContext, getRegistry, requireExecutionContext } from "@core/context/executionContext"
-import { getRuntimeEnabledModels, type UserModels } from "@lucky/models"
+import { getExecutionContext, getUserModels, requireExecutionContext } from "@core/context/executionContext"
+import type { UserModels } from "@lucky/models"
 
 /**
  * Get the UserModels instance from execution context.
@@ -29,14 +29,9 @@ export async function getModelsInstance(): Promise<UserModels> {
     )
   }
 
-  const registry = getRegistry()
-  const allModelIds = getRuntimeEnabledModels().map(m => m.id)
+  const userModels = getUserModels()
 
-  return registry.forUser({
-    mode: "shared",
-    userId: `system-${principal.clerk_id}`,
-    models: allModelIds,
-  })
+  return userModels
 }
 
 /**
@@ -46,6 +41,6 @@ export async function getModelsInstance(): Promise<UserModels> {
 export function resetModelsInstance(): void {
   const ctx = getExecutionContext()
   if (ctx) {
-    ctx.delete("llmRegistry")
+    ctx.delete("userModels")
   }
 }

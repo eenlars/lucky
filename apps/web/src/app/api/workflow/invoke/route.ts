@@ -24,12 +24,12 @@ import {
 } from "@/lib/workflow/provider-validation"
 import { getExecutionContext, withExecutionContext } from "@lucky/core/context/executionContext"
 import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
-import { createLLMRegistry } from "@lucky/models"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
-import { genShortId, isNir } from "@lucky/shared"
+import { createLLMRegistry } from "@lucky/models"
+import { type MCPToolkitMap, genShortId, isNir, uiConfigToToolkits } from "@lucky/shared"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { type NextRequest, NextResponse } from "next/server"
@@ -158,14 +158,14 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
     // Load MCP configurations from both database and lockbox
-    let mcpToolkits: import("@lucky/shared").MCPToolkitMap | undefined
-    if (principal.auth_method === "session") {
+    let mcpToolkits: MCPToolkitMap | undefined
+    if (principal.auth_method === "session" && process.env.NODE_ENV !== "production") {
       try {
         // Load from database
         const databaseToolkits = await loadMCPToolkitsFromDatabase(principal.clerk_id)
 
         // Load from lockbox
-        let lockboxToolkits: import("@lucky/shared").MCPToolkitMap | undefined
+        let lockboxToolkits: MCPToolkitMap | undefined
         try {
           const mcpConfigJson = await secrets.get("servers", "mcp")
 
@@ -175,7 +175,6 @@ export async function POST(req: NextRequest) {
             }
 
             if (Object.keys(mcpConfig.mcpServers).length > 0) {
-              const { uiConfigToToolkits } = await import("@lucky/shared")
               lockboxToolkits = uiConfigToToolkits(mcpConfig.mcpServers)
             }
           }
@@ -214,16 +213,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Extract providers required by this workflow for targeted validation
-    const requiredProviderKeys = workflowConfig
+    const { providers, models } = workflowConfig
       ? getRequiredProviderKeys(workflowConfig, "workflow/invoke")
-      : [...FALLBACK_PROVIDER_KEYS]
+      : { providers: new Set(FALLBACK_PROVIDER_KEYS), models: new Map() }
 
     // Pre-fetch required provider keys (only those actually needed by this workflow)
-    const apiKeys = await secrets.getAll(requiredProviderKeys, "environment-variables")
+    const apiKeys = await secrets.getAll(Array.from(providers), "environment-variables")
 
     // Validate all required keys are present for session-based auth
     if (principal.auth_method === "session") {
-      const missingKeys = validateProviderKeys(requiredProviderKeys, apiKeys)
+      const missingKeys = validateProviderKeys(Array.from(providers), apiKeys)
 
       if (!isNir(missingKeys)) {
         const missingProviders = formatMissingProviders(missingKeys)
@@ -254,12 +253,23 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    const userModels = llmRegistry.forUser({
+      mode: "byok",
+      userId: principal.clerk_id,
+      models: Array.from(models.values()).flat(),
+      apiKeys: {
+        openai: apiKeys.OPENAI_API_KEY,
+        groq: apiKeys.GROQ_API_KEY,
+        openrouter: apiKeys.OPENROUTER_API_KEY,
+      },
+    })
+
     const result = await withExecutionContext(
       {
         principal,
         secrets,
         apiKeys,
-        llmRegistry,
+        userModels,
         // Pass MCP toolkits in execution context (if available)
         ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
       },

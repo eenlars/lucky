@@ -158,6 +158,18 @@ export const apiSchemas = {
   },
 
   /**
+   * POST /api/modify-workflow
+   * Modify and validate workflow configuration
+   */
+  "modify-workflow": {
+    req: z.object({
+      prompt: z.string(),
+      options: z.unknown().optional(), // GenerationOptions & AfterGenerationOptions
+    }),
+    res: z.unknown(), // RS<WorkflowConfig>
+  },
+
+  /**
    * GET /api/workflow/config
    * Get workflow runtime configuration
    * POST /api/workflow/config

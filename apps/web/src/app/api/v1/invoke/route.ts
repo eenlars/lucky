@@ -117,14 +117,14 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
     // Extract required provider keys from workflow config
-    const requiredProviderKeys = getRequiredProviderKeys(config, "v1/invoke")
+    const { providers, models } = getRequiredProviderKeys(config, "v1/invoke")
 
     // Pre-fetch required provider keys (only those actually needed by this workflow)
-    const apiKeys = await secrets.getAll(requiredProviderKeys, "environment-variables")
+    const apiKeys = await secrets.getAll(Array.from(providers), "environment-variables")
 
     // Validate all required keys are present for session-based auth
     if (principal.auth_method === "session") {
-      const missingKeys = validateProviderKeys(requiredProviderKeys, apiKeys)
+      const missingKeys = validateProviderKeys(Array.from(providers), apiKeys)
 
       if (!isNir(missingKeys)) {
         const missingProviders = formatMissingProviders(missingKeys)
@@ -149,8 +149,19 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    const userModels = llmRegistry.forUser({
+      mode: "byok",
+      userId: principal.clerk_id,
+      models: Array.from(models.values()).flat(),
+      apiKeys: {
+        openai: apiKeys.OPENAI_API_KEY,
+        groq: apiKeys.GROQ_API_KEY,
+        openrouter: apiKeys.OPENROUTER_API_KEY,
+      },
+    })
+
     // Execute workflow within execution context with registry
-    const result = await withExecutionContext({ principal, secrets, apiKeys, llmRegistry }, async () => {
+    const result = await withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
       return invokeWorkflow(coreInvocationInput)
     })
 

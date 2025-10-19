@@ -5,9 +5,9 @@ import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.ty
 import { ToolManager } from "@core/node/toolManager"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
-import { createLLMRegistry } from "@lucky/models"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
+import { MODEL_CATALOG, createLLMRegistry } from "@lucky/models"
 import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
 import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
@@ -106,6 +106,12 @@ export async function POST(request: Request) {
       },
     })
 
+    const userModels = llmRegistry.forUser({
+      mode: "shared",
+      userId: userId,
+      models: MODEL_CATALOG.map(i => i.id),
+    })
+
     const result = await withExecutionContext(
       {
         principal: {
@@ -118,7 +124,7 @@ export async function POST(request: Request) {
           getAll: async () => ({}),
         },
         apiKeys: devApiKeys,
-        llmRegistry,
+        userModels,
       },
       async () => {
         return withObservationContext({ randomId, observer }, async () => {

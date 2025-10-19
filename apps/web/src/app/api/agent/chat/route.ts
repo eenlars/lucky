@@ -218,8 +218,14 @@ export async function POST(request: NextRequest) {
       fallbackKeys,
     })
 
+    const userModels = llmRegistry.forUser({
+      mode: "shared",
+      userId: clerkId,
+      models: allowlist,
+    })
+
     // Execute the chat invocation within the execution context
-    return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys, llmRegistry }, async () => {
+    return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys, userModels }, async () => {
       // Create user-specific models instance with allowed models list
       let model: LanguageModel
       let resolvedModelId: string

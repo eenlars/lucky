@@ -32,7 +32,7 @@ export async function executeEditMode(
     const currentWorkflow = JSON.parse(currentWorkflowJson)
 
     onProgress?.("Sending modification request to AI...")
-    const response = await fetch("/api/workflow/formalize", {
+    const response = await fetch("/api/modify-workflow", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

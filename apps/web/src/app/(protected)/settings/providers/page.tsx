@@ -32,8 +32,9 @@ export default function ProvidersPage() {
     setIsLoading(true)
     try {
       const keysResponse = await fetch("/api/user/env-keys")
-      const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
-      const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
+      const keysData = keysResponse.ok ? await keysResponse.json() : { data: [] }
+      const keys = Array.isArray(keysData?.data) ? keysData.data : []
+      const keyNames = new Set(keys.map((k: { name: string }) => k.name))
 
       const providerConfigs = getProviderConfigs()
       const providerSlugs = getEnabledProviderSlugs(providerConfigs)

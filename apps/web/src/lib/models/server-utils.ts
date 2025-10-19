@@ -57,5 +57,10 @@ export async function getUserModels(clerkId: string): Promise<ModelEntry[]> {
     }
   }
 
+  if (modelEntries.length === 0) {
+    console.warn(`[getUserModels] No enabled models found for user "${clerkId}"`)
+    return []
+  }
+
   return modelEntries
 }

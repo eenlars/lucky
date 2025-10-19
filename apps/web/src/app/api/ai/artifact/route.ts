@@ -3,7 +3,7 @@ import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { createLLMRegistry } from "@lucky/models"
 import { generateObject } from "ai"
-import { type NextRequest } from "next/server"
+import type { NextRequest } from "next/server"
 import { z } from "zod"
 
 // Schema for MCP server configuration
@@ -121,17 +121,19 @@ ${JSON.stringify(currentState, null, 2)}
 Make appropriate changes based on the user's request.`
     }
 
-    // Execute within execution context
-    return withExecutionContext({ principal, secrets, apiKeys, llmRegistry }, async () => {
-      const userModels = llmRegistry.forUser({
-        mode: "shared",
-        userId: principal.clerk_id,
-        models: ["openai#gpt-4o"],
-      })
+    const modelUsed = "openai#gpt-4o-mini"
 
+    const userModels = llmRegistry.forUser({
+      mode: "shared",
+      userId: principal.clerk_id,
+      models: [modelUsed],
+    })
+
+    // Execute within execution context
+    return withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
       // Simple non-streaming call
       const result = await generateObject({
-        model: userModels.model("openai#gpt-4o"),
+        model: userModels.model(modelUsed),
         schema: mcpConfigResponseSchema,
         messages: [
           { role: "system", content: systemPrompt },
