@@ -1,8 +1,8 @@
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
+import { genObject } from "@lucky/core/messages/api/genObject"
 import { createLLMRegistry } from "@lucky/models"
-import { generateObject } from "ai"
 import type { NextRequest } from "next/server"
 import { z } from "zod"
 
@@ -131,20 +131,35 @@ Make appropriate changes based on the user's request.`
 
     // Execute within execution context
     return withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
-      // Simple non-streaming call
-      const result = await generateObject({
-        model: userModels.model(modelUsed),
+      // Use custom genObject wrapper to avoid type inference issues
+      const result = await genObject({
+        model: modelUsed,
         schema: mcpConfigResponseSchema,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt },
         ],
+        opts: {
+          retries: 2,
+          repair: true,
+        },
       })
+
+      if (!result.success) {
+        return Response.json(
+          {
+            success: false,
+            error: result.error || "Failed to generate configuration",
+            errorType: "generation_failed",
+          },
+          { status: 500 },
+        )
+      }
 
       // Return simple JSON response like the workflow endpoint
       return Response.json({
         success: true,
-        data: result.object,
+        data: result.data.value,
       })
     })
   } catch (error) {
