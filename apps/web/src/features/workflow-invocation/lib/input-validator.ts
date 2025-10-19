@@ -1,7 +1,7 @@
 import type { Principal } from "@/lib/auth/principal"
-import { formatErrorResponse } from "@/lib/mcp-invoke/response"
 import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { InvalidWorkflowInputError } from "./errors"
+import { formatErrorResponse } from "./response-formatter"
 
 /**
  * Validate workflow invocation input against security and auth constraints.

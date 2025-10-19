@@ -1,7 +1,7 @@
+import { formatErrorResponse, formatSuccessResponse } from "@/features/workflow-invocation/lib"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
-import { formatErrorResponse, formatSuccessResponse } from "@/lib/mcp-invoke/response"
 import { auth } from "@clerk/nextjs/server"
 import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow/verifyWorkflow"
 import { clientWorkflowLoader } from "@lucky/core/workflow/setup/WorkflowLoader.client"

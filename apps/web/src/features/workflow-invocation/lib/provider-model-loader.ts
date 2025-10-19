@@ -1,10 +1,4 @@
 import type { Principal } from "@/lib/auth/principal"
-import {
-  FALLBACK_PROVIDER_KEYS,
-  formatMissingProviders,
-  getRequiredProviderKeys,
-  validateProviderKeys,
-} from "@/lib/workflow/provider-validation"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { createLLMRegistry } from "@lucky/models"
 import type { UserModels } from "@lucky/models"
@@ -13,6 +7,12 @@ import { loadWorkflowConfigFromInput } from "./config-loader"
 import { MissingApiKeysError, NoEnabledModelsError } from "./errors"
 import { validateInvocationInputSchema } from "./input-schema-validation"
 import { type ResolvedModels, getAllAvailableModels, resolveAvailableModels } from "./model-resolver"
+import {
+  FALLBACK_PROVIDER_KEYS,
+  formatMissingProviders,
+  getRequiredProviderKeys,
+  validateProviderKeys,
+} from "./provider-validation"
 import { fetchUserProviderSettings } from "./user-provider-settings"
 
 /**

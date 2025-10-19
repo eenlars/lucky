@@ -7,6 +7,14 @@
 // Config loading
 export { loadWorkflowConfigFromInput, type WorkflowConfigResult } from "./config-loader"
 
+// Database workflow loading (for direct access)
+export {
+  loadWorkflowConfig,
+  getDemoWorkflow,
+  type WorkflowLoadResult,
+  type WorkflowIdMode,
+} from "./database-workflow-loader"
+
 // Provider settings
 export { fetchUserProviderSettings, type UserProviderSettings } from "./user-provider-settings"
 
@@ -46,3 +54,33 @@ export {
 } from "./schema-validator"
 
 export { validateInvocationInputSchema } from "./input-schema-validation"
+
+// Response formatting
+export {
+  formatSuccessResponse,
+  formatErrorResponse,
+  formatWorkflowError,
+  formatInternalError,
+  extractWorkflowOutput,
+  extractTraceId,
+  type InvocationMetadata,
+} from "./response-formatter"
+
+// MCP input transformation
+export {
+  transformInvokeInput,
+  createInvocationInput,
+  type TransformResult,
+  type TransformedInvokeInput,
+} from "./mcp-input-transform"
+
+// JSON-RPC validation
+export { validateInvokeRequest, type ValidationResult } from "./json-rpc-validation"
+
+// Provider validation
+export {
+  getRequiredProviderKeys,
+  validateProviderKeys,
+  formatMissingProviders,
+  FALLBACK_PROVIDER_KEYS,
+} from "./provider-validation"

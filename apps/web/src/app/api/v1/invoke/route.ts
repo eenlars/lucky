@@ -1,23 +1,23 @@
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
-import { SchemaValidationError, validateWorkflowInputSchema } from "@/features/workflow-invocation/lib"
-import { authenticateRequest } from "@/lib/auth/principal"
-import { logException } from "@/lib/error-logger"
 import {
+  SchemaValidationError,
+  createInvocationInput,
   extractTraceId,
   extractWorkflowOutput,
   formatErrorResponse,
   formatInternalError,
+  formatMissingProviders,
   formatSuccessResponse,
   formatWorkflowError,
-} from "@/lib/mcp-invoke/response"
-import { createInvocationInput, transformInvokeInput } from "@/lib/mcp-invoke/transform"
-import { validateInvokeRequest } from "@/lib/mcp-invoke/validation"
-import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
-import {
-  formatMissingProviders,
   getRequiredProviderKeys,
+  loadWorkflowConfig,
+  transformInvokeInput,
+  validateInvokeRequest,
   validateProviderKeys,
-} from "@/lib/workflow/provider-validation"
+  validateWorkflowInputSchema,
+} from "@/features/workflow-invocation/lib"
+import { authenticateRequest } from "@/lib/auth/principal"
+import { logException } from "@/lib/error-logger"
 import { WorkflowConfigurationError } from "@core/utils/errors/WorkflowErrors"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"

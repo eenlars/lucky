@@ -1,5 +1,5 @@
-import { validateAgainstSchema } from "@/lib/mcp-invoke/schema-validator"
 import type { JsonSchemaDefinition } from "@lucky/shared/contracts/workflow"
+import { validateAgainstSchema } from "./json-schema-validation"
 
 /**
  * Schema validation error

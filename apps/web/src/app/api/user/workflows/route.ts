@@ -1,7 +1,7 @@
+import { getDemoWorkflow } from "@/features/workflow-invocation/lib"
 import { alrighty } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
-import { getDemoWorkflow } from "@/lib/mcp-invoke/workflow-loader"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { type NextRequest, NextResponse } from "next/server"
 

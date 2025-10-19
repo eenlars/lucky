@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises"
-import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import { loadWorkflowConfig } from "./database-workflow-loader"
 
 /**
  * Result of loading workflow configuration

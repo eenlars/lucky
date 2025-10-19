@@ -1,4 +1,4 @@
-import { FALLBACK_PROVIDER_KEYS } from "@/lib/workflow/provider-validation"
+import { FALLBACK_PROVIDER_KEYS } from "@/features/workflow-invocation/lib"
 import { extractRequiredProviders, getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 import { describe, expect, it } from "vitest"
