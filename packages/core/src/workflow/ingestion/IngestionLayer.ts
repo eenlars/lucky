@@ -7,9 +7,9 @@ import { envi } from "@core/utils/env.mjs"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
+import type { IPersistence } from "@lucky/adapter-supabase"
 import { JSONN } from "@lucky/shared"
 import * as csv from "@lucky/shared/csv"
-import type { IPersistence } from "@together/adapter-supabase"
 import type { WorkflowIO } from "./ingestion.types"
 
 /**

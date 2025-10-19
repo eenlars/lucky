@@ -35,7 +35,7 @@ export interface PopulationStats {
  * Converts to snake_case for database storage.
  */
 export interface NodeInvocationStartData {
-  nodeInvocationId: string
+  nodeInvocationId?: string
   nodeId: string
   nodeVersionId: string
   workflowInvocationId: string

@@ -3,7 +3,7 @@ import { type AggregatedPayload, extractTextFromPayload } from "@core/messages/M
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { InMemoryPersistence } from "@together/adapter-supabase"
+import { InMemoryPersistence } from "@lucky/adapter-supabase"
 import { describe, expect, it, vi } from "vitest"
 
 // Minimal end-to-end test that covers parallel fan-out using the new HandoffMessageHandler.

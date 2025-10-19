@@ -1,5 +1,5 @@
 import { lgg } from "@core/utils/logging/Logger"
-import type { CleanupStats, IPersistence } from "@together/adapter-supabase"
+import type { CleanupStats, IPersistence } from "@lucky/adapter-supabase"
 
 /**
  * cleanup stale records from the database

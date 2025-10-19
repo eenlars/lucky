@@ -35,9 +35,8 @@ import { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { R, type RS, genShortId } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
-import type { IPersistence } from "@together/adapter-supabase"
+import type { IPersistence } from "@lucky/adapter-supabase"
+import { R, type RS, genShortId, isNir } from "@lucky/shared"
 import type { EvolutionContext, GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
 
 /**

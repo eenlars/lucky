@@ -1,7 +1,7 @@
 import type { Payload } from "@core/messages/MessagePayload"
 import { lgg } from "@core/utils/logging/Logger"
+import type { IPersistence, MessageData } from "@lucky/adapter-supabase"
 import { type TablesUpdate, genShortId } from "@lucky/shared"
-import type { IPersistence, MessageData } from "@together/adapter-supabase"
 
 export class WorkflowMessage<P extends Payload = Payload> {
   readonly messageId: string = genShortId()

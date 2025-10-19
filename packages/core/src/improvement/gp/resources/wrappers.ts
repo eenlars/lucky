@@ -2,14 +2,13 @@
  * Wrapper functions for external services with caching
  */
 
-import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionContext, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 import { lgg } from "@core/utils/logging/Logger"
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { IPersistence } from "@lucky/adapter-supabase"
 import { R, type RS } from "@lucky/shared"
-import type { IPersistence } from "@together/adapter-supabase"
 import { Genome } from "../Genome"
 
 /**

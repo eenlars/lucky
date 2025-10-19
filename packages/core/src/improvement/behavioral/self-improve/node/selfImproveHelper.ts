@@ -1,5 +1,4 @@
 import { getCoreConfig } from "@core/core-config/coreConfig"
-const config = getCoreConfig()
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { getSelfImprovePrompt } from "@core/improvement/behavioral/self-improve/node/selfImprovement.p"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
@@ -8,7 +7,8 @@ import { AgentSelfImprovementOutputSchema } from "@core/node/schemas/restrictedA
 import { saveInLoc } from "@core/utils/fs/fileSaver"
 import { lgg } from "@core/utils/logging/Logger" // src/core/node/improve/function.ts
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import type { IPersistence } from "@together/adapter-supabase"
+import type { IPersistence } from "@lucky/adapter-supabase"
+const config = getCoreConfig()
 
 export async function selfImproveHelper({
   n,

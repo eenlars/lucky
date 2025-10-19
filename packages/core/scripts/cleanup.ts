@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 import { cleanupStaleRecords } from "@core/utils/cleanup/cleanupStaleRecords"
-import { createPersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@lucky/adapter-supabase"
 
 async function main() {
   try {

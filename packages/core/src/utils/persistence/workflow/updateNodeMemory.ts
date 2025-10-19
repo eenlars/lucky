@@ -1,6 +1,6 @@
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { IPersistence } from "@together/adapter-supabase"
+import type { IPersistence } from "@lucky/adapter-supabase"
 
 /**
  * Updates memory for all nodes in a workflow configuration

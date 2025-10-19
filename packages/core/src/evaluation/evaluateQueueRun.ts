@@ -48,7 +48,7 @@ export const evaluateQueueRun = async ({
   const fitness = fitnessResult.data
 
   await updateWorkflowInvocationInDatabase(workflow.getPersistence(), {
-    workflowInvocationId: workflowInvocationId,
+    wf_invocation_id: workflowInvocationId,
     status: "completed",
     end_time: new Date().toISOString(),
     usd_cost: queueRunResult.totalCost + (fitnessResult.usdCost ?? 0),
@@ -61,9 +61,6 @@ export const evaluateQueueRun = async ({
     workflow_output: evaluation as unknown as Json,
     expected_output: typeof evaluation === "string" ? evaluation : JSON.stringify(evaluation),
     actual_output: queueRunResult.finalWorkflowOutput,
-    feedback: feedbackResult?.data ?? "",
-    fitness_score: Math.round(fitness.score),
-    accuracy: Math.round(fitness.accuracy),
   })
 
   return {

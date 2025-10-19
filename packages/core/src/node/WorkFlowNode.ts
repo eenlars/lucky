@@ -10,6 +10,7 @@ import { emitAgentEnd, emitAgentError, emitAgentStart } from "@core/utils/observ
 import { NodePersistenceManager } from "@core/utils/persistence/node/nodePersistence"
 
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { IPersistence } from "@lucky/adapter-supabase"
 import { genShortId } from "@lucky/shared"
 import type {
   IWorkflowNode,
@@ -18,7 +19,6 @@ import type {
   SupportsCodeTools,
   SupportsMCPTools,
 } from "@lucky/shared/contracts/agent"
-import type { IPersistence } from "@together/adapter-supabase"
 import chalk from "chalk"
 import { InvocationPipeline } from "../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../messages/pipeline/input.types"

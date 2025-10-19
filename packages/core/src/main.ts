@@ -61,7 +61,7 @@ import { Workflow } from "@core/workflow/Workflow"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import { loadSingleWorkflow, persistWorkflow, saveWorkflowConfigToOutput } from "@core/workflow/setup/WorkflowLoader"
-import { createPersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@lucky/adapter-supabase"
 import chalk from "chalk"
 
 // Parse command line arguments

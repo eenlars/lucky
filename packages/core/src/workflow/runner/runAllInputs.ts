@@ -20,7 +20,7 @@ import type { Workflow } from "@core/workflow/Workflow"
 import { queueRun } from "@core/workflow/runner/queueRun"
 import { guard } from "@core/workflow/schema/errorMessages"
 import { R, type RS, isNir } from "@lucky/shared"
-import type { WorkflowEventHandler } from "packages/shared/dist"
+import type { WorkflowEventHandler } from "@lucky/shared"
 import type { AggregateEvaluationResult, EvaluationResult, RunResult } from "./types"
 
 /**

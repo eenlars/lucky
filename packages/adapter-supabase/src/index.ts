@@ -1,5 +1,5 @@
 /**
- * @together/adapter-supabase
+ * @lucky/adapter-supabase
  *
  * Persistence adapter for the together workflow system.
  * Provides optional database persistence through a clean interface.

@@ -15,7 +15,8 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { validateAndDecide } from "@core/utils/validation/message/validateAndDecide"
-import type { NodeInvocationData } from "@together/adapter-supabase"
+import type { NodeInvocationEndData } from "@lucky/adapter-supabase"
+import type { TablesInsert } from "@lucky/shared"
 
 /**
  * Handles successful response processing.
@@ -181,21 +182,22 @@ export async function handleSuccess(
       )
     }
 
-    const nodeInvocationData: NodeInvocationData = {
-      nodeId: nodeConfig.nodeId,
-      nodeVersionId: context.nodeVersionId,
-      workflowInvocationId: context.workflowInvocationId,
-      workflowVersionId: context.workflowVersionId,
-      startTime: context.startTime,
-      endTime: new Date().toISOString(),
-      messageId: context.workflowMessageIncoming.messageId,
-      usdCost: response.cost,
+    const nodeInvocationData: TablesInsert<"NodeInvocation"> = {
+      node_id: nodeConfig.nodeId,
+      node_version_id: context.nodeVersionId,
+      wf_invocation_id: context.workflowInvocationId,
+      wf_version_id: context.workflowVersionId,
+      start_time: context.startTime,
+      end_time: new Date().toISOString(),
+      status: "completed",
+      model: context.nodeConfig.modelName,
+      usd_cost: response.cost,
       output: finalNodeInvocationOutput,
-      agentSteps: response.agentSteps,
       summary: response.summary ?? "",
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      model: context.nodeConfig.modelName,
-      updatedMemory: updatedMemory || undefined,
+      extras: (response.agentSteps ?? {}) as any,
+      metadata: (updatedMemory || {}) as any,
+      attempt_no: 1,
     }
     const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
     nodeInvocationId = result.nodeInvocationId
@@ -265,20 +267,23 @@ export async function handleError({
       )
     }
 
-    const nodeInvocationData: NodeInvocationData = {
-      nodeId: context.nodeConfig.nodeId,
-      nodeVersionId: context.nodeVersionId,
-      workflowInvocationId: context.workflowInvocationId,
-      workflowVersionId: context.workflowVersionId,
-      startTime: context.startTime,
-      endTime: new Date().toISOString(),
-      messageId: context.workflowMessageIncoming.messageId,
-      usdCost: 0,
+    const nodeInvocationData: TablesInsert<"NodeInvocation"> = {
+      node_id: context.nodeConfig.nodeId,
+      node_version_id: context.nodeVersionId,
+      wf_invocation_id: context.workflowInvocationId,
+      wf_version_id: context.workflowVersionId,
+      start_time: context.startTime,
+      end_time: new Date().toISOString(),
+      status: "failed",
+      model: context.nodeConfig.modelName,
+      usd_cost: 0,
       output: errorMessage,
-      agentSteps,
       summary,
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      model: context.nodeConfig.modelName,
+      extras: (agentSteps ?? {}) as any,
+      metadata: {} as any,
+      attempt_no: 1,
+      error: { message: errorMessage },
     }
     const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
     nodeInvocationId = result.nodeInvocationId

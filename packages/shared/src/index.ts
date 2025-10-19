@@ -205,6 +205,31 @@ export {
   type Principal,
 } from "./contracts/execution"
 
+// Persistence contracts
+export type {
+  WorkflowId,
+  WorkflowVersionId,
+  WorkflowInvocationId,
+  GenerationId,
+  RunId,
+  NodeVersionId,
+  NodeInvocationId,
+  MessageId,
+  CreateWorkflowCmd,
+  CreateWorkflowVersionCmd,
+  StartWorkflowInvocationCmd,
+  CompleteWorkflowInvocationPatch,
+  CreateRunCmd,
+  CreateGenerationCmd,
+  CompleteGenerationPatch,
+  Workflow,
+  WorkflowVersion,
+  WorkflowInvocation,
+  EvolutionRun,
+  Generation,
+} from "./contracts/persistence"
+export type { PersistencePort } from "./contracts/ports"
+
 // Agent event types
 export type {
   AgentEvent,

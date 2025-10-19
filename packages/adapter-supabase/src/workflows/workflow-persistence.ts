@@ -4,11 +4,11 @@
  */
 
 import { getExecutionContext } from "@lucky/core/context/executionContext"
+import type { TablesUpdate } from "@lucky/shared"
 import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { TablesInsert } from "@lucky/shared/types/supabase.types"
 import { genShortId } from "@repo/shared"
 import type { SupabaseClient } from "@supabase/supabase-js"
-import type { TablesUpdate } from "packages/shared/dist"
 import { DatasetRecordNotFoundError, PersistenceError, WorkflowNotFoundError } from "../errors/domain-errors"
 import type { CleanupStats, DatasetRecord } from "../persistence-interface"
 

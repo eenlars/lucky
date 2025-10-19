@@ -3,12 +3,12 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { InvocationPipeline } from "@core/messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { ToolManager } from "@core/node/toolManager"
+import { createPersistence } from "@lucky/adapter-supabase"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
-import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 // Types for the API
@@ -114,9 +114,9 @@ export async function POST(request: Request) {
           // Create workflow version record for tracking
           await persistence.ensureWorkflowExists(workflowId, "Dev pipeline testing")
           await persistence.createWorkflowVersion({
-            workflowVersionId,
-            workflowId,
-            commitMessage: `Dev test: ${body.systemPrompt.substring(0, 50)}...`,
+            wf_version_id: workflowVersionId,
+            workflow_id: workflowId,
+            commit_message: `Dev test: ${body.systemPrompt.substring(0, 50)}...`,
             dsl: {
               nodes: [
                 {
@@ -132,13 +132,28 @@ export async function POST(request: Request) {
 
           // Create workflow invocation record for observability
           await persistence.createWorkflowInvocation({
-            workflowInvocationId: invocationId,
-            workflowVersionId,
-            metadata: {
+            wf_invocation_id: invocationId,
+            wf_version_id: workflowVersionId,
+            extras: {
               provider: body.provider,
               model: body.modelName,
             },
-            workflowInput: body.message,
+            workflow_input: body.message,
+            workflow_output: null,
+            status: "running",
+            start_time: new Date().toISOString(),
+            end_time: null,
+            usd_cost: 0,
+            actual_output: null,
+            dataset_record_id: null,
+            evaluator_id: null,
+            expected_output: null,
+            expected_output_type: null,
+            fitness: null,
+            feedback: null,
+            preparation: null,
+            run_id: null,
+            generation_id: null,
           })
 
           // Create tool manager

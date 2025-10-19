@@ -1,6 +1,6 @@
 import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { createPersistence } from "@lucky/adapter-supabase"
 import { cleanupStaleRecords } from "@lucky/core/utils/cleanup/cleanupStaleRecords"
-import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 export async function GET() {

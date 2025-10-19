@@ -6,9 +6,9 @@ import { isValidToolInformation } from "@core/utils/validation/workflow/toolInfo
 import { verifyWorkflowConfig } from "@core/utils/validation/workflow/verifyWorkflow"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { WorkflowConfigSchema, WorkflowConfigSchemaDisplay } from "@core/workflow/schema/workflowSchema"
+import type { IPersistence } from "@lucky/adapter-supabase"
 import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { CodeToolName } from "@lucky/tools"
-import type { IPersistence } from "@together/adapter-supabase"
 
 /**
  * Migrate workflow config from any version to current version.
@@ -531,7 +531,7 @@ export const workflowConfigHandler = WorkflowConfigHandler.getInstance()
 export const loadSingleWorkflow = (filePath?: string) => workflowConfigHandler.loadSingleWorkflow(filePath)
 
 // These database functions now need to create their own persistence
-import { SupabasePersistence } from "@together/adapter-supabase"
+import { SupabasePersistence } from "@lucky/adapter-supabase"
 
 export const loadFromDatabase = async (workflowVersionId: string) => {
   const persistence = new SupabasePersistence()

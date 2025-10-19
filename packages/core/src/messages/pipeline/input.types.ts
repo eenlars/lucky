@@ -1,8 +1,8 @@
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+import type { IPersistence } from "@lucky/adapter-supabase"
 import type { NodeInvocationCallContext as NodeInvocationCallContextBase } from "@lucky/shared/contracts/agent"
-import type { IPersistence } from "@together/adapter-supabase"
 
 /**
  * Execution context for invoking a workflow node.

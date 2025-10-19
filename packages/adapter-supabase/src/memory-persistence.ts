@@ -4,8 +4,8 @@
  */
 
 import type { Tables } from "@lucky/shared"
+import type { TablesUpdate } from "@lucky/shared"
 import type { Json, TablesInsert } from "@lucky/shared/types/public.types"
-import type { TablesUpdate } from "packages/shared/dist"
 import type {
   CleanupStats,
   DatasetRecord,
@@ -41,10 +41,10 @@ class InMemoryEvolutionPersistence implements IEvolutionPersistence {
       run_id: runId,
       start_time: data.start_time || new Date().toISOString(),
       status: (data.status as Tables<"EvolutionRun">["status"]) || "running",
-      clerk_id: clerkId ?? data.clerk_id ?? null,
-      end_time: data.end_time ?? null,
-      evolution_type: data.evolution_type ?? null,
-      notes: data.notes ?? null,
+      clerk_id: clerkId || data.clerk_id || null,
+      end_time: data.end_time || null,
+      evolution_type: data.evolution_type || null,
+      notes: data.notes || null,
       config: data.config,
       goal_text: data.goal_text,
     } as Tables<"EvolutionRun">)
@@ -65,12 +65,12 @@ class InMemoryEvolutionPersistence implements IEvolutionPersistence {
     this.generations.set(generationId, {
       ...data,
       generation_id: generationId,
-      clerk_id: clerkId ?? data.clerk_id ?? null,
+      clerk_id: clerkId || data.clerk_id || null,
       start_time: data.start_time || new Date().toISOString(),
-      end_time: data.end_time ?? null,
-      best_workflow_version_id: data.best_workflow_version_id ?? null,
-      comment: data.comment ?? null,
-      feedback: data.feedback ?? null,
+      end_time: data.end_time || null,
+      best_workflow_version_id: data.best_workflow_version_id || null,
+      comment: data.comment || null,
+      feedback: data.feedback || null,
       number: data.number,
       run_id: data.run_id,
     } as Tables<"Generation">)
@@ -82,11 +82,11 @@ class InMemoryEvolutionPersistence implements IEvolutionPersistence {
     const generation = this.generations.get(update.generation_id)
     if (generation) {
       generation.end_time = new Date().toISOString()
-      generation.best_workflow_version_id = update.best_workflow_version_id ?? null
+      generation.best_workflow_version_id = update.best_workflow_version_id || null
       generation.comment = stats
         ? `Best: ${stats.bestFitness.toFixed(3)}, Avg: ${stats.avgFitness.toFixed(3)}, Cost: $${stats.evaluationCost.toFixed(2)}`
-        : (update.comment ?? null)
-      generation.feedback = update.feedback ?? null
+        : update.comment || null
+      generation.feedback = update.feedback || null
     }
   }
 
@@ -149,7 +149,7 @@ class InMemoryNodePersistence implements INodePersistence {
     return { nodeVersionId }
   }
   async createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }> {
-    const nodeInvocationId = data.nodeInvocationId
+    const nodeInvocationId = data.nodeInvocationId ?? genId("ninv")
     this.nodeInvocations.set(nodeInvocationId, {
       node_invocation_id: nodeInvocationId,
       status: "running",
@@ -220,11 +220,11 @@ class InMemoryMessagePersistence implements IMessagePersistence {
   async save(message: MessageData): Promise<void> {
     this.messages.set(message.messageId, {
       msg_id: message.messageId,
-      from_node_id: message.fromNodeId ?? null,
-      target_invocation_id: message.originInvocationId ?? null,
-      to_node_id: message.toNodeId ?? null,
-      origin_invocation_id: message.originInvocationId ?? null,
-      seq: message.seq ?? 0,
+      from_node_id: message.fromNodeId || null,
+      target_invocation_id: message.originInvocationId || null,
+      to_node_id: message.toNodeId || null,
+      origin_invocation_id: message.originInvocationId || null,
+      seq: message.seq || 0,
       role: message.role,
       payload: message.payload as unknown as Json,
       created_at: message.createdAt,
@@ -273,7 +273,7 @@ export class InMemoryPersistence implements IPersistence {
       this.workflows.set(workflowId, {
         wf_id: workflowId,
         description,
-        clerk_id: clerkId ?? null,
+        clerk_id: clerkId || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       } as Tables<"Workflow">)

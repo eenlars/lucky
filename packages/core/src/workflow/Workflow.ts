@@ -22,12 +22,12 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+// src/core/workflow/Workflow.ts
+import type { IPersistence } from "@lucky/adapter-supabase"
 import type { RS, WorkflowEventHandler } from "@lucky/shared"
 import { R, genShortId, isNir } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import { INACTIVE_TOOLS } from "@lucky/tools"
-// src/core/workflow/Workflow.ts
-import type { IPersistence } from "@together/adapter-supabase"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null
@@ -356,14 +356,14 @@ export class Workflow {
     // Only register the workflow version (if persistence enabled)
     if (this.persistence) {
       await this.persistence.createWorkflowVersion({
-        workflowVersionId: this.workflowVersionId,
-        workflowId: this.workflowId,
-        commitMessage: this.goal,
-        dsl: this.config,
-        generationId: this.evolutionContext?.generationId,
+        wf_version_id: this.workflowVersionId,
+        workflow_id: this.workflowId,
+        commit_message: this.goal,
+        dsl: this.config as any,
+        generation_id: this.evolutionContext?.generationId ?? null,
         operation: this.parent1Id ? "mutation" : "init",
-        parent1Id: this.parent1Id,
-        parent2Id: this.parent2Id,
+        parent1_id: this.parent1Id ?? null,
+        parent2_id: this.parent2Id ?? null,
       })
     }
 
@@ -395,19 +395,30 @@ export class Workflow {
       try {
         lgg.log("[Workflow.createInvocationForIO] DEBUG: Calling persistence.createWorkflowInvocation...")
         await this.persistence.createWorkflowInvocation({
-          workflowInvocationId,
-          workflowVersionId: this.workflowVersionId,
-          runId: this.evolutionContext?.runId,
-          generationId: this.evolutionContext?.generationId,
-          metadata: {
+          wf_invocation_id: workflowInvocationId,
+          wf_version_id: this.workflowVersionId,
+          run_id: this.evolutionContext?.runId ?? null,
+          generation_id: this.evolutionContext?.generationId ?? null,
+          extras: {
             configFiles: this.config.contextFile ? [this.config.contextFile] : [],
             workflowIOIndex: index,
-          },
-          expectedOutputType: this.evaluationInput.outputSchema
-            ? JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ")
+          } as any,
+          expected_output_type: this.evaluationInput.outputSchema
+            ? (JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ") as any)
             : null,
-          workflowInput: workflowIO.workflowInput as any,
-          workflowOutput: workflowIO.workflowOutput as any,
+          workflow_input: workflowIO.workflowInput as any,
+          workflow_output: workflowIO.workflowOutput as any,
+          status: "running",
+          start_time: new Date().toISOString(),
+          end_time: null,
+          usd_cost: 0,
+          actual_output: null,
+          dataset_record_id: null,
+          evaluator_id: null,
+          expected_output: null,
+          fitness: null,
+          feedback: null,
+          preparation: null,
         })
         lgg.log("[Workflow.createInvocationForIO] DEBUG: Successfully created invocation in database!")
       } catch (error) {

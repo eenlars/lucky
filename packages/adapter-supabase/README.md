@@ -1,17 +1,17 @@
-# @together/adapter-supabase
+# @lucky/adapter-supabase
 
 Persistence adapter for the together workflow system. Provides optional database persistence through a clean interface with support for both Supabase and in-memory storage.
 
 ## Installation
 
 ```bash
-bun add @together/adapter-supabase
+bun add @lucky/adapter-supabase
 ```
 
 ## Quick Start
 
 ```typescript
-import { createPersistence } from '@together/adapter-supabase'
+import { createPersistence } from '@lucky/adapter-supabase'
 
 // Use Supabase (requires environment variables)
 const persistence = createPersistence({ backend: 'supabase' })
@@ -218,7 +218,7 @@ import {
   NodeVersionMissingError,
   DatasetRecordNotFoundError,
   InvalidInputError
-} from '@together/adapter-supabase'
+} from '@lucky/adapter-supabase'
 
 try {
   await persistence.loadWorkflowConfig('invalid_id')
@@ -349,7 +349,7 @@ Mapping is handled transparently by the `applyFieldMappings()` and `reverseField
 Use in-memory persistence for tests:
 
 ```typescript
-import { createPersistence } from '@together/adapter-supabase'
+import { createPersistence } from '@lucky/adapter-supabase'
 
 describe('workflow tests', () => {
   let persistence
@@ -398,7 +398,7 @@ console.log(stats)
 For advanced use cases, you can directly instantiate implementations:
 
 ```typescript
-import { SupabasePersistence, InMemoryPersistence } from '@together/adapter-supabase'
+import { SupabasePersistence, InMemoryPersistence } from '@lucky/adapter-supabase'
 
 const supabase = new SupabasePersistence()
 const memory = new InMemoryPersistence()
@@ -407,7 +407,7 @@ const memory = new InMemoryPersistence()
 ### Custom Error Handling
 
 ```typescript
-import { PersistenceError } from '@together/adapter-supabase'
+import { PersistenceError } from '@lucky/adapter-supabase'
 
 class CustomPersistenceWrapper {
   constructor(private persistence: IPersistence) {}

@@ -21,10 +21,8 @@ import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSL, loadFromDatabase, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
-import { JSONN, genShortId } from "@lucky/shared"
-import { R, type RS } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
-import { createPersistence } from "@together/adapter-supabase"
+import { createPersistence } from "@lucky/adapter-supabase"
+import { JSONN, R, type RS, genShortId, isNir } from "@lucky/shared"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**
@@ -202,7 +200,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       for (const runResult of runResults) {
         try {
           await persistence.updateWorkflowInvocation({
-            workflowInvocationId: runResult.workflowInvocationId,
+            wf_invocation_id: runResult.workflowInvocationId,
             status: "completed",
             end_time: new Date().toISOString(),
             usd_cost: runResult.queueRunResult.totalCost,

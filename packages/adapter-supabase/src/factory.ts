@@ -55,7 +55,7 @@ export function createPersistence(config: PersistenceConfig = {}): IPersistence 
   // Enforce server-only usage for Supabase backend
   if (selectedBackend === "supabase" && typeof window !== "undefined") {
     throw new Error(
-      "@together/adapter-supabase (supabase backend) is server-only. Use the memory backend in browser code or move persistence to the server.",
+      "@lucky/adapter-supabase (supabase backend) is server-only. Use the memory backend in browser code or move persistence to the server.",
     )
   }
 
