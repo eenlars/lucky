@@ -38,8 +38,7 @@ const eslintConfig = [
             },
             {
               group: ["**/supabase.types", "**/public.types"],
-              message:
-                "Core cannot import Supabase types. Use domain contracts from @lucky/shared/contracts instead.",
+              message: "Core cannot import Supabase types. Use domain contracts from @lucky/shared/contracts instead.",
             },
           ],
         },
