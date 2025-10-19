@@ -120,7 +120,7 @@ export default function EditModeSelector({ workflowVersion, initialMode }: EditM
   const { loadPreferences, preferences } = useModelPreferencesStore()
 
   // Set editor mode from runner store
-  const { setEditorMode } = useRunnerStore()
+  const setEditorMode = useRunnerStore(state => state.setEditorMode)
 
   // Set initial editor mode on mount
   useEffect(() => {
