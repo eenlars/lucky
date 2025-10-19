@@ -15,8 +15,7 @@ import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import type { NodeMemory } from "@core/utils/memory/memorySchema"
 import { validateAndDecide } from "@core/utils/validation/message/validateAndDecide"
-import type { NodeInvocationEndData } from "@lucky/adapter-supabase"
-import type { TablesInsert } from "@lucky/shared"
+import type { NodeInvocationStartData } from "@lucky/adapter-supabase"
 
 /**
  * Handles successful response processing.
@@ -175,32 +174,38 @@ export async function handleSuccess(
     })
     nodeInvocationId = context.nodeInvocationId
   } else {
-    // Legacy pattern: create record at completion only (backwards compatibility)
+    // Fallback: create invocation record retroactively if not created upfront
     if (!context.nodeVersionId) {
       throw new Error(
         `[handleSuccess] nodeVersionId is required but missing for node ${nodeConfig.nodeId}. This indicates the node was not properly registered in the database.`,
       )
     }
 
-    const nodeInvocationData: TablesInsert<"NodeInvocation"> = {
-      node_id: nodeConfig.nodeId,
-      node_version_id: context.nodeVersionId,
-      wf_invocation_id: context.workflowInvocationId,
-      wf_version_id: context.workflowVersionId,
-      start_time: context.startTime,
-      end_time: new Date().toISOString(),
-      status: "completed",
+    // Create start record first
+    const startData: NodeInvocationStartData = {
+      nodeId: nodeConfig.nodeId,
+      nodeVersionId: context.nodeVersionId,
+      workflowInvocationId: context.workflowInvocationId,
+      workflowVersionId: context.workflowVersionId,
+      startTime: context.startTime,
       model: context.nodeConfig.modelName,
-      usd_cost: response.cost,
+      attemptNo: 1,
+    }
+    const startResult = await context.persistence.nodes.createNodeInvocationStart(startData)
+    nodeInvocationId = startResult.nodeInvocationId
+
+    // Then update with end data
+    await context.persistence.nodes.updateNodeInvocationEnd({
+      nodeInvocationId,
+      endTime: new Date().toISOString(),
+      status: "completed",
       output: finalNodeInvocationOutput,
       summary: response.summary ?? "",
+      usdCost: response.cost,
+      agentSteps: response.agentSteps,
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      extras: (response.agentSteps ?? {}) as any,
-      metadata: (updatedMemory || {}) as any,
-      attempt_no: 1,
-    }
-    const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
-    nodeInvocationId = result.nodeInvocationId
+      updatedMemory: updatedMemory || undefined,
+    })
   }
 
   return {
@@ -260,33 +265,38 @@ export async function handleError({
     })
     nodeInvocationId = context.nodeInvocationId
   } else {
-    // Legacy pattern: create record at completion only (backwards compatibility)
+    // Fallback: create invocation record retroactively if not created upfront
     if (!context.nodeVersionId) {
       throw new Error(
         `[handleError] nodeVersionId is required but missing for node ${context.nodeConfig.nodeId}. This indicates the node was not properly registered in the database.`,
       )
     }
 
-    const nodeInvocationData: TablesInsert<"NodeInvocation"> = {
-      node_id: context.nodeConfig.nodeId,
-      node_version_id: context.nodeVersionId,
-      wf_invocation_id: context.workflowInvocationId,
-      wf_version_id: context.workflowVersionId,
-      start_time: context.startTime,
-      end_time: new Date().toISOString(),
-      status: "failed",
+    // Create start record first
+    const startData: NodeInvocationStartData = {
+      nodeId: context.nodeConfig.nodeId,
+      nodeVersionId: context.nodeVersionId,
+      workflowInvocationId: context.workflowInvocationId,
+      workflowVersionId: context.workflowVersionId,
+      startTime: context.startTime,
       model: context.nodeConfig.modelName,
-      usd_cost: 0,
+      attemptNo: 1,
+    }
+    const startResult = await context.persistence.nodes.createNodeInvocationStart(startData)
+    nodeInvocationId = startResult.nodeInvocationId
+
+    // Then update with end data (failure)
+    await context.persistence.nodes.updateNodeInvocationEnd({
+      nodeInvocationId,
+      endTime: new Date().toISOString(),
+      status: "failed",
       output: errorMessage,
       summary,
+      usdCost: 0,
+      agentSteps,
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      extras: (agentSteps ?? {}) as any,
-      metadata: {} as any,
-      attempt_no: 1,
       error: { message: errorMessage },
-    }
-    const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
-    nodeInvocationId = result.nodeInvocationId
+    })
   }
 
   const {

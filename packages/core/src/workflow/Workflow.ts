@@ -10,6 +10,7 @@ import { WorkflowFitnessError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import { createWorkflowInvocation, createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
 
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 // zodToJson no longer needed - outputSchema is JSON Schema, not Zod
@@ -355,15 +356,16 @@ export class Workflow {
 
     // Only register the workflow version (if persistence enabled)
     if (this.persistence) {
-      await this.persistence.createWorkflowVersion({
-        wf_version_id: this.workflowVersionId,
-        workflow_id: this.workflowId,
-        commit_message: this.goal,
-        dsl: this.config as any,
-        generation_id: this.evolutionContext?.generationId ?? null,
+      await createWorkflowVersion({
+        persistence: this.persistence,
+        workflowVersionId: this.workflowVersionId,
+        workflowId: this.workflowId,
+        commitMessage: this.goal,
+        workflowConfig: this.config,
+        generation: this.evolutionContext?.generationId,
         operation: this.parent1Id ? "mutation" : "init",
-        parent1_id: this.parent1Id ?? null,
-        parent2_id: this.parent2Id ?? null,
+        parent1Id: this.parent1Id,
+        parent2Id: this.parent2Id,
       })
     }
 
@@ -394,31 +396,21 @@ export class Workflow {
     if (this.persistence) {
       try {
         lgg.log("[Workflow.createInvocationForIO] DEBUG: Calling persistence.createWorkflowInvocation...")
-        await this.persistence.createWorkflowInvocation({
-          wf_invocation_id: workflowInvocationId,
-          wf_version_id: this.workflowVersionId,
-          run_id: this.evolutionContext?.runId ?? null,
-          generation_id: this.evolutionContext?.generationId ?? null,
-          extras: {
+        await createWorkflowInvocation({
+          persistence: this.persistence,
+          workflowInvocationId,
+          workflowVersionId: this.workflowVersionId,
+          runId: this.evolutionContext?.runId,
+          generation: this.evolutionContext?.generationId,
+          metadata: {
             configFiles: this.config.contextFile ? [this.config.contextFile] : [],
             workflowIOIndex: index,
-          } as any,
-          expected_output_type: this.evaluationInput.outputSchema
-            ? (JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ") as any)
+          },
+          expectedOutputType: this.evaluationInput.outputSchema
+            ? JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ")
             : null,
-          workflow_input: workflowIO.workflowInput as any,
-          workflow_output: workflowIO.workflowOutput as any,
-          status: "running",
-          start_time: new Date().toISOString(),
-          end_time: null,
-          usd_cost: 0,
-          actual_output: null,
-          dataset_record_id: null,
-          evaluator_id: null,
-          expected_output: null,
-          fitness: null,
-          feedback: null,
-          preparation: null,
+          workflowInput: workflowIO.workflowInput,
+          workflowOutput: workflowIO.workflowOutput,
         })
         lgg.log("[Workflow.createInvocationForIO] DEBUG: Successfully created invocation in database!")
       } catch (error) {

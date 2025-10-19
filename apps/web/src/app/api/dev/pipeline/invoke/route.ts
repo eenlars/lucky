@@ -3,6 +3,7 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { InvocationPipeline } from "@core/messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { ToolManager } from "@core/node/toolManager"
+import { createWorkflowInvocation, createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
 import { createPersistence } from "@lucky/adapter-supabase"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
@@ -113,11 +114,12 @@ export async function POST(request: Request) {
         return withObservationContext({ randomId, observer }, async () => {
           // Create workflow version record for tracking
           await persistence.ensureWorkflowExists(workflowId, "Dev pipeline testing")
-          await persistence.createWorkflowVersion({
-            wf_version_id: workflowVersionId,
-            workflow_id: workflowId,
-            commit_message: `Dev test: ${body.systemPrompt.substring(0, 50)}...`,
-            dsl: {
+          await createWorkflowVersion({
+            persistence,
+            workflowVersionId,
+            workflowId,
+            commitMessage: `Dev test: ${body.systemPrompt.substring(0, 50)}...`,
+            workflowConfig: {
               nodes: [
                 {
                   nodeId,
@@ -131,29 +133,15 @@ export async function POST(request: Request) {
           })
 
           // Create workflow invocation record for observability
-          await persistence.createWorkflowInvocation({
-            wf_invocation_id: invocationId,
-            wf_version_id: workflowVersionId,
-            extras: {
+          await createWorkflowInvocation({
+            persistence,
+            workflowInvocationId: invocationId,
+            workflowVersionId,
+            metadata: {
               provider: body.provider,
               model: body.modelName,
             },
-            workflow_input: body.message,
-            workflow_output: null,
-            status: "running",
-            start_time: new Date().toISOString(),
-            end_time: null,
-            usd_cost: 0,
-            actual_output: null,
-            dataset_record_id: null,
-            evaluator_id: null,
-            expected_output: null,
-            expected_output_type: null,
-            fitness: null,
-            feedback: null,
-            preparation: null,
-            run_id: null,
-            generation_id: null,
+            workflowInput: body.message,
           })
 
           // Create tool manager
@@ -219,7 +207,6 @@ export async function POST(request: Request) {
 
     // Check if pipeline execution succeeded
     const hasError = !!result.error
-    const success = !hasError
 
     // If pipeline failed, return error response
     if (hasError) {
