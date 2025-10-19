@@ -83,16 +83,18 @@ describe("RunService", () => {
       await service.createRun("test goal", config)
 
       expect(service.getRunId()).toBe("test-run-id")
+      // Persistence layer uses snake_case because it works with Supabase TablesInsert types
+      // which map directly to database schema fields (goal_text, evolution_type, run_id, etc.)
       expect(mockPersistence.evolution.createRun).toHaveBeenCalledWith({
-        goalText: "test goal",
+        goal_text: "test goal",
         config: config,
         status: "running",
-        evolutionType: "gp",
+        evolution_type: "gp",
         notes: expect.stringContaining("GP Evolution Run"),
       })
       expect(mockPersistence.evolution.createGeneration).toHaveBeenCalledWith({
-        generationNumber: 0,
-        runId: "test-run-id",
+        number: 0,
+        run_id: "test-run-id",
       })
     })
 
@@ -134,8 +136,8 @@ describe("RunService", () => {
 
       expect(service.getCurrentGenerationId()).toBe("test-generation-id")
       expect(mockPersistence.evolution.createGeneration).toHaveBeenCalledWith({
-        generationNumber: 1,
-        runId: "test-run-id",
+        number: 1,
+        run_id: "test-run-id",
       })
     })
 
@@ -187,10 +189,12 @@ describe("RunService", () => {
         operator: "mutation",
       })
 
+      // Persistence layer uses snake_case (generation_id, best_workflow_version_id)
+      // matching Supabase TablesUpdate schema for the Generation table
       expect(mockPersistence.evolution.completeGeneration).toHaveBeenCalledWith(
         expect.objectContaining({
-          generationId: "test-generation-id",
-          bestWorkflowVersionId: expect.any(String),
+          generation_id: "test-generation-id",
+          best_workflow_version_id: expect.any(String),
         }),
         mockStats,
       )
