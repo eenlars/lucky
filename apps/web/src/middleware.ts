@@ -1,8 +1,20 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 
+// API routes that handle their own authentication (support both Clerk and API keys)
+const isApiRoute = createRouteMatcher([
+  "/api/user/workflows(.*)",
+  "/api/workflow/status/(.*)",
+  "/api/workflow/cancel/(.*)",
+  "/api/v1/invoke(.*)",
+])
+
 const isProtectedRoute = createRouteMatcher(["/(.*)"])
 export default clerkMiddleware(
   async (auth, req) => {
+    // Skip Clerk protection for API routes that handle their own auth
+    if (isApiRoute(req)) {
+      return
+    }
     if (isProtectedRoute(req)) await auth.protect()
   },
   {
