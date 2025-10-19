@@ -174,7 +174,9 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
           nodesDraggable={editorMode !== "create-new"}
           nodesConnectable={editorMode !== "create-new"}
           elementsSelectable={editorMode !== "create-new"}
-          className={editorMode === "create-new" ? "blur-md transition-all duration-300" : "transition-all duration-300"}
+          className={
+            editorMode === "create-new" ? "blur-md transition-all duration-300" : "transition-all duration-300"
+          }
         >
           <Background gap={20} size={1} color="#e5e7eb" className="bg-gray-50/50" />
           <AutoFitView nodeCount={nodes.length} />
@@ -186,12 +188,8 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
         {editorMode === "create-new" && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
             <div className="text-center space-y-4 -mt-32">
-              <h1 className="text-5xl font-semibold text-gray-900 dark:text-gray-100">
-                What do you want to build?
-              </h1>
-              <p className="text-xl text-gray-600 dark:text-gray-400">
-                Describe your workflow below
-              </p>
+              <h1 className="text-5xl font-semibold text-gray-900 dark:text-gray-100">What do you want to build?</h1>
+              <p className="text-xl text-gray-600 dark:text-gray-400">Describe your workflow below</p>
               <div className="flex items-center gap-2 justify-center text-sm text-gray-500 dark:text-gray-500">
                 <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">⌘K</kbd>
                 <span>to focus prompt</span>

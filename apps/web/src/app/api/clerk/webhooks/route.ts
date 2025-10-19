@@ -8,14 +8,14 @@ type UserData = Extract<UserWebhookEvent, { type: "user.created" | "user.updated
 
 // Extended webhook event with instance_id field (not in official Clerk types)
 type ClerkWebhookEvent = UserWebhookEvent & {
-	instance_id?: string
+  instance_id?: string
 }
 
 function getEmailFromEvent(data: UserData): string | null {
   const primaryId = data.primary_email_address_id
   const addrs = data.email_addresses
   if (!primaryId || !Array.isArray(addrs)) return null
-  const match = addrs.find((a) => a.id === primaryId)
+  const match = addrs.find(a => a.id === primaryId)
   return match?.email_address ?? null
 }
 
