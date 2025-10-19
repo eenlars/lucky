@@ -19,17 +19,30 @@ export interface EditModeResult {
  * @param prompt - Natural language description of desired changes
  * @param exportToJSON - Function to export current workflow as JSON
  * @param onProgress - Optional callback for progress logging
+ * @param baseWorkflow - Optional base workflow to modify (null = create new, undefined = use current)
  * @returns Result containing the updated workflow configuration
  */
 export async function executeEditMode(
   prompt: string,
   exportToJSON: () => string,
   onProgress?: (log: string) => void,
+  baseWorkflow?: WorkflowConfig | null,
 ): Promise<EditModeResult> {
   try {
-    onProgress?.("Exporting current workflow...")
-    const currentWorkflowJson = exportToJSON()
-    const currentWorkflow = JSON.parse(currentWorkflowJson)
+    let workflowToModify: WorkflowConfig | null = null
+
+    if (baseWorkflow === null) {
+      // Explicitly creating a new workflow
+      onProgress?.("Creating new workflow from scratch...")
+    } else if (baseWorkflow === undefined) {
+      // Default behavior: modify current workflow
+      onProgress?.("Exporting current workflow...")
+      const currentWorkflowJson = exportToJSON()
+      workflowToModify = JSON.parse(currentWorkflowJson)
+    } else {
+      // Use provided base workflow
+      workflowToModify = baseWorkflow
+    }
 
     onProgress?.("Sending modification request to AI...")
     const response = await fetch("/api/modify-workflow", {
@@ -40,7 +53,7 @@ export async function executeEditMode(
       body: JSON.stringify({
         prompt: prompt.trim(),
         options: {
-          workflowConfig: currentWorkflow,
+          workflowConfig: workflowToModify,
           workflowGoal: prompt.trim(),
           verifyWorkflow: "none",
           repairWorkflowAfterGeneration: false,

@@ -15,6 +15,7 @@ import Workflow from "@/features/react-flow-visualization/components/workflow/Wo
 import type { WorkflowValidationError } from "@/features/react-flow-visualization/store/app-store"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useModelPreferencesStore } from "@/stores/model-preferences-store"
+import { useRunnerStore } from "@/stores/runner-store"
 
 import EditorHeader from "./EditorHeader"
 import JSONEditor from "./JSONEditor"
@@ -103,9 +104,10 @@ type EditMode = "graph" | "json" | "eval"
 
 interface EditModeSelectorProps {
   workflowVersion?: Tables<"WorkflowVersion">
+  initialMode?: "create-new" | "editing"
 }
 
-export default function EditModeSelector({ workflowVersion }: EditModeSelectorProps) {
+export default function EditModeSelector({ workflowVersion, initialMode }: EditModeSelectorProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<EditMode>("graph")
@@ -116,6 +118,18 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
 
   // Load model preferences early
   const { loadPreferences, preferences } = useModelPreferencesStore()
+
+  // Set editor mode from runner store
+  const setEditorMode = useRunnerStore(state => state.setEditorMode)
+
+  // Set initial editor mode on mount
+  useEffect(() => {
+    if (initialMode) {
+      setEditorMode(initialMode)
+    } else if (workflowVersion) {
+      setEditorMode("editing")
+    }
+  }, [initialMode, workflowVersion, setEditorMode])
 
   const {
     nodes: _nodes,
