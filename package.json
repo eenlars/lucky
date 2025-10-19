@@ -32,6 +32,7 @@
   },
   "scripts": {
     "prepare": "husky",
+    "validate:tsconfigs": "bun run scripts/validate-tsconfigs.ts",
     "gen:env": "bun run scripts/generate-env-artifacts.ts",
     "gen:db": "cd packages/shared && bun run generate",
     "web": "bun --env-file .env --env-file .env.local turbo run dev --filter=together",

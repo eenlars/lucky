@@ -17,15 +17,6 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.js",
-    "src/**/*.json",
-    "src/**/*.d.ts",
-    "scripts/**/*.ts",
-    "../models/src/models/model-resolver.ts",
-    "../models/src/models/tier-config-builder.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json", "src/**/*.d.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules", "src/examples/logging_folder", "src/utils/env.mjs", "dist"]
 }
