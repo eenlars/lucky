@@ -7,7 +7,7 @@ import { createRLSClient } from "@/lib/supabase/server-rls"
 import { findModel } from "@lucky/models"
 import { type Database, type ModelEntry, type Principal, isNir } from "@lucky/shared"
 import type { SupabaseClient } from "@supabase/supabase-js"
-import type { LuckyProvider } from "packages/shared"
+import type { LuckyGateway } from "packages/shared"
 
 /**
  * Server-side model utilities for fetching user-specific model data.
@@ -24,12 +24,12 @@ import type { LuckyProvider } from "packages/shared"
  * @example
  * ```ts
  * const models = await getUserModels(clerkId)
- * // Returns: [{ id: "openai#gpt-4o", provider: "openai", model: "gpt-4o", ... }, ...]
+ * // Returns: [{ id: "gpt-4o",  "openai", gatewayModelId: "gpt-4o", ... }, ...]
  * ```
  */
 export async function getUserModelsSetup(
   auth: { clerkId: string } | { principal: Principal },
-  onlyIncludeProviders?: LuckyProvider[],
+  onlyIncludeProviders?: LuckyGateway[],
 ): Promise<ModelEntry[]> {
   let supabase: SupabaseClient<Database>
   let clerkId: string
@@ -58,7 +58,7 @@ export async function getUserModelsSetup(
   // Collect all enabled model IDs
   const allEnabledModelIds = new Set<string>()
   for (const row of data) {
-    const enabledModels = (row.enabled_models as Record<LuckyProvider, string>) || {}
+    const enabledModels = (row.enabled_models as Record<LuckyGateway, string>) || {}
     for (const modelId of Object.values(enabledModels)) {
       allEnabledModelIds.add(modelId)
     }
@@ -76,10 +76,8 @@ export async function getUserModelsSetup(
     }
 
     // Skip if provider filtering is enabled and this provider is not included
-    if (!isNir(onlyIncludeProviders) && !onlyIncludeProviders.includes(entry.provider)) {
-      console.warn(
-        `[getUserModels] Model "${modelId}" provider "${entry.provider}" not in allowed providers - skipping`,
-      )
+    if (!isNir(onlyIncludeProviders) && !onlyIncludeProviders.includes(entry.gateway)) {
+      console.warn(`[getUserModels] Model "${modelId}" provider "${entry.gateway}" not in allowed providers - skipping`)
       continue
     }
 

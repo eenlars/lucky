@@ -1,25 +1,26 @@
 import { createLLMRegistryForUser } from "@/features/provider-llm-setup/lib/create-llm-registry"
-import { loadProviderApiKeys } from "@/features/provider-llm-setup/lib/load-user-providers"
+import { type UserGateways, loadProviderApiKeys } from "@/features/provider-llm-setup/lib/load-user-providers"
 import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { loadWorkflowConfig } from "@/features/workflow-or-chat-invocation/lib/config-load/database-workflow-loader"
 import { InvalidWorkflowInputError } from "@/features/workflow-or-chat-invocation/lib/errors/workflowInputError"
 import { loadMCPToolkitsForWorkflow } from "@/features/workflow-or-chat-invocation/lib/tools/mcp-toolkit-loader"
 import { validateWorkflowInput } from "@/features/workflow-or-chat-invocation/lib/validation/input-validator"
-import {
-  formatMissingProviders,
-  getRequiredProviderKeys,
-  validateProviderKeys,
-} from "@/features/workflow-or-chat-invocation/lib/validation/provider-validation"
 import { activeWorkflows } from "@/features/workflow-or-chat-invocation/workflow/active-workflows"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
+import {
+  formatGatewayDisplayNames,
+  getRequiredGateways,
+  validateGatewayKeys,
+} from "@/lib/validation/gateway-validation"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
+import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { genShortId } from "@lucky/shared"
@@ -100,28 +101,29 @@ export async function POST(req: NextRequest) {
       return fail("workflow/invoke", "Workflow not found", { status: 404 })
     }
 
-    // Secrets & providers
+    // Secrets & gateways
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
     // Only fetch what the workflow needs
-    const { providers } = getRequiredProviderKeys(load.config, "workflow/invoke")
+    const { gateways } = getRequiredGateways(load.config, "workflow/invoke")
     // 1) User BYOK (preferred)
-    const userProviders = await loadProviderApiKeys(secrets)
+    const userGateways = await loadProviderApiKeys(secrets)
     // 2) Env/company fallback (namespaced) — allowed only for API-key auth
     const envFallback =
-      principal.auth_method === "api_key" ? await secrets.getAll(Array.from(providers), "environment-variables") : {}
-    // Build consolidated provider map with correct precedence
-    const consolidated: Record<string, string> = {}
-    for (const p of providers) {
-      const key = userProviders[p as keyof typeof userProviders] ?? envFallback[p]
-      if (key) consolidated[p] = key
+      principal.auth_method === "api_key" ? await secrets.getAll(Array.from(gateways), "environment-variables") : {}
+    // Build consolidated gateway map with correct precedence
+    const consolidated: UserGateways = {}
+    for (const g of gateways) {
+      const key = userGateways[g] ?? envFallback[g]
+      if (key) consolidated[g] = key
     }
 
     // For session-auth, enforce presence
     if (principal.auth_method === "session") {
-      const missing = validateProviderKeys(Array.from(providers), consolidated)
-      if (missing.length) {
-        const display = formatMissingProviders(missing)
+      const missingGateways = validateGatewayKeys(Array.from(gateways), consolidated)
+      if (missingGateways.length) {
+        const missingKeyNames = missingGateways.map(getProviderKeyName)
+        const display = formatGatewayDisplayNames(missingKeyNames)
         await cleanup()
         const msg = `This workflow requires ${display.join(", ")} ${display.length === 1 ? "API key" : "API keys"} to run. Configure ${display.length === 1 ? "it" : "them"} in Settings → Providers.`
         return fail("workflow/invoke", msg, { status: 400 })
@@ -129,10 +131,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Models & registry
-    const enabledModels = await getUserModelsSetup({ principal }, Array.from(providers) as any)
+    const enabledModels = await getUserModelsSetup({ principal }, Array.from(gateways))
     const userModels = await createLLMRegistryForUser({
       principal,
-      userProviders: consolidated as any,
+      userProviders: consolidated,
       userEnabledModels: enabledModels,
       fallbackKeys: consolidated,
     })

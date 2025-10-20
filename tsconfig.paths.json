@@ -4,9 +4,9 @@
     "paths": {
       "@/*": ["apps/web/src/*"],
       "@tests/*": ["tests/*"],
-      "@repo/*": ["packages/*/src"],
-      "@repo/test-config": ["packages/test-config/src"],
-      "@repo/test-config/*": ["packages/test-config/src/*"],
+      "@lucky/*": ["packages/*/src"],
+      "@lucky/test-config": ["packages/test-config/src"],
+      "@lucky/test-config/*": ["packages/test-config/src/*"],
       "@lucky/adapter-supabase": ["packages/adapter-supabase/src"],
       "@lucky/adapter-supabase/*": ["packages/adapter-supabase/src/*"],
       "@lucky/shared": ["packages/shared/src"],
@@ -20,7 +20,6 @@
       "@lucky/models/*": ["packages/models/src/*"],
       "@lucky/examples": ["apps/examples"],
       "@lucky/examples/*": ["apps/examples/*"],
-      "@lucky/*": ["packages/*/src"],
       "@core": ["packages/core/src"],
       "@core/*": ["packages/core/src/*"],
       "@examples/*": ["apps/examples/*"]

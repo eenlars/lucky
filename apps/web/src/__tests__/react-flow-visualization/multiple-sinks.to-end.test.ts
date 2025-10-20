@@ -13,7 +13,7 @@ vi.mock("@/react-flow-visualization/components/nodes", () => ({
 }))
 
 vi.mock("@lucky/examples/settings/constants.client", () => ({
-  MODELS: { default: "openrouter#openai/gpt-4o-mini" },
+  MODELS: { default: "openai/gpt-4o-mini" },
 }))
 
 // Prevent ELK worker usage during tests
@@ -30,7 +30,8 @@ describe("multiple sinks attach to a single end node", () => {
           nodeId: "a",
           description: "A",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["b"],
@@ -40,7 +41,8 @@ describe("multiple sinks attach to a single end node", () => {
           nodeId: "b",
           description: "B",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -50,7 +52,8 @@ describe("multiple sinks attach to a single end node", () => {
           nodeId: "c",
           description: "C",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -74,7 +77,8 @@ describe("multiple sinks attach to a single end node", () => {
           nodeId: "x",
           description: "",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

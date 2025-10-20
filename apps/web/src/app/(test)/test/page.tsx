@@ -14,12 +14,12 @@ interface Message {
   timestamp: string
   isMarkdown?: boolean
   cost?: number
-  model?: string
+  gatewayModelId?: string
   tokens?: TokenUsage
 }
 
 interface CallInfo {
-  model: string
+  gatewayModelId: string
   cost: number
   tokens: TokenUsage
   timestamp: string
@@ -100,7 +100,7 @@ export default function TestPage() {
       }
 
       // Track API call cost and prepare message data
-      let messageData: Partial<Pick<Message, "cost" | "model" | "tokens">> = {}
+      let messageData: Partial<Pick<Message, "cost" | "gatewayModelId" | "tokens">> = {}
 
       if (data.usage && data.model) {
         // Calculate cost via API route
@@ -110,7 +110,7 @@ export default function TestPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: data.model,
+            gatewayModelId: data.model,
             usage: data.usage,
           }),
         })
@@ -124,7 +124,7 @@ export default function TestPage() {
         }
 
         const callInfo: CallInfo = {
-          model: data.model,
+          gatewayModelId: data.model,
           cost,
           tokens,
           timestamp: new Date().toISOString(),
@@ -133,7 +133,7 @@ export default function TestPage() {
         setCalls(prev => [...prev, callInfo])
         setTotalCost(prev => prev + cost)
 
-        messageData = { cost, model: data.model, tokens }
+        messageData = { cost, gatewayModelId: data.model, tokens }
       }
 
       const botMessage: Message = {
@@ -170,7 +170,7 @@ export default function TestPage() {
       const content = `Test Response: ${data.message}\nStatus: ${data.status}`
 
       // Track API call cost and prepare message data
-      let messageData: Partial<Pick<Message, "cost" | "model" | "tokens">> = {}
+      let messageData: Partial<Pick<Message, "cost" | "gatewayModelId" | "tokens">> = {}
 
       if (data.usage && data.model) {
         // Calculate cost via API route
@@ -180,7 +180,7 @@ export default function TestPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: data.model,
+            gatewayModelId: data.model,
             usage: data.usage,
           }),
         })
@@ -194,7 +194,7 @@ export default function TestPage() {
         }
 
         const callInfo: CallInfo = {
-          model: data.model,
+          gatewayModelId: data.model,
           cost,
           tokens,
           timestamp: new Date().toISOString(),
@@ -203,7 +203,7 @@ export default function TestPage() {
         setCalls(prev => [...prev, callInfo])
         setTotalCost(prev => prev + cost)
 
-        messageData = { cost, model: data.model, tokens }
+        messageData = { cost, gatewayModelId: data.model, tokens }
       }
 
       const testMessage: Message = {
@@ -572,9 +572,9 @@ export default function TestPage() {
                               )}
                             </div>
                           </div>
-                          {!msg.isUser && msg.model && msg.tokens && (
+                          {!msg.isUser && msg.gatewayModelId && msg.tokens && (
                             <div className="text-xs text-gray-400 flex items-center space-x-2">
-                              <span className="font-mono">{msg.model.replace(/^[^/]+\//, "")}</span>
+                              <span className="font-mono">{msg.gatewayModelId.replace(/^[^/]+\//, "")}</span>
                               <span>•</span>
                               <span>{(msg.tokens.inputTokens + msg.tokens.outputTokens).toLocaleString()} tokens</span>
                               {msg.tokens.cachedInputTokens && msg.tokens.cachedInputTokens > 0 && (

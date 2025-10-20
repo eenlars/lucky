@@ -19,10 +19,10 @@ export const sdkTestWorkflow: WorkflowConfig = {
         1. Main functionality
         2. Potential issues
         3. Suggestions for improvement`,
-      modelName: "anthropic/claude-sonnet-4",
+      gatewayModelId: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
       sdkConfig: {
-        model: "sonnet",
+        gatewayModelId: "sonnet",
         maxTokens: 4096,
         temperature: 0.5,
         timeout: 60000,
@@ -43,7 +43,7 @@ export const sdkTestWorkflow: WorkflowConfig = {
         1. Create actionable recommendations
         2. Prioritize by importance
         3. Suggest specific code changes`,
-      modelName: "gpt-4o-mini",
+      gatewayModelId: "gpt-4o-mini",
       useClaudeSDK: false, // Uses custom pipeline
       mcpTools: [],
       codeTools: ["contextGet", "contextSet"], // Custom tools
@@ -61,10 +61,10 @@ export const sdkTestWorkflow: WorkflowConfig = {
         - Executive summary
         - Detailed findings
         - Implementation roadmap`,
-      modelName: "anthropic/claude-3-5-haiku",
+      gatewayModelId: "anthropic/claude-3-5-haiku",
       useClaudeSDK: true,
       sdkConfig: {
-        model: "haiku", // Using faster model for formatting
+        gatewayModelId: "haiku", // Using faster model for formatting
         maxTokens: 2048,
         temperature: 0.3,
         timeout: 30000,
@@ -124,10 +124,10 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       nodeId: "conversation-start",
       description: "Start a conversation with official Anthropic SDK",
       systemPrompt: "You are a helpful assistant providing detailed technical explanations.",
-      modelName: "anthropic/claude-sonnet-4",
+      gatewayModelId: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
       sdkConfig: {
-        model: "sonnet",
+        gatewayModelId: "sonnet",
         maxTokens: 4096,
         temperature: 0.7,
       },
@@ -139,10 +139,10 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       nodeId: "conversation-continue",
       description: "Continue the conversation (context passed via workflow)",
       systemPrompt: "Continue helping with technical explanations, building on previous context.",
-      modelName: "anthropic/claude-sonnet-4",
+      gatewayModelId: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
       sdkConfig: {
-        model: "sonnet",
+        gatewayModelId: "sonnet",
         maxTokens: 4096,
         temperature: 0.7,
       },

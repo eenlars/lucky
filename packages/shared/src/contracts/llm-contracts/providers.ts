@@ -9,38 +9,69 @@ import { z } from "zod"
  * Provider name schema - validated against MODEL_CATALOG at runtime
  * This is a string type that gets validated dynamically
  */
-export const providerNameSchema = z.enum(["openai", "openrouter", "groq"])
+export const gatewayNameSchema = z.enum(["openai-api", "openrouter-api", "groq-api"])
 
-export type LuckyProvider = z.infer<typeof providerNameSchema>
+export type LuckyGateway = z.infer<typeof gatewayNameSchema>
+
+export const GATEWAY_AVAILABILITY = {
+  "openai-api": true,
+  "openrouter-api": true,
+  "groq-api": true, // Enable Groq in all environments for proper BYOK isolation
+} as const
+
+/**
+ * Provider entry schema - defines provider metadata for models package
+ *
+ * @example
+ * {
+ *    "openai-api",
+ *   displayName: "OpenAI",
+ *   secretKeyName: "OPENAI_API_KEY",  // Environment variable name
+ *   apiKeyValuePrefix: "sk-"          // Prefix in actual key value
+ * }
+ */
+export const gatewayEntrySchema = z.object({
+  /** Provider identifier (e.g., "openai", "groq") */
+  gateway: gatewayNameSchema,
+  /** Display name for UI (e.g., "OpenAI", "Groq") */
+  displayName: z.string(),
+  /** Environment variable name for API key (e.g., "OPENAI_API_KEY") */
+  secretKeyName: z.string(),
+  /** Prefix that appears in actual API key values (e.g., "sk-" for OpenAI, "gsk_" for Groq) */
+  apiKeyValuePrefix: z.string(),
+})
+
+export type GatewayEntry = z.infer<typeof gatewayEntrySchema>
+
 /**
  * Provider API key mapping schema
  * Maps provider names to their required API key environment variable names
  */
-export const providerKeyMappingSchema = z.object({
-  provider: providerNameSchema,
+export const gatewayKeyMappingSchema = z.object({
+  gateway: gatewayNameSchema,
   keyName: z.string(),
   keyPrefix: z.string().optional(),
   required: z.boolean().default(true),
 })
 
-export type ProviderKeyMapping = z.infer<typeof providerKeyMappingSchema>
+export type GatewayKeyMapping = z.infer<typeof gatewayKeyMappingSchema>
 
 /**
  * Provider configuration schema for user settings
  */
-export const providerSettingsSchema = z.object({
-  provider: providerNameSchema,
+export const gatewaySettingsSchema = z.object({
+  gatewayNameSchema,
   enabledModels: z.array(z.string()).default([]),
   isEnabled: z.boolean().default(true),
 })
 
-export type ProviderSettings = z.infer<typeof providerSettingsSchema>
+export type GatewaySettings = z.infer<typeof gatewaySettingsSchema>
 
 /**
  * Provider configuration with API key status
  */
-export const providerConfigSchema = z.object({
-  provider: providerNameSchema,
+export const gatewayConfigSchema = z.object({
+  gatewayNameSchema,
   enabledModels: z.array(z.string()),
   isEnabled: z.boolean(),
   hasApiKey: z.boolean(),
@@ -52,25 +83,25 @@ export const providerConfigSchema = z.object({
   activeModels: z.number(),
 })
 
-export type ProviderConfig = z.infer<typeof providerConfigSchema>
+export type GatewayConfig = z.infer<typeof gatewayConfigSchema>
 
 /**
  * API key validation result schema
  */
-export const apiKeyValidationSchema = z.object({
+export const gatewayApiKeyValidationSchema = z.object({
   valid: z.boolean(),
   error: z.string().optional(),
-  provider: providerNameSchema.optional(),
+  gateway: gatewayNameSchema,
 })
 
-export type ApiKeyValidation = z.infer<typeof apiKeyValidationSchema>
+export type GatewayApiKeyValidation = z.infer<typeof gatewayApiKeyValidationSchema>
 
 /**
  * Provider status schema for UI display
  */
-export const providerStatusSchema = z.enum(["configured", "partial", "unconfigured", "disabled"])
+export const gatewayStatusSchema = z.enum(["configured", "partial", "unconfigured", "disabled"])
 
-export type ProviderStatus = z.infer<typeof providerStatusSchema>
+export type GatewayStatus = z.infer<typeof gatewayStatusSchema>
 
 /**
  * Model ID schema - for user model preferences (stores API-format model names)
@@ -82,31 +113,10 @@ export const modelIdSchema = z.string().min(1)
 export type ModelId = z.infer<typeof modelIdSchema>
 
 /**
- * Catalog ID type - enforces "<provider>#<model>" format for internal catalog lookups
- * This keeps catalog identifiers distinct from API-format model names.
- * WARNING: Never parse this string to determine the API provider - always look up in MODEL_CATALOG.
- *
- * @example
- * ```ts
- * "openai#gpt-4.1-mini" // ✓ correct catalog ID
- * "openrouter#anthropic/claude-sonnet-4" // ✓ correct (uses OpenRouter models)
- * "gpt-4.1-mini" // ✗ missing provider prefix
- * "openrouter#openai/gpt-4.1-mini" // ✗ old format
- * ```
- */
-export type CatalogId = `${string}#${string}`
-
-/**
- * Zod schema for catalog ID validation
- * Validates the "<provider>#<model>" format
- */
-export const catalogIdSchema = z.string().regex(/^[^#]+#[^#]+$/, 'Catalog ID must follow format "<provider>#<model>"')
-
-/**
  * Enhanced user provider settings with metadata
  */
-export const userProviderSettingsSchema = z.object({
-  provider: providerNameSchema,
+export const userGatewaySettingsSchema = z.object({
+  gateway: gatewayNameSchema,
   enabledModels: z.array(modelIdSchema),
   isEnabled: z.boolean(),
   metadata: z
@@ -117,14 +127,14 @@ export const userProviderSettingsSchema = z.object({
     .optional(),
 })
 
-export type UserProviderSettings = z.infer<typeof userProviderSettingsSchema>
+export type UserGatewaySettings = z.infer<typeof userGatewaySettingsSchema>
 
 /**
  * Complete user model preferences across all providers
  */
-export const userModelPreferencesSchema = z.object({
-  providers: z.array(userProviderSettingsSchema),
+export const userGatewayPreferencesSchema = z.object({
+  gateways: z.array(userGatewaySettingsSchema),
   lastSynced: z.string().datetime(),
 })
 
-export type UserModelPreferences = z.infer<typeof userModelPreferencesSchema>
+export type UserGatewayPreferences = z.infer<typeof userGatewayPreferencesSchema>

@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       "environment-variables",
     )
 
-    const llmRegistry = getServerLLMRegistry()
+    const llmRegistry = await getServerLLMRegistry()
     const fallbackOverrides: Record<string, string> = {}
     if (typeof apiKeys.OPENAI_API_KEY === "string" && apiKeys.OPENAI_API_KEY.length > 0) {
       fallbackOverrides.openai = apiKeys.OPENAI_API_KEY
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     const userModels = llmRegistry.forUser({
       mode: "shared",
       userId: principal.clerk_id,
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
       fallbackOverrides,
     })
 
@@ -99,7 +99,7 @@ Respond with a JSON object containing:
 
     return withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
       const result = streamText({
-        model: userModels.model("openai#gpt-4o-mini"),
+        model: userModels.model("gpt-4o-mini"),
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt },

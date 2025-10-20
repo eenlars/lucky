@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Multi-provider model configuration and registry for Vercel AI SDK",
+  "description": "Multi-gateway model configuration and registry for Vercel AI SDK",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "files": ["dist"],
@@ -53,6 +53,11 @@
       "types": "./dist/pricing/catalog.d.ts",
       "import": "./dist/pricing/catalog.js",
       "ts": "./src/pricing/catalog.ts"
+    },
+    "./utils/apikey": {
+      "types": "./dist/utils/apikey.d.ts",
+      "import": "./dist/utils/apikey.js",
+      "ts": "./src/utils/apikey.ts"
     }
   },
   "dependencies": {

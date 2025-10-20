@@ -5,6 +5,7 @@ import { type MouseEvent, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { type WorkflowConfig, toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { MODELS } from "@lucky/examples/settings/constants.client"
+import { MODEL_CONFIG } from "@lucky/examples/settings/models"
 
 interface StructureMiniMapProps {
   dsl: WorkflowConfig
@@ -64,8 +65,9 @@ export function StructureMiniMap({ dsl, width, height }: StructureMiniMapProps) 
         mcpTools: [],
         codeTools: [],
         description: "End node",
-        modelName: MODELS.default,
+        gatewayModelId: MODELS.default,
         memory: {},
+        gateway: MODEL_CONFIG.gateway,
       })
     }
 

@@ -34,7 +34,7 @@ export function openaiHandlers(options: OpenAIHandlerOptions = {}) {
         id: "chatcmpl-test",
         object: "chat.completion",
         created: Math.floor(Date.now() / 1000),
-        model: "gpt-4",
+        gatewayModelId: "gpt-4",
         choices: [
           {
             index: 0,

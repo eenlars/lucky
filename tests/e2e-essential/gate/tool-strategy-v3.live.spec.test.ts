@@ -7,7 +7,7 @@ import { z } from "zod"
 
 // Helper: detect placeholder envs from tests/setup/env.ts - check for the current provider
 const hasRealApiKey = (() => {
-  const provider = MODEL_CONFIG.provider
+  const provider = MODEL_CONFIG.gateway
   if (provider === "openai") {
     return typeof process.env.OPENAI_API_KEY === "string" && !process.env.OPENAI_API_KEY.startsWith("test-")
   }

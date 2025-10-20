@@ -7,10 +7,10 @@ nodes:
     systemPrompt: |
       You are a helpful assistant that analyzes text.
       Be concise and clear in your responses.
-    modelName: claude-3-sonnet-latest
+    gatewayModelId: claude-3-sonnet-latest
     useClaudeSDK: true
     sdkConfig:
-      model: sonnet
+      gatewayModelId: sonnet
       maxTokens: 4096
       temperature: 0.7
       timeout: 30000
@@ -24,7 +24,7 @@ nodes:
     systemPrompt: |
       You are a summarization expert.
       Take the analysis provided and create a brief summary.
-    modelName: gpt-4o-mini
+    gatewayModelId: gpt-4o-mini
     useClaudeSDK: false # This node uses the custom pipeline
     mcpTools: []
     codeTools: []

@@ -19,7 +19,6 @@ vi.mock("@core/utils/env.mjs", () => ({
 
 import os from "node:os"
 import path from "node:path"
-import { z } from "zod"
 
 // Mock SpendingTracker to avoid execution context requirement
 vi.mock("@core/utils/spending/trackerContext", () => ({
@@ -99,7 +98,7 @@ vi.mock("@examples/settings/constants", () => {
         showParameterSchemas: true,
       },
       models: {
-        provider: "openai" as const,
+        gateway: "openai-api" as const,
         inactive: [],
       },
       improvement: {
@@ -210,7 +209,6 @@ vi.mock("@core/clients/supabase/client", () => ({
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import type { StructuredRequest, TResponse, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
@@ -265,7 +263,8 @@ describe("invokeAgent", () => {
       nodeId: "test-node",
       description: "A test node for unit testing",
       systemPrompt: "You are a helpful assistant. Just respond with the input you received.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"], // Single node invocation should end here
@@ -340,7 +339,8 @@ describe("invokeAgent", () => {
       nodeId: "tool-node",
       description: "A node with tools",
       systemPrompt: "You have access to tools. Use them if needed.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: ["todoRead", "todoWrite"],
       handOffs: ["next-node", "end"],
@@ -364,7 +364,8 @@ describe("invokeAgent", () => {
       nodeId: "memory-node",
       description: "A node with initial memory",
       systemPrompt: "You have memory from previous runs.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -393,7 +394,8 @@ describe("invokeAgent", () => {
       nodeId: "context-node",
       description: "A node with workflow context",
       systemPrompt: "Process based on workflow goal.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["analyzer", "summarizer", "end"],

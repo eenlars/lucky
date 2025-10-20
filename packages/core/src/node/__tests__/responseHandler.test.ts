@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import { describe, expect, it, vi } from "vitest"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
@@ -74,7 +73,8 @@ describe("responseHandler - Parallel Handoff Logic", () => {
       handOffType,
       description: "test description",
       systemPrompt: "test system prompt",
-      modelName: getDefaultModels().default,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       waitingFor: [],

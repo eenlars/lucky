@@ -34,7 +34,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
       agentSteps: agentSteps,
       roundsLeft: maxRounds - round,
       systemMessage: ctx.nodeConfig.systemPrompt,
-      model: ctx.nodeConfig.modelName,
+      gatewayModelId: ctx.nodeConfig.gatewayModelId,
     })
 
     // Track cost from strategy selection
@@ -147,7 +147,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
       error,
       usdCost,
     } = await sendAI({
-      model: ctx.nodeConfig.modelName,
+      model: ctx.nodeConfig.gatewayModelId,
       mode: "tool",
       debug: true,
       messages: [
@@ -189,7 +189,7 @@ export async function runMultiStepLoopV2Helper(context: MultiStepLoopContext): P
 
     const processed = processResponseVercel({
       response: toolUseResponse,
-      modelUsed: ctx.nodeConfig.modelName,
+      modelUsed: ctx.nodeConfig.gatewayModelId,
       nodeId: ctx.nodeConfig.nodeId,
     })
 

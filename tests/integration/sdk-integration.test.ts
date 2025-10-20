@@ -13,7 +13,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "test-node",
           description: "Test node with official SDK",
           systemPrompt: "You are a test assistant",
-          modelName: "anthropic/claude-sonnet-4",
+          gatewayModelId: "anthropic/claude-sonnet-4",
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
@@ -43,7 +43,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "sdk-node",
           description: "SDK-enabled node",
           systemPrompt: "SDK prompt",
-          modelName: "anthropic/claude-3-5-haiku",
+          gatewayModelId: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
@@ -57,7 +57,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "custom-node",
           description: "Custom pipeline node",
           systemPrompt: "Custom prompt",
-          modelName: "gpt-4o-mini",
+          gatewayModelId: "gpt-4o-mini",
           useClaudeSDK: false,
           mcpTools: [],
           codeTools: ["contextGet", "contextSet"],
@@ -85,7 +85,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "default-node",
           description: "Default behavior node",
           systemPrompt: "Default prompt",
-          modelName: "gpt-4o-mini",
+          gatewayModelId: "gpt-4o-mini",
           mcpTools: [],
           codeTools: ["todoRead", "todoWrite"],
           handOffs: [],
@@ -106,7 +106,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "opus-node",
           description: "Opus model node",
           systemPrompt: "Using Opus",
-          modelName: "anthropic/claude-3-5-haiku",
+          gatewayModelId: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
             model: "opus-3",
@@ -122,7 +122,7 @@ describe("Anthropic SDK Integration", () => {
           nodeId: "haiku-node",
           description: "Haiku model node",
           systemPrompt: "Using Haiku",
-          modelName: "anthropic/claude-3-5-haiku",
+          gatewayModelId: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
           sdkConfig: {
             model: "haiku",

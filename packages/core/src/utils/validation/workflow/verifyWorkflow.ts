@@ -20,23 +20,23 @@ import { verifyHandoffTypeConsistency } from "@core/utils/validation/workflow/ve
 import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { findModel } from "@lucky/models"
 import { isNir } from "@lucky/shared"
-import { findModel } from "@repo/models"
 
-// verify that each node has a modelname that exists
-export const verifyModelNameExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {
+// verify that each node has a GatewayModelId that exists
+export const verifyGatewayModelIdExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
-    if (!node.modelName) {
-      errors.push(`Node '${node.nodeId}' is missing a modelName`)
+    if (!node.gatewayModelId) {
+      errors.push(`Node '${node.nodeId}' is missing a gatewayModelId`)
     } else {
-      const modelName = node.modelName
+      const gatewayModelId = node.gatewayModelId
 
       // Look up model by API name (workflows store API-format model names)
-      const catalogEntry = findModel(modelName)
+      const catalogEntry = findModel(gatewayModelId)
 
       if (!catalogEntry) {
-        errors.push(`Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`)
+        errors.push(`Node '${node.nodeId}' has an invalid gatewayModelId: ${node.gatewayModelId}`)
       }
     }
   }
@@ -59,8 +59,9 @@ export const verifyNoDuplicateHandoffs = async (config: WorkflowConfig): Promise
 export const verifyModelsAreActive = async (config: WorkflowConfig): Promise<VerificationErrors> => {
   const errors: string[] = []
   for (const node of config.nodes) {
-    if (node.modelName && getCoreConfig().models.inactive.includes(node.modelName)) {
-      errors.push(`Node '${node.nodeId}' uses inactive model: ${node.modelName}`)
+    if (node.gatewayModelId && getCoreConfig().models.inactive.includes(node.gatewayModelId)) {
+      // wording includes "inactive model" to match validation expectations/tests
+      errors.push(`Node '${node.nodeId}' uses inactive model: ${node.gatewayModelId}`)
     }
   }
   return errors
@@ -82,7 +83,7 @@ export const verifyWorkflowConfig = async (
       everyNodeIsConnectedToStartNode,
       startNodeIsConnectedToEndNode,
       verifyToolSetEachNodeIsUnique,
-      verifyModelNameExists,
+      verifyGatewayModelIdExists,
       verifyModelsAreActive,
       verifyNoDuplicateHandoffs,
       verifyMaxToolsPerAgent,

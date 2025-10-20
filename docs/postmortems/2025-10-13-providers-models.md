@@ -8,7 +8,7 @@ The problem is that global runtime configuration (`@lucky/shared/contracts/confi
 Both the core engine (`packages/core/src/models/models-instance.ts`) and the shared models layer (`packages/models/src/models-instance.ts`) read those flags before checking keys.  
 If the flag is false, the provider is never added to the config map passed into the AI SDK factory, regardless of whether valid keys exist.
 
-Because `models.provider` in core config (driven by `apps/examples/settings/constants`) can be set to `"openrouter"`, teams believe they’re using OpenRouter by default.  
+Because `models.gateway` in core config (driven by `apps/examples/settings/constants`) can be set to `"openrouter"`, teams believe they’re using OpenRouter by default.  
 But tier resolution (`packages/models/src/config/defaults.ts`) still maps low/medium/high to OpenAI models such as `gpt-4o-mini` / `gpt-4o`.  
 When the workflow runs, the engine resolves the tier to those OpenAI names, then asks the `ProviderRegistry` for the corresponding provider (determined by catalog entry).  
 Since the OpenRouter provider was never initialized (flagged off), two brittle outcomes occur:
@@ -76,7 +76,7 @@ Everything above them assumes providers are available.
 - **Runtime-configurable availability flags** — Replace hard-coded booleans with values derived from CoreConfig or environment variables.  
   *High confidence (~90%)* because it directly removes the blocker while preserving the dual-key plumbing.
 
-- **Provider-aware tier configurations** — Define tier defaults for each provider, keyed by `models.provider`, so “medium” resolves to an OpenRouter model when OpenRouter is selected.  
+- **Provider-aware tier configurations** — Define tier defaults for each provider, keyed by `models.gateway`, so “medium” resolves to an OpenRouter model when OpenRouter is selected.  
   *Medium confidence (~70%)*; requires reworking tier definitions but is conceptually straightforward.
 
 - **Provider-and-model aware resolution** — Extend catalog lookup to consider both model name and desired provider to avoid ambiguous matches and ensure routing respects user defaults.  

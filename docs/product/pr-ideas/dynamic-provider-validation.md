@@ -75,7 +75,7 @@ export function extractRequiredProviders(dsl: WorkflowDSL): RequiredProviders {
 /**
  * Map provider names to their API key environment variable names
  */
-export function getProviderKeyName(provider: string): string {
+export function getProviderKeyName( string): string {
   const mapping: Record<string, string> = {
     openai: "OPENAI_API_KEY",
     openrouter: "OPENROUTER_API_KEY",

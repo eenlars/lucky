@@ -7,6 +7,7 @@ import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
+import type { LuckyGateway } from "@lucky/shared"
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -20,7 +21,7 @@ export const maxDuration = 60
  * Request body:
  * - messages: UIMessage[] - Chat history
  * - nodeId: string - Agent node ID
- * - modelName?: string - Override model (format: "provider/model" or "tier:name")
+ * - gatewayModelId?: string - Override model (format: "provider/model" or "tier:name")
  * - systemPrompt?: string - System prompt for the agent
  */
 export async function POST(request: NextRequest) {
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { messages, nodeId, modelName, systemPrompt } = validationResult.data
+    const { messages, nodeId, gatewayModelId, systemPrompt } = validationResult.data
 
     // TODO: Add authorization check - verify user owns this nodeId
     // const hasAccess = await verifyNodeAccess(principal.clerk_id, nodeId)
@@ -64,11 +65,11 @@ export async function POST(request: NextRequest) {
     // }
 
     // Log request for debugging
-    console.log(`[Agent Chat] Starting stream for node=${nodeId}, model=${modelName || "default"}`)
+    console.log(`[Agent Chat] Starting stream for node=${nodeId}, model=${gatewayModelId || "default"}`)
 
-    // Validate that modelName is provided
-    if (!modelName) {
-      return NextResponse.json({ error: "Model name is required", field: "modelName" }, { status: 400 })
+    // Validate that gatewayModelId is provided
+    if (!gatewayModelId) {
+      return NextResponse.json({ error: "Model is required", field: "gatewayModelId" }, { status: 400 })
     }
 
     // Fetch user's enabled models to use as allowlist and gather required provider keys
@@ -81,15 +82,15 @@ export async function POST(request: NextRequest) {
       .eq("is_enabled", true)
 
     const allowlist: string[] = []
-    const providerIds = new Set<string>()
+    const providerIds = new Set<LuckyGateway>()
     if (providerSettings) {
       for (const row of providerSettings) {
         const enabledModels = Array.isArray(row.enabled_models)
           ? row.enabled_models.filter((m): m is string => typeof m === "string")
           : []
         allowlist.push(...enabledModels)
-        if (typeof row.provider === "string" && row.provider.length > 0) {
-          providerIds.add(row.provider)
+        if (row.provider && typeof row.provider === "string" && row.provider.length > 0) {
+          providerIds.add(row.provider as LuckyGateway)
         }
       }
     }
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const llmRegistry = getServerLLMRegistry()
+    const llmRegistry = await getServerLLMRegistry()
 
     const userModels = llmRegistry.forUser({
       mode: "shared",
@@ -132,15 +133,15 @@ export async function POST(request: NextRequest) {
         const userModels = llmRegistry.forUser({
           mode: "shared", // Using fallback keys from registry
           userId: clerkId,
-          models: allowlist.length > 0 ? allowlist : ["openai#gpt-4o-mini"], // Fallback to a default model
+          models: allowlist.length > 0 ? allowlist : ["gpt-4o-mini"], // Fallback to a default model
           fallbackOverrides,
         })
 
         // Get the model directly by name - just validate it exists
-        userModels.model(modelName)
-        resolvedModelId = modelName
+        userModels.model(gatewayModelId)
+        resolvedModelId = gatewayModelId
       } catch (error) {
-        console.error("[Agent Chat] Failed to load model:", error)
+        console.error("[Agent Chat] Failed to load gatewayModelId:", error)
         const userError = getUserFriendlyError(error)
         return NextResponse.json(
           {
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
                   ? error.message
                   : String(error)
                 : undefined,
-            modelName: process.env.NODE_ENV === "development" ? modelName : undefined,
+            gatewayModelId: process.env.NODE_ENV === "development" ? gatewayModelId : undefined,
           },
           { status: 500 },
         )

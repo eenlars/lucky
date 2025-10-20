@@ -2,18 +2,18 @@
  * Client-safe model utilities for React components.
  * Uses API routes to access server-side model utilities.
  */
-import type { LuckyProvider, ModelPricing } from "@lucky/shared"
+import type { LuckyGateway, ModelPricing } from "@lucky/shared"
 
 /**
  * Browser default provider (hardcoded since runtime config requires Node.js).
- * Server-side code should use getCurrentProvider() from @lucky/shared.
+ * Server-side code should use getCurrentGateway() from @lucky/shared.
  * MUST match the provider configured in apps/examples/settings/models.ts
  */
-const BROWSER_DEFAULT_PROVIDER: LuckyProvider = "openai"
+const BROWSER_DEFAULT_PROVIDER: LuckyGateway = "openrouter-api"
 
 // Cache for active model names to avoid repeated API calls
 let cachedModels: string[] | null = null
-let cachedProvider: LuckyProvider | null = null
+let cachedProvider: LuckyGateway | null = null
 
 // Cache for model pricing to avoid repeated API calls
 const modelPricingCache = new Map<string, ModelPricing>()
@@ -22,7 +22,7 @@ const modelPricingCache = new Map<string, ModelPricing>()
  * Get all active models from provider structure.
  * Defaults to openrouter for browser contexts.
  */
-export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T): string[] => {
+export const getActiveGatewayModelIds = <T extends LuckyGateway>(customProvider?: T): string[] => {
   const provider = customProvider ?? (BROWSER_DEFAULT_PROVIDER as T)
 
   // Return cached if available for same provider
@@ -31,7 +31,7 @@ export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T)
   }
 
   // Synchronous API - throw error if called before cache is populated
-  throw new Error("getActiveModelNames must be called after useModelCache hook")
+  throw new Error("getActiveGatewayModelIds must be called after useModelCache hook")
 }
 
 /**
@@ -39,21 +39,21 @@ export const getActiveModelNames = <T extends LuckyProvider>(customProvider?: T)
  * Returns null if not cached yet.
  * Use fetchModelV2 to populate the cache.
  */
-export function getModelV2(model: string): ModelPricing | null {
-  return modelPricingCache.get(model) ?? null
+export function getModelV2(gatewayModelId: string): ModelPricing | null {
+  return modelPricingCache.get(gatewayModelId) ?? null
 }
 
 /**
  * Hook to fetch and cache active model names.
  * Call this in components that need model lists.
  */
-export async function fetchActiveModelNames(customProvider?: LuckyProvider): Promise<string[]> {
+export async function fetchActiveGatewayModelIds(customProvider?: LuckyGateway): Promise<string[]> {
   const provider = customProvider ?? BROWSER_DEFAULT_PROVIDER
 
   const response = await fetch("/api/models", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getActiveModelNames", provider }),
+    body: JSON.stringify({ action: "getActivegatewayModelIds", gateway: provider }),
   })
 
   const result = await response.json()
@@ -71,13 +71,13 @@ export async function fetchActiveModelNames(customProvider?: LuckyProvider): Pro
 /**
  * Fetch model pricing information and cache it.
  */
-export async function fetchModelV2(model: string, customProvider?: LuckyProvider): Promise<ModelPricing> {
+export async function fetchModelV2(gatewayModelId: string, customProvider?: LuckyGateway): Promise<ModelPricing> {
   const provider = customProvider ?? BROWSER_DEFAULT_PROVIDER
 
   const response = await fetch("/api/models", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getModelV2", model, provider }),
+    body: JSON.stringify({ action: "getModelV2", gatewayModelId, gateway: provider }),
   })
 
   const result = await response.json()
@@ -86,7 +86,7 @@ export async function fetchModelV2(model: string, customProvider?: LuckyProvider
   }
 
   // Cache the result
-  modelPricingCache.set(model, result.model)
+  modelPricingCache.set(gatewayModelId, result.gatewayModelId)
 
-  return result.model
+  return result.gatewayModelId
 }

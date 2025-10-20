@@ -55,11 +55,11 @@ vi.mock("@examples/settings/constants", () => {
     },
     models: {
       inactive: [],
-      provider: "openai",
+      gateway: "openai-api" as const,
       defaults: {
-        summary: "openrouter#google/gemini-2.5-flash-lite",
-        nano: "openrouter#google/gemini-2.5-flash-lite",
-        low: "openrouter#google/gemini-2.5-flash-lite",
+        summary: "google/gemini-2.5-flash-lite",
+        nano: "google/gemini-2.5-flash-lite",
+        low: "google/gemini-2.5-flash-lite",
         balanced: "gpt-4.1-mini",
         high: "gpt-4.1",
         default: "gpt-4.1-nano",

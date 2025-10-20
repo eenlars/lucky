@@ -5,24 +5,24 @@ import type { VercelUsage } from "./calculatePricing"
 /**
  * Calculate the USD cost of a completion given token usage and per-million-token pricing.
  */
-export function calculateUsageCost(usage: Partial<VercelUsage>, modelName: string): number {
-  if (usage === null || usage === undefined || isNir(modelName)) {
-    console.error(`Invalid usage or model name: ${JSON.stringify(usage)} ${JSON.stringify(modelName)}`)
+export function calculateUsageCost(usage: Partial<VercelUsage>, gatewayModelId: string): number {
+  if (usage === null || usage === undefined || isNir(gatewayModelId)) {
+    console.error(`Invalid usage or model name: ${JSON.stringify(usage)} ${JSON.stringify(gatewayModelId)}`)
     return 0
   }
   const { promptTokens = 0, completionTokens = 0 } = usage
 
   let modelPricing: any
   try {
-    modelPricing = findModel(modelName)
+    modelPricing = findModel(gatewayModelId)
   } catch (_err) {
-    console.error(`Model pricing not found for: ${modelName}`)
+    console.error(`Model pricing not found for: ${gatewayModelId}`)
     return 0
   }
 
   // Check if modelPricing is undefined before destructuring
   if (!modelPricing) {
-    console.error(`Model pricing not found for: ${modelName}`)
+    console.error(`Model pricing not found for: ${gatewayModelId}`)
     return 0
   }
 
@@ -30,7 +30,7 @@ export function calculateUsageCost(usage: Partial<VercelUsage>, modelName: strin
 
   // validate
   if (typeof pricePerMInput !== "number" || typeof pricePerMOutput !== "number") {
-    console.error(`Invalid pricing data for: ${modelName}`, modelPricing)
+    console.error(`Invalid pricing data for: ${gatewayModelId}`, modelPricing)
     return 0
   }
 

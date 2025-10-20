@@ -7,6 +7,32 @@ import type { ModelEntry, TierName } from "@lucky/shared"
 import { findModel } from "./llm-catalog/catalog-queries"
 
 /**
+ * Check if input is a tier name and return the normalized tier
+ *
+ * @param input - String to check
+ * @returns Tier name if valid, undefined otherwise
+ */
+export function findTierModels(input: string): TierName | undefined {
+  const inputLower = input.toLowerCase()
+
+  // Legacy tier migrations
+  const LEGACY_TIER_MIGRATIONS: Record<string, TierName> = {
+    medium: "balanced",
+    fallback: "balanced",
+  }
+
+  const migratedName = LEGACY_TIER_MIGRATIONS[inputLower] ?? inputLower
+
+  // Check if it's a valid tier name
+  const validTiers: TierName[] = ["cheap", "fast", "smart", "balanced"]
+  if (validTiers.includes(migratedName as TierName)) {
+    return migratedName as TierName
+  }
+
+  return undefined
+}
+
+/**
  * Select the best model for a given tier from a list of allowed models
  * Uses different strategies per tier:
  * - cheap: lowest average cost

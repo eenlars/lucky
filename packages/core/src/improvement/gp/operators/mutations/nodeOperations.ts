@@ -43,7 +43,7 @@ export class NodeOperations {
       try {
         const { success, data } = await Workflow.formalizeWorkflow(
           `Add a new specialized node to enhance this workflow with additional capabilities. 
-          this is the parent workflow: ${parent.toString({ easyModelNames: true })}
+          this is the parent workflow: ${parent.toString({ tierMappingEnabled: true })}
           the goal is to fix bugs given an input.        
           `,
           {

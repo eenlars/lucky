@@ -164,7 +164,7 @@ export interface InvocationSummary {
   summary: string
   createdAt: string
   usdCost: number
-  modelName: string
+  gatewayModelId: string
   tokensUsed?: {
     prompt: number
     completion: number

@@ -1,6 +1,7 @@
-import { extractRequiredProviders, getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
+import { extractRequiredGateways, getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { PROVIDER_API_KEYS } from "@lucky/models"
+import { MODEL_CONFIG } from "@lucky/examples/settings/models"
+import { GATEWAY_API_KEYS } from "@lucky/models"
 import { describe, expect, it } from "vitest"
 
 /**
@@ -16,7 +17,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "You are a helpful assistant",
-            modelName: "openai#gpt-4.1-nano",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -25,11 +27,11 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
-      expect(providers.size).toBe(1)
-      expect(providers.has("openai")).toBe(true)
+      expect(gateways.size).toBe(1)
+      expect(gateways.has("openai-api")).toBe(true)
       expect(requiredKeys).toEqual(["OPENAI_API_KEY"])
     })
 
@@ -40,7 +42,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "Anthropic model via OpenRouter",
             systemPrompt: "You are a helpful assistant",
-            modelName: "anthropic/claude-sonnet-4",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "anthropic/claude-sonnet-4",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -49,11 +52,11 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
-      expect(providers.size).toBe(1)
-      expect(providers.has("openrouter")).toBe(true)
+      expect(gateways.size).toBe(1)
+      expect(gateways.has("openrouter-api")).toBe(true)
       expect(requiredKeys).toEqual(["OPENROUTER_API_KEY"])
     })
   })
@@ -66,7 +69,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "You are a helpful assistant",
-            modelName: "openai#gpt-4.1-nano",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: ["agent2"],
@@ -75,7 +79,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent2",
             description: "Anthropic model via OpenRouter",
             systemPrompt: "You are a helpful assistant",
-            modelName: "openrouter#anthropic/claude-sonnet-4",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "anthropic/claude-sonnet-4",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -84,12 +89,12 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
-      expect(providers.size).toBe(2)
-      expect(providers.has("openai")).toBe(true)
-      expect(providers.has("openrouter")).toBe(true)
+      expect(gateways.size).toBe(2)
+      expect(gateways.has("openai-api")).toBe(true)
+      expect(gateways.has("openrouter-api")).toBe(true)
       expect(requiredKeys).toContain("OPENAI_API_KEY")
       expect(requiredKeys).toContain("OPENROUTER_API_KEY")
     })
@@ -101,7 +106,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "test",
-            modelName: "openai#gpt-4.1-nano",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -110,7 +116,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent2",
             description: "Another OpenAI agent",
             systemPrompt: "test",
-            modelName: "openai#gpt-5",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-5",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -119,10 +126,10 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
-      expect(providers.size).toBe(1)
+      expect(gateways.size).toBe(1)
       expect(requiredKeys).toContain("OPENAI_API_KEY")
     })
   })
@@ -135,7 +142,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "test",
-            modelName: "openai#gpt-4.1-nano",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -144,8 +152,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
       // Simulate API keys object (user has no keys configured)
       const apiKeys: Record<string, string | undefined> = {}
@@ -161,7 +169,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "test",
-            modelName: "openai#gpt-4.1-nano",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -170,8 +179,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
       // Simulate API keys object (user has OpenAI configured)
       const apiKeys: Record<string, string | undefined> = {
@@ -189,7 +198,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent1",
             description: "OpenAI agent",
             systemPrompt: "test",
-            modelName: "openai#gpt-4.1-nano",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "gpt-4.1-nano",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -198,7 +208,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
             nodeId: "agent2",
             description: "OpenRouter agent",
             systemPrompt: "test",
-            modelName: "openrouter#anthropic/claude-sonnet-4",
+            gateway: MODEL_CONFIG.gateway,
+            gatewayModelId: "anthropic/claude-sonnet-4",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -207,8 +218,8 @@ describe("Workflow Invoke API - Provider Validation", () => {
         entryNodeId: "agent1",
       }
 
-      const { providers } = extractRequiredProviders(config)
-      const requiredKeys = Array.from(providers).map(getProviderKeyName)
+      const { gateways } = extractRequiredGateways(config)
+      const requiredKeys = Array.from(gateways).map(getProviderKeyName)
 
       // Simulate API keys object (user has OpenAI but not OpenRouter)
       const apiKeys: Record<string, string | undefined> = {
@@ -224,7 +235,7 @@ describe("Workflow Invoke API - Provider Validation", () => {
     it("should use fallback keys when workflow config is malformed", () => {
       // Test uses the real PROVIDER_API_KEYS constant from provider-validation
       // This ensures the test fails if the fallback list drifts
-      const fallbackKeys = [...PROVIDER_API_KEYS]
+      const fallbackKeys = [...GATEWAY_API_KEYS]
 
       expect(fallbackKeys).toContain("OPENROUTER_API_KEY")
       expect(fallbackKeys).toContain("OPENAI_API_KEY")

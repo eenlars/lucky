@@ -8,6 +8,7 @@ import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 
 import { zodToJson } from "@core/utils/validation/zodToJson"
+import { generateJsonPrompt } from "@lucky/core/prompts/utils/generateJson.p"
 import { JSONN, R, type RS, isNir } from "@lucky/shared"
 
 export const addReasoning = <S extends z.ZodTypeAny>(schema: S) => {
@@ -46,21 +47,7 @@ export const genObject = async <T extends z.ZodSchema>({
   // we use two types, because otherwise we get lots of errors. it seems stupid, but it works.
   const systemMessage: ModelMessage = {
     role: "system",
-    content: `You are an AI assistant that strictly returns JSON data. Your response MUST be a single, valid JSON object enclosed in <json> and </json> tags.
-Do NOT include any explanatory text, markdown, or any characters outside of the JSON object itself.
-Your response must conform to this JSON Schema:
-${JSON.stringify(jsonSchema)}
-
-CORRECT EXAMPLE:
-input: { 'memory': { 'stores': [] } }
-output:
-<json>
-{
-    "memory": {
-        "stores": []
-    }
-}
-</json>`,
+    content: generateJsonPrompt(jsonSchema),
   }
 
   const result = await sendAI({
@@ -71,7 +58,6 @@ output:
   })
 
   if (!result.success) {
-    console.warn("[genObject] sendAI failed", { error: result.error })
     return R.error(`genObject failed: ${result.error}`, usdCost)
   }
 

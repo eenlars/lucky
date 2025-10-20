@@ -91,8 +91,8 @@ export function isToolInactive(toolName: string): boolean {
 /**
  * Check if a model is inactive
  */
-export function isModelInactive(modelName: string): boolean {
-  return getCoreConfig().models.inactive.includes(modelName)
+export function isModelInactive(gatewayModelId: string): boolean {
+  return getCoreConfig().models.inactive.includes(gatewayModelId)
 }
 
 /**

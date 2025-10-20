@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 // comprehensive tests for genome class
 import {
   createMockEvaluationInputGeneric,
@@ -38,7 +37,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       inactive: new Set(),
-      provider: "openai",
+      gateway: "openai-api" as const,
     },
     workflow: {
       maxTotalNodeInvocations: 14,
@@ -174,8 +173,7 @@ vi.mock("@core/utils/persistence/workflow/registerWorkflow", () => ({
 // Import after mocks to avoid hoisting issues
 import { Genome } from "@core/improvement/gp/Genome"
 import { createDummyGenome } from "@core/improvement/gp/rsc/debug/dummyGenome"
-import type { WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
-import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
+import type { EvolutionContext, WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
 import { workflowConfigToGenome } from "@core/improvement/gp/rsc/wrappers"
 
 import type { EvaluationCSV, EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -242,7 +240,8 @@ describe("Genome", () => {
               nodeId: "dummy-node",
               description: "dummy node",
               systemPrompt: "dummy system prompt",
-              modelName: getDefaultModels().default,
+              gatewayModelId: "gpt-4o-mini",
+              gateway: "openai-api" as const,
               mcpTools: [],
               codeTools: [],
               handOffs: [],

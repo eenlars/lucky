@@ -116,7 +116,7 @@ const runInspector = defineTool({
                   cost: node.usd_cost,
                   summary: node.summary,
                   output: node.output,
-                  model: node.model,
+                  gatewayModelId: node.model,
                   files: node.files,
                   node_version: node.NodeVersion,
                   extras: node.extras,
@@ -180,7 +180,7 @@ const runInspector = defineTool({
                   end_time: node.end_time,
                   cost: node.usd_cost,
                   summary: node.summary,
-                  model: node.model,
+                  gatewayModelId: node.model,
                   system_prompt: node.NodeVersion?.system_prompt,
                   tools: node.NodeVersion?.tools,
                   output_preview:
@@ -224,7 +224,7 @@ const runInspector = defineTool({
               node_id: node.node_id,
               node_invocation_id: node.node_invocation_id,
               cost: node.usd_cost || 0,
-              model: node.model,
+              gatewayModelId: node.model,
               start_time: node.start_time,
               end_time: node.end_time,
             })) || []

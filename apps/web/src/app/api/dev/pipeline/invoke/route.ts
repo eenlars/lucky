@@ -9,15 +9,15 @@ import { withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { MODEL_CATALOG } from "@lucky/models"
-import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
+import { type LuckyGateway, type WorkflowNodeConfig, genShortId } from "@lucky/shared"
 import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 // Types for the API
 interface PipelineTestRequest {
   systemPrompt: string
-  provider: string
-  modelName: string
+  gateway: LuckyGateway
+  gatewayModelId: string
   maxSteps?: number
   codeTools: string[]
   mcpTools: string[]
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as PipelineTestRequest
 
     // Validate required fields
-    if (!body.systemPrompt || !body.provider || !body.modelName || !body.message) {
+    if (!body.systemPrompt || !body.gateway || !body.gatewayModelId || !body.message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -50,11 +50,6 @@ export async function POST(request: Request) {
     const nodeId = `test-pipeline-${Date.now()}`
     const workflowVersionId = `wf_dev_test_${Date.now()}`
     const workflowId = "dev-test-workflow"
-
-    // Build full model identifier: provider#model
-    // Check if modelName already includes provider prefix (from catalog)
-    // If it does, use it as-is; otherwise add the prefix
-    const fullModelId = body.modelName.includes("#") ? body.modelName : `${body.provider}#${body.modelName}`
 
     // Simple execution context for dev testing
     // Uses server environment variables for API keys
@@ -65,12 +60,12 @@ export async function POST(request: Request) {
     if (process.env.ANTHROPIC_API_KEY) devApiKeys.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 
     // Validate that the required provider API key is available
-    const requiredProviderKey = `${body.provider.toUpperCase()}_API_KEY`
+    const requiredProviderKey = `${body.gateway.toUpperCase()}_API_KEY`
     if (!devApiKeys[requiredProviderKey]) {
       return NextResponse.json(
         {
           success: false,
-          error: `Provider "${body.provider}" is not configured. Missing ${requiredProviderKey} in environment variables.`,
+          error: `Provider "${body.gateway}" is not configured. Missing ${requiredProviderKey} in environment variables.`,
         },
         { status: 400 },
       )
@@ -84,7 +79,7 @@ export async function POST(request: Request) {
       nodeId,
       description: "Pipeline test node",
       systemPrompt: body.systemPrompt,
-      modelName: fullModelId,
+      gatewayModelId: body.gatewayModelId,
       mcpTools: body.mcpTools,
       codeTools: body.codeTools,
       handOffs: ["end"], // Pipeline needs at least one handoff target
@@ -98,12 +93,12 @@ export async function POST(request: Request) {
     const observer = new AgentObserver()
     ObserverRegistry.getInstance().register(randomId, observer)
 
-    const llmRegistry = getServerLLMRegistry()
+    const llmRegistry = await getServerLLMRegistry()
 
     const userModels = llmRegistry.forUser({
       mode: "shared",
       userId: userId,
-      models: MODEL_CATALOG.map(i => i.id),
+      models: MODEL_CATALOG.map(i => i.gatewayModelId),
     })
 
     const result = await withExecutionContext(
@@ -133,7 +128,7 @@ export async function POST(request: Request) {
                 {
                   nodeId,
                   systemPrompt: body.systemPrompt,
-                  modelName: fullModelId,
+                  gatewayModelId: body.gatewayModelId,
                   codeTools: body.codeTools,
                   mcpTools: body.mcpTools,
                 },
@@ -145,10 +140,7 @@ export async function POST(request: Request) {
           await persistence.createWorkflowInvocation({
             workflowInvocationId: invocationId,
             workflowVersionId,
-            metadata: {
-              provider: body.provider,
-              model: body.modelName,
-            },
+            metadata: {},
             workflowInput: body.message,
           })
 

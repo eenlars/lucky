@@ -1,14 +1,14 @@
-import { getActiveModelNames } from "@core/utils/spending/functions"
+import { getActiveGatewayModelIds } from "@core/utils/spending/functions"
 import { findModel } from "@lucky/models"
 
 // model utilities - use new providersV2 system
 const getActiveModels = (): ReadonlyArray<string> => {
-  return getActiveModelNames()
+  return getActiveGatewayModelIds()
 }
 
 const getActiveModelsWithInfo = (): string => {
   return getActiveModels()
-    .map(model => `modelName:${model},metadata:${findModel(model)}`)
+    .map(model => `gatewayModelId:${model},metadata:${findModel(model)}`)
     .join(";")
 }
 

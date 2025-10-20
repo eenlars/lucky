@@ -31,8 +31,8 @@ export interface ModelFiltersProps {
 export interface ModelGridProps {
   models: EnrichedModelInfo[]
   enabledModels: Set<string>
-  onToggleModel: (modelName: string) => void
-  onBulkToggleModels: (modelNames: string[], enable: boolean) => void
+  onToggleModel: (gatewayModelId: string) => void
+  onBulkToggleModels: (gatewayModelIds: string[], enable: boolean) => void
   isLoading?: boolean
 }
 

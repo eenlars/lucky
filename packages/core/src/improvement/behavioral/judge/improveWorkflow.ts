@@ -40,7 +40,7 @@ export async function improveWorkflowUnified(params: UnifiedImprovementParams): 
   const inputConfig = sanitizeConfigTools(config)
 
   const { data, success, error, usdCost } = await sendAI({
-    // watch out: this is without the easyModelNames option!
+    // watch out: this is without the tierMappingEnabled option!
     messages: WorkflowEvolutionPrompts.createJudgePrompt(inputConfig, fitness, feedback),
     model: getDefaultModels().reasoning,
     mode: "structured",

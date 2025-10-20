@@ -29,35 +29,38 @@ export async function selectToolStrategyV3<T extends ToolSet>(
   strategyResult: StrategyResult<T> // the result of the strategy
   debugPrompt: string // debugprompt is to check what has been sent to the model.
 }> {
-  const { tools, identityPrompt, agentSteps, roundsLeft, systemMessage, model } = options
+  const { tools, identityPrompt, agentSteps, roundsLeft, systemMessage, gatewayModelId } = options
 
   const shortHash = (s: string) => createHash("sha256").update(s).digest("hex").slice(0, 8)
 
-  return obs.span("strategy.selectTool.v3", { model: String(model), rounds_left: roundsLeft ?? 0 }, async () => {
-    if (isNir(tools) || Object.keys(tools).length === 0) {
-      // this should never happen.
-      lgg.error("No tools available.", { tools, identityPrompt, roundsLeft })
-      const result: StrategyResult<T> = {
-        type: "terminate",
-        reasoning: "No tools available.",
-        usdCost: 0,
+  return obs.span(
+    "strategy.selectTool.v3",
+    { gatewayModelId: String(gatewayModelId), rounds_left: roundsLeft ?? 0 },
+    async () => {
+      if (isNir(tools) || Object.keys(tools).length === 0) {
+        // this should never happen.
+        lgg.error("No tools available.", { tools, identityPrompt, roundsLeft })
+        const result: StrategyResult<T> = {
+          type: "terminate",
+          reasoning: "No tools available.",
+          usdCost: 0,
+        }
+        obs.event("strategy.selectTool:decision", {
+          type: result.type,
+          cost_usd: result.usdCost,
+        })
+        return { strategyResult: result, debugPrompt: "" }
       }
-      obs.event("strategy.selectTool:decision", {
-        type: result.type,
-        cost_usd: result.usdCost,
-      })
-      return { strategyResult: result, debugPrompt: "" }
-    }
 
-    let agentStepsString = ""
-    let agentStepsAnalysis: string | null = null
+      let agentStepsString = ""
+      let agentStepsAnalysis: string | null = null
 
-    if (!isNir(agentSteps)) {
-      agentStepsString = toolUsageToString(agentSteps, 1000, {
-        includeArgs: true,
-      })
-      agentStepsAnalysis = await askLLM(
-        `
+      if (!isNir(agentSteps)) {
+        agentStepsString = toolUsageToString(agentSteps, 1000, {
+          includeArgs: true,
+        })
+        agentStepsAnalysis = await askLLM(
+          `
           # role
           you are the trace observer.
           - you talk as if you are talking to someone who has no idea what is going on.
@@ -95,56 +98,56 @@ export async function selectToolStrategyV3<T extends ToolSet>(
           2. We see that the tool call to 'doGoogleSearch' was done, even though not allowed. (observation)
             - from the instructions, it says we can only find a recipe from italy (specific explanation)
           `,
-        1,
-        `
+          1,
+          `
           first show the full trace until now. 
           then do a maximum 2 observations that would aid in next tool calls to make a good decision,
           keep it as concise and dense as possible
           `,
-      )
-    } else {
-      agentStepsString = "no past calls"
-    }
-
-    const toolKeys = Object.keys(tools) as (keyof T)[]
-
-    // Use provided system message as primary directive
-    const primaryInstruction = systemMessage
-
-    // Define schema for structured output (V3 with mutation observer support)
-    // Require toolName when type === "tool" to avoid invalid selections
-    const DecisionSchemaV3 = z.discriminatedUnion("type", [
-      z.object({
-        type: z.literal("terminate"),
-        reasoning: z.string(),
-        plan: z.string().optional(),
-        check: z.string().nullable().optional(),
-        expectsMutation: z.boolean().optional(),
-      }),
-      z.object({
-        type: z.literal("tool"),
-        toolName: toolKeys.length > 0 ? z.enum(toolKeys as [string, ...string[]]) : z.string(),
-        reasoning: z.string(),
-        plan: z.string().optional(),
-        check: z.string().nullable().optional(),
-        expectsMutation: z.boolean().optional(),
-      }),
-    ])
-
-    // Check if previous reasoning indicated mutation expectation
-    let previousToolExpectedMutation = false
-    if (agentSteps && agentSteps.length > 0) {
-      const lastReasoningLog = agentSteps.findLast(log => log.type === "reasoning")
-      if (lastReasoningLog?.return.includes("[EXPECTS_MUTATION]")) {
-        previousToolExpectedMutation = true
+        )
+      } else {
+        agentStepsString = "no past calls"
       }
-    }
 
-    // Analysis prompt
-    const analysisMessages: ModelMessage[] = [
-      {
-        role: "system",
-        content: `
+      const toolKeys = Object.keys(tools) as (keyof T)[]
+
+      // Use provided system message as primary directive
+      const primaryInstruction = systemMessage
+
+      // Define schema for structured output (V3 with mutation observer support)
+      // Require toolName when type === "tool" to avoid invalid selections
+      const DecisionSchemaV3 = z.discriminatedUnion("type", [
+        z.object({
+          type: z.literal("terminate"),
+          reasoning: z.string(),
+          plan: z.string().optional(),
+          check: z.string().nullable().optional(),
+          expectsMutation: z.boolean().optional(),
+        }),
+        z.object({
+          type: z.literal("tool"),
+          toolName: toolKeys.length > 0 ? z.enum(toolKeys as [string, ...string[]]) : z.string(),
+          reasoning: z.string(),
+          plan: z.string().optional(),
+          check: z.string().nullable().optional(),
+          expectsMutation: z.boolean().optional(),
+        }),
+      ])
+
+      // Check if previous reasoning indicated mutation expectation
+      let previousToolExpectedMutation = false
+      if (agentSteps && agentSteps.length > 0) {
+        const lastReasoningLog = agentSteps.findLast(log => log.type === "reasoning")
+        if (lastReasoningLog?.return.includes("[EXPECTS_MUTATION]")) {
+          previousToolExpectedMutation = true
+        }
+      }
+
+      // Analysis prompt
+      const analysisMessages: ModelMessage[] = [
+        {
+          role: "system",
+          content: `
       OBJECTIVE
       - You should make the optimal decision on how to go forward to get closer to achieving our task.
       - Follow the Primary Instruction strictly.
@@ -205,55 +208,87 @@ export async function selectToolStrategyV3<T extends ToolSet>(
       - No commentary.
       - No extra fields.
     `,
-      },
-      {
-        role: "user",
-        content: `
+        },
+        {
+          role: "user",
+          content: `
       Available tools:\n${explainTools(tools)}
     `,
-      },
-    ]
-
-    const debugPrompt = analysisMessages.map(m => m.content).join("\n")
-    obs.event("strategy.selectTool:prompt", {
-      length: debugPrompt.length,
-      hash: shortHash(debugPrompt),
-    })
-
-    console.log(debugPrompt)
-
-    try {
-      const {
-        success,
-        data: decision,
-        usdCost,
-        error,
-      } = await sendAI({
-        model,
-        messages: analysisMessages,
-        mode: "structured",
-        schema: DecisionSchemaV3,
-        opts: {
-          reasoning: false,
         },
+      ]
+
+      const debugPrompt = analysisMessages.map(m => m.content).join("\n")
+      obs.event("strategy.selectTool:prompt", {
+        length: debugPrompt.length,
+        hash: shortHash(debugPrompt),
       })
 
-      if (success && decision) {
-        if (decision.plan && (verbose || verboseOverride)) {
-          console.log(chalk.bold("decision:", JSON.stringify(decision, null, 2)))
-          // console.log(chalk.blueBright.bold("plan:", decision.plan))
-          // console.log(chalk.blueBright.bold("reasoning:", decision.reasoning))
-          // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
+      console.log(debugPrompt)
 
-          // console.log(chalk.yellow.bold("agentSteps:", agentSteps))
-          // console.log(chalk.cyan.bold("model:", model))
-          // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
-        }
+      try {
+        const {
+          success,
+          data: decision,
+          usdCost,
+          error,
+        } = await sendAI({
+          model: gatewayModelId,
+          messages: analysisMessages,
+          mode: "structured",
+          schema: DecisionSchemaV3,
+          opts: {
+            reasoning: false,
+          },
+        })
 
-        if (decision.type === "terminate") {
+        if (success && decision) {
+          if (decision.plan && (verbose || verboseOverride)) {
+            console.log(chalk.bold("decision:", JSON.stringify(decision, null, 2)))
+            // console.log(chalk.blueBright.bold("plan:", decision.plan))
+            // console.log(chalk.blueBright.bold("reasoning:", decision.reasoning))
+            // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
+
+            // console.log(chalk.yellow.bold("agentSteps:", agentSteps))
+            // console.log(chalk.cyan.bold("gatewayModelId:", model))
+            // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
+          }
+
+          if (decision.type === "terminate") {
+            const result: StrategyResult<T> = {
+              type: "terminate",
+              reasoning: decision.reasoning,
+              usdCost: usdCost ?? 0,
+            }
+            obs.event("strategy.selectTool:decision", {
+              type: result.type,
+              cost_usd: result.usdCost,
+            })
+            return { strategyResult: result, debugPrompt }
+          }
+
+          //likely bug: toolKeys.includes() check may fail due to type casting issues
+          if (decision.type === "tool" && decision.toolName && String(decision.toolName) in tools) {
+            const result: StrategyResult<T> = {
+              type: "tool",
+              toolName: decision.toolName as keyof T,
+              reasoning: decision.reasoning,
+              plan: decision.plan || "",
+              check: decision.check || undefined,
+              expectsMutation: decision.expectsMutation,
+              usdCost: usdCost ?? 0,
+            }
+            obs.event("strategy.selectTool:decision", {
+              type: result.type,
+              tool: (result as any).toolName,
+              cost_usd: (result as any).usdCost ?? 0,
+            })
+            return { strategyResult: result, debugPrompt }
+          }
+
+          // Invalid toolName
           const result: StrategyResult<T> = {
             type: "terminate",
-            reasoning: decision.reasoning,
+            reasoning: `Invalid tool selected: ${decision.toolName}`,
             usdCost: usdCost ?? 0,
           }
           obs.event("strategy.selectTool:decision", {
@@ -263,29 +298,10 @@ export async function selectToolStrategyV3<T extends ToolSet>(
           return { strategyResult: result, debugPrompt }
         }
 
-        //likely bug: toolKeys.includes() check may fail due to type casting issues
-        if (decision.type === "tool" && decision.toolName && String(decision.toolName) in tools) {
-          const result: StrategyResult<T> = {
-            type: "tool",
-            toolName: decision.toolName as keyof T,
-            reasoning: decision.reasoning,
-            plan: decision.plan || "",
-            check: decision.check || undefined,
-            expectsMutation: decision.expectsMutation,
-            usdCost: usdCost ?? 0,
-          }
-          obs.event("strategy.selectTool:decision", {
-            type: result.type,
-            tool: (result as any).toolName,
-            cost_usd: (result as any).usdCost ?? 0,
-          })
-          return { strategyResult: result, debugPrompt }
-        }
-
-        // Invalid toolName
+        // Handle failed request case
         const result: StrategyResult<T> = {
-          type: "terminate",
-          reasoning: `Invalid tool selected: ${decision.toolName}`,
+          type: "error",
+          reasoning: error ?? "Unknown error",
           usdCost: usdCost ?? 0,
         }
         obs.event("strategy.selectTool:decision", {
@@ -293,38 +309,26 @@ export async function selectToolStrategyV3<T extends ToolSet>(
           cost_usd: result.usdCost,
         })
         return { strategyResult: result, debugPrompt }
+      } catch (error) {
+        lgg.error("Error in selectToolStrategyV3:", error)
+        let message = "Error in strategy selection."
+        if (typeof error === "string") {
+          message = error
+        }
+        if (error instanceof Error) {
+          message = error.message
+        }
+        const result: StrategyResult<T> = {
+          type: "error",
+          reasoning: message,
+          usdCost: 0,
+        }
+        obs.event("strategy.selectTool:decision", {
+          type: result.type,
+          cost_usd: result.usdCost,
+        })
+        return { strategyResult: result, debugPrompt }
       }
-
-      // Handle failed request case
-      const result: StrategyResult<T> = {
-        type: "error",
-        reasoning: error ?? "Unknown error",
-        usdCost: usdCost ?? 0,
-      }
-      obs.event("strategy.selectTool:decision", {
-        type: result.type,
-        cost_usd: result.usdCost,
-      })
-      return { strategyResult: result, debugPrompt }
-    } catch (error) {
-      lgg.error("Error in selectToolStrategyV3:", error)
-      let message = "Error in strategy selection."
-      if (typeof error === "string") {
-        message = error
-      }
-      if (error instanceof Error) {
-        message = error.message
-      }
-      const result: StrategyResult<T> = {
-        type: "error",
-        reasoning: message,
-        usdCost: 0,
-      }
-      obs.event("strategy.selectTool:decision", {
-        type: result.type,
-        cost_usd: result.usdCost,
-      })
-      return { strategyResult: result, debugPrompt }
-    }
-  })
+    },
+  )
 }

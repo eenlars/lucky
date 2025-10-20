@@ -14,7 +14,7 @@ function initCoreOnce() {
   initCoreConfig({
     paths: PATHS,
     models: {
-      provider: CONFIG.models.provider,
+      gateway: CONFIG.models.gateway,
       defaults: MODELS,
       inactive: CONFIG.models.inactive,
     },
@@ -73,7 +73,7 @@ describe("AI pipeline smoke (isolation)", () => {
           nodeId: "main",
           description: "Main workflow node",
           systemPrompt: "You are a helpful assistant. Complete the task as requested.",
-          modelName: "gpt-4.1-mini", // legacy format
+          gatewayModelId: "gpt-4.1-mini", // legacy format
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -105,7 +105,7 @@ describe("AI pipeline smoke (isolation)", () => {
       throw new Error(`formalizeWorkflow failed: ${result?.error}`)
     }
 
-    const normalizedModels = result.data.nodes.map(node => node.modelName)
+    const normalizedModels = result.data.nodes.map(node => node.gatewayModelId)
     for (const model of normalizedModels) {
       expect(findModel(model)).toBeTruthy()
       expect(model).toMatch(/^[^#]+#[^#]+$/)

@@ -8,7 +8,7 @@ export interface ModelFilters {
   minIntelligence?: number
   maxIntelligence?: number
   speed?: ModelSpeed
-  providers?: string[]
+  gateways?: string[]
   capabilities?: string[] // all must be present if provided
   minContextLength?: number
   maxContextLength?: number
@@ -30,7 +30,7 @@ export interface FindModelOptions {
   filters?: ModelFilters
   sort?: ModelSort
   searchSet?: ModelEntry[]
-  /** simple substring match across NON-model fields (provider, id, description, regions, capabilities, pricingTier, speed, supports) */
+  /** simple substring match across NON-model fields (gateway, id, description, regions, capabilities, pricingTier, speed, supports) */
   searchText?: string
   limit?: number
   offset?: number
@@ -58,8 +58,8 @@ function priceScore(m: ModelEntry): number {
 }
 
 function alphaKey(m: WithNormalized): string {
-  const prov = (m.provider || "").toLowerCase()
-  const mdl = (m.model || "").toLowerCase()
+  const prov = (m.gateway || "").toLowerCase()
+  const mdl = (m.gatewayModelId || "").toLowerCase()
   return `${prov}#${mdl}`
 }
 
@@ -82,9 +82,9 @@ function matchesFilters(m: WithNormalized, f?: ModelFilters): boolean {
 
   if (f.speed && m.speed !== f.speed) return false
 
-  if (f.providers && f.providers.length > 0) {
-    const want = new Set(f.providers.map(p => p.toLowerCase()))
-    const have = (m.provider || "").toLowerCase()
+  if (f.gateways && f.gateways.length > 0) {
+    const want = new Set(f.gateways.map(p => p.toLowerCase()))
+    const have = (m.gateway || "").toLowerCase()
     if (!want.has(have)) return false
   }
 
@@ -137,10 +137,10 @@ function matchesSearchText(m: WithNormalized, q?: string): boolean {
   if (!q) return true
   const needle = q.toLowerCase()
 
-  const provider = (m.provider || "").toLowerCase()
-  if (provider.includes(needle)) return true
+  const gateway = (m.gateway || "").toLowerCase()
+  if (gateway.includes(needle)) return true
 
-  const id = (m.id || "").toLowerCase()
+  const id = (m.gatewayModelId || "").toLowerCase()
   if (id.includes(needle)) return true
 
   const desc = (m.description || "").toLowerCase()
@@ -263,7 +263,7 @@ export function findModels(options: FindModelOptions = {}): ModelEntry[] {
   const sortDir = options.sortDir
 
   const raw = searchSet ?? getCatalog()
-  const normalized: WithNormalized[] = raw.map(m => findModel(m.id) as WithNormalized)
+  const normalized: WithNormalized[] = raw.map(m => findModel(m.gatewayModelId) as WithNormalized)
 
   let models = normalized.filter(m => matchesFilters(m, filters))
   if (searchText && searchText.trim() !== "") {

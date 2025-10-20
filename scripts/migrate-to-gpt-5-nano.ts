@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * Script to migrate ALL database model configurations to openai#gpt-5-nano
+ * Script to migrate ALL database model configurations to gpt-5-nano
  *
  * This script updates:
  * 1. app.provider_settings.enabled_models (user model preferences) - APP SCHEMA
  * 2. public.NodeVersion.llm_model (historical node configurations) - PUBLIC SCHEMA
- * 3. public.WorkflowVersion.dsl (workflow configurations with modelName) - PUBLIC SCHEMA
+ * 3. public.WorkflowVersion.dsl (workflow configurations with gatewayModelId) - PUBLIC SCHEMA
  *
  * Note: Uses two different schemas:
  * - "app" schema: provider_settings
@@ -30,7 +30,7 @@ import { createClient } from "@supabase/supabase-js"
 // Configuration
 // ============================================================================
 
-const TARGET_MODEL = "openai#gpt-5-nano" // Catalog ID format (provider#model)
+const TARGET_MODEL = "gpt-5-nano" // Catalog ID format (provider#model)
 
 interface MigrationStats {
   providerSettings: {
@@ -131,7 +131,7 @@ async function migrateProviderSettings(dryRun: boolean): Promise<MigrationStats[
   for (const record of records) {
     const enabledModels = (record.enabled_models as string[]) || []
 
-    // Check if any model needs updating (anything that's not already openai#gpt-5-nano)
+    // Check if any model needs updating (anything that's not already gpt-5-nano)
     const needsUpdate = enabledModels.some(model => model !== TARGET_MODEL)
 
     if (needsUpdate) {
@@ -139,7 +139,7 @@ async function migrateProviderSettings(dryRun: boolean): Promise<MigrationStats[
       const newModels = [TARGET_MODEL] // Set to single model
 
       console.log(`   ${dryRun ? "[DRY RUN] Would update" : "Updating"} record ${record.provider_setting_id}:`)
-      console.log(`     Provider: ${record.provider}`)
+      console.log(`     Provider: ${record.gateway}`)
       console.log(`     Old models: ${JSON.stringify(enabledModels)}`)
       console.log(`     New models: ${JSON.stringify(newModels)}`)
 
@@ -258,13 +258,13 @@ async function migrateWorkflowVersions(dryRun: boolean): Promise<MigrationStats[
     let nodesUpdatedInWorkflow = 0
 
     const updatedNodes = dsl.nodes.map((node: any) => {
-      if (node.modelName && node.modelName !== TARGET_MODEL) {
+      if (node.gatewayModelId && node.gatewayModelId !== TARGET_MODEL) {
         console.log(
-          `     ${dryRun ? "[DRY RUN] Would update" : "Updating"} node ${node.nodeId}: ${node.modelName} → ${TARGET_MODEL}`,
+          `     ${dryRun ? "[DRY RUN] Would update" : "Updating"} node ${node.nodeId}: ${node.gatewayModelId} → ${TARGET_MODEL}`,
         )
         workflowNeedsUpdate = true
         nodesUpdatedInWorkflow++
-        return { ...node, modelName: TARGET_MODEL }
+        return { ...node, gatewayModelId: TARGET_MODEL }
       }
       return node
     })
@@ -310,7 +310,7 @@ async function migrateWorkflowVersions(dryRun: boolean): Promise<MigrationStats[
 
 async function migrate(options: { dryRun: boolean; createBackup: boolean }) {
   console.log("🚀 Starting model configuration migration")
-  console.log(`   Target model: ${TARGET_MODEL}`)
+  console.log(`   Target gatewayModelId: ${TARGET_MODEL}`)
   console.log(`   Mode: ${options.dryRun ? "DRY RUN (no changes will be made)" : "EXECUTE (changes will be applied)"}`)
   console.log("")
 

@@ -9,7 +9,7 @@ export const createWorkflowPrompt = `Create a workflow as a directed acyclic gra
       "nodeId": "string",                    // unique id; MUST NOT be "end"
       "description": "string",               // description of the node
       "systemPrompt": "string",              // system prompt for the node
-      "modelName": "ModelName",              // e.g. openrouter#openai/gpt-4.1-mini, openrouter#google/gemini-2.5-flash-lite
+      "gatewayModelId": "GatewayModelId",              // e.g. openai/gpt-4.1-mini, google/gemini-2.5-flash-lite
       "mcpTools": ["MCPToolName"],           // mcp tools to use (not code tools)
       "codeTools": ["CodeToolName"],         // code tools to use
       "handOffs": ["string"],                // next targets by node-id; MAY include "end" (except for parallel; see below)

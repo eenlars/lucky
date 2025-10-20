@@ -24,7 +24,7 @@ export const ChatRequestSchema = z
         { message: "Invalid message format" },
       ),
     nodeId: z.string().min(1, "nodeId cannot be empty").max(200),
-    modelName: z.string().max(200).optional(),
+    gatewayModelId: z.string().max(200).optional(),
     systemPrompt: z.string().max(10000, "System prompt is too long").optional(),
   })
   .strict()
@@ -32,7 +32,7 @@ export const ChatRequestSchema = z
 export type ChatRequest = z.infer<typeof ChatRequestSchema>
 
 export type ProviderSettingsRow = {
-  provider: string | null
+  gateway: string | null
   enabled_models: unknown
   is_enabled: boolean | null
 }

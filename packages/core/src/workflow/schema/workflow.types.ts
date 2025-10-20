@@ -5,16 +5,18 @@ import type { CodeToolName, MCPToolName } from "@lucky/tools"
 // Import SDK config type - can be removed cleanly when ejecting SDK
 // @sdk-import - marker for easy removal
 import type { ClaudeSDKConfig } from "@core/tools/claude-sdk/types"
+import type { LuckyGateway } from "@lucky/shared"
 
 /**
  * Declarative configuration for a single workflow node.
  * Extends the base contract with specific types for models and tools.
- * Note: Using string for modelName instead of AnyModelName to avoid TypeScript memory issues.
+ * Note: Using string for gatewayModelId instead of AnyGatewayModelId to avoid TypeScript memory issues.
  * Runtime validation is handled by Zod schemas in contracts package.
  */
 export interface WorkflowNodeConfig
-  extends Omit<WorkflowNodeConfigBase, "modelName" | "mcpTools" | "codeTools" | "sdkConfig"> {
-  modelName: string
+  extends Omit<WorkflowNodeConfigBase, "gatewayModelId" | "mcpTools" | "codeTools" | "sdkConfig"> {
+  gatewayModelId: string
+  gateway: LuckyGateway
   mcpTools: MCPToolName[]
   codeTools: CodeToolName[]
   sdkConfig?: ClaudeSDKConfig // SDK-specific configuration
@@ -42,7 +44,7 @@ export const isWorkflowConfig = (config: unknown): config is WorkflowConfig => {
     if (typeof node.nodeId !== "string") return false
     if (typeof node.description !== "string") return false
     if (typeof node.systemPrompt !== "string") return false
-    if (typeof node.modelName !== "string") return false
+    if (typeof node.gatewayModelId !== "string") return false
     if (!Array.isArray(node.mcpTools)) return false
     if (!Array.isArray(node.codeTools)) return false
     if (!Array.isArray(node.handOffs)) return false

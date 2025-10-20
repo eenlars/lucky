@@ -32,8 +32,8 @@ export async function verifyOneNode(node: WorkflowNodeConfig): Promise<Verificat
     missingFields.push("systemPrompt")
   }
 
-  if (!node.modelName) {
-    missingFields.push("modelName")
+  if (!node.gatewayModelId) {
+    missingFields.push("gatewayModelId")
   }
 
   if (!node.mcpTools) {

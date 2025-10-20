@@ -1,5 +1,7 @@
 import { logException } from "@/lib/error-logger"
-import { PROVIDERS, getProviderInfo } from "@lucky/models"
+import { getGatewayInfo } from "@lucky/models"
+import { GATEWAYS } from "@lucky/models/llm-catalog/providers"
+import type { LuckyGateway } from "@lucky/shared/contracts/llm-contracts/providers"
 import type { LucideIcon } from "lucide-react"
 import { Bot } from "lucide-react"
 
@@ -30,14 +32,14 @@ const PROVIDER_METADATA: Record<
   string,
   Omit<ProviderConfig, "slug" | "defaultModelsCount" | "secretKeyName" | "apiKeyValuePrefix">
 > = {
-  openai: {
+  "openai-api": {
     name: "OpenAI",
     description: "Direct access to GPT models from OpenAI",
     logo: "/logos/openai.svg",
     docsUrl: "https://platform.openai.com/docs",
     keysUrl: "https://platform.openai.com/api-keys",
   },
-  groq: {
+  "groq-api": {
     name: "Groq",
     description: "Ultra-fast inference with Groq's LPU",
     logo: "/logos/groq.svg",
@@ -45,7 +47,7 @@ const PROVIDER_METADATA: Record<
     keysUrl: "https://console.groq.com/keys",
     disabled: !isDevelopment, // Enabled in development
   },
-  openrouter: {
+  "openrouter-api": {
     name: "OpenRouter",
     description: "Access to 100+ models from multiple providers",
     logo: "/logos/openrouter.svg",
@@ -60,12 +62,12 @@ const PROVIDER_METADATA: Record<
  * This merges static metadata with dynamic model counts from the catalog
  */
 export function getProviderConfigs(): Record<string, ProviderConfig> {
-  const providerInfo = getProviderInfo()
+  const providerInfo = getGatewayInfo()
   const configs: Record<string, ProviderConfig> = {}
 
   for (const info of providerInfo) {
     const metadata = PROVIDER_METADATA[info.name]
-    const providerEntry = PROVIDERS.find(p => p.provider === info.name)
+    const providerEntry = GATEWAYS.find(p => p.gateway === info.name)
 
     if (metadata && providerEntry) {
       configs[info.name] = {
@@ -97,21 +99,19 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
 /**
  * Helper: return provider slugs for configurations that are not disabled
  */
-export function getEnabledProviderSlugs(configs: Record<string, ProviderConfig> = getProviderConfigs()): string[] {
-  return Object.entries(configs)
-    .filter(([, config]) => !config.disabled)
-    .map(([slug]) => slug)
+export function getEnabledGatewaySlugs(configs: Record<string, ProviderConfig> = getProviderConfigs()): string[] {
+  return Object.keys(configs).filter(gateway => !configs[gateway].disabled)
 }
 
-export function validateApiKey(provider: string, apiKey: string): { valid: boolean; error?: string } {
+export function validateApiKey(gateway: LuckyGateway, apiKey: string): { valid: boolean; error?: string } {
   if (!apiKey || !apiKey.trim()) {
     return { valid: false, error: "API key cannot be empty" }
   }
 
-  const config = getProviderConfigs()[provider]
+  const config = getProviderConfigs()[gateway]
 
   if (!config) {
-    return { valid: false, error: `Unknown provider: ${provider}` }
+    return { valid: false, error: `Unknown  ${gateway}` }
   }
 
   // Skip prefix check if provider has no prefix defined
@@ -143,14 +143,14 @@ export function validateApiKey(provider: string, apiKey: string): { valid: boole
 }
 
 export async function testConnection(
-  provider: string,
+  gateway: LuckyGateway,
   apiKey: string,
 ): Promise<{ success: boolean; error?: string; modelCount?: number }> {
   try {
     const response = await fetch("/api/providers/test-connection", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ provider, apiKey }),
+      body: JSON.stringify({ gateway, apiKey }),
     })
 
     const result = await response.json()

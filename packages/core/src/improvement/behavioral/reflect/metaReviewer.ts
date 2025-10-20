@@ -4,8 +4,7 @@ import { FitnessOfWorkflowSchema } from "@core/evaluation/calculate-fitness/fitn
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import type { OutputSchema } from "@core/workflow/ingestion/ingestion.types"
-import { JSONN } from "@lucky/shared"
-import { R, type RS } from "@lucky/shared"
+import { JSONN, R, type RS } from "@lucky/shared"
 
 /**
  * Evaluates the quality of a critique by comparing it to the meta agent's assessment

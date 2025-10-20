@@ -32,7 +32,7 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
   }
 
   // Get recommended model names
-  const recommendedModelNames = useMemo(() => getRecommendedModels(models), [models])
+  const recommendedGatewayModelIds = useMemo(() => getRecommendedModels(models), [models])
 
   // Apply preset filters
   const presetFilters = useMemo(() => applyPreset(activePreset), [activePreset])
@@ -52,7 +52,7 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
 
     // Special handling for "recommended" preset - only show recommended models
     if (activePreset === "recommended") {
-      filtered = filtered.filter(m => recommendedModelNames.includes(m.name))
+      filtered = filtered.filter(m => recommendedGatewayModelIds.includes(m.gatewayModelId))
     }
 
     // Sort enabled models to top only on initial load, not after user interaction
@@ -62,28 +62,32 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
 
     // After user interaction, maintain stable sort order (don't move enabled to top)
     return sortModels(filtered, "recommended", models)
-  }, [models, filters, activePreset, recommendedModelNames, enabledModels, hasUserInteracted])
+  }, [models, filters, activePreset, recommendedGatewayModelIds, enabledModels, hasUserInteracted])
 
   // Bulk actions
   const handleEnableRecommended = () => {
     // Map model names to full IDs for models that are recommended but not enabled
     const recommendedModelIds = models
-      .filter(m => recommendedModelNames.includes(m.name) && !enabledModels.has(m.id))
-      .map(m => m.id)
+      .filter(m => recommendedGatewayModelIds.includes(m.gatewayModelId) && !enabledModels.has(m.gatewayModelId))
+      .map(m => m.gatewayModelId)
     if (recommendedModelIds.length > 0) {
       handleBulkToggle(recommendedModelIds, true)
     }
   }
 
   const handleEnableAll = () => {
-    const modelsToEnable = filteredAndSortedModels.filter(m => !enabledModels.has(m.id)).map(m => m.id)
+    const modelsToEnable = filteredAndSortedModels
+      .filter(m => !enabledModels.has(m.gatewayModelId))
+      .map(m => m.gatewayModelId)
     if (modelsToEnable.length > 0) {
       handleBulkToggle(modelsToEnable, true)
     }
   }
 
   const handleDisableAll = () => {
-    const modelsToDisable = filteredAndSortedModels.filter(m => enabledModels.has(m.id)).map(m => m.id)
+    const modelsToDisable = filteredAndSortedModels
+      .filter(m => enabledModels.has(m.gatewayModelId))
+      .map(m => m.gatewayModelId)
     if (modelsToDisable.length > 0) {
       handleBulkToggle(modelsToDisable, false)
     }
@@ -157,11 +161,11 @@ export function ModelGrid({ models, enabledModels, onToggleModel, onBulkToggleMo
           {/* Model rows */}
           {filteredAndSortedModels.map(model => (
             <ModelCard
-              key={model.id}
+              key={model.gatewayModelId}
               model={model}
-              isEnabled={enabledModels.has(model.id)}
-              onToggle={() => handleToggleModel(model.id)}
-              isRecommended={isModelRecommended(model.name, models)}
+              isEnabled={enabledModels.has(model.gatewayModelId)}
+              onToggle={() => handleToggleModel(model.gatewayModelId)}
+              isRecommended={isModelRecommended(model.gatewayModelId, models)}
             />
           ))}
         </div>

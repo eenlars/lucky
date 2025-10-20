@@ -77,15 +77,15 @@ export function normalizeError(error: unknown): NormalizedError {
     }
 
     // Provider-aware friendly messages
-    let provider: string | undefined
+    let gateway: string | undefined
     try {
       if (url) {
         const host = new URL(url).hostname
-        if (host.includes("openrouter.ai")) provider = "OpenRouter"
-        else if (host.includes("api.openai.com")) provider = "OpenAI"
-        else if (host.includes("api.groq.com")) provider = "Groq"
-        else if (host.includes("googleapis.com") || host.includes("generativelanguage")) provider = "Google"
-        else if (host.includes("anthropic.com")) provider = "Anthropic"
+        if (host.includes("openrouter.ai")) gateway = "openrouter-api"
+        else if (host.includes("api.openai.com")) gateway = "openai-api"
+        else if (host.includes("api.groq.com")) gateway = "groq-api"
+        else if (host.includes("googleapis.com") || host.includes("generativelanguage")) gateway = "google-api"
+        else if (host.includes("anthropic.com")) gateway = "anthropic-api"
       }
     } catch {}
 
@@ -93,31 +93,40 @@ export function normalizeError(error: unknown): NormalizedError {
       ? "Provider returned 200 with empty body (invalid JSON)."
       : extractedMessage || messageIn || "Upstream provider error"
 
+    // Convert gateway to display name for friendly messages
+    const gatewayDisplayName = gateway
+      ? gateway
+          .replace("-api", "")
+          .split("-")
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join("")
+      : undefined
+
     let friendly: string | undefined
     switch (statusCode) {
       case 401:
-        friendly = `${provider ? `${provider}: ` : ""}Authentication failed. Check your API key/credentials.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Authentication failed. Check your API key/credentials.`
         break
       case 402:
-        friendly = `${provider ? `${provider}: ` : ""}Insufficient credits or requested max tokens too high. Reduce max_tokens/maxTokens or add credits.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Insufficient credits or requested max tokens too high. Reduce max_tokens/maxTokens or add credits.`
         break
       case 403:
-        friendly = `${provider ? `${provider}: ` : ""}Access denied. The model or endpoint may be unavailable for your account.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Access denied. The model or endpoint may be unavailable for your account.`
         break
       case 404:
-        friendly = `${provider ? `${provider}: ` : ""}Endpoint or model not found.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Endpoint or model not found.`
         break
       case 408:
-        friendly = `${provider ? `${provider}: ` : ""}Request timed out. Please retry with a smaller prompt or later.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Request timed out. Please retry with a smaller prompt or later.`
         break
       case 429:
-        friendly = `${provider ? `${provider}: ` : ""}Rate limit exceeded. Slow down requests or upgrade your plan.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Rate limit exceeded. Slow down requests or upgrade your plan.`
         break
       case 500:
       case 502:
       case 503:
       case 504:
-        friendly = `${provider ? `${provider}: ` : ""}Service is temporarily unavailable. Please retry.`
+        friendly = `${gatewayDisplayName ? `${gatewayDisplayName}: ` : ""}Service is temporarily unavailable. Please retry.`
         break
       default:
         friendly = undefined
@@ -133,7 +142,7 @@ export function normalizeError(error: unknown): NormalizedError {
         url,
         responseHeaders,
         responseBodySnippet: body ? body.slice(0, 1000) : "",
-        provider,
+        gateway: gateway,
       },
     }
   }

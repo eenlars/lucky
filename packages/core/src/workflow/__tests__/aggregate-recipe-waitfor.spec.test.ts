@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { AggregatedPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 // TODO: Refactor test to use adapter pattern
@@ -19,7 +18,8 @@ const recipeAggregationConfig: WorkflowConfig = {
       description: "Entry node that receives a user request to aggregate three recipes into one combined recipe.",
       systemPrompt:
         "You are an assistant that understands the user's request to combine three different recipes into one aggregated recipe. Identify the recipes and prepare to fetch their details.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["fetch-recipe-1", "fetch-recipe-2", "fetch-recipe-3"],
@@ -30,7 +30,8 @@ const recipeAggregationConfig: WorkflowConfig = {
       description: "Fetch details of the first recipe to be aggregated.",
       systemPrompt:
         "Fetch and extract the full details of the first recipe including ingredients, steps, and cooking time.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["aggregate-recipes"],
@@ -40,7 +41,8 @@ const recipeAggregationConfig: WorkflowConfig = {
       description: "Fetch details of the second recipe to be aggregated.",
       systemPrompt:
         "Fetch and extract the full details of the second recipe including ingredients, steps, and cooking time.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["aggregate-recipes"],
@@ -50,7 +52,8 @@ const recipeAggregationConfig: WorkflowConfig = {
       description: "Fetch details of the third recipe to be aggregated.",
       systemPrompt:
         "Fetch and extract the full details of the third recipe including ingredients, steps, and cooking time.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["aggregate-recipes"],
@@ -61,7 +64,8 @@ const recipeAggregationConfig: WorkflowConfig = {
         "Aggregate the three fetched recipes into one combined recipe, merging ingredients and steps logically.",
       systemPrompt:
         "Combine the three recipes into one aggregated recipe. Merge ingredients lists, unify cooking steps, and optimize the recipe for clarity and efficiency.",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -127,7 +131,7 @@ describe.skip("Aggregate waitFor integration (recipe config)", () => {
           //   summary: `${nodeId} ok`,
           //   files: [],
           //   workflowVersionId: args.workflowVersionId,
-          //   model: nodeCfg.modelName,
+          //   model: nodeCfg.gatewayModelId,
           // })
 
           return {

@@ -29,10 +29,10 @@ import type { Principal } from "@lucky/shared"
 // Mock the AI SDK providers to prevent actual API calls
 vi.mock("@ai-sdk/openai", () => ({
   createOpenAI: vi.fn((config: { apiKey: string }) => {
-    return vi.fn((modelName: string) => ({
+    return vi.fn((gatewayModelId: string) => ({
       __provider: "openai",
       __apiKey: config.apiKey, // Store for verification
-      modelId: `openai#${modelName}`,
+      modelId: `${gatewayModelId}`,
       doGenerate: vi.fn(),
     }))
   }),
@@ -40,10 +40,10 @@ vi.mock("@ai-sdk/openai", () => ({
 
 vi.mock("@ai-sdk/groq", () => ({
   createGroq: vi.fn((config: { apiKey: string }) => {
-    return vi.fn((modelName: string) => ({
+    return vi.fn((gatewayModelId: string) => ({
       __provider: "groq",
       __apiKey: config.apiKey, // Store for verification
-      modelId: `groq#${modelName}`,
+      modelId: `${gatewayModelId}`,
       doGenerate: vi.fn(),
     }))
   }),
@@ -51,10 +51,10 @@ vi.mock("@ai-sdk/groq", () => ({
 
 vi.mock("@openrouter/ai-sdk-provider", () => ({
   createOpenRouter: vi.fn((config: { apiKey: string }) => {
-    return vi.fn((modelName: string) => ({
+    return vi.fn((gatewayModelId: string) => ({
       __provider: "openrouter",
       __apiKey: config.apiKey, // Store for verification
-      modelId: `openrouter#${modelName}`,
+      modelId: `${gatewayModelId}`,
       doGenerate: vi.fn(),
     }))
   }),
@@ -143,9 +143,9 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const models = llmRegistry.forUser({
           mode: "shared",
           userId: userAlice.clerk_id,
-          models: ["openai#gpt-4o-mini", "groq#llama-3.1-8b-instant"],
+          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
         })
-        const model = models.model("openai#gpt-4o-mini")
+        const model = models.model("gpt-4o-mini")
 
         // Verify: model instance uses Alice's lockbox key, NOT process.env
         expect((model as any).__apiKey).toBe("sk-alice-lockbox-openai-key-xyz")
@@ -169,9 +169,9 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const models = llmRegistry.forUser({
           mode: "shared",
           userId: userBob.clerk_id,
-          models: ["openai#gpt-4o-mini", "groq#llama-3.1-8b-instant"],
+          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
         })
-        const model = models.model("openai#gpt-4o-mini")
+        const model = models.model("gpt-4o-mini")
 
         // Verify: model uses Bob's lockbox key, NOT process.env
         expect((model as any).__apiKey).toBe("sk-bob-lockbox-openai-key-abc")
@@ -194,10 +194,10 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const models = llmRegistry.forUser({
           mode: "shared",
           userId: userAlice.clerk_id,
-          models: ["openai#gpt-4o-mini", "groq#llama-3.1-8b-instant"],
+          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
         })
-        const openaiModel = models.model("openai#gpt-4o-mini")
-        const groqModel = models.model("groq#llama-3.1-8b-instant")
+        const openaiModel = models.model("gpt-4o-mini")
+        const groqModel = models.model("llama-3.1-8b-instant")
 
         // CRITICAL: Verify process.env keys are NEVER used
         expect((openaiModel as any).__apiKey).not.toContain("process-env")
@@ -229,9 +229,9 @@ describe("BYOK Key Isolation - Security Critical", () => {
           const models = aliceRegistry.forUser({
             mode: "shared",
             userId: userAlice.clerk_id,
-            models: ["openai#gpt-4o-mini"],
+            models: ["gpt-4o-mini"],
           })
-          const model = models.model("openai#gpt-4o-mini")
+          const model = models.model("gpt-4o-mini")
           aliceModelKey = (model as any).__apiKey
         },
       )
@@ -250,9 +250,9 @@ describe("BYOK Key Isolation - Security Critical", () => {
           const models = bobRegistry.forUser({
             mode: "shared",
             userId: userBob.clerk_id,
-            models: ["openai#gpt-4o-mini"],
+            models: ["gpt-4o-mini"],
           })
-          const model = models.model("openai#gpt-4o-mini")
+          const model = models.model("gpt-4o-mini")
           bobModelKey = (model as any).__apiKey
         },
       )
@@ -286,9 +286,9 @@ describe("BYOK Key Isolation - Security Critical", () => {
               const models = registry.forUser({
                 mode: "shared",
                 userId: userAlice.clerk_id,
-                models: ["openai#gpt-4o-mini"],
+                models: ["gpt-4o-mini"],
               })
-              const model = models.model("openai#gpt-4o-mini")
+              const model = models.model("gpt-4o-mini")
               return (model as any).__apiKey
             },
           )
@@ -307,9 +307,9 @@ describe("BYOK Key Isolation - Security Critical", () => {
               const models = registry.forUser({
                 mode: "shared",
                 userId: userBob.clerk_id,
-                models: ["openai#gpt-4o-mini"],
+                models: ["gpt-4o-mini"],
               })
-              const model = models.model("openai#gpt-4o-mini")
+              const model = models.model("gpt-4o-mini")
               return (model as any).__apiKey
             },
           )
@@ -344,11 +344,11 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const userModels = llmRegistry.forUser({
           mode: "byok",
           userId: userAlice.clerk_id,
-          models: ["openai#gpt-4o-mini"],
+          models: ["gpt-4o-mini"],
           apiKeys: byokKeys,
         })
 
-        const model = userModels.model("openai#gpt-4o-mini")
+        const model = userModels.model("gpt-4o-mini")
 
         // Verify: BYOK mode uses the explicitly provided key, NOT the fallback (lockbox) key
         expect((model as any).__apiKey).toBe("sk-alice-explicit-byok-key-different")
@@ -370,10 +370,10 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const userModels = llmRegistry.forUser({
           mode: "shared",
           userId: userAlice.clerk_id,
-          models: ["openai#gpt-4o-mini"],
+          models: ["gpt-4o-mini"],
         })
 
-        const model = userModels.model("openai#gpt-4o-mini")
+        const model = userModels.model("gpt-4o-mini")
 
         // Verify: shared mode uses fallback keys (which are the user's lockbox keys)
         expect((model as any).__apiKey).toBe("sk-alice-lockbox-openai-key-xyz")
@@ -397,7 +397,7 @@ describe("BYOK Key Isolation - Security Critical", () => {
           llmRegistry.forUser({
             mode: "byok",
             userId: "attacker",
-            models: ["openai#gpt-4o-mini"],
+            models: ["gpt-4o-mini"],
             apiKeys: {}, // Empty - trying to access fallback
           }),
         ).toThrow("BYOK mode requires apiKeys")
@@ -421,15 +421,15 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const models = llmRegistry.forUser({
           mode: "shared",
           userId: userAlice.clerk_id,
-          models: ["openai#gpt-4o-mini", "groq#llama-3.1-8b-instant"],
+          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
         })
 
         // Verify: secretResolver was called for the user's keys
         expect(secrets.getAll).toHaveBeenCalledWith(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
 
         // Verify: models use the resolved keys
-        const openaiModel = models.model("openai#gpt-4o-mini")
-        const groqModel = models.model("groq#llama-3.1-8b-instant")
+        const openaiModel = models.model("gpt-4o-mini")
+        const groqModel = models.model("llama-3.1-8b-instant")
 
         expect((openaiModel as any).__apiKey).toBe(aliceLockboxKeys.OPENAI_API_KEY)
         expect((groqModel as any).__apiKey).toBe(aliceLockboxKeys.GROQ_API_KEY)
@@ -475,16 +475,16 @@ describe("BYOK Key Isolation - Security Critical", () => {
         const models = llmRegistry.forUser({
           mode: "shared",
           userId: userAlice.clerk_id,
-          models: ["openai#gpt-4o-mini", "groq#llama-3.1-8b-instant"],
+          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
         })
 
         // OpenAI works (user has key)
-        const openaiModel = models.model("openai#gpt-4o-mini")
+        const openaiModel = models.model("gpt-4o-mini")
         expect((openaiModel as any).__apiKey).toBe("sk-alice-openai-only")
 
         // GROQ fails gracefully (no provider configured)
         // It should NOT fall back to process.env
-        expect(() => models.model("groq#llama-3.1-8b-instant")).toThrow("Provider not configured: groq")
+        expect(() => models.model("llama-3.1-8b-instant")).toThrow("Provider not configured: groq")
       })
     })
 

@@ -12,7 +12,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers).toEqual(new Set(["openai"]))
+    expect(result.gateways).toEqual(new Set(["openai"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o", "gpt-4"])
     expect(result.fallbacksUsed.size).toBe(0)
   })
@@ -23,7 +23,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers).toEqual(new Set(["openai"]))
+    expect(result.gateways).toEqual(new Set(["openai"]))
     expect(result.models.get("openai")).toEqual(["gpt-3.5-turbo", "gpt-4o-mini"])
     expect(result.fallbacksUsed.size).toBe(1)
     expect(result.fallbacksUsed.get("openai")).toEqual({
@@ -38,7 +38,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers).toEqual(new Set(["openai"]))
+    expect(result.gateways).toEqual(new Set(["openai"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o"])
     expect(result.fallbacksUsed.size).toBe(0)
   })
@@ -52,7 +52,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers).toEqual(new Set(["openai"]))
+    expect(result.gateways).toEqual(new Set(["openai"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o"])
     expect(result.models.has("groq")).toBe(false)
   })
@@ -71,7 +71,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers).toEqual(new Set(["openai", "groq", "anthropic"]))
+    expect(result.gateways).toEqual(new Set(["openai", "groq", "anthropic"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o"])
     expect(result.models.get("groq")).toEqual(["llama-3.1-8b"])
     expect(result.models.get("anthropic")).toEqual(["claude-3-opus"])
@@ -88,7 +88,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers.size).toBe(0)
+    expect(result.gateways.size).toBe(0)
     expect(result.models.size).toBe(0)
     expect(result.fallbacksUsed.size).toBe(0)
   })
@@ -99,7 +99,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers.size).toBe(0)
+    expect(result.gateways.size).toBe(0)
     expect(result.models.size).toBe(0)
   })
 
@@ -109,7 +109,7 @@ describe("resolveAvailableModels", () => {
 
     const result = resolveAvailableModels(required, enabled)
 
-    expect(result.providers.size).toBe(0)
+    expect(result.gateways.size).toBe(0)
     expect(result.models.size).toBe(0)
   })
 })
@@ -124,7 +124,7 @@ describe("getAllAvailableModels", () => {
 
     const result = getAllAvailableModels(enabled)
 
-    expect(result.providers).toEqual(new Set(["openai", "groq", "anthropic"]))
+    expect(result.gateways).toEqual(new Set(["openai", "groq", "anthropic"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o", "gpt-3.5-turbo"])
     expect(result.models.get("groq")).toEqual(["llama-3.1-8b"])
     expect(result.models.get("anthropic")).toEqual(["claude-3-opus"])
@@ -140,7 +140,7 @@ describe("getAllAvailableModels", () => {
 
     const result = getAllAvailableModels(enabled)
 
-    expect(result.providers).toEqual(new Set(["openai", "anthropic"]))
+    expect(result.gateways).toEqual(new Set(["openai", "anthropic"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o"])
     expect(result.models.get("anthropic")).toEqual(["claude-3-opus"])
     expect(result.models.has("groq")).toBe(false)
@@ -151,7 +151,7 @@ describe("getAllAvailableModels", () => {
 
     const result = getAllAvailableModels(enabled)
 
-    expect(result.providers.size).toBe(0)
+    expect(result.gateways.size).toBe(0)
     expect(result.models.size).toBe(0)
     expect(result.fallbacksUsed.size).toBe(0)
   })
@@ -161,7 +161,7 @@ describe("getAllAvailableModels", () => {
 
     const result = getAllAvailableModels(enabled)
 
-    expect(result.providers).toEqual(new Set(["openai"]))
+    expect(result.gateways).toEqual(new Set(["openai"]))
     expect(result.models.get("openai")).toEqual(["gpt-4o"])
   })
 })

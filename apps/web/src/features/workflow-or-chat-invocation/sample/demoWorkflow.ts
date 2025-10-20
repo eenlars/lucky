@@ -27,7 +27,8 @@ Based on their responses, identify 2-3 promising market opportunities with clear
 After identifying opportunities, say: "I've found some fascinating market gaps! Let me connect you with our idea generator who can turn these opportunities into concrete startup concepts! 💡" and hand off to the idea_generator.
 
 Be analytical but accessible - help them see the business potential! 🎯`,
-        modelName: "gpt-4o-mini",
+        gateway: "openai-api",
+        gatewayModelId: "gpt-4o-mini",
         mcpTools: [],
         codeTools: [],
         handOffs: ["idea_generator"],
@@ -53,7 +54,8 @@ Generate 3-5 concrete startup ideas and get them excited about the possibilities
 After presenting the ideas, say: "These concepts have real potential! Let me connect you with our business strategist who can help evaluate and refine the most promising ones! 📈" and hand off to the business_strategist.
 
 Be creative but grounded in real market needs! ✨`,
-        modelName: "gpt-4o-mini",
+        gateway: "openai-api",
+        gatewayModelId: "gpt-4o-mini",
         mcpTools: [],
         codeTools: [],
         handOffs: ["business_strategist"],
@@ -85,7 +87,8 @@ Help them pick the 1-2 most promising ideas and create a practical roadmap for g
 End with: "You now have a solid foundation to build on! Remember, the best startups solve real problems for real people. Go validate these ideas and make them happen! 🚀✨"
 
 Be strategic but encouraging - help them see the path from idea to reality! 🎯`,
-        modelName: "gpt-4o-mini",
+        gateway: "openai-api",
+        gatewayModelId: "gpt-4o-mini",
         mcpTools: [],
         codeTools: [],
         handOffs: [],

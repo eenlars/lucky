@@ -30,17 +30,17 @@ export const ZExecutionSchema = z.object({
   /**
    * API keys for this workflow invocation (in-memory cache)
    *
-   * Maps provider names (lowercase) to API key values.
-   * Example: { openai: "sk-...", groq: "gsk-...", openrouter: "sk-or-..." }
+   * Maps gateway names (lowercase) to API key values.
+   * Example: { "openai-api": "sk-...", "groq-api": "gsk-...", "openrouter-api": "sk-or-..." }
    *
    * IMPORTANT:
-   * - Keys are provider names (openai, anthropic, groq), NOT env var names (OPENAI_API_KEY)
+   * - Keys are gateway names (openai-api, groq-api, openrouter-api), NOT env var names (OPENAI_API_KEY)
    * - This is an OPTIONAL in-memory cache; `secrets` resolver is the primary source
    * - Used for testing and when keys are already loaded in memory
    *
    * Lookup order: apiKeys → secrets.get() → process.env (dev only)
    *
-   * Access via: requireExecutionContext().get("apiKeys") or use getApiKey(providerName) helper
+   * Access via: requireExecutionContext().get("apiKeys") or use getApiKey(gatewayName) helper
    */
   apiKeys: z.record(z.string()).optional(),
   /**
@@ -180,9 +180,9 @@ export async function getApiKey(name: string): Promise<string | undefined> {
  * const userModels = registry.forUser({
  *   mode: "shared",
  *   userId: "user-123",
- *   models: ["openai#gpt-4o", "groq#llama-3.1-70b"]
+ *   models: ["gpt-4o", "llama-3.1-70b"]
  * })
- * const model = userModels.model("openai#gpt-4o")
+ * const model = userModels.model("gpt-4o")
  * ```
  */
 export function getUserModelsFromContext(): UserModels {

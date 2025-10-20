@@ -116,12 +116,12 @@ export const MODELS: TypedModelDefaults = _modelsProxy
 /**
  * Lazy object that proxies access to live model config
  */
-type ModelConfigProxy = Pick<CoreConfig["models"], "provider" | "inactive">
+type ModelConfigProxy = Pick<CoreConfig["models"], "gateway" | "inactive">
 
 const _modelConfigProxy = new Proxy({} as ModelConfigProxy, {
   get: (_target, prop) => {
     const models = getCoreConfig().models
-    if (prop === "provider") return models.provider
+    if (prop === "gateway") return models.gateway
     if (prop === "inactive") return models.inactive
     return undefined
   },
@@ -143,7 +143,7 @@ export { TOOLS }
 // ============================================================================
 
 /**
- * Typed model defaults using AnyModelName for type safety
+ * Typed model defaults using AnyGatewayModelId for type safety
  * All properties are readonly to prevent accidental mutation of shared config
  */
 export type TypedModelDefaults = {

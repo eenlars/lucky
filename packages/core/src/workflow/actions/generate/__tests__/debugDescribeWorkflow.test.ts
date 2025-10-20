@@ -52,7 +52,7 @@ describe("Debug describeWorkflow", () => {
       includeToolExplanations: true,
       includeAdjacencyList: false,
       includeAgents: false,
-      easyModelNames: false,
+      tierMappingEnabled: false,
     })
 
     console.log("Full describeWorkflow result:")
