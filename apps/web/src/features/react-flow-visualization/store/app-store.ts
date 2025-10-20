@@ -15,10 +15,10 @@ import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middl
 import { setColorModeCookie } from "@/features/react-flow-visualization/components/actions/cookies"
 import { type AppEdge, createEdge } from "@/features/react-flow-visualization/components/edges/edges"
 import nodesConfig, {
-  createNodeByType,
   type AppNode,
   type AppNodeType,
   type WorkflowNodeData,
+  createNodeByType,
 } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { CITY_NAMES } from "@/features/react-flow-visualization/lib/city-names"
 import { toFrontendWorkflowConfig } from "@/features/react-flow-visualization/lib/workflow-data"
@@ -708,6 +708,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
               location: "/store/app-store",
             })
             console.error("Error syncing JSON to graph:", error)
+            throw error
           }
         },
 

@@ -3,7 +3,14 @@
 import { type ReactNode, createContext, useContext, useRef } from "react"
 import { useStore } from "zustand"
 
-import { type AppState, type AppStore, createAppStore } from "@/features/react-flow-visualization/store/app-store"
+import {
+  type AppState,
+  type AppStore,
+  type WorkflowValidationError,
+  createAppStore,
+} from "@/features/react-flow-visualization/store/app-store"
+
+export type { WorkflowValidationError }
 
 export type AppStoreApi = ReturnType<typeof createAppStore>
 

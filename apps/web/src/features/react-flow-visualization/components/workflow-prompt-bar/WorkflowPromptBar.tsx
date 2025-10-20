@@ -2,10 +2,11 @@
 
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { cn } from "@/lib/utils"
-import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { useRunnerStore } from "@/stores/runner-store"
+import { verifyWorkflowConfig } from "@lucky/core/utils/validation/workflow/verifyWorkflow"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { Panel } from "@xyflow/react"
-import { AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
+import { AudioWaveform, CheckCircle, Loader2, Pencil, Play, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -16,7 +17,7 @@ import { executeRunMode } from "./run-mode-handler"
 /**
  * WorkflowPromptBar - Dual-mode workflow interaction component.
  *
- * Two distinct modes:
+ * Three distinct modes:
  * 1. Edit Mode (default): AI-powered workflow structure modification
  *    - Changes nodes, edges, and workflow structure
  *    - Uses natural language to describe changes
@@ -26,23 +27,36 @@ import { executeRunMode } from "./run-mode-handler"
  *    - Runs the current workflow as-is
  *    - User input becomes the workflow's initial input
  *    - Calls /api/workflow/invoke
+ *
+ * 3. Validate Mode: Check workflow for errors
+ *    - Validates current workflow structure
+ *    - Displays errors in error panel
+ *    - Calls /api/workflow/verify
  */
-export function WorkflowPromptBar() {
+
+interface WorkflowPromptBarProps {
+  showValidation?: boolean
+}
+
+export function WorkflowPromptBar({ showValidation = true }: WorkflowPromptBarProps = {}) {
   const router = useRouter()
-  const { exportToJSON, loadWorkflowFromData, organizeLayout, addChatMessage, logPanelOpen } = useAppStore(
-    useShallow(state => ({
-      exportToJSON: state.exportToJSON,
-      loadWorkflowFromData: state.loadWorkflowFromData,
-      organizeLayout: state.organizeLayout,
-      addChatMessage: state.addChatMessage,
-      logPanelOpen: state.logPanelOpen,
-    })),
-  )
+  const { exportToJSON, loadWorkflowFromData, organizeLayout, addChatMessage, logPanelOpen, addValidationErrors } =
+    useAppStore(
+      useShallow(state => ({
+        exportToJSON: state.exportToJSON,
+        loadWorkflowFromData: state.loadWorkflowFromData,
+        organizeLayout: state.organizeLayout,
+        addChatMessage: state.addChatMessage,
+        logPanelOpen: state.logPanelOpen,
+        addValidationErrors: state.addValidationErrors,
+      })),
+    )
 
   const { editorMode, setEditorMode, setExecuting } = useRunnerStore()
 
   const [prompt, setPrompt] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
   const [showLogs, setShowLogs] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -187,6 +201,32 @@ export function WorkflowPromptBar() {
     setExecuting(false)
   }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage, router, setEditorMode, setExecuting])
 
+  const handleValidate = useCallback(async () => {
+    setIsValidating(true)
+
+    try {
+      const workflow = JSON.parse(exportToJSON())
+      const result = await verifyWorkflowConfig(workflow, { throwOnError: false })
+
+      if (result.isValid) {
+        toast.success("Workflow is valid")
+      } else {
+        const errors = result.errors.map((msg, i) => ({
+          id: `error-${i}-${Date.now()}`,
+          title: msg.split(":")[0] || "Validation Error",
+          description: msg,
+          severity: "error" as const,
+        }))
+        addValidationErrors(errors)
+        toast.error(`${errors.length} validation issue(s) found`)
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Validation failed")
+    } finally {
+      setIsValidating(false)
+    }
+  }, [exportToJSON, addValidationErrors])
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault()
@@ -282,6 +322,23 @@ export function WorkflowPromptBar() {
                   <Pencil className="size-4" strokeWidth={2.5} />
                   <span>Edit</span>
                 </button>
+                {showValidation && (
+                  <button
+                    type="button"
+                    onClick={handleValidate}
+                    disabled={isValidating}
+                    className={cn(
+                      "flex items-center gap-2 px-3 h-9 rounded-lg transition-all text-sm border",
+                      isValidating
+                        ? "border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                        : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800",
+                    )}
+                    aria-label="Validate workflow"
+                  >
+                    <CheckCircle className="size-4" strokeWidth={2.5} />
+                    <span>{isValidating ? "Validating..." : "Validate"}</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={handleRun}
