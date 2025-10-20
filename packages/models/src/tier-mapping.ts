@@ -3,7 +3,7 @@
  */
 
 import type { ModelId, TierName } from "@lucky/shared"
-import { findModelById } from "./llm-catalog/catalog-queries"
+import { findModel } from "./llm-catalog/catalog-queries"
 
 /**
  * Maps a model name to its recommended tier category
@@ -18,7 +18,7 @@ import { findModelById } from "./llm-catalog/catalog-queries"
  * mapModelToTier("groq#openai/gpt-oss-20b") // "fast"
  */
 export function mapModelToTier(modelName: ModelId): TierName {
-  const model = findModelById(modelName)
+  const model = findModel(modelName)
 
   if (!model) {
     return "balanced" // default fallback

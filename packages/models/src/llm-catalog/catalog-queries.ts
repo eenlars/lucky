@@ -2,7 +2,7 @@
  * catalog query and filter functions
  */
 
-import type { ModelEntry, ModelId } from "@lucky/shared"
+import type { LuckyProvider, ModelEntry, ModelId } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import { MODEL_CATALOG } from "./catalog"
 
@@ -14,10 +14,18 @@ export function getCatalog(): ModelEntry[] {
 }
 
 /**
- * finds model by ID (format: "provider#model")
- * case-insensitive
+ * Find model by ID (format: "provider#model")
+ * Case-insensitive matching
+ *
+ * @param id - Full model ID like "openai#gpt-4o"
+ * @returns Model entry if found, undefined otherwise
+ *
+ * @example
+ * findModelById("openai#gpt-4o")     // → ModelEntry for GPT-4o
+ * findModelById("OPENAI#GPT-4O")     // → Same model (case-insensitive)
+ * findModelById("gpt-4o")            // → undefined (needs provider prefix)
  */
-export function findModelById(id: string): ModelEntry | undefined {
+function findModelById(id: string): ModelEntry | undefined {
   if (isNir(id)) {
     return undefined
   }
@@ -25,10 +33,21 @@ export function findModelById(id: string): ModelEntry | undefined {
 }
 
 /**
- * finds model by name without provider prefix
- * matches exact model name or suffix after #
+ * Find model by name without provider prefix
+ * Matches model name in multiple ways for flexibility:
+ * 1. Exact match against model name field
+ * 2. Match against model part after # in ID
+ * 3. Full ID match (fallback)
+ *
+ * @param inputName - Model name like "gpt-4o" or full ID
+ * @returns First matching model entry, undefined if not found
+ *
+ * @example
+ * findModelByName("gpt-4o")          // → ModelEntry for GPT-4o
+ * findModelByName("openai#gpt-4o")   // → Same model (full ID match)
+ * findModelByName("GPT-4O")          // → Same model (case-insensitive)
  */
-export function findModelByName(inputName: ModelId): ModelEntry | undefined {
+function findModelByName(inputName: ModelId): ModelEntry | undefined {
   if (isNir(inputName)) {
     return undefined
   }
@@ -44,18 +63,29 @@ export function findModelByName(inputName: ModelId): ModelEntry | undefined {
   return undefined
 }
 
-/**
- * @deprecated use findModelById instead
- */
 export function findModel(id: string): ModelEntry | undefined {
-  return findModelById(id)
+  const idModel = findModelById(id)
+  const nameModel = findModelByName(id)
+  return idModel || nameModel
+}
+
+export const toNormalModelName = (model: string) => {
+  let normalizedModel = model.trim()
+  if (model.includes("#")) {
+    const [_provider, modelName] = normalizedModel.split("#")
+    normalizedModel = modelName?.trim() ?? normalizedModel
+  }
+  if (!normalizedModel) {
+    throw new Error(`Invalid model: ${model}`)
+  }
+  return normalizedModel
 }
 
 /**
  * returns all models for a provider
  * case-sensitive, returns empty array if not found
  */
-export function getModelsByProvider(provider: string): ModelEntry[] {
+export function getModelsByProvider(provider: LuckyProvider): ModelEntry[] {
   if (isNir(provider)) {
     return []
   }

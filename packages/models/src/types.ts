@@ -2,6 +2,8 @@
  * Type definitions for the models package
  */
 
+import type { LuckyProvider } from "@repo/shared"
+
 export interface FallbackKeys {
   [provider: string]: string | undefined
 }
@@ -14,7 +16,5 @@ export interface UserConfig {
   mode: "byok" | "shared"
   userId: string
   models: string[]
-  apiKeys?: {
-    [provider: string]: string | undefined
-  }
+  apiKeys?: Partial<Record<LuckyProvider, string>>
 }

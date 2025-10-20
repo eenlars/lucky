@@ -48,10 +48,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ nam
     await updateEnvKeyLastUsed(supabase, data.user_secret_id)
 
     return alrighty("user/env-keys/[name]", {
-      id: data.user_secret_id,
-      name: data.name,
-      value,
-      createdAt: data.created_at,
+      success: true,
+      data: {
+        id: data.user_secret_id,
+        name: data.name,
+        value,
+        createdAt: data.created_at,
+      },
     })
   } catch (e: any) {
     return fail("user/env-keys/[name]", e?.message ?? "Failed to fetch environment key", {

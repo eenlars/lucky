@@ -6,7 +6,7 @@
  * configured with appropriate API keys and access controls.
  */
 
-import { getExecutionContext, getUserModels, requireExecutionContext } from "@core/context/executionContext"
+import { getExecutionContext, getUserModelsFromContext, requireExecutionContext } from "@core/context/executionContext"
 import type { UserModels } from "@lucky/models"
 
 /**
@@ -29,7 +29,7 @@ export async function getModelsInstance(): Promise<UserModels> {
     )
   }
 
-  const userModels = getUserModels()
+  const userModels = getUserModelsFromContext()
 
   return userModels
 }

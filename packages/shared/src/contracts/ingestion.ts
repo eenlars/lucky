@@ -5,9 +5,29 @@
 
 import { z } from "zod"
 
+/**
+ * Resolves encrypted secrets from the user's lockbox.
+ *
+ * @example
+ * const resolver = createSecretResolver(clerkId)
+ * const openaiKey = await resolver.get("OPENAI_API_KEY", "environment-variables")
+ * const allKeys = await resolver.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+ */
 export type SecretResolver = {
-  get(name: string, namespace?: string): Promise<string | undefined>
-  getAll(names: string[], namespace?: string): Promise<Record<string, string>>
+  /**
+   * Get a single secret by its key name
+   * @param secretKeyName - The secret key name (e.g., "OPENAI_API_KEY")
+   * @param namespace - Optional namespace (e.g., "environment-variables")
+   */
+  get(secretKeyName: string, namespace?: string): Promise<string | undefined>
+
+  /**
+   * Get multiple secrets by their key names
+   * @param secretKeyNames - Array of secret key names (e.g., ["OPENAI_API_KEY", "GROQ_API_KEY"])
+   * @param namespace - Optional namespace (e.g., "environment-variables")
+   * @returns Record mapping secret key names to their decrypted values
+   */
+  getAll(secretKeyNames: string[], namespace?: string): Promise<Record<string, string>>
 }
 
 // ============================================================================

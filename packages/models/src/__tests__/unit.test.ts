@@ -3,17 +3,17 @@
  * Tests catalog, providers, registry creation, and user model access
  */
 
+import type { LuckyProvider } from "@lucky/shared"
 import { describe, expect, it, vi } from "vitest"
 import { MOCK_CATALOG } from "./fixtures/mock-catalog"
-import type { LuckyProvider } from "@lucky/shared"
 
 vi.mock("../llm-catalog/catalog", () => ({
   MODEL_CATALOG: MOCK_CATALOG,
 }))
 
-import { createLLMRegistry } from "../llm-registry"
-import { findModelById, findModelByName, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
+import { findModel, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
 import { PROVIDERS } from "../llm-catalog/providers"
+import { createLLMRegistry } from "../llm-registry"
 import { getProviderDisplayName, getProviderKeyName } from "../provider-utils"
 
 describe("Model Catalog", () => {
@@ -85,7 +85,7 @@ describe("Model Catalog", () => {
 
   it("finds models by ID when exists", () => {
     const firstModel = MOCK_CATALOG[0]
-    const model = findModelById(firstModel.id)
+    const model = findModel(firstModel.id)
     expect(model).toBeDefined()
     expect(model?.id).toBe(firstModel.id)
   })
@@ -93,7 +93,7 @@ describe("Model Catalog", () => {
   it("finds models by name when exists", () => {
     const firstModel = MOCK_CATALOG[0]
     const modelName = firstModel.model
-    const models = findModelByName(modelName)
+    const models = findModel(modelName)
     expect(models).toBeDefined()
   })
 

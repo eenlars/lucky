@@ -15,18 +15,32 @@ export const ZExecutionSchema = z.object({
   /**
    * Secret resolver for this workflow invocation
    *
-   * The secret resolver is used to resolve API keys for the current user.
-   * It does Supabase Calls.
+   * Fetches encrypted secrets from the user's lockbox (Supabase database).
+   * Secrets are stored by environment variable name (OPENAI_API_KEY, GROQ_API_KEY, etc.)
+   * in the "environment-variables" namespace.
    *
-   * Access via: requireExecutionContext().get("secrets") or use getSecretResolver() helper
+   * This is the PRIMARY source for user API keys in production (BYOK mode).
+   * Falls back to `apiKeys` in-memory cache if available, or process.env in dev.
+   *
+   * Example: await secrets.get("OPENAI_API_KEY", "environment-variables")
+   *
+   * Access via: requireExecutionContext().get("secrets")
    */
   secrets: z.custom<SecretResolver>(),
   /**
-   * API keys for this workflow invocation
+   * API keys for this workflow invocation (in-memory cache)
    *
-   * The API keys are used to resolve API keys for the current user.
+   * Maps provider names (lowercase) to API key values.
+   * Example: { openai: "sk-...", groq: "gsk-...", openrouter: "sk-or-..." }
    *
-   * Access via: requireExecutionContext().get("apiKeys") or use getApiKeys() helper
+   * IMPORTANT:
+   * - Keys are provider names (openai, anthropic, groq), NOT env var names (OPENAI_API_KEY)
+   * - This is an OPTIONAL in-memory cache; `secrets` resolver is the primary source
+   * - Used for testing and when keys are already loaded in memory
+   *
+   * Lookup order: apiKeys → secrets.get() → process.env (dev only)
+   *
+   * Access via: requireExecutionContext().get("apiKeys") or use getApiKey(providerName) helper
    */
   apiKeys: z.record(z.string()).optional(),
   /**
@@ -171,7 +185,7 @@ export async function getApiKey(name: string): Promise<string | undefined> {
  * const model = userModels.model("openai#gpt-4o")
  * ```
  */
-export function getUserModels(): UserModels {
+export function getUserModelsFromContext(): UserModels {
   const ctx = requireExecutionContext()
   const userModels = ctx.get("userModels")
   if (!userModels) {

@@ -146,6 +146,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       debug_output: { lastGen: result, attempts: attemptsDebug },
     }
   } catch (err) {
+    console.error("execText error", JSON.stringify(err, null, 2))
     // TODO: implement comprehensive error classification system
     // TODO: add error recovery strategies beyond fallback
     // TODO: create error analytics and reporting

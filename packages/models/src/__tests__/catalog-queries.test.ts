@@ -5,7 +5,7 @@ vi.mock("../llm-catalog/catalog", () => ({
   MODEL_CATALOG: MOCK_CATALOG,
 }))
 
-import { findModelById, findModelByName, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
+import { findModel, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
 
 describe("Catalog Queries", () => {
   describe("getCatalog", () => {
@@ -30,11 +30,11 @@ describe("Catalog Queries", () => {
     })
   })
 
-  describe("findModelById", () => {
+  describe("findModel by ID", () => {
     const firstModel = MOCK_CATALOG[0]
 
     it("finds model by exact ID", () => {
-      const found = findModelById(firstModel.id)
+      const found = findModel(firstModel.id)
       expect(found?.id).toBe(firstModel.id)
       expect(found?.provider).toBe(firstModel.provider)
       expect(found?.model).toBe(firstModel.model)
@@ -48,56 +48,56 @@ describe("Catalog Queries", () => {
         .map((c, i) => (i % 2 ? c.toUpperCase() : c.toLowerCase()))
         .join("")
 
-      expect(findModelById(upperCase)?.id).toBe(firstModel.id)
-      expect(findModelById(lowerCase)?.id).toBe(firstModel.id)
-      expect(findModelById(mixed)?.id).toBe(firstModel.id)
+      expect(findModel(upperCase)?.id).toBe(firstModel.id)
+      expect(findModel(lowerCase)?.id).toBe(firstModel.id)
+      expect(findModel(mixed)?.id).toBe(firstModel.id)
     })
 
     it("returns undefined for non-existent or malformed IDs", () => {
-      expect(findModelById("nonexistent#model")).toBeUndefined()
-      expect(findModelById("")).toBeUndefined()
-      expect(findModelById("malformed-without-hash")).toBeUndefined()
+      expect(findModel("nonexistent#model")).toBeUndefined()
+      expect(findModel("")).toBeUndefined()
+      expect(findModel("malformed-without-hash")).toBeUndefined()
     })
 
     it("handles IDs with special characters", () => {
       const modelWithSlash = MOCK_CATALOG.find(m => m.id.includes("/"))
       if (modelWithSlash) {
-        expect(findModelById(modelWithSlash.id)?.id).toBe(modelWithSlash.id)
+        expect(findModel(modelWithSlash.id)?.id).toBe(modelWithSlash.id)
       }
     })
 
     it("finds all catalog models by their IDs", () => {
       for (const model of MOCK_CATALOG) {
-        expect(findModelById(model.id)?.id).toBe(model.id)
+        expect(findModel(model.id)?.id).toBe(model.id)
       }
     })
   })
 
-  describe("findModelByName", () => {
+  describe("findModel by name", () => {
     const firstModel = MOCK_CATALOG[0]
 
     it("finds model by name without provider prefix", () => {
-      const found = findModelByName(firstModel.model)
+      const found = findModel(firstModel.model)
       expect(found?.model).toBe(firstModel.model)
     })
 
     it("is case-insensitive", () => {
       const upperCase = firstModel.model.toUpperCase()
       const lowerCase = firstModel.model.toLowerCase()
-      expect(findModelByName(upperCase)?.model).toBe(firstModel.model)
-      expect(findModelByName(lowerCase)?.model).toBe(firstModel.model)
+      expect(findModel(upperCase)?.model).toBe(firstModel.model)
+      expect(findModel(lowerCase)?.model).toBe(firstModel.model)
     })
 
     it("returns undefined for non-existent names", () => {
-      expect(findModelByName("nonexistent-model-xyz-123")).toBeUndefined()
-      expect(findModelByName("")).toBeUndefined()
+      expect(findModel("nonexistent-model-xyz-123")).toBeUndefined()
+      expect(findModel("")).toBeUndefined()
     })
 
     it("returns first match when duplicate names across providers", () => {
       const modelName = firstModel.model
       const allWithSameName = MOCK_CATALOG.filter(m => m.model.toLowerCase() === modelName.toLowerCase())
       if (allWithSameName.length > 1) {
-        const found = findModelByName(modelName)
+        const found = findModel(modelName)
         expect(found?.model).toBe(allWithSameName[0].model)
       }
     })
@@ -107,10 +107,10 @@ describe("Catalog Queries", () => {
       const modelWithSlash = MOCK_CATALOG.find(m => m.model.includes("/"))
 
       if (modelWithHyphen) {
-        expect(findModelByName(modelWithHyphen.model)?.model).toBe(modelWithHyphen.model)
+        expect(findModel(modelWithHyphen.model)?.model).toBe(modelWithHyphen.model)
       }
       if (modelWithSlash) {
-        expect(findModelByName(modelWithSlash.model)?.model).toBe(modelWithSlash.model)
+        expect(findModel(modelWithSlash.model)?.model).toBe(modelWithSlash.model)
       }
     })
   })
@@ -152,10 +152,10 @@ describe("Catalog Queries", () => {
   })
 
   describe("Cross-function consistency", () => {
-    it("findModelById and findModelByName resolve to same model", () => {
+    it("findModel resolves both by ID and by name to same model", () => {
       const firstModel = MOCK_CATALOG[0]
-      const foundById = findModelById(firstModel.id)
-      const foundByName = findModelByName(firstModel.model)
+      const foundById = findModel(firstModel.id)
+      const foundByName = findModel(firstModel.model)
       expect(foundById?.model).toBe(foundByName?.model)
     })
 

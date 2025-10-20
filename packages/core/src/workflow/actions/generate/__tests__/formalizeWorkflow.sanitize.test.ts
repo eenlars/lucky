@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODEL_CATALOG, findModelByName } from "@lucky/models"
+import { MODEL_CATALOG, findModel } from "@lucky/models"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock the LLM call to return a workflow with tier name "balanced"
@@ -98,7 +98,7 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     // No base config - generate a new workflow from scratch
     // The mock returns a node with modelName "balanced" (tier name)
     // Tier names are preserved for execution-time resolution (not converted to catalog IDs)
-    const { success, data, error } = await formalizeWorkflow("Normalize models", {
+    const { success, data } = await formalizeWorkflow("Normalize models", {
       verifyWorkflow: "none",
     })
 
@@ -118,7 +118,7 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     const tierNames = ["cheap", "fast", "smart", "balanced"]
     for (const model of normalizedModels) {
       const isTierName = tierNames.includes(model)
-      const isInCatalog = findModelByName(model) !== undefined
+      const isInCatalog = findModel(model) !== undefined
       expect(isTierName || isInCatalog, `Model ${model} should be either a tier name or in catalog`).toBe(true)
     }
   })

@@ -12,19 +12,19 @@ export const PROVIDERS: readonly ProviderEntry[] = [
   {
     provider: "openai",
     displayName: "OpenAI",
-    apiKeyName: "OPENAI_API_KEY",
-    apiKeyPrefix: "sk-",
+    secretKeyName: "OPENAI_API_KEY",
+    apiKeyValuePrefix: "sk-",
   },
   {
     provider: "openrouter",
     displayName: "OpenRouter",
-    apiKeyName: "OPENROUTER_API_KEY",
-    apiKeyPrefix: "sk-or-v1-",
+    secretKeyName: "OPENROUTER_API_KEY",
+    apiKeyValuePrefix: "sk-or-v1-",
   },
   {
     provider: "groq",
     displayName: "Groq",
-    apiKeyName: "GROQ_API_KEY",
-    apiKeyPrefix: "gsk_",
+    secretKeyName: "GROQ_API_KEY",
+    apiKeyValuePrefix: "gsk_",
   },
 ] as const

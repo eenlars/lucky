@@ -1,7 +1,7 @@
+import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
-import { getUserModels } from "@/lib/models/server-utils"
 import { auth } from "@clerk/nextjs/server"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Fetch user's available models from database
-    const availableModels = await getUserModels(userId)
+    const availableModels = await getUserModelsSetup({ clerkId: userId })
 
     // Merge user's available models into options
     const optionsWithModels: GenerationOptions & AfterGenerationOptions = {

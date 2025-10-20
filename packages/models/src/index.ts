@@ -20,8 +20,6 @@ export { PROVIDERS } from "./llm-catalog/providers"
 // Catalog query functions
 export {
   findModel,
-  findModelById,
-  findModelByName,
   getActiveModelsByProvider,
   getAllProviders, // Backward compatibility alias
   getCatalog,

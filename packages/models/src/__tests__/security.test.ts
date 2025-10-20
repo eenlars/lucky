@@ -298,7 +298,7 @@ describe("Security - Resource Exhaustion", () => {
   })
 
   it("limits model ID length to 200 chars", () => {
-    const tooLong = "openai#" + "x".repeat(194)
+    const tooLong = `openai#${"x".repeat(194)}`
 
     expect(() =>
       registry.forUser({
@@ -311,7 +311,7 @@ describe("Security - Resource Exhaustion", () => {
   })
 
   it("limits API key length to 500 chars", () => {
-    const tooLong = "sk-" + "x".repeat(498)
+    const tooLong = `sk-${"x".repeat(498)}`
 
     expect(() =>
       registry.forUser({

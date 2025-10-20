@@ -7,7 +7,7 @@ import {
   isModelRecommended,
   sortModels,
   sortModelsWithEnabledFirst,
-} from "@/lib/providers/model-filters"
+} from "@/features/provider-llm-setup/model-filters"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { useMemo, useState } from "react"
 import { ModelBulkActions } from "./ModelBulkActions"

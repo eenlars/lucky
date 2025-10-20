@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         workflowId: "adhoc-ui",
       }
 
-      const res = await invokeWorkflow({ dslConfig, evalInput })
+      const res = await invokeWorkflow({ source: { kind: "dsl", config: dslConfig }, evalInput })
       if (!res.success) {
         results.push({ success: false, error: res.error })
       } else {

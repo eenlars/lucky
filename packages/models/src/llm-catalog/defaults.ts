@@ -8,7 +8,7 @@ export const DEFAULT_MODELS = {
     nano: "openrouter#google/gemini-2.5-flash-lite",
     low: "openrouter#google/gemini-2.5-flash-lite",
     balanced: "openrouter#openai/gpt-4.1-mini",
-    high: "openrouter#openai/gpt-4.1",
+    high: "openrouter#openai/gpt-5-mini",
     default: "openrouter#openai/gpt-4.1-nano",
     fitness: "openrouter#openai/gpt-4.1-mini",
     reasoning: "openrouter#openai/gpt-4.1-mini",

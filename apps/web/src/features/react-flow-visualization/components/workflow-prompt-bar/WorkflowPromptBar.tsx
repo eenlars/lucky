@@ -2,7 +2,6 @@
 
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { cn } from "@/lib/utils"
-import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { useRunnerStore } from "@/stores/runner-store"
 import { Panel } from "@xyflow/react"
 import { AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
@@ -157,7 +156,7 @@ export function WorkflowPromptBar() {
     setShowLogs(true)
 
     // Run Mode: Execute workflow with input
-    const result = await executeRunMode(prompt.trim(), exportToJSON, addLog, (finalMessage: string) => {
+    const result = await executeRunMode(prompt.trim(), exportToJSON, undefined, addLog, (finalMessage: string) => {
       addChatMessage(finalMessage, "result")
     })
 
@@ -168,14 +167,8 @@ export function WorkflowPromptBar() {
       // Keep logs visible in run mode so user can see output
     } else {
       // Check if error is MISSING_API_KEYS and show clickable link
-      if (result.errorCode === ErrorCodes.MISSING_API_KEYS) {
-        toast.error(result.error || "Missing API Keys", {
-          action: {
-            label: "Go to Settings",
-            onClick: () => router.push("/settings/providers"),
-          },
-          duration: 10000, // Show for 10 seconds to give user time to click
-        })
+      if (result.errors && result.errors.length > 0) {
+        toast.error(result.errors.join("\n"))
       } else {
         toast.error(result.error || "Workflow execution failed")
       }

@@ -1,20 +1,19 @@
-import { describe, expect, it, vi, beforeEach, afterAll } from "vitest"
+import { findModel } from "@lucky/models"
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest"
 import {
+  WorkflowConfigSchemaEasy,
   handleWorkflowCompletionTierStrategy,
   handleWorkflowCompletionUserModelsStrategy,
-  WorkflowConfigSchemaEasy,
 } from "../workflowSchema"
-import { findModelById, findModelByName } from "@lucky/models"
 
 // Mock console.warn to test fallback warnings
 const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
 
 // Mock the models module
 vi.mock("@lucky/models", () => ({
-  findModelById: vi.fn(),
-  findModelByName: vi.fn(),
+  findModel: vi.fn(),
   getActiveModelsByProvider: vi.fn(() => []),
-  mapModelNameToEasyName: vi.fn((name: string) => "balanced"),
+  mapModelNameToEasyName: vi.fn((_name: string) => "balanced"),
   getCatalog: vi.fn(() => []),
   getModelsByProvider: vi.fn(() => []),
 }))
@@ -56,8 +55,7 @@ describe("workflowSchema - model name validation", () => {
       })
 
       it("normalizes uppercase tier names to lowercase", () => {
-        ;(findModelById as any).mockReturnValue(undefined)
-        ;(findModelByName as any).mockReturnValue(undefined)
+        ;(findModel as any).mockReturnValue(undefined)
 
         const testCases = ["CHEAP", "FAST", "SMART", "BALANCED"]
 
@@ -90,8 +88,7 @@ describe("workflowSchema - model name validation", () => {
 
     describe("model ID handling", () => {
       it("resolves valid model names to catalog IDs", () => {
-        ;(findModelById as any).mockReturnValueOnce(undefined)
-        ;(findModelByName as any).mockReturnValueOnce({
+        ;(findModel as any).mockReturnValueOnce({
           id: "openai#gpt-4o",
           provider: "openai",
           model: "gpt-4o",
@@ -105,7 +102,7 @@ describe("workflowSchema - model name validation", () => {
       })
 
       it("preserves already-valid catalog IDs", () => {
-        ;(findModelById as any).mockReturnValueOnce({
+        ;(findModel as any).mockReturnValueOnce({
           id: "openai#gpt-4o",
           provider: "openai",
           model: "gpt-4o",
@@ -121,8 +118,7 @@ describe("workflowSchema - model name validation", () => {
 
     describe("fallback behavior", () => {
       it("falls back to cheap tier for unknown model names", () => {
-        ;(findModelById as any).mockReturnValue(undefined)
-        ;(findModelByName as any).mockReturnValue(undefined)
+        ;(findModel as any).mockReturnValue(undefined)
 
         const workflow = createTestWorkflow("nonexistent-model-xyz")
         const result = handleWorkflowCompletionTierStrategy(null, workflow)
@@ -134,8 +130,7 @@ describe("workflowSchema - model name validation", () => {
       })
 
       it("handles empty model names", () => {
-        ;(findModelById as any).mockReturnValue(undefined)
-        ;(findModelByName as any).mockReturnValue(undefined)
+        ;(findModel as any).mockReturnValue(undefined)
 
         const workflow = createTestWorkflow("")
         const result = handleWorkflowCompletionTierStrategy(null, workflow)
@@ -200,7 +195,7 @@ describe("workflowSchema - model name validation", () => {
     })
 
     it("resolves model IDs from catalog", () => {
-      ;(findModelById as any).mockReturnValueOnce({
+      ;(findModel as any).mockReturnValueOnce({
         id: "groq#llama-3.1-70b",
         provider: "groq",
         model: "llama-3.1-70b",
@@ -214,8 +209,7 @@ describe("workflowSchema - model name validation", () => {
     })
 
     it("falls back to cheap for invalid models", () => {
-      ;(findModelById as any).mockReturnValue(undefined)
-      ;(findModelByName as any).mockReturnValue(undefined)
+      ;(findModel as any).mockReturnValue(undefined)
 
       const workflow = createTestWorkflow("fake-model")
       const result = handleWorkflowCompletionUserModelsStrategy(null, workflow)
@@ -252,14 +246,8 @@ describe("workflowSchema - model name validation", () => {
   describe("integration scenarios", () => {
     it("handles workflow with multiple nodes of mixed types", () => {
       // setup mock to handle all lookups correctly
-      ;(findModelById as any).mockImplementation((id: string) => {
-        if (id === "openai#gpt-4o") {
-          return { id: "openai#gpt-4o", provider: "openai", model: "gpt-4o" }
-        }
-        return undefined
-      })
-      ;(findModelByName as any).mockImplementation((name: string) => {
-        if (name === "openai#gpt-4o") {
+      ;(findModel as any).mockImplementation((input: string) => {
+        if (input === "openai#gpt-4o") {
           return { id: "openai#gpt-4o", provider: "openai", model: "gpt-4o" }
         }
         return undefined
