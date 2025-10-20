@@ -38,10 +38,6 @@ export type GenerateWorkflowsResult = {
  */
 export type AfterGenerationOptions =
   | {
-      verifyWorkflow?: undefined
-      repairWorkflowAfterGeneration?: false
-    }
-  | {
       verifyWorkflow: "none"
       repairWorkflowAfterGeneration?: false
     }

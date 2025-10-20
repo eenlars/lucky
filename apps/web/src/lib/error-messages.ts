@@ -103,3 +103,53 @@ export function getErrorMessage(error: unknown): ErrorMessage {
     action: "Retry",
   }
 }
+
+/**
+ * Convert HTTP status code to user-friendly message
+ */
+export function getStatusMessage(status: number): string {
+  switch (status) {
+    case 200:
+    case 201:
+      return "Success"
+    case 400:
+      return "Invalid request"
+    case 401:
+      return "Not signed in"
+    case 403:
+      return "Access denied"
+    case 404:
+      return "Not found"
+    case 429:
+      return "Too many requests"
+    case 500:
+    case 502:
+    case 503:
+    case 504:
+      return "Server error"
+    default:
+      return `Error ${status}`
+  }
+}
+
+/**
+ * Check if an error is retryable
+ */
+export function isRetryableError(error: unknown): boolean {
+  if (error instanceof Response) {
+    // Retry on server errors and rate limiting
+    return error.status >= 500 || error.status === 429
+  }
+
+  // Retry on network errors
+  if (error instanceof TypeError && error.message.includes("fetch")) {
+    return true
+  }
+
+  // Retry on timeout
+  if (error instanceof Error && error.message.includes("timeout")) {
+    return true
+  }
+
+  return false
+}

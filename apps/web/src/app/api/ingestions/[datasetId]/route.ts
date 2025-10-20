@@ -4,18 +4,17 @@ import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 import { loadDatasetMeta } from "../_lib/meta"
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ datasetId: string }> }) {
+export async function GET(_req: NextRequest, { params }: { params: { datasetId: string } }) {
   // Require authentication
   const { isAuthenticated } = await auth()
   if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
-    const { datasetId } = await params
     // First try database
     try {
-      const dataset = await getDataSet(datasetId)
+      const dataset = await getDataSet(params.datasetId)
       if (dataset) {
-        const records = await getDatasetRecords(datasetId)
+        const records = await getDatasetRecords(params.datasetId)
         return NextResponse.json({
           datasetId: dataset.dataset_id,
           name: dataset.name,
@@ -30,7 +29,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ dat
     }
 
     // Fallback to storage
-    const meta = await loadDatasetMeta(datasetId)
+    const meta = await loadDatasetMeta(params.datasetId)
     return NextResponse.json(meta)
   } catch (e: any) {
     if (e?.message === "NOT_FOUND") {

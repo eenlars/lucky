@@ -14,7 +14,7 @@ export default function HomePage() {
   // In production, redirect home to the editor
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
-      router.replace("/edit/new")
+      router.replace("/edit")
     }
   }, [router])
 

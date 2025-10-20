@@ -68,8 +68,8 @@ export class SupabasePersistence implements IPersistence {
   }
 
   // Delegate all workflow methods to SupabaseWorkflowPersistence
-  async ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void> {
-    return this.getWorkflows().ensureWorkflowExists(workflowId, description, clerkId)
+  async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
+    return this.getWorkflows().ensureWorkflowExists(workflowId, description)
   }
 
   async createWorkflowVersion(data: WorkflowVersionData): Promise<void> {

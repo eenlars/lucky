@@ -1,5 +1,5 @@
 // tests for crossover operations
-import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import {
   createMockCrossoverParams,
   createMockWorkflowConfig,
@@ -186,7 +186,7 @@ vi.mock("@core/improvement/gp/operators/crossover/crossoverStrategy", () => ({
   selectCrossoverType: vi.fn(() => "structureCrossover"),
 }))
 
-vi.mock("@core/improvement/gp/rsc/tracker", () => ({
+vi.mock("@core/improvement/gp/resources/tracker", () => ({
   failureTracker: {
     trackCrossoverFailure: vi.fn(),
   },
@@ -238,7 +238,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
-      const { createDummyGenome } = await import("@core/improvement/gp/rsc/debug/dummyGenome")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
         parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
@@ -281,7 +281,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
-      const { createDummyGenome } = await import("@core/improvement/gp/rsc/debug/dummyGenome")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
         parents: [createDummyGenome([], evolutionContext)],
@@ -301,7 +301,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
-      const { createDummyGenome } = await import("@core/improvement/gp/rsc/debug/dummyGenome")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
         parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
@@ -322,7 +322,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
-      const { createDummyGenome } = await import("@core/improvement/gp/rsc/debug/dummyGenome")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const params = createMockCrossoverParams({
         parents: [createDummyGenome([], evolutionContext), createDummyGenome([], evolutionContext)],
@@ -357,8 +357,8 @@ describe("Crossover", () => {
       const params = createMockCrossoverParams({ verbose: false })
 
       // Stub genome creation to avoid DB persistence in this unit test
-      const wrappers = await import("@core/improvement/gp/rsc/wrappers")
-      const { createDummyGenome } = await import("@core/improvement/gp/rsc/debug/dummyGenome")
+      const wrappers = await import("@core/improvement/gp/resources/wrappers")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
       vi.spyOn(wrappers, "workflowConfigToGenome").mockResolvedValue({
         success: true,
         data: createDummyGenome([], evolutionContext),
@@ -531,7 +531,7 @@ describe("Crossover", () => {
       // Verbose mode will be set by runtime constants mock
 
       const { Crossover } = await import("@core/improvement/gp/operators/crossover/Crossover")
-      const { createDummyGenome } = await import("@core/improvement/gp/rsc/debug/dummyGenome")
+      const { createDummyGenome } = await import("@core/improvement/gp/resources/debug/dummyGenome")
 
       const startTime = Date.now()
       const params = createMockCrossoverParams({

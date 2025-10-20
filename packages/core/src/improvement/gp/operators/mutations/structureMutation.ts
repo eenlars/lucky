@@ -6,7 +6,7 @@
  * enable exploration of different workflow organizations during evolution.
  */
 
-import { failureTracker } from "@core/improvement/gp/rsc/tracker"
+import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import { lgg } from "@core/utils/logging/Logger"
 import { Workflow } from "@core/workflow/Workflow"

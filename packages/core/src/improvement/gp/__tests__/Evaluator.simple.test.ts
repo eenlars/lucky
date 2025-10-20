@@ -28,7 +28,7 @@ vi.mock("@core/evaluation/evaluators/AggregatedEvaluator", () => ({
   },
 }))
 
-vi.mock("@core/improvement/gp/rsc/debug/MockGPEvaluator", () => ({
+vi.mock("@core/improvement/gp/resources/debug/MockGPEvaluator", () => ({
   MockGPEvaluator: vi.fn().mockImplementation(() => ({
     evaluate: vi.fn().mockResolvedValue({
       success: true,
@@ -38,7 +38,7 @@ vi.mock("@core/improvement/gp/rsc/debug/MockGPEvaluator", () => ({
   })),
 }))
 
-vi.mock("@core/improvement/gp/rsc/tracker", () => ({
+vi.mock("@core/improvement/gp/resources/tracker", () => ({
   failureTracker: {
     trackEvaluationAttempt: vi.fn(),
     trackEvaluationFailure: vi.fn(),

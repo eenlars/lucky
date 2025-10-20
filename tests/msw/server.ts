@@ -1,9 +1,9 @@
-import type { RequestHandler } from "msw"
 /**
  * MSW server setup for Node tests
  * Use this to mock external HTTP requests in integration tests
  */
 import { setupServer } from "msw/node"
+import type { RequestHandler } from "msw"
 
 /**
  * Create an MSW server with the given handlers

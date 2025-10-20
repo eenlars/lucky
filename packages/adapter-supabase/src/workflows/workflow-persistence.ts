@@ -18,19 +18,10 @@ import type {
 export class SupabaseWorkflowPersistence {
   constructor(private client: SupabaseClient) {}
 
-  /**
-   * Ensures a workflow exists in the database by upserting it.
-   * Creates a new workflow record if it doesn't exist, or updates the existing one.
-   *
-   * @param workflowId - The unique identifier for the workflow
-   * @param description - A description of the workflow, typically used as the commit message
-   * @param clerkId - Optional clerk user ID for RLS. If not provided, will attempt to get from auth session.
-   */
-  async ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void> {
+  async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
     const workflowInsertable: TablesInsert<"Workflow"> = {
       wf_id: workflowId,
       description,
-      ...(clerkId && { clerk_id: clerkId }),
     }
 
     const { error } = await this.client.from("Workflow").upsert(workflowInsertable)

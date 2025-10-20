@@ -2,15 +2,14 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getProviderConfigs, testConnection, validateApiKey } from "@/features/provider-llm-setup/provider-utils"
 import { ModelGrid } from "@/features/provider-llm-setup/providers/model-selection/ModelGrid"
 import { ProviderConfigSkeleton } from "@/features/provider-llm-setup/providers/provider-skeleton"
-import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
-import { post } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
+import { getProviderConfigs, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
+import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
 import { AlertCircle, ArrowLeft, CheckCircle2, Copy, ExternalLink, Eye, EyeOff, Loader2, RefreshCw } from "lucide-react"
 import Image from "next/image"
@@ -79,7 +78,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const loadConfiguration = async () => {
     setIsLoading(true)
     try {
-      const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.secretKeyName)}`)
+      const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`)
       if (keyResponse.ok) {
         const keyData: { value: string } = await keyResponse.json()
         setApiKey(keyData.value)
@@ -197,10 +196,19 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      await post("user/env-keys/set", {
-        key: config.secretKeyName,
-        value: apiKey,
+      const keyResponse = await fetch("/api/user/env-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: config.apiKeyName,
+          value: apiKey,
+        }),
       })
+
+      if (!keyResponse.ok) {
+        const errorDetails = await extractFetchError(keyResponse)
+        throw new Error(errorDetails)
+      }
 
       setIsConfigured(true)
       setHasUnsavedKeyChanges(false)
@@ -323,7 +331,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                     <Input
                       id="api-key"
                       type={isVisible ? "text" : "password"}
-                      placeholder={`${config.apiKeyValuePrefix}...`}
+                      placeholder={`${config.apiKeyPrefix}...`}
                       value={apiKey}
                       onChange={e => handleApiKeyChange(e.target.value)}
                       autoComplete="off"

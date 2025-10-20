@@ -6,7 +6,7 @@
  * exploring different workflow architectures during evolution.
  */
 
-import { failureTracker } from "@core/improvement/gp/rsc/tracker"
+import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { lgg } from "@core/utils/logging/Logger"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"

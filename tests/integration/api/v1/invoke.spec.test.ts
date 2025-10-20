@@ -3,10 +3,67 @@
  * This test makes REAL HTTP calls to the API endpoint
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
-import type { TestUser } from "../../../helpers/test-auth-simple"
+import {
+  type TestUser,
+  createTestUserWithServiceRole,
+  createTestWorkflowSimple,
+} from "../../../helpers/test-auth-simple"
 
 // Test configuration - dynamic URL from globalSetup
 const BASE_URL = process.env.SERVER_URL || (globalThis as any).__SERVER_URL__ || "http://localhost:3000"
+
+// Workflow configuration from user requirement
+const TEST_WORKFLOW_CONFIG = {
+  nodes: [
+    {
+      nodeId: "assistant",
+      description: "Assistant",
+      systemPrompt: "You are a helpful assistant. Respond briefly.",
+      modelName: "gpt-4.1-nano",
+      mcpTools: [],
+      codeTools: [],
+      handOffs: ["Agent yeahs"],
+      memory: {},
+    },
+    {
+      nodeId: "Agent yeahs",
+      description: "Second agent",
+      systemPrompt: "You are a second agent. Say 'Complete' and end.",
+      modelName: "gpt-4.1-nano",
+      mcpTools: [],
+      codeTools: [],
+      handOffs: ["end"],
+      memory: {},
+    },
+  ],
+  entryNodeId: "assistant",
+  ui: {
+    layout: {
+      nodes: [
+        {
+          nodeId: "start",
+          x: 12,
+          y: 54,
+        },
+        {
+          nodeId: "end",
+          x: 1294,
+          y: 54,
+        },
+        {
+          nodeId: "assistant",
+          x: 234,
+          y: 12,
+        },
+        {
+          nodeId: "Agent yeahs",
+          x: 764,
+          y: 42,
+        },
+      ],
+    },
+  },
+}
 
 describe.skipIf(!process.env.TEST_API_KEY)("POST /api/v1/invoke - Real Integration Test", () => {
   let testUser: TestUser
@@ -196,7 +253,7 @@ describe("POST /api/v1/invoke - Endpoint Verification (No Auth Required)", () =>
           console.log(`[Endpoint Verification] ✓ Route ready (status: ${warmupResponse.status})`)
           break
         }
-      } catch (_e) {
+      } catch (e) {
         // Ignore fetch errors during warmup
       }
 

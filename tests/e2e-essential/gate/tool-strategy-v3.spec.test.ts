@@ -25,7 +25,7 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
   const systemMessage = "Choose the correct tool for the user request."
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
   afterEach(() => {
     vi.restoreAllMocks()

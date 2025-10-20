@@ -113,7 +113,7 @@ vi.mock("@examples/settings/constants", () => ({
     free: "qwen/qwq-32b:free",
     free2: "deepseek/deepseek-r1-0528:free",
     low: "gpt-4.1-nano",
-    balanced: "gpt-4.1-mini",
+    medium: "gpt-4.1-mini",
     high: "anthropic/claude-sonnet-4",
     fitness: "gpt-4.1-mini",
     reasoning: "anthropic/claude-sonnet-4",

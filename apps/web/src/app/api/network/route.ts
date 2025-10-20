@@ -1,7 +1,7 @@
 import { alrighty, fail } from "@/lib/api/server"
 import { lgg } from "@lucky/core/utils/logging/Logger"
 import { networkMonitor } from "@lucky/examples/definitions/browser-automation/network"
-import type { NextRequest } from "next/server"
+import { type NextRequest } from "next/server"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

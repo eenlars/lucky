@@ -3,9 +3,8 @@ import type { AgentSteps } from "@core/messages/pipeline/AgentStep.types"
 import type { InvocationSummary } from "@core/messages/summaries/createSummary"
 import type { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { WorkflowEventHandler } from "@lucky/shared"
-import type { WorkflowConfigZ } from "@lucky/shared/contracts/workflow"
 
 /**
  * Parameters for a basic in-memory queue-based workflow run.
@@ -93,21 +92,23 @@ export type ValidationMethod = "strict" | "ai" | "none"
  * - filename: load config from a local file
  * - dslConfig: pass a config object directly
  */
-export type InvocationSource =
-  | { kind: "version"; id: string } // wf_ver_* or parent wf_*, resolved by loader
-  | { kind: "filename"; path: string } // server-side file path (guarded by auth)
-  | { kind: "dsl"; config: WorkflowConfigZ | WorkflowConfig }
-
-export interface InvocationInput {
+export type InvocationInput = {
   evalInput: EvaluationInput
-  source: InvocationSource
   /** Optional progress event handler */
   onProgress?: WorkflowEventHandler
   /** Optional abort signal for graceful cancellation */
   abortSignal?: AbortSignal
   /** Validation method before execution (default: 'strict') */
   validation?: ValidationMethod
-}
+} & (
+  | { workflowVersionId: string; filename?: never; dslConfig?: never }
+  | { filename: string; workflowVersionId?: never; dslConfig?: never }
+  | {
+      dslConfig: WorkflowConfig
+      workflowVersionId?: never
+      filename?: never
+    }
+)
 
 /**
  * Result wrapper for ad-hoc workflow invocation with optional evaluation.

@@ -12,9 +12,9 @@
 
 import fs from "node:fs/promises"
 import path from "node:path"
-import type { ModelSchemaOpenRouter } from "@lucky/models/llm-catalog/openrouter/openrouter.schema"
 // write to file
 import type { ModelEntry } from "@lucky/shared"
+import type { OpenRouterModel, OpenRouterResponse } from "../src/openrouter.types"
 
 /**
  * Convert OpenRouter pricing string to number (per 1M tokens)
@@ -29,76 +29,63 @@ function parsePricing(priceStr: string): number {
 }
 
 /**
- * Estimate intelligence based on model capabilities and pricing
- * Combines multiple signals: reasoning capability, size indicators, price, context length
+ * Estimate intelligence based on model name and pricing
+ * Higher prices generally indicate more capable models
  */
-function estimateIntelligence(model: ModelSchemaOpenRouter): number {
+function estimateIntelligence(model: OpenRouterModel): number {
   const name = model.id.toLowerCase()
-  const inputPrice = parsePricing(model.pricing.prompt || "0")
-  const outputPrice = parsePricing(model.pricing.completion || "0")
+  const inputPrice = parsePricing(model.pricing.prompt)
+  const outputPrice = parsePricing(model.pricing.completion)
   const avgPrice = (inputPrice + outputPrice) / 2
-
-  // tier mapping for model size indicators (name-based)
-  const tierMap: Record<string, number> = {
-    nano: 3,
-    lite: 4,
-    mini: 5,
-    flash: 5,
-    haiku: 5,
-    small: 6,
-    medium: 7,
-    sonnet: 7,
-    large: 7,
-    pro: 7,
-    opus: 8,
-    ultra: 8,
-  }
 
   // start with base intelligence from naming
   let intelligence = 5 // default baseline
 
-  // reasoning models are always high intelligence
+  // reasoning models get high intelligence
   if (name.includes("o1") || name.includes("o3") || name.includes("reasoning")) {
-    return 10
+    intelligence = 10
+    return intelligence // reasoning models are always high intelligence
   }
 
-  // find highest tier indicator in name
-  for (const [tier, score] of Object.entries(tierMap)) {
-    if (name.includes(tier)) {
-      intelligence = score
-      break // use first (most specific) match
-    }
+  // adjust based on model tier indicators in name
+  if (name.includes("nano") || name.includes("lite")) {
+    intelligence = 4
+  } else if (name.includes("mini") || name.includes("flash") || name.includes("haiku")) {
+    intelligence = 5
+  } else if (name.includes("small")) {
+    intelligence = 6
+  } else if (name.includes("medium") || name.includes("sonnet")) {
+    intelligence = 7
+  } else if (name.includes("large") || name.includes("pro")) {
+    intelligence = 7
+  } else if (name.includes("opus") || name.includes("ultra")) {
+    intelligence = 8
   }
 
-  // price-based adjustments (override name hints)
-  const priceScores: Array<[number, number]> = [
-    [10, 9], // >$10/1M = very capable
-    [5, 8], // >$5/1M = capable
-    [2, 7], // >$2/1M = decent
-    [0.5, 6], // >$0.5/1M = budget
-    [0.1, 5], // >$0.1/1M = basic
-    [0, 4], // $0 = minimal
-  ]
-
-  for (const [threshold, score] of priceScores) {
-    if (avgPrice > threshold) {
-      intelligence = Math.max(intelligence, score)
-      break
-    }
+  // adjust based on price (higher price = more capable)
+  // if price is very high but name suggests lower tier, trust the price
+  if (avgPrice > 10) {
+    intelligence = Math.max(intelligence, 9) // very expensive = very smart
+  } else if (avgPrice > 5) {
+    intelligence = Math.max(intelligence, 8) // expensive = smart
+  } else if (avgPrice > 2) {
+    intelligence = Math.max(intelligence, 7) // medium price = decent
+  } else if (avgPrice > 0.5) {
+    intelligence = Math.max(intelligence, 6) // low price = budget
+  } else if (avgPrice > 0.1) {
+    intelligence = Math.max(intelligence, 5) // very low price = basic
+  } else {
+    intelligence = Math.min(intelligence, 4) // free/nearly free = minimal
   }
 
-  // context length signals capability
-  if (model.context_length > 100_000) {
-    intelligence = Math.max(intelligence, 8) // long context = advanced
-  } else if (model.context_length > 32_000) {
-    intelligence = Math.max(intelligence, 7) // medium-long context
+  // if name says "pro" but price is low, downgrade
+  if (name.includes("pro") && avgPrice < 1) {
+    intelligence = Math.min(intelligence, 6) // marketing "pro", not actually pro
   }
 
-  // multimodal capabilities suggest higher intelligence
-  const inputMods = model.architecture?.input_modalities?.length || 0
-  const outputMods = model.architecture?.output_modalities?.length || 0
-  if (inputMods > 2 || outputMods > 2) {
-    intelligence = Math.max(intelligence, 7) // rich multimodal = capable
+  // if name says "lite/mini/nano" but price is high, upgrade
+  if ((name.includes("lite") || name.includes("mini") || name.includes("nano")) && avgPrice > 2) {
+    intelligence = Math.min(intelligence + 2, 8) // priced higher than expected
   }
 
   // clamp between 1 and 10
@@ -106,21 +93,23 @@ function estimateIntelligence(model: ModelSchemaOpenRouter): number {
 }
 
 /**
- * Estimate speed based on model characteristics
- * Fast models: small, optimized variants; Slow models: reasoning-intensive
+ * Estimate speed based on model name
  */
-function estimateSpeed(model: ModelSchemaOpenRouter): "fast" | "medium" | "slow" {
+function estimateSpeed(model: OpenRouterModel): "fast" | "medium" | "slow" {
   const name = model.id.toLowerCase()
 
-  // reasoning models are inherently slow
-  if (name.includes("o1") || name.includes("o3") || name.includes("reasoning")) {
-    return "slow"
+  if (
+    name.includes("flash") ||
+    name.includes("turbo") ||
+    name.includes("mini") ||
+    name.includes("nano") ||
+    name.includes("lite")
+  ) {
+    return "fast"
   }
 
-  // optimized fast variants
-  const fastIndicators = ["flash", "turbo", "mini", "nano", "lite", "instruct"]
-  if (fastIndicators.some(indicator => name.includes(indicator))) {
-    return "fast"
+  if (name.includes("o1") || name.includes("o3") || name.includes("reasoning")) {
+    return "slow"
   }
 
   return "medium"
@@ -139,29 +128,26 @@ function getPricingTier(inputPrice: number, outputPrice: number): "low" | "mediu
 
 /**
  * Check if model supports vision
- * Uses structured modality data and generic fallback patterns
  */
-function supportsVision(model: ModelSchemaOpenRouter): boolean {
-  // primary: use structured modality data from schema
-  if (model.architecture?.input_modalities?.includes("image")) {
-    return true
-  }
-
-  // fallback: check generic modality descriptions
-  const modality = model.architecture?.modality?.toLowerCase() || ""
-  if (modality.includes("image") || modality.includes("vision")) {
-    return true
-  }
-
-  // last resort: generic patterns (avoid specific model names)
+function supportsVision(model: OpenRouterModel): boolean {
   const name = model.id.toLowerCase()
-  return name.includes("vision") || name.includes("-4o") || name.includes("-4-vision")
+  const modality = model.architecture?.modality?.toLowerCase() || ""
+
+  return (
+    modality.includes("image") ||
+    modality.includes("vision") ||
+    name.includes("vision") ||
+    name.includes("gpt-4o") ||
+    name.includes("claude-3") ||
+    name.includes("gemini-2") ||
+    name.includes("gemini-pro")
+  )
 }
 
 /**
  * Check if model supports reasoning
  */
-function supportsReasoning(model: ModelSchemaOpenRouter): boolean {
+function supportsReasoning(model: OpenRouterModel): boolean {
   const name = model.id.toLowerCase()
   return name.includes("o1") || name.includes("o3") || name.includes("reasoning")
 }
@@ -170,7 +156,7 @@ function supportsReasoning(model: ModelSchemaOpenRouter): boolean {
  * Check if model supports tools
  * OpenRouter models expose this via the supported_parameters array
  */
-function supportsTools(model: ModelSchemaOpenRouter): boolean {
+function supportsTools(model: OpenRouterModel): boolean {
   const supportedParams = model.supported_parameters || []
   return supportedParams.includes("tools")
 }
@@ -179,36 +165,20 @@ function supportsTools(model: ModelSchemaOpenRouter): boolean {
  * Check if model supports JSON mode
  * OpenRouter models expose this via the supported_parameters array
  */
-function supportsJsonMode(model: ModelSchemaOpenRouter): boolean {
+function supportsJsonMode(model: OpenRouterModel): boolean {
   const supportedParams = model.supported_parameters || []
   return supportedParams.includes("response_format") || supportedParams.includes("structured_outputs")
 }
 
 /**
- * Check if model supports audio (input or output)
- * Uses structured modality data from schema
- */
-function supportsAudio(model: ModelSchemaOpenRouter): boolean {
-  const inputModalities = model.architecture?.input_modalities || []
-  const outputModalities = model.architecture?.output_modalities || []
-  return inputModalities.includes("audio") || outputModalities.includes("audio")
-}
-
-/**
  * Transform OpenRouter model to ModelEntry
- * Prioritizes schema-provided values with sensible defaults as fallback
  */
-function transformModel(model: ModelSchemaOpenRouter): ModelEntry {
-  const inputPrice = parsePricing(model.pricing.prompt || "0")
-  const outputPrice = parsePricing(model.pricing.completion || "0")
+function transformModel(model: OpenRouterModel): ModelEntry {
+  const inputPrice = parsePricing(model.pricing.prompt)
+  const outputPrice = parsePricing(model.pricing.completion)
 
-  // cached input pricing: use schema value if available, fallback to 1/3 of input
-  let cachedInput: number | null = null
-  if (model.pricing.input_cache_read) {
-    cachedInput = parsePricing(model.pricing.input_cache_read)
-  } else if (inputPrice > 0) {
-    cachedInput = inputPrice / 3 // standard estimate when not specified
-  }
+  // calculate cached input price (typically 1/3 of input price)
+  const cachedInput = inputPrice > 0 ? inputPrice / 3 : null
 
   return {
     id: `openrouter#${model.id}`,
@@ -218,18 +188,17 @@ function transformModel(model: ModelSchemaOpenRouter): ModelEntry {
     output: outputPrice,
     cachedInput,
     contextLength: model.context_length,
-    supportsTools: supportsTools(model),
-    supportsJsonMode: supportsJsonMode(model),
-    supportsStreaming: true, // all models on OpenRouter support streaming
+    supportsTools: supportsTools(model), // check OpenRouter supported_parameters
+    supportsJsonMode: supportsJsonMode(model), // check OpenRouter supported_parameters
+    supportsStreaming: true, // all models support streaming via OpenRouter
     supportsVision: supportsVision(model),
     supportsReasoning: supportsReasoning(model),
-    supportsAudio: supportsAudio(model),
-    supportsVideo: false, // rare - manually configure as needed
+    supportsAudio: false, // rare, manually configure
+    supportsVideo: false, // rare, manually configure
     speed: estimateSpeed(model),
     intelligence: estimateIntelligence(model),
     pricingTier: getPricingTier(inputPrice, outputPrice),
-    runtimeEnabled: false, // manually configure per deployment
-    uiHiddenInProd: false, // manually configure per deployment
+    active: false, // manually configure which models are active
   }
 }
 
@@ -268,8 +237,7 @@ function generateCatalogCode(models: ModelEntry[]): string {
     lines.push(`    speed: "${model.speed}",`)
     lines.push(`    intelligence: ${model.intelligence},`)
     lines.push(`    pricingTier: "${model.pricingTier}",`)
-    lines.push(`    runtimeEnabled: ${model.runtimeEnabled},`)
-    lines.push(`    uiHiddenInProd: ${model.uiHiddenInProd},`)
+    lines.push(`    active: ${model.active},`)
     lines.push("  },")
     lines.push("")
   }
@@ -291,7 +259,7 @@ async function main() {
     throw new Error(`Failed to fetch models: ${response.statusText}`)
   }
 
-  const data = (await response.json()) as { data: ModelSchemaOpenRouter[] }
+  const data = (await response.json()) as OpenRouterResponse
   console.log(`Fetched ${data.data.length} models from OpenRouter`)
 
   // transform models
@@ -322,14 +290,13 @@ async function main() {
   // generate code
   const code = generateCatalogCode(filtered)
 
-  const outputPath = path.join(import.meta.dir, "../src/llm-catalog/pricing-generation/openrouter-models.ts")
+  const outputPath = path.join(import.meta.dir, "../src/pricing/openrouter-models.ts")
   await fs.writeFile(outputPath, code, "utf-8")
 
   console.log(`\n✅ Generated ${filtered.length} model entries`)
   console.log(`📝 Written to: ${outputPath}`)
   console.log("\nNOTE: Review and manually configure:")
-  console.log("  - runtimeEnabled: true for models you want to enable")
-  console.log("  - uiHiddenInProd: true for models you want to hide in production")
+  console.log("  - active: true for models you want to enable")
   console.log("  - supportsVision/Audio/Video based on model capabilities")
   console.log("  - intelligence ratings based on benchmarks")
 }

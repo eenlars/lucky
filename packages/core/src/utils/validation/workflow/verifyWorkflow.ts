@@ -20,8 +20,8 @@ import { verifyHandoffTypeConsistency } from "@core/utils/validation/workflow/ve
 import { verifyHierarchicalStructure } from "@core/utils/validation/workflow/verifyHierarchical"
 import { verifyNodes } from "@core/utils/validation/workflow/verifyOneNode"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import { findModelByName } from "@lucky/models"
 import { isNir } from "@lucky/shared"
-import { findModel } from "@repo/models"
 
 // verify that each node has a modelname that exists
 export const verifyModelNameExists = async (config: WorkflowConfig): Promise<VerificationErrors> => {
@@ -33,7 +33,7 @@ export const verifyModelNameExists = async (config: WorkflowConfig): Promise<Ver
       const modelName = node.modelName
 
       // Look up model by API name (workflows store API-format model names)
-      const catalogEntry = findModel(modelName)
+      const catalogEntry = findModelByName(modelName)
 
       if (!catalogEntry) {
         errors.push(`Node '${node.nodeId}' has an invalid modelName: ${node.modelName}`)

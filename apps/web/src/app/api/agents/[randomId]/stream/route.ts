@@ -13,8 +13,8 @@ export const maxDuration = 59 // 1 minute (Vercel hobby plan limit for prod; dev
  *
  * Returns Server-Sent Events for real-time agent execution monitoring
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ randomId: string }> }) {
-  const { randomId } = await params
+export async function GET(req: NextRequest, { params }: { params: { randomId: string } }) {
+  const { randomId } = params
 
   // Authenticate
   const principal = await authenticateRequest(req)

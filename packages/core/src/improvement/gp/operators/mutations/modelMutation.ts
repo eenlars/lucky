@@ -2,7 +2,7 @@
  * model mutation operations
  */
 
-import { failureTracker } from "@core/improvement/gp/rsc/tracker"
+import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { lgg } from "@core/utils/logging/Logger"
 import { getActiveModelNames } from "@core/utils/spending/functions"
 

@@ -20,7 +20,7 @@ async function runOnce(setupFilePath?: string) {
       data: results,
       usdCost,
     } = await invokeWorkflow({
-      source: { kind: "filename", path: setupPath },
+      filename: setupPath,
       evalInput: SELECTED_QUESTION,
     })
 

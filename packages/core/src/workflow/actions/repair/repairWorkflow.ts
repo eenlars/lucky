@@ -36,7 +36,7 @@ export async function repairWorkflow(
 
   const { data, success, error, usdCost } = await sendAI({
     messages: WorkflowRepairPrompts.repairWorkflowPrompt(config, verificationSummary),
-    model: getDefaultModels().balanced,
+    model: getDefaultModels().medium,
     mode: "structured",
     schema: WorkflowRepairPrompts.expectedOutput,
   })

@@ -7,7 +7,7 @@
  */
 
 import { getDefaultModels } from "@core/core-config/coreConfig"
-import { failureTracker } from "@core/improvement/gp/rsc/tracker"
+import { failureTracker } from "@core/improvement/gp/resources/tracker"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { WORKFLOW_GENERATION_RULES } from "@core/prompts/generationRules"

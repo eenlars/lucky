@@ -129,12 +129,12 @@ vi.mock("@examples/settings/constants", () => ({
 }))
 
 // Mock workflowConfigToGenome wrapper - specific to this test
-vi.mock("@core/improvement/gp/rsc/wrappers", () => ({
+vi.mock("@core/improvement/gp/resources/wrappers", () => ({
   workflowConfigToGenome: vi.fn(),
 }))
 
 // Mock createDummyGenome
-vi.mock("@core/improvement/gp/rsc/debug/dummyGenome", () => ({
+vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
   createDummyGenome: vi.fn(),
 }))
 
@@ -173,10 +173,10 @@ vi.mock("@core/utils/persistence/workflow/registerWorkflow", () => ({
 
 // Import after mocks to avoid hoisting issues
 import { Genome } from "@core/improvement/gp/Genome"
-import { createDummyGenome } from "@core/improvement/gp/rsc/debug/dummyGenome"
-import type { WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
-import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
-import { workflowConfigToGenome } from "@core/improvement/gp/rsc/wrappers"
+import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
+import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
+import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
 
 import type { EvaluationCSV, EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"

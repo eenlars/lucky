@@ -1,9 +1,5 @@
-import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
-import { requireAuthWithApiKey } from "@/lib/api-auth"
-import { withExecutionContext } from "@lucky/core/context/executionContext"
-import { genObject } from "@lucky/core/messages/api/genObject"
-import { createLLMRegistry } from "@lucky/models"
-import type { NextRequest } from "next/server"
+import { openai } from "@ai-sdk/openai"
+import { generateObject } from "ai"
 import { z } from "zod"
 
 // Schema for MCP server configuration
@@ -26,28 +22,13 @@ const mcpConfigResponseSchema = z.object({
   }),
 })
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // Require authentication
-    const authResult = await requireAuthWithApiKey(req)
-    if (authResult instanceof Response) return authResult
-    const principal = authResult
-
     const { contextType, prompt, currentState } = await req.json()
 
     if (!contextType || !prompt) {
       return Response.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
-
-    // Setup execution context
-    const secrets = createSecretResolver(principal.clerk_id, principal)
-    const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
-
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: apiKeys.OPENAI_API_KEY,
-      },
-    })
 
     // Create system prompt based on context type
     let systemPrompt = `You are an AI assistant helping to modify ${contextType} configurations.\n`
@@ -121,66 +102,33 @@ ${JSON.stringify(currentState, null, 2)}
 Make appropriate changes based on the user's request.`
     }
 
-    const modelUsed = "openai#gpt-4o-mini"
-
-    const userModels = llmRegistry.forUser({
-      mode: "shared",
-      userId: principal.clerk_id,
-      models: [modelUsed],
+    // Simple non-streaming call
+    const result = await generateObject({
+      model: openai("gpt-4o"),
+      schema: mcpConfigResponseSchema,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt },
+      ],
     })
 
-    // Execute within execution context
-    return withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
-      // Use custom genObject wrapper to avoid type inference issues
-      const result = await genObject({
-        model: modelUsed,
-        schema: mcpConfigResponseSchema,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: prompt },
-        ],
-        opts: {
-          retries: 2,
-          repair: true,
-        },
-      })
-
-      if (!result.success) {
-        return Response.json(
-          {
-            success: false,
-            error: result.error || "Failed to generate configuration",
-            errorType: "generation_failed",
-          },
-          { status: 500 },
-        )
-      }
-
-      // Return simple JSON response like the workflow endpoint
-      return Response.json({
-        success: true,
-        data: result.data.value,
-      })
+    // Return simple JSON response like the workflow endpoint
+    return Response.json({
+      success: true,
+      data: result.object,
     })
   } catch (error) {
     // Handle AI SDK errors with better user messages
     if (error && typeof error === "object" && "name" in error) {
-      const errorWithName = error as {
-        name: string
-        message?: string
-        statusCode?: number
-        lastError?: { statusCode?: number; responseBody?: string }
-      }
+      const err = error as any
 
       // Handle quota/billing errors (429)
-      if (errorWithName.name === "AI_RetryError" || errorWithName.name === "AI_APICallError") {
-        const statusCode = errorWithName.statusCode ?? errorWithName.lastError?.statusCode
-        const errorType = errorWithName.lastError?.responseBody
-          ? JSON.parse(errorWithName.lastError.responseBody)?.error?.type
-          : null
+      if (err.name === "AI_RetryError" || err.name === "AI_APICallError") {
+        const statusCode = err.statusCode || err.lastError?.statusCode
+        const errorType = err.lastError?.responseBody ? JSON.parse(err.lastError.responseBody)?.error?.type : null
 
         if (statusCode === 429 || errorType === "insufficient_quota") {
-          console.error("[AI artifact] Quota exceeded:", errorWithName.message)
+          console.error("[AI artifact] Quota exceeded:", err.message)
           return Response.json(
             {
               success: false,
@@ -193,7 +141,7 @@ Make appropriate changes based on the user's request.`
 
         // Handle rate limits
         if (statusCode === 429 || errorType === "rate_limit_exceeded") {
-          console.error("[AI artifact] Rate limit:", errorWithName.message)
+          console.error("[AI artifact] Rate limit:", err.message)
           return Response.json(
             {
               success: false,
@@ -206,7 +154,7 @@ Make appropriate changes based on the user's request.`
 
         // Handle authentication errors
         if (statusCode === 401 || errorType === "invalid_api_key") {
-          console.error("[AI artifact] Auth error:", errorWithName.message)
+          console.error("[AI artifact] Auth error:", err.message)
           return Response.json(
             {
               success: false,

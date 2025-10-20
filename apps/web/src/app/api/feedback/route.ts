@@ -1,17 +1,18 @@
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
 import { ZodError } from "zod"
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth()
+    const { isAuthenticated, userId } = await auth()
 
     // Validate request body using type-safe schema
     const body = await handleBody("feedback", req as any)
     if (isHandleBodyError(body)) return body
 
-    const { message: content, context } = body
+    const { message: content, context, type } = body
 
     const supabase = await createRLSClient()
     const { error } = await supabase

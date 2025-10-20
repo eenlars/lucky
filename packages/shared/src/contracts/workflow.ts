@@ -79,7 +79,7 @@ export const WorkflowConfigSchema = z.object({
 })
 
 export type WorkflowNodeConfig = z.infer<typeof WorkflowNodeConfigSchema>
-export type WorkflowConfigZ = z.infer<typeof WorkflowConfigSchema>
+export type WorkflowConfig = z.infer<typeof WorkflowConfigSchema>
 export type HandoffType = z.infer<typeof HandoffTypeSchema>
 export type JsonSchemaDefinition = JSONSchema7
 export type NodeLayout = z.infer<typeof NodeLayoutSchema>

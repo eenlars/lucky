@@ -1,43 +1,13 @@
-import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
-import { requireAuthWithApiKey } from "@/lib/api-auth"
-import { withExecutionContext } from "@lucky/core/context/executionContext"
-import { createLLMRegistry } from "@lucky/models"
+import { openai } from "@ai-sdk/openai"
 import { streamText } from "ai"
-import type { NextRequest } from "next/server"
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // Require authentication
-    const authResult = await requireAuthWithApiKey(req)
-    if (authResult instanceof Response) return authResult
-    const principal = authResult
-
     const { contextType, prompt, currentState, operation: _operation } = await req.json()
 
     if (!contextType || !prompt) {
       return Response.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
-
-    // Setup execution context
-    const secrets = createSecretResolver(principal.clerk_id, principal)
-    const apiKeys = await secrets.getAll(
-      ["OPENAI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY"],
-      "environment-variables",
-    )
-
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: apiKeys.OPENAI_API_KEY,
-        groq: apiKeys.GROQ_API_KEY,
-        openrouter: apiKeys.OPENROUTER_API_KEY,
-      },
-    })
-
-    const userModels = llmRegistry.forUser({
-      mode: "shared",
-      userId: principal.clerk_id,
-      models: ["openai#gpt-4o-mini"],
-    })
 
     // Create system prompt based on context type
     let systemPrompt = `You are an AI assistant helping to modify ${contextType} configurations.\n`
@@ -92,51 +62,49 @@ Respond with a JSON object containing:
 - explanation: a brief explanation of what was changed`
     }
 
-    return withExecutionContext({ principal, secrets, apiKeys, userModels }, async () => {
-      const result = streamText({
-        model: userModels.model("openai#gpt-4o-mini"),
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.7,
-      })
-
-      // Get the complete text response
-      let fullText = ""
-      for await (const chunk of result.textStream) {
-        fullText += chunk
-      }
-
-      // Try to parse the response as JSON
-      try {
-        // Find JSON in the response (it might be wrapped in markdown code blocks)
-        const jsonMatch = fullText.match(/\{[\s\S]*\}/)
-        if (!jsonMatch) {
-          throw new Error("No JSON found in response")
-        }
-
-        const parsed = JSON.parse(jsonMatch[0])
-
-        if (!parsed.changes) {
-          throw new Error("Response missing 'changes' field")
-        }
-
-        return Response.json({
-          success: true,
-          changes: parsed.changes,
-          explanation: parsed.explanation || "Configuration updated",
-        })
-      } catch (parseError) {
-        console.error("Failed to parse AI response:", parseError)
-        console.error("Raw response:", fullText)
-
-        return Response.json({
-          success: false,
-          error: "Failed to parse AI response. Please try again.",
-        })
-      }
+    const result = streamText({
+      model: openai("gpt-4o"),
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.7,
     })
+
+    // Get the complete text response
+    let fullText = ""
+    for await (const chunk of result.textStream) {
+      fullText += chunk
+    }
+
+    // Try to parse the response as JSON
+    try {
+      // Find JSON in the response (it might be wrapped in markdown code blocks)
+      const jsonMatch = fullText.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) {
+        throw new Error("No JSON found in response")
+      }
+
+      const parsed = JSON.parse(jsonMatch[0])
+
+      if (!parsed.changes) {
+        throw new Error("Response missing 'changes' field")
+      }
+
+      return Response.json({
+        success: true,
+        changes: parsed.changes,
+        explanation: parsed.explanation || "Configuration updated",
+      })
+    } catch (parseError) {
+      console.error("Failed to parse AI response:", parseError)
+      console.error("Raw response:", fullText)
+
+      return Response.json({
+        success: false,
+        error: "Failed to parse AI response. Please try again.",
+      })
+    }
   } catch (error) {
     console.error("AI handler error:", error)
     return Response.json({ success: false, error: "Internal server error" }, { status: 500 })

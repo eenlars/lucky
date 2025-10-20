@@ -2,19 +2,18 @@ import { loadDatasetMeta, saveDatasetMeta } from "@/app/api/ingestions/_lib/meta
 import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ datasetId: string; ioId: string }> }) {
+export async function PUT(req: NextRequest, { params }: { params: { datasetId: string; ioId: string } }) {
   // Require authentication
   const { isAuthenticated } = await auth()
   if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
-    const { datasetId, ioId } = await params
     const patch = (await req.json()) as Partial<{
       input: unknown
       expected: unknown
     }>
-    const meta = await loadDatasetMeta(datasetId)
-    const idx = (meta.ios || []).findIndex(x => x.id === ioId)
+    const meta = await loadDatasetMeta(params.datasetId)
+    const idx = (meta.ios || []).findIndex(x => x.id === params.ioId)
     if (idx === -1) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
     const cur = meta.ios[idx]
@@ -34,16 +33,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ data
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ datasetId: string; ioId: string }> }) {
+export async function DELETE(_req: NextRequest, { params }: { params: { datasetId: string; ioId: string } }) {
   // Require authentication
   const { isAuthenticated } = await auth()
   if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   try {
-    const { datasetId, ioId } = await params
-    const meta = await loadDatasetMeta(datasetId)
+    const meta = await loadDatasetMeta(params.datasetId)
     const before = (meta.ios || []).length
-    meta.ios = (meta.ios || []).filter(x => x.id !== ioId)
+    meta.ios = (meta.ios || []).filter(x => x.id !== params.ioId)
     if (meta.ios.length === before) {
       return NextResponse.json({ error: "Not found" }, { status: 404 })
     }

@@ -7,7 +7,6 @@ import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
-import { MODEL_CATALOG, createLLMRegistry } from "@lucky/models"
 import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
 import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
@@ -97,21 +96,6 @@ export async function POST(request: Request) {
     const observer = new AgentObserver()
     ObserverRegistry.getInstance().register(randomId, observer)
 
-    // Create registry with dev API keys
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: devApiKeys.OPENAI_API_KEY,
-        groq: devApiKeys.GROQ_API_KEY,
-        openrouter: devApiKeys.OPENROUTER_API_KEY,
-      },
-    })
-
-    const userModels = llmRegistry.forUser({
-      mode: "shared",
-      userId: userId,
-      models: MODEL_CATALOG.map(i => i.id),
-    })
-
     const result = await withExecutionContext(
       {
         principal: {
@@ -124,7 +108,6 @@ export async function POST(request: Request) {
           getAll: async () => ({}),
         },
         apiKeys: devApiKeys,
-        userModels,
       },
       async () => {
         return withObservationContext({ randomId, observer }, async () => {
@@ -221,7 +204,7 @@ export async function POST(request: Request) {
 
     // Check if pipeline execution succeeded
     const hasError = !!result.error
-    const _success = !hasError
+    const success = !hasError
 
     // If pipeline failed, return error response
     if (hasError) {

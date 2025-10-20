@@ -225,12 +225,11 @@ export class InMemoryPersistence implements IPersistence {
     this.messages = new InMemoryMessagePersistence()
   }
 
-  async ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void> {
+  async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
     if (!this.workflows.has(workflowId)) {
       this.workflows.set(workflowId, {
         wf_id: workflowId,
         description,
-        ...(clerkId && { clerk_id: clerkId }),
       })
     }
   }

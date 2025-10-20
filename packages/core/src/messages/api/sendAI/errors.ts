@@ -16,13 +16,11 @@ export function normalizeError(error: unknown): NormalizedError {
     const nameVal = rec.name
     const statusCodeVal = rec.statusCode
     const responseBodyVal = rec.responseBody
-    const responseBodySnippetVal = rec.responseBodySnippet
     const responseHeadersVal = rec.responseHeaders
     return (
       (typeof nameVal === "string" && nameVal === "APICallError") ||
       typeof statusCodeVal === "number" ||
       typeof responseBodyVal === "string" ||
-      typeof responseBodySnippetVal === "string" ||
       (typeof responseHeadersVal === "object" && responseHeadersVal !== null)
     )
   }
@@ -33,29 +31,19 @@ export function normalizeError(error: unknown): NormalizedError {
     const messageIn = typeof rec.message === "string" ? (rec.message as string) : undefined
     const statusCode = typeof rec.statusCode === "number" ? (rec.statusCode as number) : undefined
     const responseBody = typeof rec.responseBody === "string" ? (rec.responseBody as string) : undefined
-    const responseBodySnippet =
-      typeof rec.responseBodySnippet === "string" ? (rec.responseBodySnippet as string) : undefined
     const responseHeaders =
       typeof rec.responseHeaders === "object" && rec.responseHeaders !== null
         ? (rec.responseHeaders as Record<string, string>)
         : undefined
     const url = typeof rec.url === "string" ? (rec.url as string) : undefined
 
-    // Use responseBody if available, otherwise fall back to responseBodySnippet
-    const body =
-      typeof responseBody === "string"
-        ? responseBody
-        : typeof responseBodySnippet === "string"
-          ? responseBodySnippet
-          : ""
+    const body = typeof responseBody === "string" ? responseBody : ""
     const isEmptyBody200 = statusCode === 200 && body.length === 0
 
-    // Extract error message from response body or snippet (OpenRouter, OpenAI, etc.)
     let extractedMessage: string | undefined
     if (!isEmptyBody200 && body) {
       try {
         const parsed = JSON.parse(body)
-        // Try multiple error message patterns from different providers
         if (parsed?.error?.metadata?.raw) {
           const raw = parsed.error.metadata.raw
           try {
@@ -65,10 +53,8 @@ export function normalizeError(error: unknown): NormalizedError {
             extractedMessage = String(raw)
           }
         } else if (parsed?.error?.message) {
-          // OpenRouter, OpenAI format: { error: { message: "..." } }
           extractedMessage = parsed.error.message
         } else if (parsed?.message) {
-          // Alternative format: { message: "..." }
           extractedMessage = parsed.message
         }
       } catch {

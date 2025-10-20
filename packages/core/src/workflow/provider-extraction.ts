@@ -1,5 +1,5 @@
-import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { PROVIDERS, findModel } from "@lucky/models"
+import { findModelByName } from "@lucky/models"
+import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
 export type RequiredProviders = {
   providers: Set<string> // e.g., ["openai", "openrouter"]
@@ -22,7 +22,7 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
     if (!modelName) continue
 
     // Look up model by its API name (the `model` field in catalog)
-    const catalogEntry = findModel(modelName)
+    const catalogEntry = findModelByName(modelName)
 
     if (!catalogEntry) {
       console.warn(`[extractProviders] Model not found in catalog: ${modelName} (node: ${nodeConfig.nodeId})`)
@@ -48,12 +48,13 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
  * Map provider names to their API key environment variable names
  */
 export function getProviderKeyName(provider: string): string {
-  const providerEntry = PROVIDERS.find(p => p.provider === provider.toLowerCase())
-  if (providerEntry) {
-    return providerEntry.secretKeyName
+  const mapping: Record<string, string> = {
+    openai: "OPENAI_API_KEY",
+    openrouter: "OPENROUTER_API_KEY",
+    anthropic: "ANTHROPIC_API_KEY",
+    groq: "GROQ_API_KEY",
   }
-  // Fallback for unknown providers (e.g., Anthropic)
-  return `${provider.toUpperCase()}_API_KEY`
+  return mapping[provider] || `${provider.toUpperCase()}_API_KEY`
 }
 
 /**
@@ -61,15 +62,15 @@ export function getProviderKeyName(provider: string): string {
  * For unknown keys, converts HUGGING_FACE_API_KEY -> "Hugging Face"
  */
 export function getProviderDisplayName(keyName: string): string {
-  // Look up in PROVIDERS first
-  const providerEntry = PROVIDERS.find(p => p.secretKeyName === keyName)
-  if (providerEntry) {
-    return providerEntry.displayName
+  const mapping: Record<string, string> = {
+    OPENAI_API_KEY: "OpenAI",
+    OPENROUTER_API_KEY: "OpenRouter",
+    ANTHROPIC_API_KEY: "Anthropic",
+    GROQ_API_KEY: "Groq",
   }
 
-  // Known legacy providers not in PROVIDERS
-  if (keyName === "ANTHROPIC_API_KEY") {
-    return "Anthropic"
+  if (mapping[keyName]) {
+    return mapping[keyName]
   }
 
   // Fallback: convert HUGGING_FACE_API_KEY -> "Hugging Face"

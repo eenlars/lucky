@@ -150,7 +150,7 @@ export type TypedModelDefaults = {
   readonly summary: string
   readonly nano: string
   readonly low: string
-  readonly balanced: string
+  readonly medium: string
   readonly high: string
   readonly default: string
   readonly fitness: string
