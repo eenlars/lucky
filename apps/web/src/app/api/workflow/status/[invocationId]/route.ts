@@ -1,8 +1,8 @@
+import { activeWorkflows } from "@/features/workflow-or-chat-invocation/workflow/active-workflows"
 import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { alrighty } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { getWorkflowState } from "@/lib/redis/workflow-state"
-import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import { type NextRequest, NextResponse } from "next/server"
 
 /**
@@ -19,12 +19,12 @@ import { type NextRequest, NextResponse } from "next/server"
  *   cancelRequestedAt?: number
  * }
  */
-export async function GET(req: NextRequest, { params }: { params: { invocationId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ invocationId: string }> }) {
   try {
     const authResult = await requireAuthWithApiKey(req)
     if (authResult instanceof NextResponse) return authResult
 
-    const { invocationId } = params
+    const { invocationId } = await params
 
     if (!invocationId || typeof invocationId !== "string") {
       return alrighty("workflow/status/[invocationId]", {
@@ -78,7 +78,7 @@ export async function GET(req: NextRequest, { params }: { params: { invocationId
 
     return alrighty("workflow/status/[invocationId]", {
       state: "not_found" as const,
-      invocationId: params.invocationId || "unknown",
+      invocationId: "unknown",
     })
   }
 }

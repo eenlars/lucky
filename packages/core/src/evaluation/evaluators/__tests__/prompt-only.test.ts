@@ -1,4 +1,4 @@
-import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
 import { createMockGenome, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"

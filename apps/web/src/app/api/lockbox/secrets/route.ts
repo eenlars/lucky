@@ -99,11 +99,14 @@ export async function POST(req: NextRequest) {
       })
 
     return alrighty("lockbox/secrets", {
-      id: data.user_secret_id,
-      name: data.name,
-      namespace: data.namespace,
-      version: data.version,
-      createdAt: data.created_at,
+      success: true,
+      data: {
+        id: data.user_secret_id,
+        name: data.name,
+        namespace: data.namespace,
+        version: data.version,
+        createdAt: data.created_at,
+      },
     })
   } catch (e: any) {
     logException(e, {
@@ -147,12 +150,15 @@ export async function GET(req: NextRequest) {
 
   if (!reveal) {
     return alrighty("lockbox/secrets:get", {
-      id: data.user_secret_id,
-      name: data.name,
-      namespace: data.namespace,
-      version: data.version,
-      lastUsedAt: data.last_used_at ?? undefined,
-      createdAt: data.created_at,
+      success: true,
+      data: {
+        id: data.user_secret_id,
+        name: data.name,
+        namespace: data.namespace,
+        version: data.version,
+        lastUsedAt: data.last_used_at ?? undefined,
+        createdAt: data.created_at,
+      },
     })
   }
 
@@ -175,11 +181,14 @@ export async function GET(req: NextRequest) {
     }
 
     return alrighty("lockbox/secrets:get", {
-      id: data.user_secret_id,
-      name: data.name,
-      namespace: data.namespace,
-      version: data.version,
-      value,
+      success: true,
+      data: {
+        id: data.user_secret_id,
+        name: data.name,
+        namespace: data.namespace,
+        version: data.version,
+        value,
+      },
     })
   } catch (e: any) {
     logException(e, {

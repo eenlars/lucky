@@ -19,7 +19,7 @@ import { ToolManager } from "../toolManager"
  * 6. Extract tool usage and validate sequential execution
  */
 
-const model = getDefaultModels().medium
+const model = getDefaultModels().balanced
 
 describe("MultiStep2 integration - todoRead and todoWrite", () => {
   // TODO: this test appears to be an integration test that makes real database calls

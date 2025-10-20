@@ -5,8 +5,8 @@
  * When persistence is not provided, generates local IDs.
  */
 
-import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/resources/evolution-types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionSettings, IterativeConfig } from "@core/improvement/gp/rsc/evolution-types"
+import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
 import type { FlowEvolutionMode } from "@core/types"
 import { RunTrackingError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"
@@ -15,7 +15,7 @@ import { JSONN } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import type { IEvolutionPersistence, IPersistence } from "@together/adapter-supabase"
 import type { Genome } from "./Genome"
-import type { PopulationStats } from "./resources/gp.types"
+import type { PopulationStats } from "./rsc/gp.types"
 
 type WorkflowOperator = "init" | "crossover" | "mutation" | "immigrant"
 

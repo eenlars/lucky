@@ -1,12 +1,12 @@
 "use client"
 
+import { getEnabledProviderSlugs } from "@/features/provider-llm-setup/provider-utils"
 import { SyncStatusBadge } from "@/features/provider-llm-setup/providers/sync-status-badge"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useFeatureFlag } from "@/lib/feature-flags"
-import { getEnabledProviderSlugs } from "@/lib/providers/provider-utils"
 import { cn } from "@/lib/utils"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
 import type { LuckyProvider } from "@lucky/shared"
 import {
@@ -114,9 +114,10 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   }, [selectedProvider])
 
   // Load preferences on mount - always refresh to get latest from server
+  // Use forceRefresh to bypass cache and ensure fresh data
   useEffect(() => {
-    loadPreferences()
-  }, [loadPreferences])
+    forceRefresh()
+  }, [forceRefresh])
 
   // Compute available models based on user preferences and selected provider
   const availableModels = useMemo(() => {
@@ -127,7 +128,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     }
 
     // Get all models for the provider from catalog
-    const allModels = getModelsByProvider(providerToFetch).filter(m => m.runtimeEnabled)
+    const allModels = getModelsByProvider(providerToFetch).filter(m => m.runtimeEnabled !== false)
     const catalogMap = new Map(allModels.map(m => [m.model, m]))
 
     // Get user's enabled models for this provider
@@ -157,7 +158,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
           active: true,
           contextLength: 0,
           intelligence: 5,
-          speed: "medium" as const,
+          speed: "balanced" as const,
           input: 0,
           output: 0,
           supportsTools: false,

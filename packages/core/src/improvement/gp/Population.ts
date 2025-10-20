@@ -25,9 +25,9 @@
  */
 
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
-import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
-import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
+import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
+import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
+import { EvolutionUtils } from "@core/improvement/gp/rsc/utils"
 import { PopulationError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
@@ -37,7 +37,7 @@ import type { RS } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import { Genome } from "./Genome"
 import type { RunService } from "./RunService"
-import type { PopulationStats } from "./resources/gp.types"
+import type { PopulationStats } from "./rsc/gp.types"
 
 export class Population {
   private genomes: Genome[] = []

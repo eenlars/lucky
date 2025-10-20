@@ -77,6 +77,7 @@ export function ErrorDetailsPanel() {
                 )}
               >
                 <button
+                  type="button"
                   onClick={() => setExpandedErrorId(expandedErrorId === error.id ? null : error.id)}
                   className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                 >
@@ -143,6 +144,7 @@ export function ErrorDetailsPanel() {
                 {expandedErrorId === error.id && (
                   <div className="px-6 pb-4 flex justify-end">
                     <button
+                      type="button"
                       onClick={() => removeValidationError(error.id)}
                       className="text-xs px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
                     >

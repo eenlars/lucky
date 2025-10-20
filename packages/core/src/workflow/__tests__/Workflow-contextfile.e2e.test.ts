@@ -123,7 +123,7 @@ if (typeof (vi as any).mock === "function")
       free: "qwen/qwq-32b:free",
       free2: "deepseek/deepseek-r1-0528:free",
       low: "gpt-4.1-nano",
-      medium: "gpt-4.1-mini",
+      balanced: "gpt-4.1-mini",
       high: "anthropic/claude-sonnet-4",
       fitness: "gpt-4.1-mini",
       reasoning: "anthropic/claude-sonnet-4",

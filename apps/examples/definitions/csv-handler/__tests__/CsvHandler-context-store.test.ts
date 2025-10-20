@@ -1,5 +1,5 @@
-import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import { createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import type { WorkflowFile } from "@lucky/shared"
 import { beforeEach, describe, expect, it } from "vitest"
 import { CsvHandler } from "../main/CsvHandler"
 

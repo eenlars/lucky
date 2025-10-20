@@ -1,6 +1,5 @@
 import { llmify } from "@core/utils/common/llmify"
 import type { WorkflowFile } from "@lucky/shared"
-export type { WorkflowFile } from "@lucky/shared"
 import { JSONN } from "@lucky/shared"
 
 export type WorkflowFiles = {

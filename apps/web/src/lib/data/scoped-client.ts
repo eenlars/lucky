@@ -1,7 +1,7 @@
 import type { Principal } from "@/lib/auth/principal"
 import { createContextAwareClient } from "@/lib/supabase/context-aware-client"
-import { createRLSClient } from "@/lib/supabase/server-rls"
 import { createClient } from "@/lib/supabase/server"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import type { Database } from "@lucky/shared/client"
 import type { SupabaseClient } from "@supabase/supabase-js"
 

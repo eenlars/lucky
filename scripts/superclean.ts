@@ -31,6 +31,20 @@ try {
     stdio: "inherit",
   })
 
+  // remove all .turbo cache folders
+  console.log("→ removing .turbo cache folders...")
+  execSync('find . -name ".turbo" -type d -prune -exec rm -rf "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
+  // remove all bun.lock files
+  console.log("→ removing bun.lock files...")
+  execSync('find . -name "bun.lock" -type f -exec rm -f "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
   console.log("\n✓ superclean completed successfully")
   console.log("\n📋 reinstalling dependencies...")
 

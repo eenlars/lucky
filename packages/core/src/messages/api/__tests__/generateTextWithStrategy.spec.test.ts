@@ -7,7 +7,7 @@ import { type ToolSet, generateText, stepCountIs, tool, zodSchema } from "ai"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-const model = openrouter(getDefaultModels().medium)
+const model = openrouter(getDefaultModels().balanced)
 
 // TODO: Comment "return F if it should never return that" is unclear
 // Should explain what F represents and why it indicates failure
@@ -112,7 +112,7 @@ describe("generateText with createPrepareStepStrategy", () => {
     })
 
     // convert to v2
-    const resultV2 = processStepsV2(result.steps, getDefaultModels().medium)
+    const resultV2 = processStepsV2(result.steps, getDefaultModels().balanced)
 
     console.log(JSONN.show(resultV2))
 

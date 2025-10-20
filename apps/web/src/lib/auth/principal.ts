@@ -1,6 +1,6 @@
+import crypto from "node:crypto"
 import { createClient } from "@/lib/supabase/server"
 import { auth } from "@clerk/nextjs/server"
-import crypto from "node:crypto"
 
 export type Principal = {
   clerk_id: string

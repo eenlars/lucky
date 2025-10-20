@@ -37,8 +37,12 @@ vi.mock("@core/prompts/generationRules", () => ({
 
 describe("generateWorkflowIdea", () => {
   beforeEach(() => {
-    // Reset implementations between tests to avoid leftover mockResolvedValueOnce queues
-    vi.resetAllMocks()
+    // Clear mock history and reset implementations between tests
+    vi.clearAllMocks()
+
+    // Reset mock implementations to clear any mockResolvedValueOnce queues
+    mockSendAIRequest.mockReset()
+    mockToolsExplanations.mockReset()
 
     // set up default mock implementations
     mockToolsExplanations.mockReturnValue("mocked tools explanation")

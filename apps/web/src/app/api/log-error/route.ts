@@ -1,7 +1,7 @@
 import crypto from "node:crypto"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { createClient } from "@/lib/supabase/server"
-import { type DatabaseWithAppFunctions } from "@lucky/shared"
+import type { DatabaseWithAppFunctions } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"

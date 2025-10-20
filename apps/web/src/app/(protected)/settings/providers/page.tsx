@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getEnabledProviderSlugs, getProviderConfigs } from "@/features/provider-llm-setup/provider-utils"
 import { SyncStatusBadge } from "@/features/provider-llm-setup/providers/sync-status-badge"
-import { getEnabledProviderSlugs, getProviderConfigs } from "@/lib/providers/provider-utils"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -32,15 +32,16 @@ export default function ProvidersPage() {
     setIsLoading(true)
     try {
       const keysResponse = await fetch("/api/user/env-keys")
-      const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
-      const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
+      const keysData = keysResponse.ok ? await keysResponse.json() : { data: [] }
+      const keys = Array.isArray(keysData?.data) ? keysData.data : []
+      const keyNames = new Set(keys.map((k: { name: string }) => k.name))
 
       const providerConfigs = getProviderConfigs()
       const providerSlugs = getEnabledProviderSlugs(providerConfigs)
 
       const providerData: ProviderCardData[] = providerSlugs.map(provider => {
         const config = providerConfigs[provider]
-        const hasApiKey = keyNames.has(config.apiKeyName)
+        const hasApiKey = keyNames.has(config.secretKeyName)
 
         return {
           provider,

@@ -48,7 +48,7 @@ export interface CoreModelsConfig {
     readonly summary: string
     readonly nano: string
     readonly low: string
-    readonly medium: string
+    readonly balanced: string
     readonly high: string
     readonly default: string
     readonly fitness: string
@@ -121,7 +121,7 @@ export interface CoreWorkflowConfig {
   /** Whether to prepare problem before execution */
   readonly prepareProblem: boolean
   /** Problem preparation method */
-  readonly prepareProblemMethod: "ai" | "workflow"
+  readonly prepareProblemMethod: "ai" | "workflow" | "none"
   /** Workflow version ID for problem preparation */
   readonly prepareProblemWorkflowVersionId: string
   /** Whether to enable parallel execution */

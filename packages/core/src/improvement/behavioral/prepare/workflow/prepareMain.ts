@@ -1,5 +1,4 @@
-import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
-import { getDefaultModels } from "@core/core-config/coreConfig"
+import { getCoreConfig, getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { lgg } from "@core/utils/logging/Logger"
 import { IngestionLayer } from "@core/workflow/ingestion/IngestionLayer"
@@ -62,7 +61,7 @@ export const prepareProblem = async (
 
     // Invoke the workflow with the specified version ID
     const invocationInput: InvocationInput = {
-      workflowVersionId: config.workflow.prepareProblemWorkflowVersionId,
+      source: { kind: "version", id: config.workflow.prepareProblemWorkflowVersionId },
       evalInput: {
         type: "prompt-only", // no need to evaluate this.
         goal: task.goal,
@@ -138,7 +137,7 @@ Guidelines:
     const { data, success, error, usdCost } = await sendAI({
       mode: "structured",
       schema: ProblemAnalysisSchema,
-      model: getDefaultModels().medium,
+      model: getDefaultModels().balanced,
       messages: [
         {
           role: "system",

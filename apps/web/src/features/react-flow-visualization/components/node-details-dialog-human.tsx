@@ -1,5 +1,6 @@
 "use client"
 
+import { fetchActiveModelNames, fetchModelV2 } from "@/features/provider-llm-setup/models/client-utils"
 import type { WorkflowNodeData } from "@/features/react-flow-visualization/components/nodes/nodes"
 import {
   Dialog,
@@ -18,7 +19,6 @@ import {
 import { Switch } from "@/features/react-flow-visualization/components/ui/switch"
 import { Textarea } from "@/features/react-flow-visualization/components/ui/textarea"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
-import { fetchActiveModelNames, fetchModelV2 } from "@/lib/models/client-utils"
 // Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
 import type { ModelPricing } from "@lucky/shared"
 import {

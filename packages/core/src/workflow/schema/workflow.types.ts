@@ -1,8 +1,5 @@
 import type { ToolsInformation } from "@core/utils/validation/workflow/toolInformation"
-import type {
-  WorkflowConfig as WorkflowConfigBase,
-  WorkflowNodeConfig as WorkflowNodeConfigBase,
-} from "@lucky/shared/contracts/workflow"
+import type { WorkflowConfigZ, WorkflowNodeConfig as WorkflowNodeConfigBase } from "@lucky/shared/contracts/workflow"
 import type { CodeToolName, MCPToolName } from "@lucky/tools"
 
 // Import SDK config type - can be removed cleanly when ejecting SDK
@@ -26,7 +23,7 @@ export interface WorkflowNodeConfig
 /**
  * WorkflowConfig extends the base contract with implementation-specific types.
  */
-export interface WorkflowConfig extends Omit<WorkflowConfigBase, "nodes" | "toolsInformation"> {
+export interface WorkflowConfig extends Omit<WorkflowConfigZ, "nodes" | "toolsInformation"> {
   nodes: WorkflowNodeConfig[]
   toolsInformation?: ToolsInformation
 }

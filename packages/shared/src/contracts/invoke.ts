@@ -21,27 +21,19 @@ export const InvokeOptions = z
   })
   .strict()
 
-/* Request schema (MCP-compliant) */
-export const JsonRpcInvokeRequest = z
-  .object({
-    jsonrpc: z.literal("2.0"),
-    id: JsonRpcId, // must NOT be null
-    method: z.literal("workflow.invoke"),
-    params: z
-      .object({
-        workflow_id: z.string().min(1, "workflow_id is required"),
-        input: z.unknown(), // validated later by AJV
-        options: InvokeOptions.optional(),
-        auth: z
-          .object({ bearer: z.string().min(16) })
-          .strict()
-          .optional(), // MCP fallback
-      })
-      .strict(),
-  })
-  .strict()
+/** Generic JSON-RPC 2.0 schema for method = "workflow.invoke". */
+export const jsonRpcInvokeRequestSchema = <T extends z.ZodTypeAny>(paramsSchema: T) =>
+  z
+    .object({
+      jsonrpc: z.literal("2.0"),
+      id: JsonRpcId, // must NOT be null
+      method: z.literal("workflow.invoke"),
+      params: paramsSchema,
+    })
+    .strict()
 
-export type InvokeRequest = z.infer<typeof JsonRpcInvokeRequest>
+/** Handy TS type for strongly typed requests */
+export type JsonRpcInvokeRequest<T extends z.ZodTypeAny> = z.infer<ReturnType<typeof jsonRpcInvokeRequestSchema<T>>>
 
 /* Response schemas */
 export const JsonRpcInvokeSuccess = z

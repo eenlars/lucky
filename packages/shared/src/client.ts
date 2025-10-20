@@ -42,7 +42,7 @@ export type {
 export type {
   StandardModels,
   TokenUsage,
-} from "./types/models"
+} from "./contracts/llm-contracts/models-old"
 
 // Memory schemas (client-safe)
 export * from "./utils/memory/memorySchema"
@@ -72,11 +72,11 @@ export {
   providerNameSchema,
   providerSettingsSchema,
   providerStatusSchema,
-} from "./contracts/providers"
+} from "./contracts/llm-contracts/providers"
 export type {
   ApiKeyValidation,
   ProviderConfig,
   ProviderKeyMapping,
   ProviderSettings,
   ProviderStatus,
-} from "./contracts/providers"
+} from "./contracts/llm-contracts/providers"

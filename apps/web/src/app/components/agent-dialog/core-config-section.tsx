@@ -1,9 +1,9 @@
 "use client"
 
+import { getActiveModelNames, getModelV2 } from "@/features/provider-llm-setup/models/client-utils"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useDebouncedUpdate } from "@/hooks/use-debounced-update"
-import { getActiveModelNames, getModelV2 } from "@/lib/models/client-utils"
 import { useEffect, useMemo, useState } from "react"
 
 interface CoreConfigSectionProps {

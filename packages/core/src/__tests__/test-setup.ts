@@ -88,7 +88,7 @@ vi.mock("@examples/settings/constants", () => ({
       showParameterSchemas: true,
     },
     models: {
-      provider: "openai" as const,
+      provider: "openrouter" as const,
       inactive: [],
     },
     improvement: {

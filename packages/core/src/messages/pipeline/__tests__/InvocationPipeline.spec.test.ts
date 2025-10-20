@@ -131,7 +131,7 @@ describe("InvocationPipeline Real Integration", () => {
       toolStrategyOverride: "v3" as const,
       nodeConfig: {
         nodeId,
-        modelName: getDefaultModels().medium,
+        modelName: getDefaultModels().balanced,
         systemPrompt: systemPrompt,
         mcpTools: [],
         codeTools: ["todoWrite", "todoRead"],
@@ -342,7 +342,7 @@ describe("InvocationPipeline Real Integration", () => {
   // TODO: Only testing one model when comment says "Test with medium model"
   // Should either test multiple models or update comment
   // Test with medium model
-  const testModels = [getDefaultModels().medium]
+  const testModels = [getDefaultModels().balanced]
 
   testModels.forEach(modelName => {
     it(`should work with model ${modelName}`, async () => {

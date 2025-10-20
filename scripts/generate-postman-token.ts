@@ -4,9 +4,9 @@
  * Usage: bun run scripts/generate-postman-token.ts
  */
 
+import { nanoid } from "nanoid"
 import { generateApiKey, hashSecret } from "../apps/web/src/lib/api-key-utils"
 import { createStandaloneClient } from "../apps/web/src/lib/supabase/standalone"
-import { nanoid } from "nanoid"
 
 async function generateTestToken() {
   console.log("\n🔑 Generating Test Bearer Token for Postman...\n")
@@ -19,7 +19,7 @@ async function generateTestToken() {
     const secretHash = hashSecret(secret)
     const secretId = `test_secret_${nanoid(10)}`
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .schema("lockbox")
       .from("secret_keys")
       .insert([
@@ -59,7 +59,7 @@ async function generateTestToken() {
     console.log(`   Key ID:    ${keyId}`)
     console.log(`   Secret ID: ${secretId}`)
     console.log(`   Clerk ID:  ${clerkId}`)
-    console.log(`   Scopes:    all (full access)`)
+    console.log("   Scopes:    all (full access)")
     console.log("\n📝 How to use in Postman:")
     console.log("   1. Open your request in Postman")
     console.log("   2. Go to Authorization tab")

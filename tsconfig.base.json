@@ -5,6 +5,9 @@
       "path": "./packages/shared/tsconfig.json"
     },
     {
+      "path": "./packages/adapter-supabase/tsconfig.json"
+    },
+    {
       "path": "./packages/core/tsconfig.json"
     },
     {

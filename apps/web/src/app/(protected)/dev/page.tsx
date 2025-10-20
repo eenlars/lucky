@@ -1,12 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { cn } from "@/lib/utils"
 import { useConnectorsUIStore } from "@/stores/connectors-ui-store"
 import { useEvolutionRunsStore } from "@/stores/evolution-runs-store"
 import { useEvolutionUIStore } from "@/stores/evolution-ui-store"
 import { useMCPConfigStore } from "@/stores/mcp-config-store"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import { useProfileStore } from "@/stores/profile.store"
 import { useRunConfigStore } from "@/stores/run-config-store"
 import { useWorkflowStore } from "@/stores/workflow-store"
