@@ -14,6 +14,7 @@ describe("Anthropic SDK Integration", () => {
           description: "Test node with official SDK",
           systemPrompt: "You are a test assistant",
           gatewayModelId: "anthropic/claude-sonnet-4",
+          gateway: "anthropic-api",
           useClaudeSDK: true,
           sdkConfig: {
             model: "sonnet",
@@ -45,6 +46,7 @@ describe("Anthropic SDK Integration", () => {
           systemPrompt: "SDK prompt",
           gatewayModelId: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
+          gateway: "openrouter-api",
           sdkConfig: {
             model: "sonnet",
             maxTokens: 4096,
@@ -58,6 +60,7 @@ describe("Anthropic SDK Integration", () => {
           description: "Custom pipeline node",
           systemPrompt: "Custom prompt",
           gatewayModelId: "gpt-4o-mini",
+          gateway: "anthropic-api",
           useClaudeSDK: false,
           mcpTools: [],
           codeTools: ["contextGet", "contextSet"],
@@ -86,6 +89,7 @@ describe("Anthropic SDK Integration", () => {
           description: "Default behavior node",
           systemPrompt: "Default prompt",
           gatewayModelId: "gpt-4o-mini",
+          gateway: "anthropic-api",
           mcpTools: [],
           codeTools: ["todoRead", "todoWrite"],
           handOffs: [],
@@ -108,6 +112,7 @@ describe("Anthropic SDK Integration", () => {
           systemPrompt: "Using Opus",
           gatewayModelId: "anthropic/claude-3-5-haiku",
           useClaudeSDK: true,
+          gateway: "anthropic-api",
           sdkConfig: {
             model: "opus-3",
             maxTokens: 8192,
@@ -123,6 +128,7 @@ describe("Anthropic SDK Integration", () => {
           description: "Haiku model node",
           systemPrompt: "Using Haiku",
           gatewayModelId: "anthropic/claude-3-5-haiku",
+          gateway: "anthropic-api",
           useClaudeSDK: true,
           sdkConfig: {
             model: "haiku",

@@ -30,6 +30,26 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./llm-catalog/catalog-queries": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/catalog-queries.ts"
+    },
+    "./llm-catalog/catalog": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/catalog.ts"
+    },
+    "./llm-catalog/providers": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/providers.ts"
+    },
+    "./llm-catalog/defaults": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/defaults.ts"
+    },
     "./server": {
       "types": "./dist/server.d.ts",
       "node": {

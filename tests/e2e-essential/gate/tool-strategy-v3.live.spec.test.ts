@@ -7,14 +7,14 @@ import { z } from "zod"
 
 // Helper: detect placeholder envs from tests/setup/env.ts - check for the current provider
 const hasRealApiKey = (() => {
-  const provider = MODEL_CONFIG.gateway
-  if (provider === "openai") {
+  const provider = MODEL_CONFIG.gateway as string
+  if (provider === "openai-api") {
     return typeof process.env.OPENAI_API_KEY === "string" && !process.env.OPENAI_API_KEY.startsWith("test-")
   }
-  if (provider === "openrouter") {
+  if (provider === "openrouter-api") {
     return typeof process.env.OPENROUTER_API_KEY === "string" && !process.env.OPENROUTER_API_KEY.startsWith("test-")
   }
-  if (provider === "groq") {
+  if (provider === "groq-api") {
     return typeof process.env.GROQ_API_KEY === "string" && !process.env.GROQ_API_KEY.startsWith("test-")
   }
   return false
@@ -57,7 +57,7 @@ describe("[gate] selectToolStrategyV3 live (no mocks)", () => {
         agentSteps: [],
         roundsLeft: 1,
         systemMessage,
-        model: MODEL,
+        gatewayModelId: MODEL,
       })
 
       expect(typeof debugPrompt).toBe("string")

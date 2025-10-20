@@ -21,8 +21,9 @@ export const sdkTestWorkflow: WorkflowConfig = {
         3. Suggestions for improvement`,
       gatewayModelId: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
+      gateway: "anthropic-api",
       sdkConfig: {
-        gatewayModelId: "sonnet",
+        model: "sonnet-4",
         maxTokens: 4096,
         temperature: 0.5,
         timeout: 60000,
@@ -44,6 +45,7 @@ export const sdkTestWorkflow: WorkflowConfig = {
         2. Prioritize by importance
         3. Suggest specific code changes`,
       gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       useClaudeSDK: false, // Uses custom pipeline
       mcpTools: [],
       codeTools: ["contextGet", "contextSet"], // Custom tools
@@ -62,9 +64,10 @@ export const sdkTestWorkflow: WorkflowConfig = {
         - Detailed findings
         - Implementation roadmap`,
       gatewayModelId: "anthropic/claude-3-5-haiku",
+      gateway: "anthropic-api",
       useClaudeSDK: true,
       sdkConfig: {
-        gatewayModelId: "haiku", // Using faster model for formatting
+        model: "haiku", // Using faster model for formatting
         maxTokens: 2048,
         temperature: 0.3,
         timeout: 30000,
@@ -126,8 +129,9 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       systemPrompt: "You are a helpful assistant providing detailed technical explanations.",
       gatewayModelId: "anthropic/claude-sonnet-4",
       useClaudeSDK: true,
+      gateway: "anthropic-api",
       sdkConfig: {
-        gatewayModelId: "sonnet",
+        model: "sonnet-4",
         maxTokens: 4096,
         temperature: 0.7,
       },
@@ -140,9 +144,10 @@ export const sdkConversationTestWorkflow: WorkflowConfig = {
       description: "Continue the conversation (context passed via workflow)",
       systemPrompt: "Continue helping with technical explanations, building on previous context.",
       gatewayModelId: "anthropic/claude-sonnet-4",
+      gateway: "anthropic-api",
       useClaudeSDK: true,
       sdkConfig: {
-        gatewayModelId: "sonnet",
+        model: "sonnet-4",
         maxTokens: 4096,
         temperature: 0.7,
       },

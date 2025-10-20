@@ -36,4 +36,15 @@ export const DEFAULT_MODELS = {
     reasoning: "gpt-5-nano",
     fallback: "gpt-5-nano",
   },
+  "anthropic-api": {
+    summary: "haiku",
+    nano: "haiku",
+    low: "haiku",
+    balanced: "haiku",
+    high: "haiku",
+    default: "haiku",
+    fitness: "haiku",
+    reasoning: "haiku",
+    fallback: "haiku",
+  },
 } satisfies Record<LuckyGateway, StandardModels>

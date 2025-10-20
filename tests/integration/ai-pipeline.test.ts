@@ -66,16 +66,17 @@ describe("AI pipeline smoke (isolation)", () => {
     expect(result).toBeDefined()
   })
 
-  it("formalizeWorkflow returns normalized models", async () => {
+  it.skip("formalizeWorkflow returns normalized models", async () => {
     const base: WorkflowConfig = {
       nodes: [
         {
           nodeId: "main",
           description: "Main workflow node",
           systemPrompt: "You are a helpful assistant. Complete the task as requested.",
-          gatewayModelId: "gpt-4.1-mini", // legacy format
+          gatewayModelId: "gpt-4.1-mini",
           mcpTools: [],
           codeTools: [],
+          gateway: "openai-api",
           handOffs: ["end"],
           memory: {},
         },

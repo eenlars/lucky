@@ -55,7 +55,7 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
       agentSteps: [],
       roundsLeft: 1,
       systemMessage,
-      model: MODEL,
+      gatewayModelId: MODEL,
     })
 
     expect(typeof debugPrompt).toBe("string")

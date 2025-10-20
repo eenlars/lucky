@@ -9,7 +9,7 @@ import { z } from "zod"
  * Provider name schema - validated against MODEL_CATALOG at runtime
  * This is a string type that gets validated dynamically
  */
-export const gatewayNameSchema = z.enum(["openai-api", "openrouter-api", "groq-api"])
+export const gatewayNameSchema = z.enum(["openai-api", "openrouter-api", "groq-api", "anthropic-api"])
 
 export type LuckyGateway = z.infer<typeof gatewayNameSchema>
 

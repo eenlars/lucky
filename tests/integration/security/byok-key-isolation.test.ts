@@ -127,25 +127,26 @@ describe("BYOK Key Isolation - Security Critical", () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
 
       // Simulate API route: fetch user's keys from lockbox
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"])
 
       // Create registry with user's lockbox keys as fallback
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY,
-          groq: apiKeys.GROQ_API_KEY,
+          "openai-api": apiKeys.OPENAI_API_KEY,
+          "groq-api": apiKeys.GROQ_API_KEY,
         },
       })
 
+      // Get user-specific models (simulates what getModelsInstance() does)
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
+      })
+
       // Execute within execution context (simulates workflow invocation)
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
-        // Get user-specific models (simulates what getModelsInstance() does)
-        const models = llmRegistry.forUser({
-          mode: "shared",
-          userId: userAlice.clerk_id,
-          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
-        })
-        const model = models.model("gpt-4o-mini")
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
+        const model = userModels.model("gpt-4o-mini")
 
         // Verify: model instance uses Alice's lockbox key, NOT process.env
         expect((model as any).__apiKey).toBe("sk-alice-lockbox-openai-key-xyz")
@@ -156,22 +157,23 @@ describe("BYOK Key Isolation - Security Critical", () => {
     it("uses Bob's lockbox keys when he invokes a workflow", async () => {
       const secrets = createMockSecretResolver(userBob.clerk_id, bobLockboxKeys)
 
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"])
 
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY,
-          groq: apiKeys.GROQ_API_KEY,
+          "openai-api": apiKeys.OPENAI_API_KEY,
+          "groq-api": apiKeys.GROQ_API_KEY,
         },
       })
 
-      await withExecutionContext({ principal: userBob, secrets, apiKeys, llmRegistry }, async () => {
-        const models = llmRegistry.forUser({
-          mode: "shared",
-          userId: userBob.clerk_id,
-          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
-        })
-        const model = models.model("gpt-4o-mini")
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userBob.clerk_id,
+        models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
+      })
+
+      await withExecutionContext({ principal: userBob, secrets, apiKeys, userModels }, async () => {
+        const model = userModels.model("gpt-4o-mini")
 
         // Verify: model uses Bob's lockbox key, NOT process.env
         expect((model as any).__apiKey).toBe("sk-bob-lockbox-openai-key-abc")
@@ -181,23 +183,24 @@ describe("BYOK Key Isolation - Security Critical", () => {
 
     it("NEVER uses process.env keys in production for authenticated users", async () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"])
 
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY,
-          groq: apiKeys.GROQ_API_KEY,
+          "openai-api": apiKeys.OPENAI_API_KEY,
+          "groq-api": apiKeys.GROQ_API_KEY,
         },
       })
 
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
-        const models = llmRegistry.forUser({
-          mode: "shared",
-          userId: userAlice.clerk_id,
-          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
-        })
-        const openaiModel = models.model("gpt-4o-mini")
-        const groqModel = models.model("llama-3.1-8b-instant")
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
+      })
+
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
+        const openaiModel = userModels.model("gpt-4o-mini")
+        const groqModel = userModels.model("llama-3.1-8b-instant")
 
         // CRITICAL: Verify process.env keys are NEVER used
         expect((openaiModel as any).__apiKey).not.toContain("process-env")
@@ -216,43 +219,45 @@ describe("BYOK Key Isolation - Security Critical", () => {
       const bobSecrets = createMockSecretResolver(userBob.clerk_id, bobLockboxKeys)
 
       // Alice invokes workflow
-      const aliceApiKeys = await aliceSecrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const aliceApiKeys = await aliceSecrets.getAll(["OPENAI_API_KEY"])
       const aliceRegistry = createLLMRegistry({
-        fallbackKeys: { openai: aliceApiKeys.OPENAI_API_KEY },
+        fallbackKeys: { "openai-api": aliceApiKeys.OPENAI_API_KEY },
+      })
+
+      const aliceModels = aliceRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini"],
       })
 
       let aliceModelKey: string | undefined
 
       await withExecutionContext(
-        { principal: userAlice, secrets: aliceSecrets, apiKeys: aliceApiKeys, llmRegistry: aliceRegistry },
+        { principal: userAlice, secrets: aliceSecrets, apiKeys: aliceApiKeys, userModels: aliceModels },
         async () => {
-          const models = aliceRegistry.forUser({
-            mode: "shared",
-            userId: userAlice.clerk_id,
-            models: ["gpt-4o-mini"],
-          })
-          const model = models.model("gpt-4o-mini")
+          const model = aliceModels.model("gpt-4o-mini")
           aliceModelKey = (model as any).__apiKey
         },
       )
 
       // Bob invokes workflow
-      const bobApiKeys = await bobSecrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const bobApiKeys = await bobSecrets.getAll(["OPENAI_API_KEY"])
       const bobRegistry = createLLMRegistry({
-        fallbackKeys: { openai: bobApiKeys.OPENAI_API_KEY },
+        fallbackKeys: { "openai-api": bobApiKeys.OPENAI_API_KEY },
+      })
+
+      const bobModels = bobRegistry.forUser({
+        mode: "shared",
+        userId: userBob.clerk_id,
+        models: ["gpt-4o-mini"],
       })
 
       let bobModelKey: string | undefined
 
       await withExecutionContext(
-        { principal: userBob, secrets: bobSecrets, apiKeys: bobApiKeys, llmRegistry: bobRegistry },
+        { principal: userBob, secrets: bobSecrets, apiKeys: bobApiKeys, userModels: bobModels },
         async () => {
-          const models = bobRegistry.forUser({
-            mode: "shared",
-            userId: userBob.clerk_id,
-            models: ["gpt-4o-mini"],
-          })
-          const model = models.model("gpt-4o-mini")
+          const model = bobModels.model("gpt-4o-mini")
           bobModelKey = (model as any).__apiKey
         },
       )
@@ -275,20 +280,21 @@ describe("BYOK Key Isolation - Security Critical", () => {
       const [aliceResult, bobResult] = await Promise.all([
         // Alice's execution
         (async () => {
-          const apiKeys = await aliceSecrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+          const apiKeys = await aliceSecrets.getAll(["OPENAI_API_KEY"])
           const registry = createLLMRegistry({
-            fallbackKeys: { openai: apiKeys.OPENAI_API_KEY },
+            fallbackKeys: { "openai-api": apiKeys.OPENAI_API_KEY },
+          })
+
+          const userModels = registry.forUser({
+            mode: "shared",
+            userId: userAlice.clerk_id,
+            models: ["gpt-4o-mini"],
           })
 
           return withExecutionContext(
-            { principal: userAlice, secrets: aliceSecrets, apiKeys, llmRegistry: registry },
+            { principal: userAlice, secrets: aliceSecrets, apiKeys, userModels },
             async () => {
-              const models = registry.forUser({
-                mode: "shared",
-                userId: userAlice.clerk_id,
-                models: ["gpt-4o-mini"],
-              })
-              const model = models.model("gpt-4o-mini")
+              const model = userModels.model("gpt-4o-mini")
               return (model as any).__apiKey
             },
           )
@@ -296,23 +302,21 @@ describe("BYOK Key Isolation - Security Critical", () => {
 
         // Bob's execution (concurrent)
         (async () => {
-          const apiKeys = await bobSecrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+          const apiKeys = await bobSecrets.getAll(["OPENAI_API_KEY"])
           const registry = createLLMRegistry({
-            fallbackKeys: { openai: apiKeys.OPENAI_API_KEY },
+            fallbackKeys: { "openai-api": apiKeys.OPENAI_API_KEY },
           })
 
-          return withExecutionContext(
-            { principal: userBob, secrets: bobSecrets, apiKeys, llmRegistry: registry },
-            async () => {
-              const models = registry.forUser({
-                mode: "shared",
-                userId: userBob.clerk_id,
-                models: ["gpt-4o-mini"],
-              })
-              const model = models.model("gpt-4o-mini")
-              return (model as any).__apiKey
-            },
-          )
+          const userModels = registry.forUser({
+            mode: "shared",
+            userId: userBob.clerk_id,
+            models: ["gpt-4o-mini"],
+          })
+
+          return withExecutionContext({ principal: userBob, secrets: bobSecrets, apiKeys, userModels }, async () => {
+            const model = userModels.model("gpt-4o-mini")
+            return (model as any).__apiKey
+          })
         })(),
       ])
 
@@ -326,28 +330,28 @@ describe("BYOK Key Isolation - Security Critical", () => {
     it("BYOK mode uses explicitly provided keys (not fallback keys)", async () => {
       // User has lockbox keys
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"])
 
       // Create registry with lockbox keys as fallback
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY, // Alice's lockbox key
+          "openai-api": apiKeys.OPENAI_API_KEY, // Alice's lockbox key
         },
       })
 
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
-        // User explicitly provides different BYOK keys
-        const byokKeys = {
-          openai: "sk-alice-explicit-byok-key-different",
-        }
+      // User explicitly provides different BYOK keys
+      const byokKeys = {
+        "openai-api": "sk-alice-explicit-byok-key-different",
+      }
 
-        const userModels = llmRegistry.forUser({
-          mode: "byok",
-          userId: userAlice.clerk_id,
-          models: ["gpt-4o-mini"],
-          apiKeys: byokKeys,
-        })
+      const userModels = llmRegistry.forUser({
+        mode: "byok",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini"],
+        apiKeys: byokKeys,
+      })
 
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
         const model = userModels.model("gpt-4o-mini")
 
         // Verify: BYOK mode uses the explicitly provided key, NOT the fallback (lockbox) key
@@ -358,21 +362,21 @@ describe("BYOK Key Isolation - Security Critical", () => {
 
     it("shared mode uses fallback keys (which are user's lockbox keys)", async () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"])
 
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY, // Alice's lockbox key
+          "openai-api": apiKeys.OPENAI_API_KEY, // Alice's lockbox key
         },
       })
 
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
-        const userModels = llmRegistry.forUser({
-          mode: "shared",
-          userId: userAlice.clerk_id,
-          models: ["gpt-4o-mini"],
-        })
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini"],
+      })
 
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
         const model = userModels.model("gpt-4o-mini")
 
         // Verify: shared mode uses fallback keys (which are the user's lockbox keys)
@@ -382,15 +386,20 @@ describe("BYOK Key Isolation - Security Critical", () => {
 
     it("BYOK mode with empty apiKeys throws error (prevents fallback escalation)", async () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"])
 
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: "sk-company-fallback-key", // Company key
+          "openai-api": "sk-company-fallback-key", // Company key
         },
       })
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini"],
+      })
 
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
         // Attacker tries to use BYOK mode without providing keys
         // to escalate to company fallback keys
         expect(() =>
@@ -408,28 +417,28 @@ describe("BYOK Key Isolation - Security Critical", () => {
   describe("SecretResolver Integration", () => {
     it("models instance uses keys from secretResolver (lockbox)", async () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"])
 
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY,
-          groq: apiKeys.GROQ_API_KEY,
+          "openai-api": apiKeys.OPENAI_API_KEY,
+          "groq-api": apiKeys.GROQ_API_KEY,
         },
       })
 
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
-        const models = llmRegistry.forUser({
-          mode: "shared",
-          userId: userAlice.clerk_id,
-          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
-        })
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
+      })
 
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
         // Verify: secretResolver was called for the user's keys
-        expect(secrets.getAll).toHaveBeenCalledWith(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+        expect(secrets.getAll).toHaveBeenCalledWith(["OPENAI_API_KEY", "GROQ_API_KEY"])
 
         // Verify: models use the resolved keys
-        const openaiModel = models.model("gpt-4o-mini")
-        const groqModel = models.model("llama-3.1-8b-instant")
+        const openaiModel = userModels.model("gpt-4o-mini")
+        const groqModel = userModels.model("llama-3.1-8b-instant")
 
         expect((openaiModel as any).__apiKey).toBe(aliceLockboxKeys.OPENAI_API_KEY)
         expect((groqModel as any).__apiKey).toBe(aliceLockboxKeys.GROQ_API_KEY)
@@ -441,12 +450,12 @@ describe("BYOK Key Isolation - Security Critical", () => {
       const bobSecrets = createMockSecretResolver(userBob.clerk_id, bobLockboxKeys)
 
       // Alice's secret resolver should ONLY return Alice's keys
-      const aliceKeys = await aliceSecrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const aliceKeys = await aliceSecrets.getAll(["OPENAI_API_KEY"])
       expect(aliceKeys.OPENAI_API_KEY).toBe("sk-alice-lockbox-openai-key-xyz")
       expect(aliceKeys.OPENAI_API_KEY).not.toBe(bobLockboxKeys.OPENAI_API_KEY)
 
       // Bob's secret resolver should ONLY return Bob's keys
-      const bobKeys = await bobSecrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const bobKeys = await bobSecrets.getAll(["OPENAI_API_KEY"])
       expect(bobKeys.OPENAI_API_KEY).toBe("sk-bob-lockbox-openai-key-abc")
       expect(bobKeys.OPENAI_API_KEY).not.toBe(aliceLockboxKeys.OPENAI_API_KEY)
     })
@@ -461,54 +470,60 @@ describe("BYOK Key Isolation - Security Critical", () => {
       }
 
       const secrets = createMockSecretResolver(userAlice.clerk_id, incompleteKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "GROQ_API_KEY"])
 
       // Registry created with incomplete keys (no GROQ)
       const llmRegistry = createLLMRegistry({
         fallbackKeys: {
-          openai: apiKeys.OPENAI_API_KEY,
+          "openai-api": apiKeys.OPENAI_API_KEY,
           // groq is undefined!
         },
       })
 
-      await withExecutionContext({ principal: userAlice, secrets, apiKeys, llmRegistry }, async () => {
-        const models = llmRegistry.forUser({
-          mode: "shared",
-          userId: userAlice.clerk_id,
-          models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
-        })
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini", "llama-3.1-8b-instant"],
+      })
 
+      await withExecutionContext({ principal: userAlice, secrets, apiKeys, userModels }, async () => {
         // OpenAI works (user has key)
-        const openaiModel = models.model("gpt-4o-mini")
+        const openaiModel = userModels.model("gpt-4o-mini")
         expect((openaiModel as any).__apiKey).toBe("sk-alice-openai-only")
 
         // GROQ fails gracefully (no provider configured)
         // It should NOT fall back to process.env
-        expect(() => models.model("llama-3.1-8b-instant")).toThrow("Provider not configured: groq")
+        expect(() => userModels.model("llama-3.1-8b-instant")).toThrow("Gateway not configured: groq-api")
       })
     })
 
-    it("execution context without registry throws clear error", async () => {
+    it("execution context without userModels throws clear error", async () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"])
 
-      // Execution context WITHOUT llmRegistry (misconfiguration)
+      // Execution context WITHOUT userModels (misconfiguration)
       await withExecutionContext({ principal: userAlice, secrets, apiKeys }, async () => {
-        await expect(getModelsInstance()).rejects.toThrow("LLMRegistry not configured in execution context")
+        await expect(getModelsInstance()).rejects.toThrow("UserModels not configured in execution context")
       })
     })
 
     it("execution context without principal throws clear error", async () => {
       const secrets = createMockSecretResolver(userAlice.clerk_id, aliceLockboxKeys)
-      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
+      const apiKeys = await secrets.getAll(["OPENAI_API_KEY"])
       const llmRegistry = createLLMRegistry({
-        fallbackKeys: { openai: apiKeys.OPENAI_API_KEY },
+        fallbackKeys: { "openai-api": apiKeys.OPENAI_API_KEY },
+      })
+
+      const userModels = llmRegistry.forUser({
+        mode: "shared",
+        userId: userAlice.clerk_id,
+        models: ["gpt-4o-mini"],
       })
 
       // Execution context WITHOUT principal (unauthenticated)
       // The execution context validation happens before getModelsInstance() is called
       try {
-        await withExecutionContext({ secrets, apiKeys, llmRegistry } as any, async () => {
+        await withExecutionContext({ secrets, apiKeys, userModels } as any, async () => {
           await getModelsInstance()
         })
         expect.fail("Should have thrown an error")
