@@ -146,8 +146,8 @@ vi.mock("@examples/settings/constants", () => ({
 
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import { EvolutionEngine } from "@core/improvement/gp/evolutionengine"
-import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import type { GenomeEvaluationResults } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
+import type { GenomeEvaluationResults } from "@core/improvement/gp/rsc/gp.types"
 import {
   createMockEvaluationInput,
   createMockEvaluator,
@@ -223,7 +223,7 @@ vi.mock("@core/improvement/gp/Select", () => ({
 }))
 
 // Mock StatsTracker
-vi.mock("@core/improvement/gp/resources/stats", () => ({
+vi.mock("@core/improvement/gp/rsc/stats", () => ({
   StatsTracker: vi.fn(() => ({
     logEvolutionStart: vi.fn(),
     recordGenerationStats: vi.fn().mockReturnValue({
@@ -244,7 +244,7 @@ vi.mock("@core/improvement/gp/resources/stats", () => ({
 }))
 
 // Mock VerificationCache
-vi.mock("@core/improvement/gp/resources/wrappers", () => ({
+vi.mock("@core/improvement/gp/rsc/wrappers", () => ({
   VerificationCache: vi.fn(() => ({
     verifyWithCache: vi.fn().mockResolvedValue({ valid: true }),
   })),

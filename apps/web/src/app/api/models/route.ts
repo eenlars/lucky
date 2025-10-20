@@ -1,7 +1,6 @@
 import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { getActiveModelNames } from "@lucky/core/utils/spending/functions"
-import { findModelByName, getModelsByProvider } from "@lucky/models"
-import { getRuntimeEnabledModels } from "@lucky/models/pricing/catalog"
+import { findModel, getModelsByProvider, getRuntimeEnabledModels } from "@lucky/models"
 import { providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -30,7 +29,7 @@ export async function POST(request: NextRequest) {
       if (!model) {
         return NextResponse.json({ error: "Model name is required" }, { status: 400 })
       }
-      const modelInfo = findModelByName(model)
+      const modelInfo = findModel(model)
       if (!modelInfo) {
         return NextResponse.json({ error: "Model not found" }, { status: 404 })
       }

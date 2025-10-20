@@ -18,7 +18,6 @@ export function SidePanelTemplate({
   isOpen,
   isExpanded = false,
   onClose,
-  onToggleExpanded,
   header,
   children,
   footer,

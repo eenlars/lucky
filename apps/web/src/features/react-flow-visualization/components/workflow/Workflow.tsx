@@ -6,12 +6,13 @@ import { useShallow } from "zustand/react/shallow"
 
 import { AgentDialogInspect } from "@/app/components/agent-dialog/panel"
 import { ExecutionLogsPanel } from "@/features/cli-inspection/components/ExecutionLogsPanel"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { WorkflowEdge } from "@/features/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
 import { nodeTypes } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { WorkflowPromptBar } from "@/features/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"
 // runner context removed
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
+import { useRunnerStore } from "@/stores/runner-store"
 import { NodePalette } from "./NodePalette"
 import { WorkflowControls } from "./controls"
 import { useDragAndDrop } from "./useDragAndDrop"
@@ -81,6 +82,9 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     })),
   )
 
+  // Get editor mode from runner store
+  const { editorMode } = useRunnerStore()
+
   // Load model preferences early (before workflows load)
   const { loadPreferences, preferences } = useModelPreferencesStore()
 
@@ -149,49 +153,54 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
 
   return (
     <>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionLineType={ConnectionLineType.Bezier}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        onNodeDragStart={onNodeDragStart}
-        onNodeDragStop={onNodeDragStop}
-        selectNodesOnDrag={false}
-        colorMode={colorMode}
-        defaultEdgeOptions={{ type: "workflow" }}
-        proOptions={proOptions}
-      >
-        <Background gap={20} size={1} color="#e5e7eb" className="bg-gray-50/50" />
-        <AutoFitView nodeCount={nodes.length} />
-        <NodePalette />
+      <div className="relative w-full h-full">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={editorMode === "create-new" ? undefined : onNodesChange}
+          onEdgesChange={editorMode === "create-new" ? undefined : onEdgesChange}
+          onConnect={editorMode === "create-new" ? undefined : onConnect}
+          connectionLineType={ConnectionLineType.Bezier}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onDragOver={editorMode === "create-new" ? undefined : onDragOver}
+          onDrop={editorMode === "create-new" ? undefined : onDrop}
+          onNodeDragStart={editorMode === "create-new" ? undefined : onNodeDragStart}
+          onNodeDragStop={editorMode === "create-new" ? undefined : onNodeDragStop}
+          selectNodesOnDrag={false}
+          colorMode={colorMode}
+          defaultEdgeOptions={{ type: "workflow" }}
+          proOptions={proOptions}
+          nodesDraggable={editorMode !== "create-new"}
+          nodesConnectable={editorMode !== "create-new"}
+          elementsSelectable={editorMode !== "create-new"}
+          className={
+            editorMode === "create-new" ? "blur-md transition-all duration-300" : "transition-all duration-300"
+          }
+        >
+          <Background gap={20} size={1} color="#e5e7eb" className="bg-gray-50/50" />
+          <AutoFitView nodeCount={nodes.length} />
+          <NodePalette />
+          <WorkflowControls />
+        </ReactFlow>
 
-        {/* Empty state - guide users to drag from palette */}
-        {nodes.length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
-            <div className="text-center text-gray-400 dark:text-gray-600 select-none">
-              <svg className="size-16 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
-                />
-              </svg>
-              <p className="text-lg font-medium mb-2">Drag a node from the left to start</p>
-              <p className="text-sm">or describe your workflow below</p>
+        {/* Create-new mode overlay */}
+        {editorMode === "create-new" && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+            <div className="text-center space-y-4 -mt-32">
+              <h1 className="text-5xl font-semibold text-gray-900 dark:text-gray-100">What do you want to build?</h1>
+              <p className="text-xl text-gray-600 dark:text-gray-400">Describe your workflow below</p>
+              <div className="flex items-center gap-2 justify-center text-sm text-gray-500 dark:text-gray-500">
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">⌘K</kbd>
+                <span>to focus prompt</span>
+              </div>
             </div>
           </div>
         )}
 
-        <WorkflowControls />
+        {/* Prompt bar - outside ReactFlow so it stays sharp */}
         <WorkflowPromptBar />
-      </ReactFlow>
+      </div>
 
       {/* Steve Jobs-inspired Inspector Panel */}
       <AgentDialogInspect />

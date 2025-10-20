@@ -1,180 +1,205 @@
+import { createLLMRegistryForUser } from "@/features/provider-llm-setup/lib/create-llm-registry"
+import { loadProviderApiKeys } from "@/features/provider-llm-setup/lib/load-user-providers"
+import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
-import { authenticateRequest } from "@/lib/auth/principal"
-import { logException } from "@/lib/error-logger"
-import {
-  extractTraceId,
-  extractWorkflowOutput,
-  formatErrorResponse,
-  formatInternalError,
-  formatSuccessResponse,
-  formatWorkflowError,
-} from "@/lib/mcp-invoke/response"
-import { createSchemaValidationError, validateAgainstSchema } from "@/lib/mcp-invoke/schema-validator"
-import { createInvocationInput, transformInvokeInput } from "@/lib/mcp-invoke/transform"
-import { validateInvokeRequest } from "@/lib/mcp-invoke/validation"
-import { loadWorkflowConfig } from "@/lib/mcp-invoke/workflow-loader"
+import { loadWorkflowConfig } from "@/features/workflow-or-chat-invocation/lib/config-load/database-workflow-loader"
+import { InvalidWorkflowInputError } from "@/features/workflow-or-chat-invocation/lib/errors/workflowInputError"
+import { loadMCPToolkitsForWorkflow } from "@/features/workflow-or-chat-invocation/lib/tools/mcp-toolkit-loader"
+import { validateWorkflowInput } from "@/features/workflow-or-chat-invocation/lib/validation/input-validator"
 import {
   formatMissingProviders,
   getRequiredProviderKeys,
   validateProviderKeys,
-} from "@/lib/workflow/provider-validation"
-import { WorkflowConfigurationError } from "@core/utils/errors/WorkflowErrors"
+} from "@/features/workflow-or-chat-invocation/lib/validation/provider-validation"
+import { activeWorkflows } from "@/features/workflow-or-chat-invocation/workflow/active-workflows"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { authenticateRequest } from "@/lib/auth/principal"
+import { ensureCoreInit } from "@/lib/ensure-core-init"
+import { logException } from "@/lib/error-logger"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
+import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
+import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
+import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
-import { isNir } from "@lucky/shared/utils/common/isNir"
-import { type NextRequest, NextResponse } from "next/server"
+import type { InvocationInput } from "@lucky/core/workflow/runner/types"
+import { genShortId } from "@lucky/shared"
+import type { NextRequest } from "next/server"
 
-/**
- * POST /api/v1/invoke
- * MCP JSON-RPC 2.0 compliant workflow invocation endpoint
- * Works for both HTTP webhooks and MCP tool calls
- */
 export async function POST(req: NextRequest) {
+  ensureCoreInit()
+
   const startedAt = new Date().toISOString()
-  let requestId: string | number | undefined
+  const requestId = `workflow-invoke-${genShortId()}`
+  const controller = new AbortController()
+
+  activeWorkflows.set(requestId, { controller, createdAt: Date.now(), state: "running" })
+
+  const cleanup = async () => {
+    activeWorkflows.delete(requestId)
+    // Observer cleanup if any was registered
+    try {
+      const ctx = getObservationContext()
+      if (ctx?.randomId) {
+        const registry = ObserverRegistry.getInstance()
+        registry.get(ctx.randomId)?.dispose()
+        registry.dispose(ctx.randomId)
+      }
+    } catch {}
+  }
 
   try {
-    // Parse body
-    const body = await req.json()
-    requestId = body.id
-
-    // Validate JSON-RPC structure and request ID uniqueness
-    const validationResult = validateInvokeRequest(body)
-    if (!validationResult.success) {
-      return NextResponse.json(formatErrorResponse(requestId ?? null, validationResult.error!), { status: 400 })
-    }
-
-    const rpcRequest = validationResult.data!
-    requestId = rpcRequest.id
-
-    // Unified authentication: API key or Clerk session
+    // Auth
     const principal = await authenticateRequest(req)
     if (!principal) {
-      return NextResponse.json(
-        formatErrorResponse(requestId, {
-          code: -32000,
-          message: "Authentication required. Provide a valid API key or sign in.",
-        }),
-        { status: 401 },
-      )
+      await cleanup()
+      return fail("workflow/invoke", "Authentication required", { status: 401 })
     }
 
-    // Load workflow configuration to get input schema
-    // For session auth users, return demo workflow if not found (better onboarding UX)
-    // TODO: think if we really want to auto-run demo workflow for session auth users
-    const workflowLoadResult = await loadWorkflowConfig(rpcRequest.params.workflow_id, principal, undefined, {
-      returnDemoOnNotFound: principal.auth_method === "session",
-    })
-    if (!workflowLoadResult.success) {
-      return NextResponse.json(formatErrorResponse(requestId, workflowLoadResult.error!), { status: 404 })
+    // Parse request body
+    const parsed = await handleBody("workflow/invoke", req)
+    if (isHandleBodyError(parsed)) {
+      await cleanup()
+      return parsed
     }
 
-    const { inputSchema, config } = workflowLoadResult
-
-    // Validate input against workflow's input schema (if defined)
-    if (inputSchema) {
-      const schemaValidationResult = validateAgainstSchema(rpcRequest.params.input, inputSchema)
-      if (!schemaValidationResult.valid) {
-        return NextResponse.json(createSchemaValidationError(requestId, schemaValidationResult), { status: 400 })
-      }
-    }
-
-    if (isNir(config)) {
-      throw new WorkflowConfigurationError(`This workflow requires API keys that aren't configured.`, {
-        field: "providers",
-        expectedFormat: "array of provider names",
+    // Determine source from parsed input
+    let source: any
+    if ("workflowVersionId" in parsed) {
+      source = { kind: "version", id: parsed.workflowVersionId }
+    } else if ("filename" in parsed) {
+      source = { kind: "filename", path: parsed.filename }
+    } else if ("dslConfig" in parsed) {
+      source = { kind: "dsl", config: parsed.dslConfig }
+    } else {
+      await cleanup()
+      return fail("workflow/invoke", "Invalid request: must specify workflowVersionId, filename, or dslConfig", {
+        status: 400,
       })
     }
 
-    // Transform MCP input to internal format
-    const transformResult = transformInvokeInput(rpcRequest)
-    if (!transformResult.success) {
-      return NextResponse.json(formatErrorResponse(requestId, transformResult.error!), { status: 400 })
+    // Security validation (e.g., filename only allowed for api_key auth)
+    validateWorkflowInput(principal, source.kind === "filename" ? source.path : undefined)
+
+    // Load workflow config (database resolves parent→latest; demo fallback preserved)
+    // - For DSL: we skip DB load; for version/parent we load to get schemas and provider requirements
+    const load =
+      source.kind === "dsl"
+        ? {
+            success: true as const,
+            config: source.config,
+            inputSchema: source.config?.inputSchema,
+            resolvedWorkflowVersionId: undefined,
+            source: "dsl" as const,
+          }
+        : await loadWorkflowConfig(source.id, principal, undefined, {
+            returnDemoOnNotFound: principal.auth_method === "session",
+          })
+
+    if (!load?.success || !load.config) {
+      await cleanup()
+      return fail("workflow/invoke", "Workflow not found", { status: 404 })
     }
 
-    const transformed = transformResult.data!
-    const invocationInput = createInvocationInput(transformed)
-
-    // If we fell back to demo workflow, invoke using the DSL config directly
-    // Otherwise, ensure we use the resolved workflow version id (handles parent IDs)
-    let coreInvocationInput: any = invocationInput
-    if (workflowLoadResult.source === "demo" && config) {
-      coreInvocationInput = {
-        evalInput: invocationInput.evalInput,
-        dslConfig: config,
-        validation: "none", // Skip validation for demo workflows (already validated)
-      }
-    } else if (workflowLoadResult.resolvedWorkflowVersionId) {
-      coreInvocationInput.workflowVersionId = workflowLoadResult.resolvedWorkflowVersionId
-    }
-
-    // Use 'none' validation by default for immediate execution (workflows are validated on save)
-    coreInvocationInput.validation = "none"
-
-    // Create context-aware secret resolver for this user
+    // Secrets & providers
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
-    // Extract required provider keys from workflow config
-    const requiredProviderKeys = getRequiredProviderKeys(config, "v1/invoke")
+    // Only fetch what the workflow needs
+    const { providers } = getRequiredProviderKeys(load.config, "workflow/invoke")
+    // 1) User BYOK (preferred)
+    const userProviders = await loadProviderApiKeys(secrets)
+    // 2) Env/company fallback (namespaced) — allowed only for API-key auth
+    const envFallback =
+      principal.auth_method === "api_key" ? await secrets.getAll(Array.from(providers), "environment-variables") : {}
+    // Build consolidated provider map with correct precedence
+    const consolidated: Record<string, string> = {}
+    for (const p of providers) {
+      const key = userProviders[p as keyof typeof userProviders] ?? envFallback[p]
+      if (key) consolidated[p] = key
+    }
 
-    // Pre-fetch required provider keys (only those actually needed by this workflow)
-    const apiKeys = await secrets.getAll(requiredProviderKeys, "environment-variables")
-
-    // Validate all required keys are present for session-based auth
+    // For session-auth, enforce presence
     if (principal.auth_method === "session") {
-      const missingKeys = validateProviderKeys(requiredProviderKeys, apiKeys)
-
-      if (!isNir(missingKeys)) {
-        const missingProviders = formatMissingProviders(missingKeys)
-        console.error("[v1/invoke] Missing required API keys:", missingKeys)
-        return NextResponse.json(
-          formatErrorResponse(requestId, {
-            code: -32000,
-            message: `This workflow requires ${missingProviders.join(", ")} ${missingProviders.length === 1 ? "API key" : "API keys"} to run. Please configure ${missingProviders.length === 1 ? "it" : "them"} in Settings → Providers.`,
-            data: { missingProviders, action: "configure_providers" },
-          }),
-          { status: 400 },
-        )
+      const missing = validateProviderKeys(Array.from(providers), consolidated)
+      if (missing.length) {
+        const display = formatMissingProviders(missing)
+        await cleanup()
+        const msg = `This workflow requires ${display.join(", ")} ${display.length === 1 ? "API key" : "API keys"} to run. Configure ${display.length === 1 ? "it" : "them"} in Settings → Providers.`
+        return fail("workflow/invoke", msg, { status: 400 })
       }
     }
 
-    // Execute workflow within execution context
-    const result = await withExecutionContext({ principal, secrets, apiKeys }, async () => {
-      return invokeWorkflow(coreInvocationInput)
+    // Models & registry
+    const enabledModels = await getUserModelsSetup({ principal }, Array.from(providers) as any)
+    const userModels = await createLLMRegistryForUser({
+      principal,
+      userProviders: consolidated as any,
+      userEnabledModels: enabledModels,
+      fallbackKeys: consolidated,
     })
+
+    // Optional MCP toolkits
+    const mcpToolkits = await loadMCPToolkitsForWorkflow(principal)
+
+    // Observer hookup
+    const obsId = genShortId()
+    const observer = new AgentObserver()
+    const registry = ObserverRegistry.getInstance()
+    registry.register(obsId, observer)
+
+    // Build core InvocationInput
+    const invocationInput: InvocationInput = {
+      source,
+      evalInput: parsed.evalInput,
+      validation: parsed.validation ?? "strict",
+      abortSignal: controller.signal,
+    }
+
+    // Execute
+    const result = await withExecutionContext(
+      {
+        principal,
+        secrets,
+        apiKeys: consolidated,
+        userModels,
+        ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
+      },
+      async () => withObservationContext({ randomId: obsId, observer }, async () => invokeWorkflow(invocationInput)),
+    )
 
     const finishedAt = new Date().toISOString()
 
-    if (!result.success) {
-      return NextResponse.json(formatWorkflowError(requestId, result), { status: 500 })
+    // Cleanup observer shortly after completion
+    setTimeout(
+      () => {
+        observer.dispose()
+        registry.dispose(obsId)
+      },
+      5 * 60 * 1000,
+    )
+
+    await cleanup()
+
+    if (!result?.success) {
+      const errMsg = result?.error ?? "Workflow invocation failed"
+      return fail("workflow/invoke", errMsg, { status: 500 })
     }
 
-    const output = extractWorkflowOutput(result)
-    const traceId = extractTraceId(result)
+    const traceId = result.data?.[0]?.workflowInvocationId ?? requestId
+    const payload = {
+      output: result,
+      invocationId: requestId,
+      traceId,
+      startedAt,
+      finishedAt,
+    }
 
-    // Return JSON-RPC success response
-    const responseWorkflowId =
-      workflowLoadResult.source === "demo"
-        ? "wf_demo"
-        : workflowLoadResult.resolvedWorkflowVersionId || transformed.workflowVersionId
-
-    return NextResponse.json(
-      formatSuccessResponse(requestId, output, {
-        requestId: transformed.workflowId,
-        workflowId: responseWorkflowId,
-        startedAt,
-        finishedAt,
-        traceId,
-      }),
-      { status: 200 },
-    )
+    return alrighty("workflow/invoke", { success: true, data: payload })
   } catch (error) {
-    logException(error, {
-      location: "/api/v1/invoke",
-    })
-    console.error("MCP Invoke API Error:", error)
-    return NextResponse.json(formatInternalError(requestId ?? null, error), {
-      status: 500,
-    })
+    await cleanup()
+    if (error instanceof InvalidWorkflowInputError) {
+      return fail("workflow/invoke", error.message, { status: 403 })
+    }
+    logException(error, { location: "/api/v1/invoke" })
+    return fail("workflow/invoke", `Unexpected error: ${String(error)}`, { status: 500 })
   }
 }

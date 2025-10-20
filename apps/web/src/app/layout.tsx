@@ -1,4 +1,5 @@
 import { GlobalErrorHandler } from "@/app/_providers/GlobalErrorHandler"
+import { ProviderHealthCheck } from "@/app/_providers/ProviderHealthCheck"
 import { QueryProvider } from "@/app/_providers/QueryProvider"
 import { SupabaseTokenBridge } from "@/app/_providers/SupabaseTokenBridge"
 import { IntegratedSidebar } from "@/app/components/sidebar/integrated-sidebar"
@@ -60,6 +61,7 @@ export default async function RootLayout({
                 </a>
                 <NextTopLoader />
                 <SignedIn>
+                  <ProviderHealthCheck />
                   <CredentialStatusBanner />
                   <IntegratedSidebar />
                 </SignedIn>

@@ -40,7 +40,7 @@ const mockTools: ToolSet = {
 describe("selectToolStrategyV2 Integration Tests", () => {
   let identityPrompt: string
   let agentSteps: AgentSteps
-  const model = getDefaultModels().medium
+  const model = getDefaultModels().balanced
 
   beforeEach(() => {
     identityPrompt = "Please create a simple todo list with items: buy groceries, walk the dog, finish project"

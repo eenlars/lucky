@@ -1,8 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks"
 import { getProviderDisplayName } from "@core/workflow/provider-extraction"
 import type { SpendingTracker } from "@lucky/core/utils/spending/SpendingTracker"
-import type { Models } from "@lucky/models/server"
-import { providerConfigSchema as modelsProviderConfigSchema } from "@lucky/models"
+import type { UserModels } from "@lucky/models"
 import { ZPrincipal, executionMCPContextSchema } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
 import { z } from "zod"
@@ -13,11 +12,49 @@ import { RuntimeContext } from "./runtime-context"
  */
 export const ZExecutionSchema = z.object({
   principal: ZPrincipal,
+  /**
+   * Secret resolver for this workflow invocation
+   *
+   * Fetches encrypted secrets from the user's lockbox (Supabase database).
+   * Secrets are stored by environment variable name (OPENAI_API_KEY, GROQ_API_KEY, etc.)
+   * in the "environment-variables" namespace.
+   *
+   * This is the PRIMARY source for user API keys in production (BYOK mode).
+   * Falls back to `apiKeys` in-memory cache if available, or process.env in dev.
+   *
+   * Example: await secrets.get("OPENAI_API_KEY", "environment-variables")
+   *
+   * Access via: requireExecutionContext().get("secrets")
+   */
   secrets: z.custom<SecretResolver>(),
+  /**
+   * API keys for this workflow invocation (in-memory cache)
+   *
+   * Maps provider names (lowercase) to API key values.
+   * Example: { openai: "sk-...", groq: "gsk-...", openrouter: "sk-or-..." }
+   *
+   * IMPORTANT:
+   * - Keys are provider names (openai, anthropic, groq), NOT env var names (OPENAI_API_KEY)
+   * - This is an OPTIONAL in-memory cache; `secrets` resolver is the primary source
+   * - Used for testing and when keys are already loaded in memory
+   *
+   * Lookup order: apiKeys → secrets.get() → process.env (dev only)
+   *
+   * Access via: requireExecutionContext().get("apiKeys") or use getApiKey(providerName) helper
+   */
   apiKeys: z.record(z.string()).optional(),
-  // Provider configuration used by @lucky/models instance
-  providerConfig: z.record(modelsProviderConfigSchema).optional(),
-  modelsInstance: z.custom<Models>().optional(),
+  /**
+   * UserModels instance for this workflow invocation
+   *
+   * The UserModels instance can be in one of two modes:
+   * - "shared": Uses company/system API keys (from process.env) as fallback for all users
+   * - "byok": Uses individual user's API keys (BYOK - Bring Your Own Key)
+   *
+   * This is a pre-configured instance created from the LLMRegistry for the current user.
+   *
+   * Access via: requireExecutionContext().get("userModels") or use getUserModels() helper
+   */
+  userModels: z.custom<UserModels>().optional(),
   spendingTracker: z.custom<SpendingTracker>().optional(),
   // MCP toolkits available during this invocation (UI-configured or file-based)
   mcp: executionMCPContextSchema.optional(),
@@ -32,6 +69,8 @@ export function withExecutionContext<T>(values: ExecutionSchema, fn: () => Promi
   if (!parsed.success) {
     throw new Error(`Invalid execution context: ${parsed.error.message}`)
   }
+  // Type assertion needed here because Object.entries loses tuple type information
+  // RuntimeContext expects an iterable of [key, value] tuples
   const ctx = new RuntimeContext<ExecutionSchema>(Object.entries(parsed.data) as any)
   return executionContextStore.run(ctx, fn)
 }
@@ -123,6 +162,38 @@ export async function getApiKey(name: string): Promise<string | undefined> {
   }
   console.log("           ✅ Found in execution context secrets")
   return secretValue
+}
+
+/**
+ * Get the LLMRegistry instance from execution context
+ *
+ * The registry is used to create user-specific model instances throughout the workflow.
+ * It is configured at the start of workflow execution with either shared company keys
+ * or user-specific keys (BYOK).
+ *
+ * @throws Error if no execution context exists or registry not configured
+ * @returns LLMRegistry instance for this workflow execution
+ *
+ * @example
+ * ```typescript
+ * const userModels = getUserModels()
+ * const userModels = registry.forUser({
+ *   mode: "shared",
+ *   userId: "user-123",
+ *   models: ["openai#gpt-4o", "groq#llama-3.1-70b"]
+ * })
+ * const model = userModels.model("openai#gpt-4o")
+ * ```
+ */
+export function getUserModelsFromContext(): UserModels {
+  const ctx = requireExecutionContext()
+  const userModels = ctx.get("userModels")
+  if (!userModels) {
+    throw new Error(
+      "UserModels not configured in execution context. Ensure userModels is passed to withExecutionContext()",
+    )
+  }
+  return userModels
 }
 
 // Re-export SecretResolver type for tests and consumers importing from core

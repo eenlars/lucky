@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import type { AgentEvent } from "@lucky/shared"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { AgentObserver } from "../AgentObserver"
 import { ObserverRegistry } from "../ObserverRegistry"
 

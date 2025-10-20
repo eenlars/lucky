@@ -60,7 +60,7 @@ vi.mock("@examples/settings/constants", () => {
         summary: "openrouter#google/gemini-2.5-flash-lite",
         nano: "openrouter#google/gemini-2.5-flash-lite",
         low: "openrouter#google/gemini-2.5-flash-lite",
-        medium: "gpt-4.1-mini",
+        balanced: "gpt-4.1-mini",
         high: "gpt-4.1",
         default: "gpt-4.1-nano",
         fitness: "gpt-4.1-mini",
