@@ -33,7 +33,7 @@ export const CONFIG = {
     maxNodes: 20,
     handoffContent: "full" as "summary" | "full",
     prepareProblem: true,
-    prepareProblemMethod: "none" as "ai" | "workflow" | "none",
+    prepareProblemMethod: "ai" as "ai" | "workflow",
     prepareProblemWorkflowVersionId: "a1373554",
   },
 

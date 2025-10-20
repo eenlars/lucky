@@ -15,7 +15,7 @@ export default defineConfig([
       "contracts/ingestion": "src/contracts/ingestion.ts",
       "contracts/invoke": "src/contracts/invoke.ts",
       "contracts/messages": "src/contracts/messages.ts",
-      "contracts/providers": "src/contracts/llm-contracts/providers.ts",
+      "contracts/providers": "src/contracts/providers.ts",
       "contracts/tools": "src/contracts/tools.ts",
       "contracts/workflow": "src/contracts/workflow.ts",
       "contracts/fixtures": "src/contracts/fixtures.ts",

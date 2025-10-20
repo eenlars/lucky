@@ -2,7 +2,7 @@
 
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { cn } from "@/lib/utils"
-import { useRunnerStore } from "@/stores/runner-store"
+import { ErrorCodes } from "@lucky/shared/contracts/invoke"
 import { Panel } from "@xyflow/react"
 import { AudioWaveform, Loader2, Pencil, Play, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -38,21 +38,12 @@ export function WorkflowPromptBar() {
     })),
   )
 
-  const { editorMode, setEditorMode, setExecuting } = useRunnerStore()
-
   const [prompt, setPrompt] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
   const [showLogs, setShowLogs] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const hideLogsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Auto-focus when in create-new mode
-  useEffect(() => {
-    if (editorMode === "create-new" && inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [editorMode])
 
   const addLog = useCallback(
     (message: string) => {
@@ -110,20 +101,11 @@ export function WorkflowPromptBar() {
     setShowLogs(true)
 
     // Edit Mode: Modify workflow structure with AI
-    // If in "create-new" mode, pass null to create from scratch
-    // Otherwise, let executeEditMode use the current workflow
-    const baseWorkflow = editorMode === "create-new" ? null : undefined
-    const result = await executeEditMode(prompt.trim(), exportToJSON, addLog, baseWorkflow)
+    const result = await executeEditMode(prompt.trim(), exportToJSON, addLog)
 
     if (result.success && result.workflowConfig) {
       await loadWorkflowFromData(result.workflowConfig)
       await organizeLayout()
-
-      // Transition from create-new to editing mode
-      if (editorMode === "create-new") {
-        setEditorMode("editing")
-      }
-
       setPrompt("")
       toast.success("Workflow updated")
       // Hide logs after edit mode completes (user doesn't need to see technical details)
@@ -136,7 +118,7 @@ export function WorkflowPromptBar() {
     }
 
     setIsGenerating(false)
-  }, [prompt, isGenerating, exportToJSON, loadWorkflowFromData, organizeLayout, addLog, editorMode, setEditorMode])
+  }, [prompt, isGenerating, exportToJSON, loadWorkflowFromData, organizeLayout, addLog])
 
   const handleRun = useCallback(async () => {
     if (!prompt.trim() || isGenerating) return
@@ -150,35 +132,36 @@ export function WorkflowPromptBar() {
     }
 
     setIsGenerating(true)
-    setExecuting(true)
-    setEditorMode("running")
     setLogs([])
     setShowLogs(true)
 
     // Run Mode: Execute workflow with input
-    const result = await executeRunMode(prompt.trim(), exportToJSON, undefined, addLog, (finalMessage: string) => {
+    const result = await executeRunMode(prompt.trim(), exportToJSON, addLog, (finalMessage: string) => {
       addChatMessage(finalMessage, "result")
     })
 
     if (result.success) {
       toast.success("Workflow completed")
       setPrompt("")
-      setEditorMode("finished")
       // Keep logs visible in run mode so user can see output
     } else {
       // Check if error is MISSING_API_KEYS and show clickable link
-      if (result.errors && result.errors.length > 0) {
-        toast.error(result.errors.join("\n"))
+      if (result.errorCode === ErrorCodes.MISSING_API_KEYS) {
+        toast.error(result.error || "Missing API Keys", {
+          action: {
+            label: "Go to Settings",
+            onClick: () => router.push("/settings/providers"),
+          },
+          duration: 10000, // Show for 10 seconds to give user time to click
+        })
       } else {
         toast.error(result.error || "Workflow execution failed")
       }
       addChatMessage(result.error || "Workflow execution failed", "error")
-      setEditorMode("editing")
     }
 
     setIsGenerating(false)
-    setExecuting(false)
-  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage, router, setEditorMode, setExecuting])
+  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage, router])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {

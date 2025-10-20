@@ -85,6 +85,7 @@ export {
   type LocalMCPTransportOAuth,
   type LocalMCPTransportStdio,
 } from "./registration/localMCP"
+export { registerAllTools, registerToolkits } from "./registration/startup"
 export {
   getAllMCPServerNames,
   getAllMCPTools,
@@ -93,7 +94,6 @@ export {
   mcpToolkits,
   type MCPServerConfig,
 } from "./registration/mcpToolsRegistration"
-export { registerAllTools, registerToolkits } from "./registration/startup"
 
 // Tool execution context from contracts
 export type {

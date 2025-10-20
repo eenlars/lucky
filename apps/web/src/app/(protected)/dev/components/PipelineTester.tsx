@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models"
+import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models/pricing/catalog"
 import { ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION, ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 import {
   AlertCircle,
@@ -225,11 +225,8 @@ export function PipelineTester() {
         <div className="p-4 space-y-6">
           {/* System Prompt */}
           <div className="space-y-2">
-            <label htmlFor="system-prompt" className="text-sm font-medium">
-              System Prompt
-            </label>
+            <label className="text-sm font-medium">System Prompt</label>
             <textarea
-              id="system-prompt"
               value={config.systemPrompt}
               onChange={e => setConfig({ ...config, systemPrompt: e.target.value })}
               rows={4}
@@ -239,11 +236,8 @@ export function PipelineTester() {
 
           {/* Provider Selection */}
           <div className="space-y-2">
-            <label htmlFor="provider-select" className="text-sm font-medium">
-              Provider
-            </label>
+            <label className="text-sm font-medium">Provider</label>
             <select
-              id="provider-select"
               value={config.provider}
               onChange={e => handleProviderChange(e.target.value)}
               className="w-full px-3 py-2 text-sm border border-border rounded bg-background"
@@ -258,11 +252,8 @@ export function PipelineTester() {
 
           {/* Model Selection */}
           <div className="space-y-2">
-            <label htmlFor="model-select" className="text-sm font-medium">
-              Model
-            </label>
+            <label className="text-sm font-medium">Model</label>
             <select
-              id="model-select"
               value={config.modelName}
               onChange={e => setConfig({ ...config, modelName: e.target.value })}
               className="w-full px-3 py-2 text-sm border border-border rounded bg-background"
@@ -282,11 +273,8 @@ export function PipelineTester() {
 
           {/* maxSteps */}
           <div className="space-y-2">
-            <label htmlFor="max-steps" className="text-sm font-medium">
-              Max Steps
-            </label>
+            <label className="text-sm font-medium">Max Steps</label>
             <input
-              id="max-steps"
               type="number"
               value={config.maxSteps || ""}
               onChange={e => setConfig({ ...config, maxSteps: e.target.value ? Number(e.target.value) : undefined })}
@@ -300,7 +288,7 @@ export function PipelineTester() {
 
           {/* Tool Strategy */}
           <div className="space-y-2">
-            <div className="text-sm font-medium">Tool Strategy</div>
+            <label className="text-sm font-medium">Tool Strategy</label>
             <div className="grid grid-cols-3 gap-2">
               {(["auto", "v2", "v3"] as const).map(strategy => (
                 <button
@@ -322,7 +310,7 @@ export function PipelineTester() {
 
           {/* Code Tools */}
           <div className="space-y-2">
-            <div className="text-sm font-medium">Code Tools</div>
+            <label className="text-sm font-medium">Code Tools</label>
             <div className="space-y-1">
               {AVAILABLE_CODE_TOOLS.map(tool => (
                 <label
@@ -349,7 +337,7 @@ export function PipelineTester() {
 
           {/* MCP Tools */}
           <div className="space-y-2">
-            <div className="text-sm font-medium">MCP Tools</div>
+            <label className="text-sm font-medium">MCP Tools</label>
             <div className="space-y-1">
               {AVAILABLE_MCP_TOOLS.map(tool => (
                 <label
@@ -374,11 +362,8 @@ export function PipelineTester() {
 
           {/* Main Goal */}
           <div className="space-y-2">
-            <label htmlFor="workflow-goal" className="text-sm font-medium">
-              Workflow Goal (optional)
-            </label>
+            <label className="text-sm font-medium">Workflow Goal (optional)</label>
             <textarea
-              id="workflow-goal"
               value={config.mainGoal || ""}
               onChange={e => setConfig({ ...config, mainGoal: e.target.value })}
               rows={2}
@@ -406,11 +391,8 @@ export function PipelineTester() {
 
         {/* Input Message */}
         <div className="border-b border-border px-8 py-6 bg-muted/30">
-          <label htmlFor="user-message" className="text-sm font-medium mb-2 block">
-            User Message
-          </label>
+          <label className="text-sm font-medium mb-2 block">User Message</label>
           <textarea
-            id="user-message"
             value={config.message}
             onChange={e => setConfig({ ...config, message: e.target.value })}
             rows={3}

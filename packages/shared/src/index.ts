@@ -57,7 +57,7 @@ export type {
 export type {
   StandardModels,
   TokenUsage,
-} from "./contracts/llm-contracts/models-old"
+} from "./types/models"
 
 // Memory schemas
 export * from "./utils/memory/memorySchema"
@@ -81,7 +81,7 @@ export type { OutputSchema, WorkflowFile } from "./types/workflow"
 
 // Workflow contracts
 export { HandoffTypeSchema, WorkflowConfigSchema, WorkflowNodeConfigSchema } from "./contracts/workflow"
-export type { HandoffType, WorkflowConfigZ, WorkflowNodeConfig } from "./contracts/workflow"
+export type { HandoffType, WorkflowConfig, WorkflowNodeConfig } from "./contracts/workflow"
 
 // Provider contracts
 export {
@@ -97,7 +97,7 @@ export {
   providerStatusSchema,
   userModelPreferencesSchema,
   userProviderSettingsSchema,
-} from "./contracts/llm-contracts/providers"
+} from "./contracts/providers"
 export type {
   ApiKeyValidation,
   CatalogId,
@@ -111,7 +111,7 @@ export type {
   ProviderConfig as ProviderStatusConfig,
   UserModelPreferences,
   UserProviderSettings,
-} from "./contracts/llm-contracts/providers"
+} from "./contracts/providers"
 
 // Model contracts
 export {
@@ -120,20 +120,18 @@ export {
   modelEntrySchema,
   modelPricingSchema,
   modelPricingTierSchema,
+  modelSelectionSchema,
   modelSpeedSchema,
-  providerEntrySchema,
-  tierNameSchema,
-} from "./contracts/llm-contracts/models"
+} from "./contracts/models"
 export type {
   EnrichedModelInfo,
   ModelCapabilities,
   ModelEntry,
   ModelPricing,
   ModelPricingTier,
+  ModelSelection,
   ModelSpeed,
-  ProviderEntry,
-  TierName,
-} from "./contracts/llm-contracts/models"
+} from "./contracts/models"
 
 // Error contracts
 export { ErrorReportSchema, SeverityLevelSchema } from "./contracts/error"
@@ -209,12 +207,12 @@ export {
 
 // Agent event types
 export type {
-  AgentEndEvent,
-  AgentErrorEvent,
   AgentEvent,
   AgentStartEvent,
-  AgentToolEndEvent,
+  AgentEndEvent,
+  AgentErrorEvent,
   AgentToolStartEvent,
+  AgentToolEndEvent,
 } from "./types/agentEvents"
 
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)

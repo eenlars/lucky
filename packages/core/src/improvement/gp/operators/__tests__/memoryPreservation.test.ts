@@ -5,11 +5,11 @@
 import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
-import { createDummyGenome } from "../../rsc/debug/dummyGenome"
+import { createDummyGenome } from "../../resources/debug/dummyGenome"
 import { MemoryPreservation } from "../memoryPreservation"
 
 describe("MemoryPreservation", () => {
-  const validModel = getDefaultModels().balanced
+  const validModel = getDefaultModels().medium
 
   const createTestGenome = (nodeMemories: Record<string, Record<string, string>>) => {
     const genome = createDummyGenome([], {

@@ -6,8 +6,8 @@
  * Always look up models in MODEL_CATALOG to get the actual API provider.
  */
 
-import type { LuckyProvider, ModelId, UserModelPreferences } from "../contracts/llm-contracts/providers"
-import { providerNameSchema } from "../contracts/llm-contracts/providers"
+import type { LuckyProvider, ModelId, UserModelPreferences } from "../contracts/providers"
+import { providerNameSchema } from "../contracts/providers"
 
 /**
  * Normalize a model name to a full model ID

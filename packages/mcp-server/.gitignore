@@ -1,0 +1,29 @@
+# Build
+dist/
+
+# OS
+.DS_Store
+Thumbs.db 
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+claude_desktop_config.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.cursorrules.md
+IMPLEMENTATION.md
+v1.2.md

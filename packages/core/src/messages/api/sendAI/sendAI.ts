@@ -31,6 +31,7 @@ import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
 import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
+import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -79,13 +80,18 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
     }
   }
 
-  /* ---- normalize model ---- */
-  // Use default model if none specified
-  req.model = req.model ?? getDefaultModels().default
-
-  if (req.model.includes("#")) {
-    const [_provider, model] = req.model.split("#")
-    req.model = model
+  /* ---- normalize and validate model ---- */
+  // Validate model is active for current provider - throws if inactive
+  try {
+    req.model = validateAndResolveModel(req.model, getDefaultModels().default)
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: error instanceof Error ? error.message : String(error),
+      debug_input: req.messages,
+      debug_output: null,
+    }
   }
 
   /* ---- delegate to mode‑specific helper ---- */
@@ -135,7 +141,7 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
 
   // log which file is requesting sendAI by inspecting the stack trace
   const stack = new Error().stack
-  let callerFile = ""
+  let callerFile: string | undefined = undefined
   if (stack) {
     // find the first stack line outside this file
     const lines = stack.split("\n")

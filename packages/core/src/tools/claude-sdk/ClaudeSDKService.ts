@@ -5,23 +5,11 @@
 
 import Anthropic from "@anthropic-ai/sdk"
 import type { Message, Tool } from "@anthropic-ai/sdk/resources"
-import { getApiKey } from "@core/context/executionContext"
 import type { ProcessedResponse } from "@core/messages/api/vercel/processResponse.types"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
 import { MissingConfigError } from "@core/utils/errors/data-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { type ClaudeSDKConfig, MODEL_PRICING, SDK_VERSION } from "./types"
-
-/**
- * Simple hash function for API keys to avoid logging sensitive credentials.
- * Returns first 4 and last 4 characters with a hash count in the middle.
- */
-function hashApiKey(apiKey: string): string {
-  const prefix = apiKey.slice(0, 4)
-  const suffix = apiKey.slice(-4)
-  const hash = apiKey.length.toString(16)
-  return apiKey.length <= 8 ? "[redacted]" : `${prefix}...${hash}...${suffix}`
-}
 
 export interface SDKRequest {
   prompt: string
@@ -34,15 +22,10 @@ export interface SDKRequest {
 /**
  * Service class for official Anthropic SDK execution.
  * Designed to be pluggable with minimal coupling.
- *
- * SECURITY: Uses key-based client caching to ensure each execution context
- * with a different API key gets its own client instance. This prevents
- * credential leaking when multiple users make requests in the same process.
  */
 export class ClaudeSDKService {
-  // Map clients by API key to ensure key isolation
-  // Each unique API key gets its own client instance
-  private static clientCache: Map<string, Anthropic> = new Map()
+  private static client: Anthropic | null = null
+  private static initialized = false
 
   /**
    * List all available Claude models from the API.
@@ -56,7 +39,7 @@ export class ClaudeSDKService {
       type: string
     }>
   > {
-    const client = await ClaudeSDKService.initializeClient()
+    const client = ClaudeSDKService.initializeClient()
 
     try {
       const response = await client.models.list()
@@ -68,46 +51,36 @@ export class ClaudeSDKService {
   }
 
   /**
-   * Initialize SDK client with key-based caching for BYOK isolation.
-   *
-   * Fetches the API key from the execution context and maintains a separate
-   * client for each unique key. This ensures that different users' credentials
-   * are never mixed up or shared.
-   *
-   * @throws MissingConfigError if ANTHROPIC_API_KEY is not available
+   * Initialize SDK client (singleton pattern for efficiency).
+   * Uses environment variable ANTH_API_KEY.
    */
-  private static async initializeClient(): Promise<Anthropic> {
-    // Always fetch the API key from execution context (respects BYOK)
-    const apiKey = await getApiKey("ANTHROPIC_API_KEY")
+  private static initializeClient(): Anthropic {
+    // Always check for API key, even if client exists
+    const apiKey = process.env.ANTH_API_KEY
 
     if (!apiKey) {
-      throw new MissingConfigError("ANTHROPIC_API_KEY", {
+      throw new MissingConfigError("ANTH_API_KEY", {
         requiredFor: "Anthropic Claude SDK usage",
-        suggestion: "Configure ANTHROPIC_API_KEY in Settings → Providers or set it in your environment variables.",
+        suggestion: "Set ANTH_API_KEY in your environment variables with your Anthropic API key.",
       })
     }
 
-    // Check if we already have a client for this specific API key
-    let client = ClaudeSDKService.clientCache.get(apiKey)
-
-    if (!client) {
-      // Create a new client for this API key
-      client = new Anthropic({
+    if (!ClaudeSDKService.client) {
+      ClaudeSDKService.client = new Anthropic({
         apiKey,
         maxRetries: 2, // SDK's built-in retry mechanism
+        // Optional: Add custom headers or other config
       })
 
-      // Cache it by the API key
-      ClaudeSDKService.clientCache.set(apiKey, client)
-
-      lgg.info("[ClaudeSDK] New Anthropic SDK client created for API key", {
-        integrationVersion: SDK_VERSION.integrationVersion,
-        keyHash: hashApiKey(apiKey),
-        cacheSize: ClaudeSDKService.clientCache.size,
-      })
+      if (!ClaudeSDKService.initialized) {
+        ClaudeSDKService.initialized = true
+        lgg.info("[ClaudeSDK] Anthropic SDK client initialized", {
+          integrationVersion: SDK_VERSION.integrationVersion,
+        })
+      }
     }
 
-    return client
+    return ClaudeSDKService.client
   }
 
   /**
@@ -148,7 +121,7 @@ export class ClaudeSDKService {
       const startTime = Date.now()
 
       // Get client
-      const client = await ClaudeSDKService.initializeClient()
+      const client = ClaudeSDKService.initializeClient()
 
       // Determine model from config (map our simple names to official model IDs)
       const modelId = this.getModelId(request.config?.model)

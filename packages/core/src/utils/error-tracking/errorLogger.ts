@@ -68,7 +68,7 @@ function stableStringify(value: unknown): string {
 /**
  * Compute deterministic hash for error deduplication
  */
-function _computeHash(parts: {
+function computeHash(parts: {
   location: string
   env: "production" | "development"
   error: unknown

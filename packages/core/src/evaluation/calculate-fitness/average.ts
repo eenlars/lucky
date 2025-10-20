@@ -51,7 +51,7 @@ export const calculateFeedbackGrouped = async (feedbacks: string[]): Promise<RS<
 
   const result = await sendAI({
     messages: [{ role: "user", content: prompt }],
-    model: getDefaultModels().balanced,
+    model: getDefaultModels().medium,
     mode: "text",
   })
 

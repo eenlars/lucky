@@ -1,0 +1,27 @@
+NOTICE
+
+This project includes code originally developed by vrknetha and Knack Labs,
+licensed under the MIT License. Significant portions of the original implementation
+have been incorporated into this work.
+
+Original work: Copyright (c) 2025 vrknetha
+Original License: MIT (see LICENSE file for full text)
+
+Modifications and additions: Copyright (c) 2025 Lucky
+Licensed under: MIT
+
+---
+
+CREDITS
+
+- Initial implementation: @vrknetha (https://github.com/vrknetha)
+- Initial implementation: @knacklabs (https://www.knacklabs.ai)
+- Modifications and integration with Lucky platform: Lucky team
+- Additional contributors: @cawstudios (https://caw.tech)
+- Integration support: @gstarwd, @xiangkaiz, @zihaolin96
+- Hosting partners: MCP.so and Klavis AI
+
+---
+
+For the full MIT License text, see the LICENSE file in this repository.
+

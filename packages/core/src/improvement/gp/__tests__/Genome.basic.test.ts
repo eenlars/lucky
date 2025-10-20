@@ -211,7 +211,7 @@ vi.mock("@core/clients/supabase/client", () => ({
   },
 }))
 
-import type { WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
+import type { WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
 
 describe("Genome Basic Tests", () => {
   beforeEach(() => {

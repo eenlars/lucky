@@ -2,7 +2,6 @@ import {
   aiProviders,
   clerkClient,
   clerkServer,
-  redisConfig,
   searchProviders,
   supabaseClient,
   supabaseServer,
@@ -23,7 +22,6 @@ export const envi = createEnv({
     ...aiProviders.shape,
     ...searchProviders.shape,
     ...toolProviders.shape,
-    ...redisConfig.shape,
   },
   client: {
     ...clerkClient.shape,
@@ -62,11 +60,6 @@ export const envi = createEnv({
     MAPBOX_TOKEN: process.env.MAPBOX_TOKEN,
     MEM0_API_KEY: process.env.MEM0_API_KEY,
     WEBSHARE_API_KEY: process.env.WEBSHARE_API_KEY,
-    // Redis
-    REDIS_ENABLED: process.env.REDIS_ENABLED,
-    REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: process.env.REDIS_PORT,
-    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
   },
 })
 

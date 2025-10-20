@@ -1,17 +1,43 @@
-import { post } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import type { JsonRpcInvokeResponse } from "@lucky/shared/contracts/invoke"
+import type { z } from "zod"
 
-export type WorkflowRunResult =
-  | {
-      success: true
-      output: string
-    }
-  | {
-      success: false
-      error: string
-      errors?: string[]
-    }
+/**
+ * Result from run mode handler
+ */
+export interface RunModeResult {
+  success: boolean
+  error?: string
+  output?: string
+  errorCode?: number // JSON-RPC error code
+  errorData?: unknown // Additional error data
+}
+
+/**
+ * Client-side wrapper for server-side DSL validation
+ */
+async function loadFromDSLClient(dslConfig: any) {
+  const response = await fetch("/api/workflow/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workflow: dslConfig, mode: "dsl" }),
+  })
+  const result = (await response.json()) as z.infer<typeof JsonRpcInvokeResponse>
+
+  if ("error" in result) {
+    // JSON-RPC error response
+    const errorData = result.error.data as any
+    throw new Error(errorData?.errors?.[0] || result.error.message || "Invalid workflow configuration")
+  }
+
+  // JSON-RPC success response
+  const output = result.result.output as any
+  if (!output.isValid) {
+    throw new Error(output.errors?.[0] || "Invalid workflow configuration")
+  }
+  return output.config
+}
 
 /**
  * Run Mode Handler: Execute workflow with user-provided input.
@@ -28,10 +54,9 @@ export type WorkflowRunResult =
 export async function executeRunMode(
   prompt: string,
   exportToJSON: () => string,
-  workflowId?: string,
   onProgress?: (log: string) => void,
   onComplete?: (finalMessage: string) => void,
-): Promise<WorkflowRunResult> {
+): Promise<RunModeResult> {
   try {
     onProgress?.("Starting workflow execution...")
     await new Promise(resolve => setTimeout(resolve, 300))
@@ -51,56 +76,32 @@ export async function executeRunMode(
 
     await new Promise(resolve => setTimeout(resolve, 200))
     onProgress?.("Validating workflow configuration...")
-
-    const { error, data } = await post("workflow/verify", {
-      workflow: cfgMaybe,
-      mode: "dsl",
-    })
-
-    if (error) {
-      return {
-        success: false,
-        error: error.message,
-      }
-    }
-
-    if (!data?.isValid && data?.errors && data.errors.length > 0) {
-      return {
-        success: false,
-        error: "Workflow validation failed",
-        errors: data.errors,
-      }
-    }
+    const cfg = await loadFromDSLClient(cfgMaybe)
 
     await new Promise(resolve => setTimeout(resolve, 200))
-    onProgress?.("That workflow looks good...")
-
-    const nodes = cfgMaybe.nodes
-    const response = await post("v1/openrouter", {
-      prompt: prompt,
-      dslConfig: {
-        nodes,
-        entryNodeId: cfgMaybe.entryNodeId || nodes[0]?.nodeId || "",
-      },
-      workflowId,
+    onProgress?.("Sending request to workflow API...")
+    const response = await fetch("/api/workflow/invoke", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        dslConfig: cfg,
+        evalInput: {
+          type: "text",
+          question: prompt,
+          answer: "",
+          goal: "Workflow run",
+          workflowId: "adhoc-ui-promptbar",
+        },
+      }),
     })
 
     onProgress?.("Processing response...")
+    const result = (await response.json()) as z.infer<typeof JsonRpcInvokeResponse>
 
-    if (response.success) {
-      // Success response - response.data.output contains the full workflow result
-      const workflowResult = response.data.output
-
-      // Extract the actual output value from the workflow result
-      let finalOutput: string
-      if (typeof workflowResult === "string") {
-        finalOutput = workflowResult
-      } else if (workflowResult && typeof workflowResult === "object" && "output" in workflowResult) {
-        finalOutput =
-          typeof workflowResult.output === "string" ? workflowResult.output : JSON.stringify(workflowResult.output)
-      } else {
-        finalOutput = JSON.stringify(workflowResult)
-      }
+    if ("result" in result) {
+      // JSON-RPC success response
+      const output = result.result.output
+      const finalOutput = typeof output === "string" ? output : JSON.stringify(output)
 
       onProgress?.("✅ Workflow completed successfully!")
       onProgress?.(`Result: ${finalOutput}`)
@@ -115,12 +116,14 @@ export async function executeRunMode(
         output: finalOutput,
       }
     }
-    // Error response
-    const errorMsg = response.error.message
+    // JSON-RPC error response
+    const errorMsg = result.error.message
     onProgress?.(`❌ Error: ${errorMsg}`)
     return {
       success: false,
       error: errorMsg,
+      errorCode: result.error.code,
+      errorData: result.error.data,
     }
   } catch (error) {
     logException(error, {

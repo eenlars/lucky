@@ -1,6 +1,7 @@
 import { alrighty } from "@/lib/api/server"
 import { handleBody, isHandleBodyError } from "@/lib/api/server"
-import { getModelsByProvider, isUIVisibleModel } from "@lucky/models"
+import { getModelsByProvider } from "@lucky/models"
+import { isUIVisibleModel } from "@lucky/models/pricing/model-lookup"
 import { type EnrichedModelInfo, providerNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 

@@ -19,12 +19,9 @@ vi.mock("@core/clients/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 
-vi.mock("@core/models/models-instance", () => ({
-  getModelsInstance: vi.fn(() =>
-    Promise.resolve({
-      resolve: vi.fn((model: string) => `mocked-${model}`),
-    }),
-  ),
+vi.mock("@core/models/getLanguageModel", () => ({
+  getLanguageModel: vi.fn((model: string) => `mocked-${model}`),
+  getLanguageModelWithReasoning: vi.fn((model: string, _opts?: any) => `mocked-${model}`),
 }))
 
 vi.mock("@core/utils/spending/SpendingTracker", () => ({

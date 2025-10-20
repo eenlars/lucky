@@ -22,7 +22,7 @@ const mcpConfigSchema = z.object({
  * GET /api/mcp/config
  * Returns the user's MCP server configurations from mcp.user_server_configs (stdio servers only)
  */
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
   const clerkId = authResult
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { mcpServers } = validation.data
+  const { mcpServers, lastKnownUpdateAt } = validation.data
 
   try {
     // Get existing stdio configs (server_id IS NULL)

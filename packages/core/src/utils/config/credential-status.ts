@@ -7,7 +7,7 @@ import { envi } from "@core/utils/env.mjs"
 import { hasSupabaseCredentials } from "@lucky/shared/supabase-credentials.server"
 import type { CredentialName } from "./credential-errors"
 
-// Re-export CredentialName as part of this module's public API
+// Re-export for consumers
 export type { CredentialName } from "./credential-errors"
 
 export type FeatureName = "persistence" | "evolution" | "ai_models" | "search" | "memory"

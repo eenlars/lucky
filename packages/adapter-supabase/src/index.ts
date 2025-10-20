@@ -44,4 +44,3 @@ export {
 // Implementation exports (for advanced usage)
 export { InMemoryPersistence } from "./memory-persistence"
 export { SupabasePersistence } from "./supabase-persistence"
-export { SupabaseWorkflowPersistence } from "./workflows/workflow-persistence"

@@ -139,61 +139,39 @@ export async function execStructured<S extends ZodTypeAny>(
     // TODO: implement error recovery mechanisms
     // TODO: add error reporting and analytics
     const { message, debug } = normalizeError(err)
+    console.error("[execStructured] error", { message })
 
     // Classify error for better tracking
     let errorCategory = "unknown"
     let severity: "error" | "warn" = "error"
-    let isUserError = false
 
     if (typeof message === "string") {
-      const lowerMsg = message.toLowerCase()
-
-      // User input validation errors - don't spam logs
-      if (
-        lowerMsg.includes("is not a valid model id") ||
-        lowerMsg.includes("does not exist") ||
-        lowerMsg.includes("model_not_found") ||
-        lowerMsg.includes("model not found") ||
-        (debug?.statusCode === 400 && (lowerMsg.includes("model") || lowerMsg.includes("invalid")))
-      ) {
-        errorCategory = "validation"
-        severity = "warn"
-        isUserError = true
-        console.warn("[execStructured] Invalid model:", model, "-", message)
-      } else if (lowerMsg.includes("quota") || lowerMsg.includes("insufficient credits")) {
+      if (message.toLowerCase().includes("quota") || message.toLowerCase().includes("insufficient credits")) {
         errorCategory = "quota"
-        console.error("[execStructured] Quota error:", message)
-      } else if (lowerMsg.includes("authentication") || lowerMsg.includes("api key")) {
+      } else if (message.toLowerCase().includes("authentication") || message.toLowerCase().includes("api key")) {
         errorCategory = "auth"
-        console.error("[execStructured] Auth error:", message)
-      } else if (lowerMsg.includes("rate limit")) {
+      } else if (message.toLowerCase().includes("rate limit")) {
         errorCategory = "rate_limit"
         severity = "warn"
-      } else if (lowerMsg.includes("schema") || lowerMsg.includes("validation")) {
+      } else if (message.toLowerCase().includes("schema") || message.toLowerCase().includes("validation")) {
         errorCategory = "schema_validation"
-      } else {
-        console.error("[execStructured] error", { message })
       }
-    } else {
-      console.error("[execStructured] error", { message })
     }
 
-    // Only log to backend for non-user errors
-    if (!isUserError) {
-      logException(err, {
-        location: `core/execStructured/${errorCategory}`,
-        context: {
-          model,
-          messageCount: messages.length,
-          hasSchema: Boolean(schema),
-          errorCategory,
-          debug,
-        },
-        severity,
-      }).catch(logErr => {
-        console.error("Failed to log error to backend:", logErr)
-      })
-    }
+    // Log to backend for tracking
+    logException(err, {
+      location: `core/execStructured/${errorCategory}`,
+      context: {
+        model,
+        messageCount: messages.length,
+        hasSchema: Boolean(schema),
+        errorCategory,
+        debug,
+      },
+      severity,
+    }).catch(logErr => {
+      console.error("Failed to log error to backend:", logErr)
+    })
 
     return {
       success: false,

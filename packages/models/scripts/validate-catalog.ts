@@ -18,7 +18,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
 
 import { modelEntrySchema } from "@lucky/shared"
-import { MODEL_CATALOG } from "../src/llm-catalog/catalog"
+import { MODEL_CATALOG } from "../src/pricing/catalog"
 
 interface ValidationError {
   modelId: string
@@ -124,23 +124,11 @@ class CatalogValidator {
   }
 
   private addError(modelId: string, field: string, message: string): void {
-    this.errors.push({
-      modelId,
-      field,
-      message,
-      severity: "error",
-      location: this.getLocation(modelId),
-    })
+    this.errors.push({ modelId, field, message, severity: "error", location: this.getLocation(modelId) })
   }
 
   private addWarning(modelId: string, field: string, message: string): void {
-    this.warnings.push({
-      modelId,
-      field,
-      message,
-      severity: "warning",
-      location: this.getLocation(modelId),
-    })
+    this.warnings.push({ modelId, field, message, severity: "warning", location: this.getLocation(modelId) })
   }
 
   private printResults(): boolean {
@@ -169,9 +157,7 @@ class CatalogValidator {
     // Print summary
     if (!hasErrors && this.warnings.length === 0) {
       console.log("✅ MODEL_CATALOG validation passed!")
-      console.log(
-        `   ${MODEL_CATALOG.length} models validated, ${MODEL_CATALOG.filter(m => m.runtimeEnabled).length} runtime-enabled`,
-      )
+      console.log(`   ${MODEL_CATALOG.length} models validated, ${MODEL_CATALOG.filter(m => m.active).length} active`)
     } else {
       console.log("\nSummary:")
       console.log(`  Total models: ${MODEL_CATALOG.length}`)
@@ -185,7 +171,7 @@ class CatalogValidator {
 
 // Run validation
 const repoRoot = path.resolve(import.meta.dir, "../../..")
-const catalogDir = path.resolve(import.meta.dir, "../src")
+const catalogDir = path.resolve(import.meta.dir, "../src/pricing")
 
 const modelLocationMap = collectModelLocations(catalogDir, repoRoot)
 

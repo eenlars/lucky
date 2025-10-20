@@ -1,4 +1,4 @@
-import { EvolutionUtils } from "../rsc/utils"
+import { EvolutionUtils } from "../resources/utils"
 
 describe("EvolutionUtils.poisson", () => {
   test("should return non-negative integers", () => {

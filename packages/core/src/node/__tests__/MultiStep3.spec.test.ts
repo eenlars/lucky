@@ -5,7 +5,7 @@ import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { ToolManager } from "../toolManager"
 
-const model = getDefaultModels().balanced
+const model = getDefaultModels().medium
 
 describe("MultiStep3 integration - todoRead and todoWrite", () => {
   // TODO: this test is nearly identical to MultiStep2.spec.test.ts with only difference

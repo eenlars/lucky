@@ -142,7 +142,7 @@ if (modelId === "anthropic/claude-sonnet-4") {
 
 ```typescript
 import { MODEL_CATALOG } from "@lucky/models/pricing/catalog"
-import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
 
 function extractRequiredProviders(config: WorkflowConfig) {
   const providers = new Set<string>()
