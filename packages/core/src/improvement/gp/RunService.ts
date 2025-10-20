@@ -10,10 +10,8 @@ import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
 import type { FlowEvolutionMode } from "@core/types"
 import { RunTrackingError } from "@core/utils/errors/evolution-errors"
 import { lgg } from "@core/utils/logging/Logger"
-import { type Tables, type TablesInsert, type TablesUpdate, genShortId } from "@lucky/shared"
-import { JSONN } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
-import type { IEvolutionPersistence, IPersistence } from "@together/adapter-supabase"
+import type { IEvolutionPersistence, IPersistence } from "@lucky/adapter-supabase"
+import { genShortId } from "@lucky/shared"
 import type { Genome } from "./Genome"
 import type { PopulationStats } from "./resources/gp.types"
 
@@ -104,17 +102,17 @@ export class RunService {
     // Create run (with persistence or locally)
     if (this.evolutionPersistence) {
       this.runId = await this.evolutionPersistence.createRun({
-        goalText: inputText,
-        config: config,
+        goal_text: inputText,
+        config: config as any,
         status: "running",
-        evolutionType: config.mode === "iterative" ? "iterative" : "gp",
+        evolution_type: config.mode === "iterative" ? "iterative" : "gp",
         notes,
       })
 
       // Create initial generation
       this.currentGenerationId = await this.evolutionPersistence.createGeneration({
-        generationNumber: 0,
-        runId: this.runId,
+        number: 0,
+        run_id: this.runId,
       })
     } else {
       // Local IDs when no persistence
@@ -130,8 +128,8 @@ export class RunService {
   async createNewGeneration(): Promise<void> {
     if (this.evolutionPersistence) {
       this.currentGenerationId = await this.evolutionPersistence.createGeneration({
-        generationNumber: this.currentGenerationNumber + 1,
-        runId: this.getRunId(),
+        number: this.currentGenerationNumber + 1,
+        run_id: this.getRunId(),
       })
     } else {
       this.currentGenerationId = `gen_${genShortId()}`
@@ -169,11 +167,11 @@ export class RunService {
 
     // Create workflow version using main persistence
     await this.mainPersistence.createWorkflowVersion({
-      workflowVersionId,
-      workflowId: genome.getWorkflowId(),
-      commitMessage: genome.getGoal(),
-      dsl: genome.getWorkflowConfig(),
-      generationId,
+      wf_version_id: workflowVersionId,
+      workflow_id: genome.getWorkflowId(),
+      commit_message: genome.getGoal(),
+      dsl: genome.getWorkflowConfig() as any,
+      generation_id: generationId,
       operation: operator,
     })
 
@@ -202,8 +200,8 @@ export class RunService {
 
     await this.evolutionPersistence.completeGeneration(
       {
-        generationId: activeGenerationId,
-        bestWorkflowVersionId: workflowVersionId,
+        generation_id: activeGenerationId,
+        best_workflow_version_id: workflowVersionId,
         comment: stats
           ? `Best: ${stats.bestFitness.toFixed(3)}, Avg: ${stats.avgFitness.toFixed(3)}, Cost: $${stats.evaluationCost.toFixed(2)}`
           : `Best genome: ${bestGenome.getWorkflowVersionId()}`,

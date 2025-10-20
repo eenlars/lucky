@@ -17,7 +17,7 @@ export function getSupabaseClient(): SupabaseClient {
   // Enforce server-only usage for the adapter
   if (typeof window !== "undefined") {
     throw new Error(
-      "@together/adapter-supabase is server-only. Use the app's Supabase client for browser code or switch to memory backend.",
+      "@lucky/adapter-supabase is server-only. Use the app's Supabase client for browser code or switch to memory backend.",
     )
   }
 

@@ -1,4 +1,4 @@
-import type { IPersistence } from "@together/adapter-supabase"
+import type { IPersistence } from "@lucky/adapter-supabase"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { WorkflowConfigHandler } from "../WorkflowLoader"
 

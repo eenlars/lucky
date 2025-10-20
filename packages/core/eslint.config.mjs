@@ -36,6 +36,10 @@ const eslintConfig = [
               message:
                 "Deep relative imports are not allowed. Use path aliases like @core/*, @examples/*, @lucky/tools/*, etc. instead.",
             },
+            {
+              group: ["**/supabase.types", "**/public.types"],
+              message: "Core cannot import Supabase types. Use domain contracts from @lucky/shared/contracts instead.",
+            },
           ],
         },
       ],

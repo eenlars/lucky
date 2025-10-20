@@ -10,6 +10,7 @@ import { WorkflowFitnessError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import { createWorkflowInvocation, createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
 
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 // zodToJson no longer needed - outputSchema is JSON Schema, not Zod
@@ -22,12 +23,12 @@ import type { AggregateEvaluationResult, RunResult } from "@core/workflow/runner
 import { ensure, guard, throwIf } from "@core/workflow/schema/errorMessages"
 import { hashWorkflow } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
+// src/core/workflow/Workflow.ts
+import type { IPersistence } from "@lucky/adapter-supabase"
 import type { RS, WorkflowEventHandler } from "@lucky/shared"
 import { R, genShortId, isNir } from "@lucky/shared"
 import type { ToolExecutionContext } from "@lucky/tools"
 import { INACTIVE_TOOLS } from "@lucky/tools"
-// src/core/workflow/Workflow.ts
-import type { IPersistence } from "@together/adapter-supabase"
 import { generateWorkflowIdea } from "./actions/generate/generateIdea"
 
 type GenomeFeedback = string | null
@@ -355,12 +356,13 @@ export class Workflow {
 
     // Only register the workflow version (if persistence enabled)
     if (this.persistence) {
-      await this.persistence.createWorkflowVersion({
+      await createWorkflowVersion({
+        persistence: this.persistence,
         workflowVersionId: this.workflowVersionId,
         workflowId: this.workflowId,
         commitMessage: this.goal,
-        dsl: this.config,
-        generationId: this.evolutionContext?.generationId,
+        workflowConfig: this.config,
+        generation: this.evolutionContext?.generationId,
         operation: this.parent1Id ? "mutation" : "init",
         parent1Id: this.parent1Id,
         parent2Id: this.parent2Id,
@@ -386,15 +388,20 @@ export class Workflow {
    * @returns The created workflowInvocationId
    */
   async createInvocationForIO(index: number, workflowIO: WorkflowIO): Promise<string> {
-    const workflowInvocationId = genShortId()
+    const workflowInvocationId = `wf_inv_${genShortId()}`
+
+    lgg.log("[Workflow.createInvocationForIO] DEBUG: Creating invocation", workflowInvocationId, "for IO index", index)
+    lgg.log("[Workflow.createInvocationForIO] DEBUG: Persistence available?", this.persistence ? "YES" : "NO")
 
     if (this.persistence) {
       try {
-        await this.persistence.createWorkflowInvocation({
+        lgg.log("[Workflow.createInvocationForIO] DEBUG: Calling persistence.createWorkflowInvocation...")
+        await createWorkflowInvocation({
+          persistence: this.persistence,
           workflowInvocationId,
           workflowVersionId: this.workflowVersionId,
           runId: this.evolutionContext?.runId,
-          generationId: this.evolutionContext?.generationId,
+          generation: this.evolutionContext?.generationId,
           metadata: {
             configFiles: this.config.contextFile ? [this.config.contextFile] : [],
             workflowIOIndex: index,
@@ -402,16 +409,20 @@ export class Workflow {
           expectedOutputType: this.evaluationInput.outputSchema
             ? JSON.stringify(this.evaluationInput.outputSchema, null, 2).replace(/[\n\s]+/g, " ")
             : null,
-          workflowInput: workflowIO.workflowInput as any,
-          workflowOutput: workflowIO.workflowOutput as any,
+          workflowInput: workflowIO.workflowInput,
+          workflowOutput: workflowIO.workflowOutput,
         })
+        lgg.log("[Workflow.createInvocationForIO] DEBUG: Successfully created invocation in database!")
       } catch (error) {
+        lgg.error("[Workflow.createInvocationForIO] DEBUG: Failed to create invocation:", error)
         lgg.error(
           `[Workflow] Failed to create workflow invocation ${workflowInvocationId} for version ${this.workflowVersionId}`,
           error,
         )
         throw new Error(`Failed to save workflow invocation: ${error instanceof Error ? error.message : String(error)}`)
       }
+    } else {
+      lgg.warn("[Workflow.createInvocationForIO] DEBUG: Skipping invocation save - no persistence adapter!")
     }
 
     this.workflowInvocationIds.set(index, workflowInvocationId)

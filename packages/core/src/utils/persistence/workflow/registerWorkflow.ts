@@ -1,12 +1,7 @@
 import type { WorkflowIO } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { Json } from "@lucky/shared"
-import type {
-  IPersistence,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  WorkflowVersionData,
-} from "@together/adapter-supabase"
+import type { IPersistence } from "@lucky/adapter-supabase"
+import type { Json, TablesInsert, TablesUpdate } from "@lucky/shared"
 
 /**
  * Auxiliary function to ensure the main workflow exists in the database
@@ -15,9 +10,10 @@ export const ensureWorkflowExists = async (
   persistence: IPersistence | undefined,
   description: string,
   workflowId: string,
+  clerkId?: string,
 ): Promise<void> => {
   if (!persistence) return
-  await persistence.ensureWorkflowExists(workflowId, description)
+  await persistence.ensureWorkflowExists(workflowId, description, clerkId)
 }
 
 /**
@@ -45,15 +41,15 @@ export const createWorkflowVersion = async ({
   parent2Id?: string
 }): Promise<void> => {
   if (!persistence) return
-  const data: WorkflowVersionData = {
-    workflowVersionId,
-    workflowId,
-    commitMessage,
-    dsl: workflowConfig,
-    generationId: generation,
+  const data: TablesInsert<"WorkflowVersion"> = {
+    wf_version_id: workflowVersionId,
+    workflow_id: workflowId,
+    commit_message: commitMessage,
+    dsl: workflowConfig as Json,
+    generation_id: generation,
     operation,
-    parent1Id,
-    parent2Id,
+    parent1_id: parent1Id,
+    parent2_id: parent2Id,
   }
   await persistence.createWorkflowVersion(data)
 }
@@ -86,23 +82,33 @@ export const createWorkflowInvocation = async ({
 }): Promise<void> => {
   if (!persistence) return
 
-  const data: WorkflowInvocationData = {
-    workflowInvocationId,
-    workflowVersionId,
-    runId,
-    generationId: generation,
-    metadata,
-    fitness,
-    expectedOutputType,
-    workflowInput,
-    workflowOutput,
+  const data: TablesInsert<"WorkflowInvocation"> = {
+    wf_invocation_id: workflowInvocationId,
+    wf_version_id: workflowVersionId,
+    run_id: runId ?? null,
+    generation_id: generation ?? null,
+    extras: metadata ?? {},
+    fitness: fitness ?? null,
+    expected_output_type: expectedOutputType ?? null,
+    workflow_input: workflowInput ?? null,
+    workflow_output: workflowOutput ?? null,
+    status: "running",
+    start_time: new Date().toISOString(),
+    end_time: null,
+    usd_cost: 0,
+    actual_output: null,
+    dataset_record_id: null,
+    evaluator_id: null,
+    expected_output: null,
+    feedback: null,
+    preparation: null,
   }
-  await persistence.createWorkflowInvocation(data)
+  await persistence.createWorkflowInvocation(data as any)
 }
 
 export const updateWorkflowInvocationInDatabase = async (
   persistence: IPersistence | undefined,
-  params: WorkflowInvocationUpdate,
+  params: TablesUpdate<"WorkflowInvocation">,
 ): Promise<unknown> => {
   if (!persistence) return
   return persistence.updateWorkflowInvocation(params)

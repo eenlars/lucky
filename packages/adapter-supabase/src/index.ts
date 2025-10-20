@@ -1,5 +1,5 @@
 /**
- * @together/adapter-supabase
+ * @lucky/adapter-supabase
  *
  * Persistence adapter for the together workflow system.
  * Provides optional database persistence through a clean interface.
@@ -14,22 +14,14 @@ export type {
   CleanupStats,
   DatasetRecord,
   EvolutionContext,
-  GenerationData,
-  GenerationUpdate,
   IEvolutionPersistence,
   IMessagePersistence,
   INodePersistence,
   IPersistence,
   MessageData,
-  NodeInvocationData,
   NodeInvocationEndData,
   NodeInvocationStartData,
-  NodeVersionData,
   PopulationStats,
-  RunData,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  WorkflowVersionData,
 } from "./persistence-interface"
 
 // Error exports

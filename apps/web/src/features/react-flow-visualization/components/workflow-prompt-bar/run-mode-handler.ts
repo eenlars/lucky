@@ -1,5 +1,6 @@
 import { logException } from "@/lib/error-logger"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { genShortId } from "@lucky/shared/client"
 import type { JsonRpcInvokeResponse } from "@lucky/shared/contracts/invoke"
 import type { z } from "zod"
 
@@ -80,17 +81,19 @@ export async function executeRunMode(
 
     await new Promise(resolve => setTimeout(resolve, 200))
     onProgress?.("Sending request to workflow API...")
+
+    // Generate unique workflow ID for each invocation so they're saved separately
+    const uniqueWorkflowId = `adhoc_ui_promptbar_${genShortId()}`
+
     const response = await fetch("/api/workflow/invoke", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         dslConfig: cfg,
         evalInput: {
-          type: "text",
-          question: prompt,
-          answer: "",
-          goal: "Workflow run",
-          workflowId: "adhoc-ui-promptbar",
+          type: "prompt-only",
+          goal: prompt,
+          workflowId: uniqueWorkflowId,
         },
       }),
     })

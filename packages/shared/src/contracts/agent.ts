@@ -110,5 +110,5 @@ export interface NodeInvocationCallContext<_TPayload = unknown, TConfig = Workfl
   skipDatabasePersistence?: boolean
 
   // Optional tool strategy override
-  toolStrategyOverride?: "v2" | "v3"
+  toolStrategyOverride?: "v2" | "v3" | "auto"
 }

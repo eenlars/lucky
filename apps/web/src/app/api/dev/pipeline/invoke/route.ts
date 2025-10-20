@@ -3,12 +3,13 @@ import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { InvocationPipeline } from "@core/messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { ToolManager } from "@core/node/toolManager"
+import { createWorkflowInvocation, createWorkflowVersion } from "@core/utils/persistence/workflow/registerWorkflow"
+import { createPersistence } from "@lucky/adapter-supabase"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { withObservationContext } from "@lucky/core/context/observationContext"
 import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
 import { type WorkflowNodeConfig, genShortId } from "@lucky/shared"
-import { createPersistence } from "@together/adapter-supabase"
 import { NextResponse } from "next/server"
 
 // Types for the API
@@ -113,11 +114,12 @@ export async function POST(request: Request) {
         return withObservationContext({ randomId, observer }, async () => {
           // Create workflow version record for tracking
           await persistence.ensureWorkflowExists(workflowId, "Dev pipeline testing")
-          await persistence.createWorkflowVersion({
+          await createWorkflowVersion({
+            persistence,
             workflowVersionId,
             workflowId,
             commitMessage: `Dev test: ${body.systemPrompt.substring(0, 50)}...`,
-            dsl: {
+            workflowConfig: {
               nodes: [
                 {
                   nodeId,
@@ -131,7 +133,8 @@ export async function POST(request: Request) {
           })
 
           // Create workflow invocation record for observability
-          await persistence.createWorkflowInvocation({
+          await createWorkflowInvocation({
+            persistence,
             workflowInvocationId: invocationId,
             workflowVersionId,
             metadata: {
@@ -204,7 +207,6 @@ export async function POST(request: Request) {
 
     // Check if pipeline execution succeeded
     const hasError = !!result.error
-    const success = !hasError
 
     // If pipeline failed, return error response
     if (hasError) {

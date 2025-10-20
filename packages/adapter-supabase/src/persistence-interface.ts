@@ -7,64 +7,9 @@
  * 2. IEvolutionPersistence - evolution run and generation tracking (only for evolution)
  */
 
-// ============ Data Types ============
+import type { Enums, Payload, Tables, TablesInsert, TablesUpdate } from "@lucky/shared"
 
-export interface WorkflowVersionData {
-  workflowVersionId: string
-  workflowId: string
-  commitMessage: string
-  dsl: unknown
-  generationId?: string
-  operation?: "init" | "crossover" | "mutation" | "immigrant"
-  parent1Id?: string
-  parent2Id?: string
-}
-
-export interface WorkflowInvocationData {
-  workflowInvocationId: string
-  workflowVersionId: string
-  runId?: string
-  generationId?: string
-  metadata?: unknown
-  fitness?: unknown
-  expectedOutputType?: unknown
-  workflowInput?: unknown
-  workflowOutput?: unknown
-}
-
-export interface WorkflowInvocationUpdate {
-  workflowInvocationId: string
-  status?: string
-  endTime?: string
-  usdCost?: number
-  fitness?: unknown
-  fitnessScore?: number
-  accuracy?: number
-  workflowOutput?: unknown
-  feedback?: string
-  [key: string]: unknown
-}
-
-export interface RunData {
-  goalText: string
-  config: unknown
-  status: "running" | "completed" | "failed" | "cancelled"
-  evolutionType: "iterative" | "gp"
-  notes?: string
-}
-
-export interface GenerationData {
-  generationNumber: number
-  runId: string
-}
-
-export interface GenerationUpdate {
-  generationId: string
-  bestWorkflowVersionId?: string
-  endTime?: string
-  comment?: string
-  feedback?: string
-}
+// ============ Helper Types ============
 
 export interface EvolutionContext {
   runId: string
@@ -83,46 +28,26 @@ export interface PopulationStats {
   improvementRate: number
 }
 
-// ============ Node Persistence Interface ============
-
-export interface NodeVersionData {
-  nodeId: string
-  workflowVersionId: string
-  config: unknown
-}
-
-export interface NodeInvocationData {
-  nodeId: string
-  workflowInvocationId: string
-  workflowVersionId: string
-  startTime: string
-  endTime?: string
-  messageId: string
-  usdCost: number
-  output: unknown
-  agentSteps?: unknown
-  summary: string
-  files?: string[]
-  model: string
-  updatedMemory?: Record<string, string>
-}
+// ============ Lifecycle Data Types (field name conversion helpers) ============
 
 /**
- * Data required to create a NodeInvocation record at execution start.
- * Used for real-time progress tracking (status='running').
+ * Helper type for creating NodeInvocation records with camelCase field names.
+ * Converts to snake_case for database storage.
  */
 export interface NodeInvocationStartData {
+  nodeInvocationId?: string
   nodeId: string
+  nodeVersionId: string
   workflowInvocationId: string
   workflowVersionId: string
   startTime: string
   model: string
-  attemptNo?: number // Defaults to 1 (first attempt)
+  attemptNo?: number
 }
 
 /**
- * Data required to update a NodeInvocation record at execution end.
- * Sets final status ('completed' or 'failed') and records results.
+ * Helper type for updating NodeInvocation records with camelCase field names.
+ * Converts to snake_case for database updates.
  */
 export interface NodeInvocationEndData {
   nodeInvocationId: string
@@ -134,36 +59,42 @@ export interface NodeInvocationEndData {
   agentSteps?: unknown
   files?: string[]
   updatedMemory?: Record<string, string>
-  error?: unknown // Set when status='failed'
+  error?: unknown
 }
 
-export interface INodePersistence {
-  saveNodeVersion(data: NodeVersionData): Promise<{ nodeVersionId: string }>
-
-  // Lifecycle methods (new pattern)
-  createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }>
-  updateNodeInvocationEnd(data: NodeInvocationEndData): Promise<void>
-
-  // Legacy method (keep for backwards compat)
-  saveNodeInvocation(data: NodeInvocationData): Promise<{ nodeInvocationId: string }>
-
-  retrieveNodeSummaries(workflowInvocationId: string): Promise<Array<{ nodeId: string; summary: string }>>
-  updateNodeMemory(nodeId: string, workflowVersionId: string, memory: Record<string, string>): Promise<void>
-}
-
-// ============ Message Persistence Interface ============
-
+/**
+ * Helper type for Message records with camelCase field names.
+ * Converts to snake_case for database storage.
+ */
 export interface MessageData {
   messageId: string
   fromNodeId?: string
   toNodeId?: string
   originInvocationId?: string
   seq?: number
-  role: string
-  payload: unknown
+  role: Enums<"MessageRole">
+  payload: Payload
   createdAt: string
   workflowInvocationId: string
 }
+
+// ============ Node Persistence Interface ============
+
+export interface INodePersistence {
+  saveNodeVersion(data: TablesInsert<"NodeVersion">, clerkId?: string): Promise<{ nodeVersionId: string }>
+
+  // Lifecycle methods (new pattern)
+  createNodeInvocationStart(data: NodeInvocationStartData): Promise<{ nodeInvocationId: string }>
+  updateNodeInvocationEnd(data: NodeInvocationEndData): Promise<void>
+
+  // Legacy method (keep for backwards compat)
+  saveNodeInvocation(data: TablesInsert<"NodeInvocation">, clerkId?: string): Promise<{ nodeInvocationId: string }>
+
+  retrieveNodeSummaries(workflowInvocationId: string): Promise<Array<{ nodeId: string; summary: string }>>
+  updateNodeMemory(nodeId: string, workflowVersionId: string, memory: Record<string, string>): Promise<void>
+}
+
+// ============ Message Persistence Interface ============
 
 export interface IMessagePersistence {
   save(message: MessageData): Promise<void>
@@ -178,12 +109,12 @@ export interface IMessagePersistence {
  */
 export interface IEvolutionPersistence {
   // Run management
-  createRun(data: RunData): Promise<string> // returns runId
+  createRun(data: TablesInsert<"EvolutionRun">, clerkId?: string): Promise<string> // returns runId
   completeRun(runId: string, status: string, notes?: string): Promise<void>
 
   // Generation management
-  createGeneration(data: GenerationData): Promise<string> // returns generationId
-  completeGeneration(update: GenerationUpdate, stats?: PopulationStats): Promise<void>
+  createGeneration(data: TablesInsert<"Generation">): Promise<string> // returns generationId
+  completeGeneration(update: TablesUpdate<"Generation">, stats?: PopulationStats): Promise<void>
 
   // Generation queries
   generationExists(runId: string, generationNumber: number): Promise<boolean>
@@ -219,8 +150,8 @@ export interface DatasetRecord {
  */
 export interface IPersistence {
   // Workflow management
-  ensureWorkflowExists(workflowId: string, description: string): Promise<void>
-  createWorkflowVersion(data: WorkflowVersionData): Promise<void>
+  ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void>
+  createWorkflowVersion(data: TablesInsert<"WorkflowVersion">): Promise<void>
   workflowVersionExists(workflowVersionId: string): Promise<boolean>
   updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void>
 
@@ -232,18 +163,11 @@ export interface IPersistence {
   updateWorkflowMemory(workflowVersionId: string, workflowConfig: unknown): Promise<void>
 
   // Workflow version helper (moved from IEvolutionPersistence)
-  ensureWorkflowVersion(
-    workflowVersionId: string,
-    workflowId: string,
-    workflowConfig: unknown,
-    generationId: string,
-    operation: string,
-    goal: string,
-  ): Promise<string>
+  ensureWorkflowVersion(data: Tables<"WorkflowVersion">): Promise<void>
 
   // Invocation management
-  createWorkflowInvocation(data: WorkflowInvocationData): Promise<void>
-  updateWorkflowInvocation(data: WorkflowInvocationUpdate): Promise<unknown>
+  createWorkflowInvocation(data: Tables<"WorkflowInvocation">): Promise<void>
+  updateWorkflowInvocation(data: TablesUpdate<"WorkflowInvocation">): Promise<void>
 
   // Dataset management
   loadDatasetRecords(recordIds: string[]): Promise<DatasetRecord[]>

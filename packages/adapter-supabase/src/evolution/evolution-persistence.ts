@@ -3,29 +3,20 @@
  * Handles run and generation tracking.
  */
 
-import type { TablesInsert } from "@lucky/shared/types/supabase.types"
+import type { TablesInsert, TablesUpdate } from "@lucky/shared/types/supabase.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { PersistenceError } from "../errors/domain-errors"
-import type {
-  EvolutionContext,
-  GenerationData,
-  GenerationUpdate,
-  IEvolutionPersistence,
-  PopulationStats,
-  RunData,
-} from "../persistence-interface"
+import type { EvolutionContext, IEvolutionPersistence, PopulationStats } from "../persistence-interface"
 
 export class SupabaseEvolutionPersistence implements IEvolutionPersistence {
   constructor(private client: SupabaseClient) {}
 
-  async createRun(data: RunData): Promise<string> {
+  async createRun(data: TablesInsert<"EvolutionRun">, clerkId?: string): Promise<string> {
     const runData: TablesInsert<"EvolutionRun"> = {
-      goal_text: data.goalText,
-      config: data.config as any,
-      status: data.status as TablesInsert<"EvolutionRun">["status"],
-      start_time: new Date().toISOString(),
-      evolution_type: data.evolutionType,
-      notes: data.notes,
+      ...data,
+      run_id: data.run_id || undefined,
+      start_time: data.start_time || new Date().toISOString(),
+      clerk_id: clerkId || data.clerk_id || undefined,
     }
 
     const { data: result, error } = await this.client.from("EvolutionRun").insert(runData).select("run_id").single()
@@ -50,11 +41,11 @@ export class SupabaseEvolutionPersistence implements IEvolutionPersistence {
     }
   }
 
-  async createGeneration(data: GenerationData): Promise<string> {
+  async createGeneration(data: TablesInsert<"Generation">): Promise<string> {
     const generationData: TablesInsert<"Generation"> = {
-      number: data.generationNumber,
-      run_id: data.runId,
-      start_time: new Date().toISOString(),
+      ...data,
+      generation_id: data.generation_id || undefined,
+      start_time: data.start_time || new Date().toISOString(),
     }
 
     const { data: result, error } = await this.client
@@ -69,17 +60,21 @@ export class SupabaseEvolutionPersistence implements IEvolutionPersistence {
     return result.generation_id
   }
 
-  async completeGeneration(update: GenerationUpdate, stats?: PopulationStats): Promise<void> {
-    const updateData = {
-      end_time: new Date().toISOString(),
-      best_workflow_version_id: update.bestWorkflowVersionId,
+  async completeGeneration(update: TablesUpdate<"Generation">, stats?: PopulationStats): Promise<void> {
+    const updateData: TablesUpdate<"Generation"> = {
+      ...update,
+      end_time: update.end_time || new Date().toISOString(),
       comment: stats
         ? `Best: ${stats.bestFitness.toFixed(3)}, Avg: ${stats.avgFitness.toFixed(3)}, Cost: $${stats.evaluationCost.toFixed(2)}`
         : update.comment,
-      feedback: update.feedback,
     }
 
-    const { error } = await this.client.from("Generation").update(updateData).eq("generation_id", update.generationId)
+    const generationId = update.generation_id
+    if (!generationId) {
+      throw new PersistenceError("generation_id is required for completeGeneration")
+    }
+
+    const { error } = await this.client.from("Generation").update(updateData).eq("generation_id", generationId)
 
     if (error) {
       throw new PersistenceError(`Failed to complete generation: ${error.message}`, error)

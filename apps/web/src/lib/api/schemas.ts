@@ -61,18 +61,6 @@ export const apiSchemas = {
   // ============================================================================
 
   /**
-   * POST /api/invoke
-   * Prompt-only workflow invocation (simplified invoke API)
-   */
-  invoke: {
-    req: z.object({
-      workflowVersionId: z.string().min(1),
-      prompt: z.string().min(1),
-    }),
-    res: ApiResponse(z.unknown()), // Output depends on workflow
-  },
-
-  /**
    * POST /api/v1/invoke
    * Full JSON-RPC 2.0 workflow invocation (MCP-compliant)
    */
@@ -336,12 +324,14 @@ export const apiSchemas = {
    */
   "user/env-keys/[name]": {
     req: z.never().optional(),
-    res: z.object({
-      id: z.string(),
-      name: z.string(),
-      value: z.string(),
-      createdAt: z.string(),
-    }),
+    res: ApiResponse(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        value: z.string(),
+        createdAt: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -762,9 +752,84 @@ export const apiSchemas = {
   /**
    * GET /api/workflow/invocations
    * List workflow invocations with filtering, sorting, and pagination
+   *
+   * Query params:
+   * - page: page number (default: 1)
+   * - pageSize: items per page (default: 20)
+   * - filters: JSON string with filtering options
+   * - sort: JSON string with sorting options
    */
   "workflow/invocations": {
-    req: z.never().optional(), // Uses query params
+    req: z.never().optional(),
+    query: z.object({
+      page: z.coerce.number().int().positive().optional(),
+      pageSize: z.coerce.number().int().positive().optional(),
+      filters: z
+        .string()
+        .transform(str => {
+          try {
+            return JSON.parse(str)
+          } catch {
+            return {}
+          }
+        })
+        .pipe(
+          z.object({
+            status: z
+              .union([
+                z.enum(["running", "completed", "failed", "rolled_back"]),
+                z.array(z.enum(["running", "completed", "failed", "rolled_back"])),
+              ])
+              .optional(),
+            runId: z.string().optional(),
+            generationId: z.string().optional(),
+            wfVersionId: z.string().optional(),
+            dateRange: z
+              .object({
+                start: z.string(),
+                end: z.string(),
+              })
+              .optional(),
+            dateFrom: z.string().optional(),
+            dateTo: z.string().optional(),
+            hasFitnessScore: z.boolean().optional(),
+            hasAccuracy: z.boolean().optional(),
+            minCost: z.number().optional(),
+            maxCost: z.number().optional(),
+            minAccuracy: z.number().optional(),
+            maxAccuracy: z.number().optional(),
+            minFitness: z.number().optional(),
+            maxFitness: z.number().optional(),
+          }),
+        )
+        .optional(),
+      sort: z
+        .string()
+        .transform(str => {
+          try {
+            return JSON.parse(str)
+          } catch {
+            return { field: "start_time", order: "desc" }
+          }
+        })
+        .pipe(
+          z.object({
+            field: z.enum([
+              "start_time",
+              "end_time",
+              "status",
+              "usd_cost",
+              "accuracy",
+              "fitness",
+              "run_id",
+              "generation_id",
+              "wf_version_id",
+            ]),
+            order: z.enum(["asc", "desc"]),
+          }),
+        )
+        .optional(),
+    }),
     res: ApiResponse(
       z.object({
         data: z.array(z.unknown()), // Complex joined data from WorkflowInvocation + WorkflowVersion + Workflow

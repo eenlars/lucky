@@ -3,7 +3,8 @@
 import { isLoggingEnabled } from "@core/core-config/coreConfig"
 import { lgg } from "@core/utils/logging/Logger"
 import type { WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import type { IPersistence, NodeVersionData } from "@together/adapter-supabase"
+import type { IPersistence } from "@lucky/adapter-supabase"
+import type { TablesInsert } from "@lucky/shared"
 
 /**
  * Manages persistence operations for workflow nodes.
@@ -33,10 +34,17 @@ export class NodePersistenceManager {
     }
 
     // Use persistence instead of direct supabase call
-    const nodeVersionData: NodeVersionData = {
-      nodeId: this.nodeId,
-      workflowVersionId,
-      config: this.config,
+    const nodeVersionData: TablesInsert<"NodeVersion"> = {
+      node_id: this.nodeId,
+      wf_version_id: workflowVersionId,
+      llm_model: this.config.modelName,
+      system_prompt: this.config.systemPrompt,
+      tools: this.config.codeTools as any,
+      description: this.config.description,
+      memory: this.config.memory as any,
+      handoffs: this.config.handOffs as any,
+      extras: {},
+      version: 1,
     }
     const { nodeVersionId } = await this.persistence.nodes.saveNodeVersion(nodeVersionData)
     return { nodeVersionId }

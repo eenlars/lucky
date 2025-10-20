@@ -40,12 +40,12 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "outputLogs": "new-only",
-      "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY"]
+      "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY", "LOCKBOX_KEK"]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY"]
+      "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY", "LOCKBOX_KEK"]
     },
     "lint": {
       "dependsOn": ["^build"]
@@ -62,7 +62,7 @@
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"],
-      "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY"]
+      "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY", "LOCKBOX_KEK"]
     },
     "test:pkg-unit": {
       "dependsOn": ["^build"],

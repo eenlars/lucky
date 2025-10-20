@@ -30,7 +30,7 @@
 
 function exampleUsageWithPersistence() {
   // import { Workflow } from '@together/core'
-  // import { SupabasePersistence } from '@together/adapter-supabase'
+  // import { SupabasePersistence } from '@lucky/adapter-supabase'
 
   const _persistence = {} // new SupabasePersistence({ url: '...', key: '...' })
 

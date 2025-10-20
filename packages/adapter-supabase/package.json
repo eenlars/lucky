@@ -1,5 +1,5 @@
 {
-  "name": "@together/adapter-supabase",
+  "name": "@lucky/adapter-supabase",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -7,6 +7,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@lucky/shared": "workspace:*",
     "@supabase/supabase-js": "^2.39.7",
     "pg-boss": "^10.1.4"
   },

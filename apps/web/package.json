@@ -48,7 +48,7 @@
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-query": "^5.62.11",
-    "@together/adapter-supabase": "workspace:*",
+    "@lucky/adapter-supabase": "workspace:*",
     "@types/glob": "^9.0.0",
     "@types/lodash": "^4.17.20",
     "@types/papaparse": "^5.3.16",

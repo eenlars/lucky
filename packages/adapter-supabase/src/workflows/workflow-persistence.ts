@@ -3,25 +3,23 @@
  * Handles workflow versions, invocations, and config management.
  */
 
+import { getExecutionContext } from "@lucky/core/context/executionContext"
+import type { TablesUpdate } from "@lucky/shared"
 import { CURRENT_SCHEMA_VERSION } from "@lucky/shared/contracts/workflow"
 import type { TablesInsert } from "@lucky/shared/types/supabase.types"
+import { genShortId } from "@repo/shared"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { DatasetRecordNotFoundError, PersistenceError, WorkflowNotFoundError } from "../errors/domain-errors"
-import type {
-  CleanupStats,
-  DatasetRecord,
-  WorkflowInvocationData,
-  WorkflowInvocationUpdate,
-  WorkflowVersionData,
-} from "../persistence-interface"
+import type { CleanupStats, DatasetRecord } from "../persistence-interface"
 
 export class SupabaseWorkflowPersistence {
   constructor(private client: SupabaseClient) {}
 
-  async ensureWorkflowExists(workflowId: string, description: string): Promise<void> {
+  async ensureWorkflowExists(workflowId: string, description: string, clerkId?: string): Promise<void> {
     const workflowInsertable: TablesInsert<"Workflow"> = {
       wf_id: workflowId,
       description,
+      clerk_id: clerkId || null,
     }
 
     const { error } = await this.client.from("Workflow").upsert(workflowInsertable)
@@ -31,23 +29,24 @@ export class SupabaseWorkflowPersistence {
     }
   }
 
-  async createWorkflowVersion(data: WorkflowVersionData): Promise<void> {
-    await this.ensureWorkflowExists(data.workflowId, data.commitMessage)
+  async createWorkflowVersion(data: TablesInsert<"WorkflowVersion">): Promise<void> {
+    // Extract clerk_id from execution context if available
+    const executionContext = getExecutionContext()
+    const clerkId = executionContext?.get("principal")?.clerk_id
+
+    await this.ensureWorkflowExists(data.workflow_id, data.commit_message, clerkId)
 
     // Ensure DSL includes schema version
     const dslWithVersion = this.ensureSchemaVersion(data.dsl)
 
     const workflowVersionInsertable: TablesInsert<"WorkflowVersion"> = {
-      wf_version_id: data.workflowVersionId,
-      workflow_id: data.workflowId,
-      commit_message: data.commitMessage,
+      ...data,
+      wf_version_id: data.wf_version_id || `wf_ver_${genShortId()}`,
+      created_at: new Date().toISOString(),
       dsl: dslWithVersion,
       iteration_budget: 10,
       time_budget_seconds: 3600,
-      generation_id: data.generationId || null,
-      operation: data.operation || "init",
-      parent1_id: data.parent1Id || null,
-      parent2_id: data.parent2Id || null,
+      operation: data.operation as TablesInsert<"WorkflowVersion">["operation"],
     }
 
     const { error } = await this.client
@@ -104,8 +103,12 @@ export class SupabaseWorkflowPersistence {
 
     if (existing) return workflowVersionId
 
+    // Extract clerk_id from execution context if available
+    const executionContext = getExecutionContext()
+    const clerkId = executionContext?.get("principal")?.clerk_id
+
     // Ensure workflow exists first
-    await this.ensureWorkflowExists(workflowId, goal)
+    await this.ensureWorkflowExists(workflowId, goal, clerkId)
 
     // Ensure DSL includes schema version
     const dslWithVersion = this.ensureSchemaVersion(workflowConfig)
@@ -131,9 +134,45 @@ export class SupabaseWorkflowPersistence {
   }
 
   async updateWorkflowVersionWithIO(workflowVersionId: string, allWorkflowIO: unknown[]): Promise<void> {
-    // ensure JSON-serializable data
-    const jsonSafeWorkflowIO = allWorkflowIO.map((io: any) => {
-      const output = io.workflowOutput?.output
+    const { data: invocations, error: fetchError } = await this.client
+      .from("WorkflowInvocation")
+      .select("wf_invocation_id")
+      .eq("wf_version_id", workflowVersionId)
+
+    if (fetchError) {
+      throw new PersistenceError(
+        `Failed to fetch workflow invocations for IO update: ${fetchError.message}`,
+        fetchError,
+      )
+    }
+
+    if (!invocations || invocations.length === 0) {
+      return
+    }
+
+    for (let i = 0; i < invocations.length && i < allWorkflowIO.length; i++) {
+      const invocation = invocations[i]
+      const ioItem = allWorkflowIO[i]
+
+      if (typeof ioItem !== "object" || ioItem === null) {
+        continue
+      }
+
+      // extract nested properties with safe type narrowing
+      let workflowInput = null
+      let output = null
+
+      if ("workflowInput" in ioItem) {
+        workflowInput = ioItem.workflowInput ?? null
+      }
+
+      if ("workflowOutput" in ioItem) {
+        const workflowOutput = ioItem.workflowOutput
+        if (typeof workflowOutput === "object" && workflowOutput !== null && "output" in workflowOutput) {
+          output = workflowOutput.output
+        }
+      }
+
       let jsonSafeOutput: unknown = null
       try {
         jsonSafeOutput = JSON.parse(JSON.stringify(output ?? null))
@@ -141,45 +180,37 @@ export class SupabaseWorkflowPersistence {
         jsonSafeOutput = typeof output === "string" ? output : String(output)
       }
 
-      return {
-        workflowInput: io.workflowInput,
-        workflowOutput: {
-          output: jsonSafeOutput,
-        },
+      const { error: updateError } = await this.client
+        .from("WorkflowInvocation")
+        .update({
+          workflow_input: workflowInput,
+          workflow_output: jsonSafeOutput,
+        })
+        .eq("wf_invocation_id", invocation.wf_invocation_id)
+
+      if (updateError) {
+        throw new PersistenceError(
+          `Failed to update workflow invocation ${invocation.wf_invocation_id} with IO: ${updateError.message}`,
+          updateError,
+        )
       }
-    })
-
-    const updateData = {
-      all_workflow_io: jsonSafeWorkflowIO,
-      updated_at: new Date().toISOString(),
-    }
-
-    const { error } = await this.client
-      .from("WorkflowVersion")
-      .update(updateData)
-      .eq("wf_version_id", workflowVersionId)
-
-    if (error) {
-      throw new PersistenceError(`Failed to update workflow version with IO: ${error.message}`, error)
     }
   }
 
-  async createWorkflowInvocation(data: WorkflowInvocationData): Promise<void> {
+  async createWorkflowInvocation(data: TablesInsert<"WorkflowInvocation">): Promise<void> {
     const workflowInvocationInsertable: TablesInsert<"WorkflowInvocation"> = {
-      wf_invocation_id: data.workflowInvocationId,
-      wf_version_id: data.workflowVersionId,
+      wf_invocation_id: data.wf_invocation_id,
+      wf_version_id: data.wf_version_id,
       status: "running",
       start_time: new Date().toISOString(),
       end_time: null,
       usd_cost: 0,
-      extras: {} as any,
-      run_id: data.runId || null,
-      generation_id: data.generationId || null,
-      fitness: (data.fitness || null) as any,
-      workflow_input: (data.workflowInput || null) as any,
-      expected_output:
-        typeof data.workflowOutput === "string" ? data.workflowOutput : JSON.stringify(data.workflowOutput) || null,
-      expected_output_type: (data.expectedOutputType || null) as any,
+      extras: data.extras || null,
+      run_id: data.run_id || null,
+      generation_id: data.generation_id || null,
+      fitness: data.fitness || null,
+      workflow_input: data.workflow_input || null,
+      workflow_output: data.workflow_output || null,
     }
 
     const { error } = await this.client.from("WorkflowInvocation").insert(workflowInvocationInsertable)
@@ -189,8 +220,8 @@ export class SupabaseWorkflowPersistence {
     }
   }
 
-  async updateWorkflowInvocation(data: WorkflowInvocationUpdate): Promise<unknown> {
-    const { workflowInvocationId, fitnessScore, ...otherFields } = data
+  async updateWorkflowInvocation(data: TablesUpdate<"WorkflowInvocation">): Promise<unknown> {
+    const { wf_invocation_id, fitness, ...otherFields } = data
 
     // Build the update payload with proper field names
     const updatePayload: any = { ...otherFields }
@@ -201,14 +232,14 @@ export class SupabaseWorkflowPersistence {
     }
 
     // Handle fitnessScore -> fitness_score rename
-    if (typeof fitnessScore === "number") {
-      updatePayload.fitness_score = Math.round(fitnessScore)
+    if (typeof fitness === "number") {
+      updatePayload.fitness = Math.round(fitness)
     }
 
     const { data: result, error } = await this.client
       .from("WorkflowInvocation")
       .update(updatePayload)
-      .eq("wf_invocation_id", workflowInvocationId)
+      .eq("wf_invocation_id", wf_invocation_id)
       .select()
       .single()
 

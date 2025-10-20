@@ -21,9 +21,8 @@ import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSL, loadFromDatabase, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
-import { JSONN, genShortId } from "@lucky/shared"
-import { R, type RS } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { createPersistence } from "@lucky/adapter-supabase"
+import { JSONN, R, type RS, genShortId, isNir } from "@lucky/shared"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**
@@ -124,13 +123,22 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       lgg.log("[invokeWorkflow] Skipping validation (validation='none')")
     }
 
+    // Create persistence adapter for database tracking
+    const persistence = createPersistence()
+    console.log("[invokeWorkflow] 🔍 DEBUG: Created persistence adapter:", persistence.constructor.name)
+
     // Create workflow
     const workflow = Workflow.create({
       config: config,
       evaluationInput: evalInput,
       toolContext: undefined,
+      persistence: persistence,
       // No parentVersionId or evolutionContext for ad-hoc invocation
     })
+    console.log(
+      "[invokeWorkflow] 🔍 DEBUG: Workflow created with persistence:",
+      workflow.getPersistence() ? "YES" : "NO",
+    )
 
     // Set workflow IO (handles multiple inputs via IngestionLayer)
     await workflow.prepareWorkflow(evalInput, getCoreConfig().workflow.prepareProblemMethod)
@@ -185,6 +193,22 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
         unique_invocation_id: evalInput.workflowId,
         workflow_version_id: workflow.getWorkflowVersionId(),
       })
+    }
+
+    // Update workflow invocations to completed status (since no evaluation will be done)
+    if (persistence) {
+      for (const runResult of runResults) {
+        try {
+          await persistence.updateWorkflowInvocation({
+            wf_invocation_id: runResult.workflowInvocationId,
+            status: "completed",
+            end_time: new Date().toISOString(),
+            usd_cost: runResult.queueRunResult.totalCost,
+          })
+        } catch (updateError) {
+          lgg.error(`[invokeWorkflow] Failed to update invocation ${runResult.workflowInvocationId}:`, updateError)
+        }
+      }
     }
 
     // Save workflow to file if it was loaded from file and has memory updates

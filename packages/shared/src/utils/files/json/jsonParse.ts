@@ -23,6 +23,7 @@ function extractJSON(input: unknown, throwIfError = false): Record<string, unkno
     return JSON.parse(JSON.stringify(input))
   }
 
+  // JSON parsers handle escape sequences correctly, so don't unescape before parsing
   const cleaned = removeCodeFences(input).trim()
   const candidates = findJSONCandidates(cleaned)
 
@@ -69,9 +70,15 @@ function extractJSON(input: unknown, throwIfError = false): Record<string, unkno
   return JSON.parse(JSON.stringify(input))
 }
 
-/** Strip out ```…``` or ~~~…~~~ fences, but preserve their inner text. */
+/** Strip out ```…``` or ~~~…~~~ fences, and <json>...</json> tags, but preserve their inner text. */
 function removeCodeFences(text: string): string {
-  return text.replace(/(```|~~~)[ \w]*\n?([\s\S]*?)\1/g, (_match, _fence, inner) => inner)
+  // First remove markdown code fences
+  let result = text.replace(/(```|~~~)[ \w]*\n?([\s\S]*?)\1/g, (_match, _fence, inner) => inner)
+
+  // Then remove <json> tags
+  result = result.replace(/<json>\n?([\s\S]*?)<\/json>/g, (_match, inner) => inner)
+
+  return result
 }
 
 /**

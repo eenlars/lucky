@@ -2,6 +2,7 @@ import {
   aiProviders,
   clerkClient,
   clerkServer,
+  lockboxServer,
   searchProviders,
   supabaseClient,
   supabaseServer,
@@ -19,6 +20,7 @@ export const envi = createEnv({
   server: {
     ...clerkServer.shape,
     ...supabaseServer.shape,
+    ...lockboxServer.shape,
     ...aiProviders.shape,
     ...searchProviders.shape,
     ...toolProviders.shape,
@@ -43,6 +45,8 @@ export const envi = createEnv({
     // Supabase client
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    // Lockbox encryption
+    LOCKBOX_KEK: process.env.LOCKBOX_KEK,
     // AI providers
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
