@@ -1,3 +1,4 @@
+"use server"
 import { MissingApiKeysError } from "@/features/secret-management/lib/errors/general"
 import { PROVIDERS, PROVIDER_API_KEYS } from "@lucky/models"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"

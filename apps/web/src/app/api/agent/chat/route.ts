@@ -1,3 +1,4 @@
+import { getServerLLMRegistry } from "@/features/provider-llm-setup/llm-registry"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { getUserFriendlyError } from "@/features/workflow-or-chat-invocation/lib/errors/userError"
 import { ChatRequestSchema } from "@/features/workflow-or-chat-invocation/types/chatRequest.schema"
@@ -6,7 +7,6 @@ import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
-import { createLLMRegistry } from "@lucky/models"
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     // Create registry with user's API keys as fallback
     // Keep env fallback for new users with no provider settings
     // Forward all provider BYOK keys (including Anthropic and others)
-    const fallbackKeys: Record<string, string | undefined> = {}
+    const fallbackOverrides: Record<string, string> = {}
 
     // Add all keys from providerApiKeys if available
     if (providerApiKeys) {
@@ -110,24 +110,18 @@ export async function POST(request: NextRequest) {
         if (value && typeof value === "string") {
           // Convert API key names back to provider names (e.g., OPENAI_API_KEY -> openai)
           const providerName = key.replace(/_API_KEY$/, "").toLowerCase()
-          fallbackKeys[providerName] = value
+          fallbackOverrides[providerName] = value
         }
       }
     }
 
-    // Add env fallbacks for any missing providers (for new users or shared flow)
-    if (!fallbackKeys.openai) fallbackKeys.openai = process.env.OPENAI_API_KEY
-    if (!fallbackKeys.groq) fallbackKeys.groq = process.env.GROQ_API_KEY
-    if (!fallbackKeys.openrouter) fallbackKeys.openrouter = process.env.OPENROUTER_API_KEY
-
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys,
-    })
+    const llmRegistry = getServerLLMRegistry()
 
     const userModels = llmRegistry.forUser({
       mode: "shared",
       userId: clerkId,
       models: allowlist,
+      fallbackOverrides,
     })
 
     // Execute the chat invocation within the execution context
@@ -139,6 +133,7 @@ export async function POST(request: NextRequest) {
           mode: "shared", // Using fallback keys from registry
           userId: clerkId,
           models: allowlist.length > 0 ? allowlist : ["openai#gpt-4o-mini"], // Fallback to a default model
+          fallbackOverrides,
         })
 
         // Get the model directly by name - just validate it exists

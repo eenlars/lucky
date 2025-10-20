@@ -1,7 +1,7 @@
+import { getServerLLMRegistry } from "@/features/provider-llm-setup/llm-registry"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
-import { createLLMRegistry } from "@lucky/models"
 import { streamText } from "ai"
 import type { NextRequest } from "next/server"
 
@@ -25,18 +25,23 @@ export async function POST(req: NextRequest) {
       "environment-variables",
     )
 
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: apiKeys.OPENAI_API_KEY,
-        groq: apiKeys.GROQ_API_KEY,
-        openrouter: apiKeys.OPENROUTER_API_KEY,
-      },
-    })
+    const llmRegistry = getServerLLMRegistry()
+    const fallbackOverrides: Record<string, string> = {}
+    if (typeof apiKeys.OPENAI_API_KEY === "string" && apiKeys.OPENAI_API_KEY.length > 0) {
+      fallbackOverrides.openai = apiKeys.OPENAI_API_KEY
+    }
+    if (typeof apiKeys.GROQ_API_KEY === "string" && apiKeys.GROQ_API_KEY.length > 0) {
+      fallbackOverrides.groq = apiKeys.GROQ_API_KEY
+    }
+    if (typeof apiKeys.OPENROUTER_API_KEY === "string" && apiKeys.OPENROUTER_API_KEY.length > 0) {
+      fallbackOverrides.openrouter = apiKeys.OPENROUTER_API_KEY
+    }
 
     const userModels = llmRegistry.forUser({
       mode: "shared",
       userId: principal.clerk_id,
       models: ["openai#gpt-4o-mini"],
+      fallbackOverrides,
     })
 
     // Create system prompt based on context type

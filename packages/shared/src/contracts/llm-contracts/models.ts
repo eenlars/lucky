@@ -20,7 +20,7 @@ const isDevelopment = process.env.NODE_ENV === "development"
 export const PROVIDER_AVAILABILITY = {
   openai: true,
   openrouter: true,
-  groq: isDevelopment, // Enabled in development for testing
+  groq: true, // Enable Groq in all environments for proper BYOK isolation
 } as const
 
 export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openrouter")
@@ -73,8 +73,11 @@ export type ModelsConfig = z.infer<typeof ModelsConfigSchema>
 
 /**
  * Model speed tier schema
+ * Accepts legacy "medium" but normalizes it to "balanced"
  */
-export const modelSpeedSchema = z.enum(["fast", "medium", "slow"])
+const modelSpeedRawSchema = z.enum(["fast", "balanced", "slow"]).or(z.literal("medium"))
+
+export const modelSpeedSchema = modelSpeedRawSchema.transform(speed => (speed === "medium" ? "balanced" : speed))
 
 export type ModelSpeed = z.infer<typeof modelSpeedSchema>
 

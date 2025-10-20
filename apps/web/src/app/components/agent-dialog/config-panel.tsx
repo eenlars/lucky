@@ -128,7 +128,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     }
 
     // Get all models for the provider from catalog
-    const allModels = getModelsByProvider(providerToFetch).filter(m => m.runtimeEnabled)
+    const allModels = getModelsByProvider(providerToFetch).filter(m => m.runtimeEnabled !== false)
     const catalogMap = new Map(allModels.map(m => [m.model, m]))
 
     // Get user's enabled models for this provider
@@ -158,7 +158,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
           active: true,
           contextLength: 0,
           intelligence: 5,
-          speed: "medium" as const,
+          speed: "balanced" as const,
           input: 0,
           output: 0,
           supportsTools: false,

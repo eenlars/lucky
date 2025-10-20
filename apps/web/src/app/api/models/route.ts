@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
       // Return models for specific provider
       const validatedProvider = providerNameSchema.parse(provider)
-      const models = getModelsByProvider(validatedProvider).filter(m => m.runtimeEnabled)
+      const models = getModelsByProvider(validatedProvider).filter(m => m.runtimeEnabled !== false)
       return alrighty("models", { models })
     }
 

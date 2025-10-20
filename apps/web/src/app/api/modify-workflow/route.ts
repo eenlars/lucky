@@ -1,4 +1,5 @@
 import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
+import { getServerLLMRegistry } from "@/features/provider-llm-setup/llm-registry"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
@@ -7,7 +8,6 @@ import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { createLLMRegistry } from "@lucky/models"
 import type { RS } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -57,14 +57,7 @@ export async function POST(req: NextRequest) {
       },
     }
 
-    // Create registry with system API keys (shared/fallback keys from process.env)
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: process.env.OPENAI_API_KEY,
-        groq: process.env.GROQ_API_KEY,
-        openrouter: process.env.OPENROUTER_API_KEY,
-      },
-    })
+    const llmRegistry = getServerLLMRegistry()
 
     const userModels = llmRegistry.forUser({
       mode: "shared",

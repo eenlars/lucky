@@ -25,7 +25,7 @@ export type SecretResolver = {
    * Get multiple secrets by their key names
    * @param secretKeyNames - Array of secret key names (e.g., ["OPENAI_API_KEY", "GROQ_API_KEY"])
    * @param namespace - Optional namespace (e.g., "environment-variables")
-   * @returns Record mapping secret key names to their decrypted values
+   * @returns Record of key names to decrypted values (e.g., { "OPENAI_API_KEY": "sk-..." })
    */
   getAll(secretKeyNames: string[], namespace?: string): Promise<Record<string, string>>
 }

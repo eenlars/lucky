@@ -180,9 +180,9 @@ export function getRecommendedModels(models: EnrichedModelInfo[]): string[] {
     // Intelligence is most important (0-10 points)
     score += model.intelligence
 
-    // Speed bonus (fast=5, medium=3, slow=0)
+    // Speed bonus (fast=5, balanced=3, slow=0)
     if (model.speed === "fast") score += 5
-    else if (model.speed === "medium") score += 3
+    else if (model.speed === "balanced") score += 3
 
     // Tool support is critical (+3 points)
     if (model.supportsTools) score += 3

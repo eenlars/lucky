@@ -3,6 +3,7 @@
  * Supports both BYOK (Bring Your Own Key) and shared key scenarios
  */
 
+import { isValidApiKey } from "@lucky/models/utils/apikey"
 import { isNir } from "@lucky/shared"
 import type { FallbackKeys, RegistryConfig, UserConfig } from "./types"
 import { UserModels } from "./user-models"
@@ -13,13 +14,40 @@ const MAX_API_KEYS = 50
 const MAX_MODEL_ID_LENGTH = 200
 const MAX_API_KEY_LENGTH = 500
 
-/**
- * Validates that an API key is ASCII-only (no unicode, emoji, control characters)
- */
-function isValidApiKey(key: string): boolean {
-  // API keys should be ASCII-only, no unicode
-  // eslint-disable-next-line no-control-regex
-  return /^[\x20-\x7E]+$/.test(key)
+function normalizeFallbackKeys(keys: FallbackKeys | undefined, context: "fallback" | "override"): FallbackKeys {
+  if (!keys) return {}
+
+  const normalized: FallbackKeys = {}
+  for (const [provider, key] of Object.entries(keys)) {
+    if (key == null) {
+      continue
+    }
+
+    if (typeof key !== "string") {
+      const prefix = context === "fallback" ? "Fallback" : "Override"
+      throw new Error(`${prefix} API key for provider "${provider}" must be a string`)
+    }
+
+    if (key.length === 0) {
+      continue
+    }
+
+    if (key.length > MAX_API_KEY_LENGTH) {
+      const prefix = context === "fallback" ? "Fallback" : "Override"
+      throw new Error(
+        `${prefix} API key too long for provider "${provider}": maximum ${MAX_API_KEY_LENGTH} characters allowed`,
+      )
+    }
+
+    if (!isValidApiKey(key)) {
+      const prefix = context === "fallback" ? "Invalid fallback" : "Invalid override"
+      throw new Error(`${prefix} API key for provider "${provider}": API keys must be ASCII-only`)
+    }
+
+    normalized[provider as keyof FallbackKeys] = key
+  }
+
+  return normalized
 }
 
 export class LLMRegistry {
@@ -108,7 +136,13 @@ export class LLMRegistry {
       return m.trim()
     })
 
-    return new UserModels(config.userId, config.mode, modelsCopy, config.apiKeys || {}, this.fallbackKeys)
+    const fallbackOverrides = normalizeFallbackKeys(config.fallbackOverrides, "override")
+    const mergedFallbackKeys =
+      config.mode === "shared" && Object.keys(fallbackOverrides).length > 0
+        ? { ...this.fallbackKeys, ...fallbackOverrides }
+        : this.fallbackKeys
+
+    return new UserModels(config.userId, config.mode, modelsCopy, config.apiKeys || {}, mergedFallbackKeys)
   }
 }
 
@@ -120,25 +154,13 @@ export function createLLMRegistry(config: RegistryConfig): LLMRegistry {
     throw new Error("fallbackKeys must be a valid object")
   }
 
+  const fallbackKeys = normalizeFallbackKeys(config.fallbackKeys, "fallback")
+
   // enforce max API keys limit
-  const fallbackKeyCount = Object.keys(config.fallbackKeys).length
+  const fallbackKeyCount = Object.keys(fallbackKeys).length
   if (fallbackKeyCount > MAX_API_KEYS) {
     throw new Error(`Too many fallback API keys: maximum ${MAX_API_KEYS} keys allowed`)
   }
 
-  // validate each fallback key
-  for (const [provider, key] of Object.entries(config.fallbackKeys)) {
-    if (!key) continue // skip empty keys
-
-    if (key.length > MAX_API_KEY_LENGTH) {
-      throw new Error(
-        `Fallback API key too long for provider "${provider}": maximum ${MAX_API_KEY_LENGTH} characters allowed`,
-      )
-    }
-    if (!isValidApiKey(key)) {
-      throw new Error(`Invalid fallback API key for provider "${provider}": API keys must be ASCII-only`)
-    }
-  }
-
-  return new LLMRegistry(config)
+  return new LLMRegistry({ fallbackKeys })
 }

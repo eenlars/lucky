@@ -9,7 +9,7 @@ vi.mock("node:fs/promises", () => ({
 }))
 
 // Mock database-workflow-loader
-vi.mock("../lib/database-workflow-loader", () => ({
+vi.mock("../lib/config-load/database-workflow-loader", () => ({
   loadWorkflowConfig: vi.fn(),
 }))
 

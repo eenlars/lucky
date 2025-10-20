@@ -1,8 +1,8 @@
+import { getServerLLMRegistry } from "@/features/provider-llm-setup/llm-registry"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { genObject } from "@lucky/core/messages/api/genObject"
-import { createLLMRegistry } from "@lucky/models"
 import type { NextRequest } from "next/server"
 import { z } from "zod"
 
@@ -41,13 +41,12 @@ export async function POST(req: NextRequest) {
 
     // Setup execution context
     const secrets = createSecretResolver(principal.clerk_id, principal)
-    const apiKeys = await secrets.getAll(["OPENAI_API_KEY"], "environment-variables")
-
-    const llmRegistry = createLLMRegistry({
-      fallbackKeys: {
-        openai: apiKeys.OPENAI_API_KEY,
-      },
-    })
+    const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "OPENROUTER_API_KEY"], "environment-variables")
+    const llmRegistry = getServerLLMRegistry()
+    const fallbackOverrides =
+      typeof apiKeys.OPENAI_API_KEY === "string" && apiKeys.OPENAI_API_KEY.length > 0
+        ? { openai: apiKeys.OPENAI_API_KEY }
+        : undefined
 
     // Create system prompt based on context type
     let systemPrompt = `You are an AI assistant helping to modify ${contextType} configurations.\n`
@@ -127,6 +126,7 @@ Make appropriate changes based on the user's request.`
       mode: "shared",
       userId: principal.clerk_id,
       models: [modelUsed],
+      fallbackOverrides,
     })
 
     // Execute within execution context

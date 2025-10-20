@@ -66,7 +66,7 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
 
   for (const modelId of enabledModelIds) {
     const entry = findModel(modelId)
-    if (entry?.runtimeEnabled) {
+    if (entry && entry.runtimeEnabled !== false) {
       enabledModels.push(entry)
     }
   }
@@ -94,7 +94,7 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
       return b.intelligence - a.intelligence
     }
     // Then prefer faster speed
-    const speedScore = (m: ModelEntry) => (m.speed === "fast" ? 3 : m.speed === "medium" ? 2 : 1)
+    const speedScore = (m: ModelEntry) => (m.speed === "fast" ? 3 : m.speed === "balanced" ? 2 : 1)
     return speedScore(b) - speedScore(a)
   })
 

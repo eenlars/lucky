@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     }
 
     const models = load.config.nodes.map(n => toNormalModelName(n.modelName))
-    const openrouterEnabled = getModelsByProvider("openrouter").filter(entry => entry.runtimeEnabled)
+    const openrouterEnabled = getModelsByProvider("openrouter").filter(entry => entry.runtimeEnabled !== false)
 
     const fixWrongModelsInConfig = (dsl: WorkflowConfigZ) => {
       const newConfig: WorkflowConfigZ = {
@@ -125,8 +125,10 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(principal.clerk_id, principal)
 
     const userProviders = await loadProviderApiKeys(secrets)
-    if (!userProviders.openrouter)
+    if (!userProviders.openrouter) {
+      await cleanup()
       return fail("v1/openrouter", "Openrouter key must be set. This can be done in settings.")
+    }
 
     const userModels = await createLLMRegistryForUser({
       principal,

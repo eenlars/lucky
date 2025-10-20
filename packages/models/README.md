@@ -221,7 +221,7 @@ interface ModelEntry {
   cachedInput?: number; // $ per 1M cached input tokens
   contextLength: number;
   intelligence: number; // 1-10 scale
-  speed: "fast" | "medium" | "slow";
+  speed: "fast" | "balanced" | "slow";
   pricingTier: "low" | "medium" | "high";
   supportsTools: boolean;
   supportsJsonMode: boolean;

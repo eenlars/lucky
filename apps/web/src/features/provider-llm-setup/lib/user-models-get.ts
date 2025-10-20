@@ -84,7 +84,7 @@ export async function getUserModelsSetup(
     }
 
     // Only include runtime-enabled models
-    if (entry.runtimeEnabled) {
+    if (entry.runtimeEnabled !== false) {
       modelEntries.push(entry)
     } else {
       console.warn(`[getUserModels] Model "${modelId}" is disabled at runtime - skipping`)

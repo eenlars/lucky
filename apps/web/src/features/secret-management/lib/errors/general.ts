@@ -6,7 +6,7 @@ export class MissingApiKeysError extends Error {
     public readonly missingKeys: string[],
     public readonly missingProviders: string[],
   ) {
-    super(`Missing required API keys: ${missingProviders.join(", ")}`)
+    super(`Missing required API keys: ${missingKeys.join(", ")}`)
     this.name = "MissingApiKeysError"
   }
 }

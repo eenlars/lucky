@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       const demoWorkflow = getDemoWorkflow()
       return alrighty("user/workflows", [
         {
-          workflow_id: "demo-workflow",
+          workflow_id: "wf_demo",
           name: "Demo Workflow",
           description: "A sample workflow to get you started",
           inputSchema: demoWorkflow.inputSchema,

@@ -82,8 +82,8 @@ export default function Workflow({ workflowVersionId }: { workflowVersionId: str
     })),
   )
 
-  // Get editor mode from runner store
-  const { editorMode } = useRunnerStore()
+  // Get editor mode from runner store without subscribing to the entire store
+  const editorMode = useRunnerStore(state => state.editorMode)
 
   // Load model preferences early (before workflows load)
   const { loadPreferences, preferences } = useModelPreferencesStore()

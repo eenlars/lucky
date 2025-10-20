@@ -170,7 +170,9 @@ class CatalogValidator {
     if (!hasErrors && this.warnings.length === 0) {
       console.log("✅ MODEL_CATALOG validation passed!")
       console.log(
-        `   ${MODEL_CATALOG.length} models validated, ${MODEL_CATALOG.filter(m => m.runtimeEnabled).length} runtime-enabled`,
+        `   ${MODEL_CATALOG.length} models validated, ${
+          MODEL_CATALOG.filter(m => m.runtimeEnabled !== false).length
+        } runtime-enabled`,
       )
     } else {
       console.log("\nSummary:")

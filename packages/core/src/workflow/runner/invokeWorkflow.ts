@@ -156,6 +156,34 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
 
     const { success, error, data: runResults } = await workflow.run({ onProgress, abortSignal })
 
+    const maybeSaveMemoryUpdates = async () => {
+      const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
+
+      if (!hasMemoryUpdates) {
+        return
+      }
+
+      const legacyFilename = "filename" in input ? (input as any).filename : undefined
+
+      let targetPath: string | undefined
+      if (input.source?.kind === "filename") {
+        targetPath = input.source.path
+      } else if (legacyFilename) {
+        targetPath = legacyFilename
+      }
+
+      if (!targetPath) {
+        return
+      }
+
+      try {
+        await workflow.saveToFile(targetPath)
+        lgg.log(`[invokeWorkflow] Saved memory updates to ${targetPath}`)
+      } catch (saveError) {
+        lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
+      }
+    }
+
     if (!runResults || !success) {
       return R.error(error || "Unknown error", 0)
     }
@@ -182,18 +210,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       }))
 
       // Save workflow to file if it was loaded from file and has memory updates
-      if ("filename" in input && input.filename) {
-        const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
-
-        if (hasMemoryUpdates && input.source.kind === "filename") {
-          try {
-            await workflow.saveToFile(input.source.path)
-            lgg.log(`[invokeWorkflow] Saved memory updates to ${input.filename}`)
-          } catch (saveError) {
-            lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
-          }
-        }
-      }
+      await maybeSaveMemoryUpdates()
 
       return R.success(resultsWithEvaluation, evaluationResult.totalCost)
     }
@@ -207,18 +224,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     }
 
     // Save workflow to file if it was loaded from file and has memory updates
-    if ("filename" in input && input.filename) {
-      const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
-
-      if (hasMemoryUpdates && input.source.kind === "filename") {
-        try {
-          await workflow.saveToFile(input.source.path)
-          lgg.log(`[invokeWorkflow] Saved memory updates to ${input.filename}`)
-        } catch (saveError) {
-          lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
-        }
-      }
-    }
+    await maybeSaveMemoryUpdates()
 
     // If no evaluation needed, return raw run results
     return R.success(

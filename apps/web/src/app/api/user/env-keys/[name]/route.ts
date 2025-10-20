@@ -1,5 +1,5 @@
 import { decryptEnvKey, getEnvKeyByName, updateEnvKeyLastUsed } from "@/features/secret-management/lib/env-keys"
-import { alrighty, fail } from "@/lib/api/server"
+import { fail } from "@/lib/api/server"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
 import { type NextRequest, NextResponse } from "next/server"
@@ -47,14 +47,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ nam
     // Update last_used_at
     await updateEnvKeyLastUsed(supabase, data.user_secret_id)
 
-    return alrighty("user/env-keys/[name]", {
-      success: true,
-      data: {
-        id: data.user_secret_id,
-        name: data.name,
-        value,
-        createdAt: data.created_at,
-      },
+    return NextResponse.json({
+      id: data.user_secret_id,
+      name: data.name,
+      value,
+      createdAt: data.created_at,
     })
   } catch (e: any) {
     return fail("user/env-keys/[name]", e?.message ?? "Failed to fetch environment key", {

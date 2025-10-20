@@ -1,4 +1,5 @@
 import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
+import { getServerLLMRegistry } from "@/features/provider-llm-setup/llm-registry"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
@@ -7,7 +8,7 @@ import { auth } from "@clerk/nextjs/server"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
-import { DEFAULT_MODELS, PROVIDERS, PROVIDER_API_KEYS, createLLMRegistry, findModel } from "@lucky/models"
+import { DEFAULT_MODELS, PROVIDERS, PROVIDER_API_KEYS, findModel } from "@lucky/models"
 import { type Principal, isNir } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -56,18 +57,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Build provider -> API key mapping for registry
-    const fallbackKeys = Object.fromEntries(
+    const fallbackOverrides = Object.fromEntries(
       PROVIDER_API_KEYS.map(keyName => {
         const provider = keyName.replace(/_API_KEY$/, "").toLowerCase()
-        return [provider, apiKeys[keyName]]
-      }),
+        const value = apiKeys[keyName]
+        return [provider, value]
+      }).filter(([, value]) => typeof value === "string" && value.length > 0),
     )
-    const registry = createLLMRegistry({ fallbackKeys })
+    const registry = getServerLLMRegistry()
 
     // Use default model if needed
     if (isNir(availableModels)) {
       const defaultModel = findModel(DEFAULT_MODELS.openai.default)
-      if (!defaultModel?.runtimeEnabled) {
+      if (!defaultModel || defaultModel.runtimeEnabled === false) {
         return fail("workflow/formalize", "No models available. Please configure API keys in Settings.", {
           code: "NO_MODELS_AVAILABLE",
           status: 400,
@@ -84,6 +86,7 @@ export async function POST(req: NextRequest) {
       mode: userModelsMode,
       userId: userModelsId,
       models: modelIds,
+      fallbackOverrides: userModelsMode === "shared" ? fallbackOverrides : undefined,
     })
 
     const optionsWithModels: GenerationOptions & AfterGenerationOptions = {

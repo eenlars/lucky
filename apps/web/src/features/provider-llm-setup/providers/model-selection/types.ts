@@ -1,10 +1,11 @@
-import type { EnrichedModelInfo } from "@lucky/shared"
+import type { EnrichedModelInfo, ModelSpeed } from "@lucky/shared"
 
-export type ModelSpeed = "fast" | "medium" | "slow"
 export type ModelCapability = "tools" | "vision" | "reasoning" | "audio" | "video"
 export type GroupBy = "none" | "speed" | "intelligence" | "capabilities"
 export type SortBy = "recommended" | "name" | "cost" | "intelligence" | "contextLength"
 export type FilterPreset = "all" | "recommended" | "fast" | "high-quality" | "with-vision" | "with-tools"
+
+export type { ModelSpeed }
 
 export interface ModelFilters {
   search: string

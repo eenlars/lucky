@@ -3,19 +3,14 @@ import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { SchemaValidationError, validateInvocationInputSchema } from "../lib/validation/input-schema-validator"
 
-// Mock schema-validator
-vi.mock("../lib/schema-validator", () => ({
-  SchemaValidationError: class SchemaValidationError extends Error {
-    constructor(
-      public errorMessage: string,
-      public details: Array<any>,
-    ) {
-      super(errorMessage)
-      this.name = "SchemaValidationError"
-    }
-  },
-  validateWorkflowInputSchema: vi.fn(),
-}))
+// Mock input-schema-validator - use partial mock to keep real implementation
+vi.mock("../lib/validation/input-schema-validator", async importOriginal => {
+  const actual = await importOriginal<typeof import("../lib/validation/input-schema-validator")>()
+  return {
+    ...actual,
+    validateWorkflowInputSchema: vi.fn(),
+  }
+})
 
 describe("validateInvocationInputSchema", () => {
   beforeEach(async () => {

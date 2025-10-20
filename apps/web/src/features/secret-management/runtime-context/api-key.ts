@@ -69,7 +69,7 @@ export async function getApiKey(name: string): Promise<string | undefined> {
   const secretValue = await secrets.get(name, "environment-variables")
   if (!secretValue) {
     console.error(
-      `[getApiKey] ❌ ${providerName} API key not configured for user in production (auth_method: ${principal.auth_method})`,
+      `[getApiKey] ❌ ${providerName} API key not configured for user in production (auth_method: ${principal?.auth_method || "unknown"})`,
     )
     console.error("           💡 User needs to add this API key in their account settings")
     return undefined

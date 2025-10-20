@@ -19,7 +19,7 @@ describe("getDemoWorkflow", () => {
     const result = getDemoWorkflow()
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("demo")
+    expect(result.source?.kind).toBe("dsl")
     expect(result.config).toBeDefined()
     expect(result.config?.__schema_version).toBe(1)
     expect(result.config?.entryNodeId).toBe("assistant")
@@ -55,7 +55,7 @@ describe("loadWorkflowConfig", () => {
     const result = await loadWorkflowConfig("wf_demo")
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("demo")
+    expect(result.source?.kind).toBe("dsl")
     expect(result.config).toBeDefined()
   })
 
@@ -63,7 +63,7 @@ describe("loadWorkflowConfig", () => {
     const result = await loadWorkflowConfig("demo")
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("demo")
+    expect(result.source?.kind).toBe("dsl")
   })
 
   it("should load workflow by version ID", async () => {
@@ -98,7 +98,10 @@ describe("loadWorkflowConfig", () => {
     const result = await loadWorkflowConfig("wf_ver_abc123", principal, "workflow_version")
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("version")
+    expect(result.source?.kind).toBe("version")
+    if (result.source?.kind === "version") {
+      expect(result.source.id).toBe("wf_ver_abc123")
+    }
     expect(result.config).toEqual(mockConfig)
     expect(result.resolvedWorkflowVersionId).toBe("wf_ver_abc123")
   })
@@ -146,7 +149,10 @@ describe("loadWorkflowConfig", () => {
     const result = await loadWorkflowConfig("wf_parent123", principal, "workflow_parent")
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("parent")
+    expect(result.source?.kind).toBe("version")
+    if (result.source?.kind === "version") {
+      expect(result.source.id).toBe("wf_ver_latest")
+    }
     expect(result.config).toEqual(mockConfig)
     expect(result.resolvedWorkflowVersionId).toBe("wf_ver_latest")
   })
@@ -183,7 +189,7 @@ describe("loadWorkflowConfig", () => {
     })
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("demo")
+    expect(result.source?.kind).toBe("dsl")
   })
 
   it("should return error on not found when option is false", async () => {
@@ -219,7 +225,7 @@ describe("loadWorkflowConfig", () => {
     })
 
     expect(result.success).toBe(true)
-    expect(result.source).toBe("demo")
+    expect(result.source?.kind).toBe("dsl")
   })
 
   it("should handle database error for version lookup", async () => {

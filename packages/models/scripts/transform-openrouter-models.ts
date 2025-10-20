@@ -109,7 +109,7 @@ function estimateIntelligence(model: ModelSchemaOpenRouter): number {
  * Estimate speed based on model characteristics
  * Fast models: small, optimized variants; Slow models: reasoning-intensive
  */
-function estimateSpeed(model: ModelSchemaOpenRouter): "fast" | "medium" | "slow" {
+function estimateSpeed(model: ModelSchemaOpenRouter): "fast" | "balanced" | "slow" {
   const name = model.id.toLowerCase()
 
   // reasoning models are inherently slow
@@ -123,7 +123,7 @@ function estimateSpeed(model: ModelSchemaOpenRouter): "fast" | "medium" | "slow"
     return "fast"
   }
 
-  return "medium"
+  return "balanced"
 }
 
 /**

@@ -2,8 +2,8 @@
  * UserModels - Per-user model access with restricted model list
  */
 
-import { createGroq, groq } from "@ai-sdk/groq"
-import { createOpenAI, openai } from "@ai-sdk/openai"
+import { createGroq } from "@ai-sdk/groq"
+import { createOpenAI } from "@ai-sdk/openai"
 import type { ProviderOptions } from "@ai-sdk/provider-utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import type { LanguageModel } from "ai"
@@ -113,9 +113,9 @@ export class UserModels {
     if (catalogEntry.provider === "openrouter") {
       model = provider(resolvedName, options)
     } else if (catalogEntry.provider === "openai") {
-      model = openai(resolvedName)
+      model = provider(resolvedName, options)
     } else if (catalogEntry.provider === "groq") {
-      model = groq(resolvedName)
+      model = provider(resolvedName, options)
     } else {
       throw new Error(`Unsupported provider: ${catalogEntry.provider}`)
     }

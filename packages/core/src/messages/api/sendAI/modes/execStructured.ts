@@ -149,13 +149,18 @@ export async function execStructured<S extends ZodTypeAny>(
       const lowerMsg = message.toLowerCase()
 
       // User input validation errors - don't spam logs
-      if (
+      const isKnownModelError =
         lowerMsg.includes("is not a valid model id") ||
         lowerMsg.includes("does not exist") ||
         lowerMsg.includes("model_not_found") ||
-        lowerMsg.includes("model not found") ||
-        (debug?.statusCode === 400 && (lowerMsg.includes("model") || lowerMsg.includes("invalid")))
-      ) {
+        lowerMsg.includes("model not found")
+
+      const isBadRequestModelError =
+        debug?.statusCode === 400 &&
+        lowerMsg.includes("model") &&
+        (lowerMsg.includes("invalid") || lowerMsg.includes("unsupported") || lowerMsg.includes("unknown"))
+
+      if (isKnownModelError || isBadRequestModelError) {
         errorCategory = "validation"
         severity = "warn"
         isUserError = true

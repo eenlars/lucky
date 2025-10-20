@@ -73,6 +73,7 @@ describe("getRequiredProviderKeys", () => {
   it("should return fallback providers on extraction error", async () => {
     const { extractRequiredProviders } = await import("@lucky/core/workflow/provider-extraction")
     const { logException } = await import("@/lib/error-logger")
+    const { PROVIDERS } = await import("@lucky/models")
 
     const mockConfig: WorkflowConfig = {
       __schema_version: 1,
@@ -86,7 +87,12 @@ describe("getRequiredProviderKeys", () => {
 
     const result = getRequiredProviderKeys(mockConfig, "test-context")
 
-    expect(result.providers).toEqual(new Set(PROVIDER_API_KEYS))
+    // Fallback should return provider names (not API key names)
+    const expectedProviders = new Set([
+      ...PROVIDERS.map(p => p.provider),
+      "anthropic", // legacy support
+    ])
+    expect(result.providers).toEqual(expectedProviders)
     expect(result.models).toEqual(new Map())
     expect(logException).toHaveBeenCalled()
   })

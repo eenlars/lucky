@@ -387,7 +387,7 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           supportsReasoning: false,
           supportsAudio: false,
           supportsVideo: false,
-          speed: "medium" as const,
+          speed: "balanced" as const,
           intelligence: 9,
           pricingTier: "high" as const,
         },

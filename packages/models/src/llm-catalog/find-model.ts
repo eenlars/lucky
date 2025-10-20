@@ -38,7 +38,7 @@ export interface FindModelOptions {
 }
 
 type WithNormalized = ModelEntry & {
-  runtimeEnabled: boolean
+  runtimeEnabled?: boolean
   uiHiddenInProd?: boolean
   releaseDate?: string
 }
@@ -47,7 +47,7 @@ type Comparator = (a: WithNormalized, b: WithNormalized) => number
 
 const SPEED_ORDER: Record<NonNullable<ModelEntry["speed"]>, number> = {
   slow: 1,
-  medium: 2,
+  balanced: 2,
   fast: 3,
 }
 
@@ -72,7 +72,7 @@ function releaseMs(m: WithNormalized): number {
 function matchesFilters(m: WithNormalized, f?: ModelFilters): boolean {
   if (!f) return true
 
-  if (f.onlyRuntimeEnabled && !m.runtimeEnabled) return false
+  if (f.onlyRuntimeEnabled && m.runtimeEnabled === false) return false
   if (f.cheapestOnly && m.pricingTier !== "low") return false
   if (f.pricingTier && m.pricingTier !== f.pricingTier) return false
 
