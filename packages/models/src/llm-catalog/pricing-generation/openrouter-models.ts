@@ -69,7 +69,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "medium",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -113,7 +113,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "medium",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 

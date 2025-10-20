@@ -4,7 +4,7 @@
  */
 
 import type { ModelEntry, TierName } from "@lucky/shared"
-import { findModelById } from "./llm-catalog/catalog-queries"
+import { findModel } from "./llm-catalog/catalog-queries"
 
 /**
  * Select the best model for a given tier from a list of allowed models
@@ -25,7 +25,7 @@ export function selectModelForTier(tierName: TierName, allowedModelIds: readonly
   }
 
   // Get catalog entries for allowed models
-  const userModels = allowedModelIds.map(id => findModelById(id)).filter((m): m is ModelEntry => m !== undefined)
+  const userModels = allowedModelIds.map(id => findModel(id)).filter((m): m is ModelEntry => m !== undefined)
 
   if (userModels.length === 0) {
     throw new Error("No valid models found in user's configuration")

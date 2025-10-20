@@ -6,12 +6,12 @@ import { useShallow } from "zustand/react/shallow"
 
 import { AgentDialogInspect } from "@/app/components/agent-dialog/panel"
 import { ExecutionLogsPanel } from "@/features/cli-inspection/components/ExecutionLogsPanel"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { WorkflowEdge } from "@/features/react-flow-visualization/components/edges/workflow-edge/WorkflowEdge"
 import { nodeTypes } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { WorkflowPromptBar } from "@/features/react-flow-visualization/components/workflow-prompt-bar/WorkflowPromptBar"
 // runner context removed
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import { useRunnerStore } from "@/stores/runner-store"
 import { NodePalette } from "./NodePalette"
 import { WorkflowControls } from "./controls"

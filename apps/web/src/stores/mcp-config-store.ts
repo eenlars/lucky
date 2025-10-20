@@ -108,7 +108,7 @@ async function loadConfigFromBackend(silent = false): Promise<MCPServers> {
   return config
 }
 
-export const useMCPConfigStore = create<MCPConfigStore>((set, get) => ({
+export const useMCPConfigStore = create<MCPConfigStore>((set, _get) => ({
   config: initialState,
   isSyncing: false,
   lastSyncError: null,

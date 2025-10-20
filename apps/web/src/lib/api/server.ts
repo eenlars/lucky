@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { type z } from "zod"
-import { apiSchemas, type Endpoint, type Req, type Res } from "./schemas"
+import type { z } from "zod"
+import { type Endpoint, type Req, type Res, apiSchemas } from "./schemas"
 
 /**
  * Helper: turn FormData into a plain object of string | File

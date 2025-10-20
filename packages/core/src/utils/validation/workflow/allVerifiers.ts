@@ -1,5 +1,4 @@
-import { isWorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import { type WorkflowConfig, isWorkflowConfig } from "@core/workflow/schema/workflow.types"
 
 /**
  * Convert an unknown value to a WorkflowConfig if valid, otherwise return null

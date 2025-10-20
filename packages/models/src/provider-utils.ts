@@ -2,7 +2,7 @@
  * Provider key extraction, validation, and formatting utilities
  */
 
-import { findModelById, findModelByName } from "./llm-catalog/catalog-queries"
+import { findModel } from "./llm-catalog/catalog-queries"
 import { PROVIDERS } from "./llm-catalog/providers"
 
 /**
@@ -10,7 +10,7 @@ import { PROVIDERS } from "./llm-catalog/providers"
  * Derived from PROVIDERS catalog + legacy Anthropic support
  */
 export const PROVIDER_API_KEYS = [
-  ...PROVIDERS.map(p => p.apiKeyName),
+  ...PROVIDERS.map(p => p.secretKeyName),
   "ANTHROPIC_API_KEY", // Legacy support - not in catalog
 ] as const
 
@@ -33,13 +33,8 @@ export function getRequiredProviderKeys(modelNames: string[]): string[] {
   const unknownModels: string[] = []
 
   for (const modelName of modelNames) {
-    // Try to find by full ID first (provider#model format)
-    let catalogEntry = findModelById(modelName)
-
-    // If not found, try to find by name (auto-detect)
-    if (!catalogEntry) {
-      catalogEntry = findModelByName(modelName)
-    }
+    // Try to find by full ID or name (auto-detect)
+    const catalogEntry = findModel(modelName)
 
     if (!catalogEntry) {
       unknownModels.push(modelName)
@@ -71,7 +66,7 @@ export function getRequiredProviderKeys(modelNames: string[]): string[] {
 export function getProviderKeyName(provider: string): string {
   const providerEntry = PROVIDERS.find(p => p.provider === provider.toLowerCase())
   if (providerEntry) {
-    return providerEntry.apiKeyName
+    return providerEntry.secretKeyName
   }
   // Fallback for unknown providers
   return `${provider.toUpperCase()}_API_KEY`
@@ -90,7 +85,7 @@ export function getProviderKeyName(provider: string): string {
  */
 export function getProviderDisplayName(keyName: string): string {
   // Look up in PROVIDERS first
-  const providerEntry = PROVIDERS.find(p => p.apiKeyName === keyName)
+  const providerEntry = PROVIDERS.find(p => p.secretKeyName === keyName)
   if (providerEntry) {
     return providerEntry.displayName
   }

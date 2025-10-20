@@ -75,7 +75,7 @@ describe("BYOK Key Isolation - Security Critical", () => {
   }
 
   // Mock secret resolvers for each user (simulates lockbox)
-  const createMockSecretResolver = (userId: string, keys: Record<string, string>): SecretResolver => ({
+  const createMockSecretResolver = (_userId: string, keys: Record<string, string>): SecretResolver => ({
     get: vi.fn(async (key: string) => keys[key]),
     getAll: vi.fn(async (keyNames: string[]) => {
       const result: Record<string, string> = {}

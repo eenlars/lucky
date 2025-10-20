@@ -1,8 +1,8 @@
+import { activeWorkflows } from "@/features/workflow-or-chat-invocation/workflow/active-workflows"
 import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { alrighty } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { getWorkflowState } from "@/lib/redis/workflow-state"
-import { activeWorkflows } from "@/lib/workflow/active-workflows"
 import { type NextRequest, NextResponse } from "next/server"
 
 /**

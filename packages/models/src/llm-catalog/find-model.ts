@@ -1,4 +1,4 @@
-import { findModelByName, getCatalog } from "@lucky/models/llm-catalog/catalog-queries"
+import { findModel, getCatalog } from "@lucky/models/llm-catalog/catalog-queries"
 import type { ModelEntry, ModelPricingTier, ModelSpeed } from "@lucky/shared/contracts/llm-contracts/models"
 
 export interface ModelFilters {
@@ -263,7 +263,7 @@ export function findModels(options: FindModelOptions = {}): ModelEntry[] {
   const sortDir = options.sortDir
 
   const raw = searchSet ?? getCatalog()
-  const normalized: WithNormalized[] = raw.map(m => findModelByName(m.id) as WithNormalized)
+  const normalized: WithNormalized[] = raw.map(m => findModel(m.id) as WithNormalized)
 
   let models = normalized.filter(m => matchesFilters(m, filters))
   if (searchText && searchText.trim() !== "") {

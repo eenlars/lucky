@@ -13,9 +13,9 @@ import { fetchSecret, fetchSecrets, touchSecrets } from "./secret-repository"
  */
 export function createSecretResolver(clerk_id: string, principal?: Principal): SecretResolver {
   return {
-    async get(name: string, namespace?: string): Promise<string | undefined> {
+    async get(secretKeyName: string, namespace?: string): Promise<string | undefined> {
       const ns = normalizeNamespace(namespace)
-      const { data, error } = await fetchSecret(clerk_id, name, ns, principal)
+      const { data, error } = await fetchSecret(clerk_id, secretKeyName, ns, principal)
 
       if (error || !data) {
         return undefined
@@ -31,12 +31,14 @@ export function createSecretResolver(clerk_id: string, principal?: Principal): S
       })
     },
 
-    async getAll(names: string[], namespace?: string): Promise<Record<string, string>> {
+    async getAll(secretKeyNames: string[], namespace?: string): Promise<Record<string, string>> {
       const ns = normalizeNamespace(namespace)
-      console.log(
-        `[secretResolver.getAll] Fetching secrets for clerk_id=${clerk_id}, names=${names.join(", ")}, namespace=${ns}`,
-      )
-      const { data, error } = await fetchSecrets(clerk_id, names, ns, principal)
+      console.log(`[secretResolver.getAll] Fetching ${secretKeyNames.length} secret(s):`, {
+        clerk_id,
+        namespace: ns,
+        requested: secretKeyNames,
+      })
+      const { data, error } = await fetchSecrets(clerk_id, secretKeyNames, ns, principal)
 
       if (error) {
         console.error("[secretResolver.getAll] Supabase error:", error)
@@ -44,11 +46,17 @@ export function createSecretResolver(clerk_id: string, principal?: Principal): S
       }
 
       if (!data || data.length === 0) {
-        console.warn(`[secretResolver.getAll] No secrets found for names: ${names.join(", ")}`)
+        console.warn(`[secretResolver.getAll] ❌ No secrets found! Requested: [${secretKeyNames.join(", ")}]`)
         return {}
       }
 
-      console.log(`[secretResolver.getAll] Found ${data.length} secret(s): ${data.map(d => d.name).join(", ")}`)
+      const foundNames = data.map(d => d.name)
+      const missingNames = secretKeyNames.filter(n => !foundNames.includes(n))
+
+      console.log(`[secretResolver.getAll] ✓ Found ${data.length}/${secretKeyNames.length} secret(s):`, {
+        found: foundNames,
+        missing: missingNames.length > 0 ? missingNames : undefined,
+      })
 
       const secrets: Record<string, string> = {}
       const secretIds: string[] = []

@@ -1,4 +1,4 @@
-import { getDemoWorkflow } from "@/features/workflow-invocation/lib"
+import { getDemoWorkflow } from "@/features/workflow-or-chat-invocation/sample/demoWorkflow"
 import { alrighty } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { logException } from "@/lib/error-logger"
@@ -62,15 +62,14 @@ export async function GET(req: NextRequest) {
 
     // If user has no workflows, return demo workflow so they can get started
     if (!data || data.length === 0) {
-      const demo = getDemoWorkflow()
+      const demoWorkflow = getDemoWorkflow()
       return alrighty("user/workflows", [
         {
-          workflow_id: "wf_demo",
-          name: "Demo Workflow (Getting Started)",
-          description:
-            "A simple AI assistant workflow to help you get started. Try asking it a question! You can create your own custom workflows using the workflow builder.",
-          inputSchema: demo.inputSchema,
-          outputSchema: demo.outputSchema,
+          workflow_id: "demo-workflow",
+          name: "Demo Workflow",
+          description: "A sample workflow to get you started",
+          inputSchema: demoWorkflow.inputSchema,
+          outputSchema: demoWorkflow.outputSchema,
           created_at: new Date().toISOString(),
         },
       ])

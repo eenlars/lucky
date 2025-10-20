@@ -44,7 +44,9 @@ export const providerConfigSchema = z.object({
   enabledModels: z.array(z.string()),
   isEnabled: z.boolean(),
   hasApiKey: z.boolean(),
-  apiKeyName: z.string(),
+  /** Environment variable name for the API key (e.g., "OPENAI_API_KEY") */
+  secretKeyName: z.string(),
+  /** The actual API key value */
   apiKeyValue: z.string(),
   totalModels: z.number(),
   activeModels: z.number(),

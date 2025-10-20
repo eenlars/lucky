@@ -83,6 +83,11 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
   // Use default model if none specified
   req.model = req.model ?? getDefaultModels().default
 
+  if (req.model.includes("#")) {
+    const [_provider, model] = req.model.split("#")
+    req.model = model
+  }
+
   /* ---- delegate to mode‑specific helper ---- */
   switch (req.mode) {
     case "text":

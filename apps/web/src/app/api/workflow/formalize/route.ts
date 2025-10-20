@@ -1,13 +1,13 @@
+import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
-import { getUserModels } from "@/lib/models/server-utils"
 import { auth } from "@clerk/nextjs/server"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
-import { DEFAULT_MODELS, PROVIDERS, PROVIDER_API_KEYS, createLLMRegistry, findModelById } from "@lucky/models"
+import { DEFAULT_MODELS, PROVIDERS, PROVIDER_API_KEYS, createLLMRegistry, findModel } from "@lucky/models"
 import { type Principal, isNir } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -46,13 +46,13 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(userId, principal)
 
     // Fetch API keys (user's if paying, environment if free)
-    const providerKeyNames = PROVIDERS.map(p => p.apiKeyName)
+    const providerKeyNames = PROVIDERS.map(p => p.secretKeyName)
     const apiKeys = await secrets.getAll(providerKeyNames, "environment-variables")
 
     // Fetch user models only if paying
-    let availableModels: Awaited<ReturnType<typeof getUserModels>> | undefined
+    let availableModels: Awaited<ReturnType<typeof getUserModelsSetup>> | undefined
     if (USER_PAYS_FOR_FORMALIZE) {
-      availableModels = await getUserModels(userId)
+      availableModels = await getUserModelsSetup({ clerkId: userId })
     }
 
     // Build provider -> API key mapping for registry
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     // Use default model if needed
     if (isNir(availableModels)) {
-      const defaultModel = findModelById(DEFAULT_MODELS.openai.default)
+      const defaultModel = findModel(DEFAULT_MODELS.openai.default)
       if (!defaultModel?.runtimeEnabled) {
         return fail("workflow/formalize", "No models available. Please configure API keys in Settings.", {
           code: "NO_MODELS_AVAILABLE",

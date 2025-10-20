@@ -221,7 +221,7 @@ export async function POST(request: Request) {
 
     // Check if pipeline execution succeeded
     const hasError = !!result.error
-    const success = !hasError
+    const _success = !hasError
 
     // If pipeline failed, return error response
     if (hasError) {

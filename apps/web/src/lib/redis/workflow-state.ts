@@ -73,7 +73,6 @@ export async function setWorkflowState(invocationId: string, entry: Partial<Work
     }
   } else if (!fallbackWarningLogged) {
     // Log warning once that Redis is unavailable
-    console.warn("[WorkflowState] ⚠️  Redis unavailable - using in-memory fallback (state not shared across servers)")
     fallbackWarningLogged = true
   }
 

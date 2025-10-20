@@ -81,7 +81,7 @@ export type { OutputSchema, WorkflowFile } from "./types/workflow"
 
 // Workflow contracts
 export { HandoffTypeSchema, WorkflowConfigSchema, WorkflowNodeConfigSchema } from "./contracts/workflow"
-export type { HandoffType, WorkflowConfig, WorkflowNodeConfig } from "./contracts/workflow"
+export type { HandoffType, WorkflowConfigZ, WorkflowNodeConfig } from "./contracts/workflow"
 
 // Provider contracts
 export {

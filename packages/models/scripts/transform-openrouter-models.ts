@@ -10,9 +10,9 @@
  * 3. Outputs TypeScript code ready to paste into catalog.ts
  */
 
-import type { ModelSchemaOpenRouter } from "@lucky/models/llm-catalog/openrouter/openrouter.schema"
 import fs from "node:fs/promises"
 import path from "node:path"
+import type { ModelSchemaOpenRouter } from "@lucky/models/llm-catalog/openrouter/openrouter.schema"
 // write to file
 import type { ModelEntry } from "@lucky/shared"
 

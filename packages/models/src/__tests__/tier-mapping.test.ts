@@ -5,7 +5,7 @@ vi.mock("../llm-catalog/catalog", () => ({
   MODEL_CATALOG: MOCK_CATALOG,
 }))
 
-import { mapModelToTier, mapModelNameToEasyName } from "../tier-mapping"
+import { mapModelNameToEasyName, mapModelToTier } from "../tier-mapping"
 
 describe("Tier Mapping", () => {
   describe("mapModelToTier", () => {

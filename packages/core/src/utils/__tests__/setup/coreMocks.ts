@@ -4,7 +4,6 @@ import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitne
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
 import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
 import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
-import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import type { FlowRuntimeConfig } from "@core/types"
 import { Workflow } from "@core/workflow/Workflow"
 import type {
@@ -14,6 +13,7 @@ import type {
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowFile } from "@lucky/shared"
 import type { RS } from "@lucky/shared"
 import { vi } from "vitest"
 

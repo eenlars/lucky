@@ -1,4 +1,4 @@
-import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
 import { extractRequiredProviders, getProviderKeyName } from "./provider-extraction"
 

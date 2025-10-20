@@ -2,19 +2,19 @@
  * UserModels - Per-user model access with restricted model list
  */
 
-import { createGroq } from "@ai-sdk/groq"
-import { createOpenAI } from "@ai-sdk/openai"
+import { createGroq, groq } from "@ai-sdk/groq"
+import { createOpenAI, openai } from "@ai-sdk/openai"
+import type { ProviderOptions } from "@ai-sdk/provider-utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import type { LanguageModel } from "ai"
-import type { ProviderOptions } from "@ai-sdk/provider-utils"
 
-import { type TierName, providerNameSchema, tierNameSchema } from "@lucky/shared"
+import { type TierName, tierNameSchema } from "@lucky/shared"
 
+import type { FallbackKeys } from "@lucky/models/types"
 import type { ModelEntry } from "@lucky/shared"
 import { MODEL_CATALOG } from "./llm-catalog/catalog"
-import { findModelById, findModelByName } from "./llm-catalog/catalog-queries"
+import { findModel, toNormalModelName } from "./llm-catalog/catalog-queries"
 import { selectModelForTier } from "./tier-selection"
-import type { FallbackKeys } from "./types"
 
 type ProviderInstance =
   | ReturnType<typeof createOpenAI>
@@ -78,33 +78,16 @@ export class UserModels {
    * @param options - Optional provider-specific parameters (e.g., { reasoning: { effort: "medium" } })
    */
   model(name: string, options?: ProviderOptions): LanguageModel {
-    // First, check if the model exists in the catalog at all
-    // This helps us give better error messages
-    let catalogEntry = name.includes("#") ? findModelById(name) : findModelByName(name)
-
-    // If the model has a # but isn't in the catalog, it's probably a malformed/unknown model
-    if (!catalogEntry && name.includes("#")) {
-      // Check if it's malformed (e.g., spaces instead of #) or just unknown
-      const [provider] = name.split("#")
-
-      // check if the provider part exists in our provider list from contracts
-      const knownProviders: readonly string[] = providerNameSchema.options
-      if (!knownProviders.includes(provider)) {
-        // if this model is in the allowlist, the provider is unknown/not configured
-        // otherwise, the model itself is not in the allowlist (different error)
-        if (this.allowedModels.includes(name)) {
-          throw new Error(`Provider not configured: ${provider}`)
-        }
-      }
-
-      // Model not found in catalog
+    // Find model in catalog
+    const catalogEntry = findModel(name)
+    if (!catalogEntry) {
       throw new Error(`Model not found: ${name}`)
     }
 
-    // check if model is in user's allowed list
-    let resolvedName = name
+    // Check if model is in user's allowed list
+    let resolvedName = toNormalModelName(catalogEntry.model)
     if (!this.allowedModels.includes(name)) {
-      // try to find by auto-detection
+      // Try to find by auto-detection (match against full IDs in allowed list)
       const found = this.allowedModels.find(allowed => {
         if (allowed === name) return true
         if (allowed.endsWith(`#${name}`)) return true
@@ -112,33 +95,31 @@ export class UserModels {
       })
 
       if (!found) {
-        // Special case: if it looks malformed (has spaces), give "Model not found" error
-        if (name.includes(" ") && !name.includes("#")) {
-          throw new Error(`Model not found: ${name}`)
-        }
-        throw new Error(`Model "${resolvedName}" not in user's allowed models`)
+        throw new Error(`Model "${name}" not in user's allowed models`)
       }
-      resolvedName = found // use the full ID
+      resolvedName = toNormalModelName(found) // use the full ID
     }
 
-    // find model in catalog (again if needed)
-    if (!catalogEntry) {
-      catalogEntry = resolvedName.includes("#") ? findModelById(resolvedName) : findModelByName(resolvedName)
-    }
-
-    if (!catalogEntry) {
-      throw new Error(`Model not found: ${resolvedName}`)
-    }
-
-    // check provider is configured
+    // Check provider is configured
     const provider = this.providers.get(catalogEntry.provider)
     if (!provider) {
       throw new Error(`Provider not configured: ${catalogEntry.provider}`)
     }
 
-    // return ai sdk model with modelId property for testing/tracking
+    // Return ai sdk model with modelId property for testing/tracking
     // Pass options through to provider (e.g., reasoning configuration for OpenRouter)
-    const model = options ? provider(catalogEntry.model, options) : provider(catalogEntry.model)
+    let model: LanguageModel
+
+    if (catalogEntry.provider === "openrouter") {
+      model = provider(resolvedName, options)
+    } else if (catalogEntry.provider === "openai") {
+      model = openai(resolvedName)
+    } else if (catalogEntry.provider === "groq") {
+      model = groq(resolvedName)
+    } else {
+      throw new Error(`Unsupported provider: ${catalogEntry.provider}`)
+    }
+
     // Add modelId for tracking without type assertion by using Object.defineProperty
     Object.defineProperty(model, "modelId", {
       value: catalogEntry.id,
@@ -146,6 +127,7 @@ export class UserModels {
       enumerable: true,
       configurable: false,
     })
+
     return model
   }
 
@@ -232,7 +214,7 @@ export class UserModels {
         return selectedModel.id
       }
       // For model name: normalize to catalog ID and validate against allowlist
-      const catalogEntry = findModelByName(nameOrTier)
+      const catalogEntry = findModel(nameOrTier)
       if (!catalogEntry) {
         throw new Error(`Model not found: ${nameOrTier}`)
       }

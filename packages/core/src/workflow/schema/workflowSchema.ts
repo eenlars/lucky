@@ -4,8 +4,8 @@ import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
-import { findModelById, findModelByName } from "@lucky/models"
-import { tierNameSchema, withDescriptions, type TierName } from "@lucky/shared"
+import { findModel } from "@lucky/models"
+import { type TierName, tierNameSchema, withDescriptions } from "@lucky/shared"
 import { ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT, ACTIVE_MCP_TOOL_NAMES } from "@lucky/tools/client"
 
 // ============================================================================
@@ -49,7 +49,7 @@ export const WorkflowNodeConfigSchemaDisplay = z.object({
   systemPrompt: z.string(),
   modelName: z.string().transform(modelName => {
     // try to find the model in the catalog (by catalog ID or API name)
-    const catalogEntry = findModelById(modelName) || findModelByName(modelName)
+    const catalogEntry = findModel(modelName)
 
     if (catalogEntry) {
       // model exists, use its catalog ID
@@ -142,7 +142,7 @@ export const handleWorkflowCompletionTierStrategy = (
       validatedModelName = modelNameLower
     } else {
       // not a tier - validate it's a real model
-      const catalogEntry = findModelById(partialNode.modelName) || findModelByName(partialNode.modelName)
+      const catalogEntry = findModel(partialNode.modelName)
       if (catalogEntry) {
         validatedModelName = catalogEntry.id
       } else {
@@ -188,7 +188,7 @@ export const handleWorkflowCompletionUserModelsStrategy = (
       validatedModelName = modelNameLower
     } else {
       // validate it's a real model
-      const catalogEntry = findModelById(partialNode.modelName) || findModelByName(partialNode.modelName)
+      const catalogEntry = findModel(partialNode.modelName)
       if (catalogEntry) {
         validatedModelName = catalogEntry.id
       } else {

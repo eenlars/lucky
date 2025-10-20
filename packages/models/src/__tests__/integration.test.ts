@@ -16,8 +16,8 @@
  * 8. Provider failures and fallback strategies
  */
 
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { generateText, streamText } from "ai"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { MOCK_CATALOG } from "./fixtures/mock-catalog"
 
 // Mock the catalog to use test fixtures
@@ -1167,7 +1167,7 @@ describe("BYOK User Lifecycle - Full Integration", () => {
           const start = process.hrtime.bigint()
           try {
             userModels.model("openai#gpt-4o-mini")
-          } catch (e) {
+          } catch (_e) {
             // Ignore
           }
           const end = process.hrtime.bigint()
@@ -1179,7 +1179,7 @@ describe("BYOK User Lifecycle - Full Integration", () => {
           const start = process.hrtime.bigint()
           try {
             userModels.model("openai#gpt-4o")
-          } catch (e) {
+          } catch (_e) {
             // Ignore
           }
           const end = process.hrtime.bigint()

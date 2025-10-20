@@ -3,9 +3,9 @@ import type { LuckyProvider, StandardModels } from "@lucky/shared"
 
 // model runtime configuration
 export const MODEL_CONFIG = {
-  provider: "openai" as const satisfies LuckyProvider,
+  provider: "openrouter" as const satisfies LuckyProvider,
   inactive: ["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"] as string[],
-  defaults: DEFAULT_MODELS.openai,
+  defaults: DEFAULT_MODELS.openrouter,
 } as const
 
 export const getDefaultModels = (): StandardModels => {

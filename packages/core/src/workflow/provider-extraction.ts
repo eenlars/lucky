@@ -1,5 +1,5 @@
-import { findModelByName, PROVIDERS } from "@lucky/models"
-import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { PROVIDERS, findModel } from "@lucky/models"
 
 export type RequiredProviders = {
   providers: Set<string> // e.g., ["openai", "openrouter"]
@@ -22,7 +22,7 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
     if (!modelName) continue
 
     // Look up model by its API name (the `model` field in catalog)
-    const catalogEntry = findModelByName(modelName)
+    const catalogEntry = findModel(modelName)
 
     if (!catalogEntry) {
       console.warn(`[extractProviders] Model not found in catalog: ${modelName} (node: ${nodeConfig.nodeId})`)
@@ -50,7 +50,7 @@ export function extractRequiredProviders(config: WorkflowConfig): RequiredProvid
 export function getProviderKeyName(provider: string): string {
   const providerEntry = PROVIDERS.find(p => p.provider === provider.toLowerCase())
   if (providerEntry) {
-    return providerEntry.apiKeyName
+    return providerEntry.secretKeyName
   }
   // Fallback for unknown providers (e.g., Anthropic)
   return `${provider.toUpperCase()}_API_KEY`
@@ -62,7 +62,7 @@ export function getProviderKeyName(provider: string): string {
  */
 export function getProviderDisplayName(keyName: string): string {
   // Look up in PROVIDERS first
-  const providerEntry = PROVIDERS.find(p => p.apiKeyName === keyName)
+  const providerEntry = PROVIDERS.find(p => p.secretKeyName === keyName)
   if (providerEntry) {
     return providerEntry.displayName
   }

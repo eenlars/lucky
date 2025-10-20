@@ -4,12 +4,10 @@ import { z } from "zod"
 // IMPORT EXISTING CONTRACTS (REUSE, DON'T DUPLICATE)
 // ============================================================================
 
-import { JsonRpcInvokeRequest, JsonRpcInvokeResponse } from "@lucky/shared/contracts/invoke"
-
-import { EvaluationInputSchema } from "@lucky/shared/contracts/ingestion"
-
 import { ErrorReportSchema } from "@lucky/shared/contracts/error"
 
+import { InvokeReqBody } from "@/app/api/workflow/invoke/params.types"
+import { WorkflowConfigSchema } from "@lucky/shared"
 import { enrichedModelInfoSchema } from "@lucky/shared/contracts/llm-contracts/models"
 
 // ============================================================================
@@ -56,37 +54,39 @@ export const ApiResponse = <T extends z.ZodTypeAny>(dataSchema: T) =>
 // ============================================================================
 
 export const apiSchemas = {
-  // ============================================================================
-  // CORE WORKFLOW APIs
-  // ============================================================================
-
-  /**
-   * POST /api/v1/invoke
-   * Full JSON-RPC 2.0 workflow invocation (MCP-compliant)
-   */
-  "v1/invoke": {
-    req: JsonRpcInvokeRequest,
-    res: JsonRpcInvokeResponse,
-  },
-
-  /**
-   * POST /api/workflow/invoke
-   * Internal workflow invocation (used by other APIs)
-   */
-  "workflow/invoke": {
+  "v1/openrouter": {
     req: z.object({
-      workflowVersionId: z.string().min(1),
-      evalInput: EvaluationInputSchema,
+      prompt: z.string(),
+      dslConfig: WorkflowConfigSchema.optional(),
+      workflowId: z.string().optional(),
+      workflowVersionId: z.string().optional(),
     }),
     res: ApiResponse(
       z.object({
-        output: z.unknown(),
-        invocationId: z.string().optional(),
-        traceId: z.string().optional(),
+        output: z.unknown(), // Full workflow result object
+        invocationId: z.string(),
+        traceId: z.string(),
+        startedAt: z.string().optional(),
+        finishedAt: z.string().optional(),
       }),
     ),
   },
 
+  // ============================================================================
+  // CORE WORKFLOW APIs
+  // ============================================================================
+  "workflow/invoke": {
+    req: InvokeReqBody,
+    res: ApiResponse(
+      z.object({
+        output: z.unknown(),
+        invocationId: z.string(),
+        traceId: z.string().optional(),
+        startedAt: z.string().datetime(),
+        finishedAt: z.string().datetime(),
+      }),
+    ),
+  },
   /**
    * GET /api/workflow/[wf_id]
    * Get workflow by ID with versions
@@ -121,7 +121,12 @@ export const apiSchemas = {
       workflow: z.unknown(), // WorkflowConfig
       mode: z.string().optional(),
     }),
-    res: z.unknown(), // JSON-RPC response or validation result
+    res: ApiResponse(
+      z.object({
+        isValid: z.boolean(),
+        errors: z.array(z.string()),
+      }),
+    ),
   },
 
   /**
@@ -320,8 +325,8 @@ export const apiSchemas = {
    */
   "user/env-keys/set": {
     req: z.object({
-      key: z.string().regex(/^[A-Z_][A-Z0-9_]*$/),
-      value: z.string(),
+      key: z.string().min(1),
+      value: z.string().min(8, "API key must be at least 8 characters"),
     }),
     res: ApiResponse(
       z.object({
@@ -336,12 +341,14 @@ export const apiSchemas = {
    */
   "user/env-keys/[name]": {
     req: z.never().optional(),
-    res: z.object({
-      id: z.string(),
-      name: z.string(),
-      value: z.string(),
-      createdAt: z.string(),
-    }),
+    res: ApiResponse(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        value: z.string(),
+        createdAt: z.string(),
+      }),
+    ),
   },
 
   /**
@@ -436,48 +443,37 @@ export const apiSchemas = {
   // ============================================================================
 
   /**
-   * GET /api/health/credentials
-   * Check if required credentials are set
+   * GET /api/status/health/credentials
+   * Get overall system health status
    */
-  "health/credentials": {
+  "status/health/credentials": {
     req: z.never().optional(),
-    res: z.object({
-      hasOpenAI: z.boolean(),
-      hasAnthropic: z.boolean(),
-      hasOpenRouter: z.boolean(),
-      timestamp: z.string().datetime(),
-    }),
+    res: z.unknown(), // SystemHealth from @lucky/core
   },
 
   /**
-   * GET /api/health/credentials/all
-   * Check all credentials status
+   * GET /api/status/health/credentials/all
+   * Get detailed status of all credentials
    */
-  "health/credentials/all": {
+  "status/health/credentials/all": {
     req: z.never().optional(),
-    res: z.object({
-      credentials: z.record(z.string(), z.boolean()),
-      timestamp: z.string().datetime(),
-    }),
+    res: z.unknown(), // CredentialStatus[] from @lucky/core
   },
 
   /**
-   * GET /api/health/features
-   * Check feature flags
+   * GET /api/status/health/features
+   * Get detailed status of all features
    */
-  "health/features": {
+  "status/health/features": {
     req: z.never().optional(),
-    res: z.object({
-      features: z.record(z.string(), z.boolean()),
-      timestamp: z.string().datetime(),
-    }),
+    res: z.unknown(), // FeatureStatus[] from @lucky/core
   },
 
   /**
-   * GET /api/health/openrouter
+   * GET /api/status/health/providers/openrouter
    * Check OpenRouter connection status
    */
-  "health/openrouter": {
+  "status/health/providers/openrouter": {
     req: z.never().optional(),
     res: z.object({
       connected: z.boolean(),
@@ -650,15 +646,17 @@ export const apiSchemas = {
       namespace: z.string().optional(),
       value: z.string(),
     }),
-    res: z.object({
-      id: z.string(),
-      name: z.string(),
-      namespace: z.string().optional(),
-      version: z.number(),
-      createdAt: z.string(),
-      lastUsedAt: z.string().optional(),
-      value: z.string().optional(),
-    }),
+    res: ApiResponse(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        namespace: z.string().optional(),
+        version: z.number(),
+        createdAt: z.string(),
+        lastUsedAt: z.string().optional(),
+        value: z.string().optional(),
+      }),
+    ),
   },
 
   /**
@@ -666,15 +664,17 @@ export const apiSchemas = {
    */
   "lockbox/secrets:get": {
     req: z.never().optional(),
-    res: z.object({
-      id: z.string(),
-      name: z.string(),
-      namespace: z.string().optional(),
-      version: z.number(),
-      createdAt: z.string().optional(),
-      lastUsedAt: z.string().optional(),
-      value: z.string().optional(),
-    }),
+    res: ApiResponse(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        namespace: z.string().optional(),
+        version: z.number(),
+        createdAt: z.string().optional(),
+        lastUsedAt: z.string().optional(),
+        value: z.string().optional(),
+      }),
+    ),
   },
 
   // ============================================================================

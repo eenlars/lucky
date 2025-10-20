@@ -1,4 +1,4 @@
-import { isModelInPreferences, pickFallbackModel } from "@/lib/models/model-fallback"
+import { isModelInPreferences, pickFallbackModel } from "@/features/provider-llm-setup/models/model-fallback"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import type { UserModelPreferences } from "@lucky/shared"
 import { type AppEdge, createEdge } from "../components/edges/edges"
@@ -32,13 +32,11 @@ export const initialSetupConfig = (
   for (const node of workflowConfig.nodes || []) {
     // Validate and resolve model against user preferences
     let resolvedModelName = node.modelName
-    let wasFallback = false
 
     if (userPreferences && !isModelInPreferences(node.modelName, userPreferences)) {
       const fallback = pickFallbackModel(node.modelName, userPreferences)
       if (fallback) {
         resolvedModelName = fallback
-        wasFallback = true
         console.warn(
           `[workflow-data] Node "${node.nodeId}": Model "${node.modelName}" not in user preferences. Using fallback: "${fallback}"`,
         )

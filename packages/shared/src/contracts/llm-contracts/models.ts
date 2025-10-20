@@ -19,34 +19,46 @@ const isDevelopment = process.env.NODE_ENV === "development"
 
 export const PROVIDER_AVAILABILITY = {
   openai: true,
-  openrouter: isDevelopment, // Enabled in development for testing
+  openrouter: true,
   groq: isDevelopment, // Enabled in development for testing
 } as const
 
-export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openai")
+export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openrouter")
 
 /**
  * Provider entry schema - defines provider metadata for models package
+ *
+ * @example
+ * {
+ *   provider: "openai",
+ *   displayName: "OpenAI",
+ *   secretKeyName: "OPENAI_API_KEY",  // Environment variable name
+ *   apiKeyValuePrefix: "sk-"          // Prefix in actual key value
+ * }
  */
 export const providerEntrySchema = z.object({
+  /** Provider identifier (e.g., "openai", "groq") */
   provider: providerNameSchema,
+  /** Display name for UI (e.g., "OpenAI", "Groq") */
   displayName: z.string(),
-  apiKeyName: z.string(),
-  apiKeyPrefix: z.string(),
+  /** Environment variable name for API key (e.g., "OPENAI_API_KEY") */
+  secretKeyName: z.string(),
+  /** Prefix that appears in actual API key values (e.g., "sk-" for OpenAI, "gsk_" for Groq) */
+  apiKeyValuePrefix: z.string(),
 })
 
 export type ProviderEntry = z.infer<typeof providerEntrySchema>
 
 export const ModelDefaultsSchema = z.object({
-  summary: z.string().default("openai#gpt-5-nano"),
-  nano: z.string().default("openai#gpt-5-nano"),
-  low: z.string().default("openai#gpt-5-mini"),
-  balanced: z.string().default("openai#gpt-5-mini"),
-  high: z.string().default("openai#gpt-5"),
-  default: z.string().default("openai#gpt-5-nano"),
-  fitness: z.string().default("openai#gpt-5-nano"),
-  reasoning: z.string().default("openai#gpt-5"),
-  fallback: z.string().default("openai#gpt-5-nano"),
+  summary: z.string().default("google/gemini-2.5-flash"),
+  nano: z.string().default("google/gemini-2.5-flash"),
+  low: z.string().default("google/gemini-2.5-flash"),
+  balanced: z.string().default("google/gemini-2.5-flash"),
+  high: z.string().default("google/gemini-2.5-flash"),
+  default: z.string().default("google/gemini-2.5-flash"),
+  fitness: z.string().default("google/gemini-2.5-flash"),
+  reasoning: z.string().default("google/gemini-2.5-flash"),
+  fallback: z.string().default("google/gemini-2.5-flash"),
 })
 
 export const ModelsConfigSchema = z.object({

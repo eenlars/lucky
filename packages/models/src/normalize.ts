@@ -7,7 +7,7 @@
  */
 
 import { tierNameSchema } from "@lucky/shared"
-import { findModelByName } from "./llm-catalog/catalog-queries"
+import { findModel } from "./llm-catalog/catalog-queries"
 
 /**
  * Legacy tier name migrations
@@ -47,7 +47,7 @@ export function normalizeModelName(modelName: string): string {
   }
 
   // Lookup and normalize model name to catalog ID
-  const catalogEntry = findModelByName(modelName)
+  const catalogEntry = findModel(modelName)
   if (!catalogEntry) {
     throw new Error(`Model not found in catalog: ${modelName}`)
   }

@@ -5,11 +5,11 @@ import { improveNodesIterativelyImpl } from "@core/improvement/behavioral/judge/
 import { type PrepareProblemMethod, prepareProblem } from "@core/improvement/behavioral/prepare/workflow/prepareMain"
 import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
-import type { WorkflowFile } from "@core/tools/context/contextStore.types"
 import { WorkflowFitnessError } from "@core/utils/errors/workflow-errors"
 import { lgg } from "@core/utils/logging/Logger"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import { type ContextStore, createContextStore } from "@core/utils/persistence/memory/ContextStore"
+import type { WorkflowFile } from "@lucky/shared"
 
 import { verifyWorkflowConfig, verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 // zodToJson no longer needed - outputSchema is JSON Schema, not Zod
