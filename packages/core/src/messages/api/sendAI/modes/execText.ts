@@ -196,7 +196,7 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
         errorCategory = "auth"
         severity = "error"
         lgg.error(`🔑 AUTH ERROR: ${provider} - ${message}`)
-        lgg.error("   Model: ${gatewayModelId}")
+        lgg.error(`   Model: ${gatewayModelId}`)
         lgg.error("   Check that your API key is set correctly and has the right permissions.")
       } else if (message.includes("Overall timeout") || message.includes("Stall timeout")) {
         errorCategory = "timeout"

@@ -26,7 +26,7 @@ export function TestPanel({ node }: TestPanelProps) {
       api: "/api/agent/chat",
       body: {
         nodeId: node.id,
-        gatewayModelId: node.data.gatewayModelId ?? "anthropic/claude-3.5-sonnet",
+        gatewayModelId: node.data.gatewayModelId,
         systemPrompt: node.data.systemPrompt,
       },
     }),

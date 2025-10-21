@@ -9,7 +9,7 @@ type WorkflowRunnerContextValue = ReturnType<typeof useWorkflowRunner>
 
 const WorkflowRunnerContext = createContext<WorkflowRunnerContextValue | null>(null)
 
-export function WorkflowRunnerGateway({ children }: { children: ReactNode }) {
+export function WorkflowRunnerProvider({ children }: { children: ReactNode }) {
   const [promptDialogOpen, setPromptDialogOpen] = useState(false)
 
   const value = {

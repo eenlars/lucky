@@ -24,7 +24,7 @@ Every model is defined in `packages/models/src/pricing/catalog.ts` with this str
 ```typescript
 export interface ModelEntry {
   id: string              // Full ID: "anthropic/claude-sonnet-4"
-   string        // Which API to use: "openrouter"
+  gateway: string        // Which API to use: "openrouter"
   model: string           // Model identifier for the API
   input: number           // Cost per 1M input tokens
   output: number          // Cost per 1M output tokens
@@ -37,7 +37,7 @@ Example from the catalog:
 ```typescript
 {
   id: "anthropic/claude-sonnet-4",
-   "openrouter",  // ← The ACTUAL provider API to use!
+  gateway: "openrouter",  // ← The ACTUAL provider API to use!
   model: "anthropic/claude-sonnet-4",
   input: 3,
   output: 15,

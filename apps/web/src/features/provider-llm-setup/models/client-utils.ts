@@ -53,7 +53,7 @@ export async function fetchActiveGatewayModelIds(customProvider?: LuckyGateway):
   const response = await fetch("/api/models", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getActivegatewayModelIds", gateway: provider }),
+    body: JSON.stringify({ action: "getActiveGatewayModelIds", gateway: provider }),
   })
 
   const result = await response.json()

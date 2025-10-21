@@ -80,32 +80,32 @@ export type Database = {
         }
         Relationships: []
       }
-      provider_settings: {
+      gateway_settings: {
         Row: {
           clerk_id: string
           created_at: string
           enabled_models: Json
+          gateway: string
+          gateway_setting_id: string
           is_enabled: boolean
-          provider: string
-          provider_setting_id: string
           updated_at: string
         }
         Insert: {
           clerk_id: string
           created_at?: string
           enabled_models?: Json
+          gateway: string
+          gateway_setting_id?: string
           is_enabled?: boolean
-          provider: string
-          provider_setting_id?: string
           updated_at?: string
         }
         Update: {
           clerk_id?: string
           created_at?: string
           enabled_models?: Json
+          gateway?: string
+          gateway_setting_id?: string
           is_enabled?: boolean
-          provider?: string
-          provider_setting_id?: string
           updated_at?: string
         }
         Relationships: []

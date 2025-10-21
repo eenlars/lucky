@@ -6,9 +6,15 @@ import { requireAuthWithApiKey } from "@/lib/api-auth"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
-import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
+import { getGatewayKeyName } from "@lucky/models/gateway-utils"
 import type { LuckyGateway } from "@lucky/shared"
-import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText } from "ai"
+import {
+  type LanguageModel,
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  streamText,
+} from "ai"
 import { type NextRequest, NextResponse } from "next/server"
 
 // Allow streaming responses up to 60 seconds
@@ -74,42 +80,42 @@ export async function POST(request: NextRequest) {
 
     // Fetch user's enabled models to use as allowlist and gather required provider keys
     const supabase = await createRLSClient()
-    const { data: providerSettings } = await supabase
+    const { data: gatewaySettings } = await supabase
       .schema("app")
-      .from("provider_settings")
-      .select("provider, enabled_models, is_enabled")
+      .from("gateway_settings")
+      .select("gateway, enabled_models, is_enabled")
       .eq("clerk_id", clerkId)
       .eq("is_enabled", true)
 
     const allowlist: string[] = []
-    const providerIds = new Set<LuckyGateway>()
-    if (providerSettings) {
-      for (const row of providerSettings) {
+    const gatewayIds = new Set<LuckyGateway>()
+    if (gatewaySettings) {
+      for (const row of gatewaySettings) {
         const enabledModels = Array.isArray(row.enabled_models)
           ? row.enabled_models.filter((m): m is string => typeof m === "string")
           : []
         allowlist.push(...enabledModels)
-        if (row.provider && typeof row.provider === "string" && row.provider.length > 0) {
-          providerIds.add(row.provider as LuckyGateway)
+        if (row.gateway && typeof row.gateway === "string" && row.gateway.length > 0) {
+          gatewayIds.add(row.gateway as LuckyGateway)
         }
       }
     }
 
-    const requiredProviderKeys = Array.from(providerIds).map(provider => getProviderKeyName(provider))
+    const requiredGatewayKeys = Array.from(gatewayIds).map(gateway => getGatewayKeyName(gateway))
 
-    const providerApiKeys =
-      requiredProviderKeys.length > 0 ? await secrets.getAll(requiredProviderKeys, "environment-variables") : undefined
+    const gatewayApiKeys =
+      requiredGatewayKeys.length > 0 ? await secrets.getAll(requiredGatewayKeys, "environment-variables") : undefined
 
     // Create registry with user's API keys as fallback
     // Keep env fallback for new users with no provider settings
-    // Forward all provider BYOK keys (including Anthropic and others)
+    // Forward all gateway BYOK keys (including Anthropic and others)
     const fallbackOverrides: Record<string, string> = {}
 
     // Add all keys from providerApiKeys if available
-    if (providerApiKeys) {
-      for (const [key, value] of Object.entries(providerApiKeys)) {
+    if (gatewayApiKeys) {
+      for (const [key, value] of Object.entries(gatewayApiKeys)) {
         if (value && typeof value === "string") {
-          // Convert API key names back to provider names (e.g., OPENAI_API_KEY -> openai)
+          // Convert API key names back to gateway names (e.g., OPENAI_API_KEY -> openai)
           const providerName = key.replace(/_API_KEY$/, "").toLowerCase()
           fallbackOverrides[providerName] = value
         }
@@ -126,20 +132,13 @@ export async function POST(request: NextRequest) {
     })
 
     // Execute the chat invocation within the execution context
-    return withExecutionContext({ principal, secrets, apiKeys: providerApiKeys, userModels }, async () => {
+    return withExecutionContext({ principal, secrets, apiKeys: gatewayApiKeys, userModels }, async () => {
       // Create user-specific models instance with allowed models list
-      let resolvedModelId: string
+      let resolvedModelId: LanguageModel
       try {
-        const userModels = llmRegistry.forUser({
-          mode: "shared", // Using fallback keys from registry
-          userId: clerkId,
-          models: allowlist.length > 0 ? allowlist : ["gpt-4o-mini"], // Fallback to a default model
-          fallbackOverrides,
-        })
-
         // Get the model directly by name - just validate it exists
-        userModels.model(gatewayModelId)
-        resolvedModelId = gatewayModelId
+        const model = userModels.model(gatewayModelId)
+        resolvedModelId = model
       } catch (error) {
         console.error("[Agent Chat] Failed to load gatewayModelId:", error)
         const userError = getUserFriendlyError(error)

@@ -8,7 +8,7 @@ import { ProviderConfigSkeleton } from "@/features/provider-llm-setup/providers/
 import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
-import { post } from "@/lib/api/api-client"
+import { postty } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import type { EnrichedModelInfo, LuckyGateway } from "@lucky/shared"
@@ -197,7 +197,7 @@ export function ProviderConfigPage({ gateway }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      await post("user/env-keys/set", {
+      await postty("user/env-keys/set", {
         key: config.secretKeyName,
         value: apiKey,
       })
@@ -221,8 +221,16 @@ export function ProviderConfigPage({ gateway }: ProviderConfigPageProps) {
    * Toggle a single model on/off. Auto-saves via Zustand store with optimistic updates.
    * @param modelId Full model ID (e.g., "openai/gpt-4o")
    */
-  const handleToggleModel = (modelId: string) => {
-    toggleModelInStore(gateway, modelId)
+  const handleToggleModel = async (modelId: string) => {
+    const willEnable = !enabledModels.has(modelId)
+
+    await toggleModelInStore(gateway, modelId)
+
+    const { error } = useModelPreferencesStore.getState()
+    if (!error) {
+      const modelName = availableModels.find(model => model.gatewayModelId === modelId)?.gatewayModelId || modelId
+      toast.success(`${modelName} ${willEnable ? "enabled" : "disabled"} and saved`)
+    }
   }
 
   /**
@@ -397,7 +405,9 @@ export function ProviderConfigPage({ gateway }: ProviderConfigPageProps) {
               </div>
 
               <div className="p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground">Your key is stored securely</p>
+                <p className="text-xs text-muted-foreground">
+                  Your key is stored in a vault, only available by your api key.
+                </p>
               </div>
             </div>
           </CardContent>
@@ -419,36 +429,6 @@ export function ProviderConfigPage({ gateway }: ProviderConfigPageProps) {
             />
           </CardContent>
         </Card>
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div>{hasUnsavedKeyChanges && <p className="text-sm text-muted-foreground">Unsaved changes</p>}</div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                loadConfiguration()
-                setHasUnsavedKeyChanges(false)
-                setValidationError(null)
-                setTestStatus("idle")
-              }}
-              disabled={isSaving || !hasUnsavedKeyChanges}
-              className="w-full sm:w-auto"
-            >
-              Reset
-            </Button>
-            <Button onClick={handleSave} disabled={isSaving || !hasUnsavedKeyChanges} className="w-full sm:w-auto">
-              {isSaving ? (
-                <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   )

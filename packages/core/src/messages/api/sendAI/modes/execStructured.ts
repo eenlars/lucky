@@ -167,7 +167,7 @@ export async function execStructured<S extends ZodTypeAny>(
         errorCategory = "validation"
         severity = "warn"
         isUserError = true
-        console.warn("[execStructured] Invalid gatewayModelId:", model, "-", message)
+        console.warn("[execStructured] Invalid gatewayModelId:", requestedModel, "-", message)
       } else if (lowerMsg.includes("quota") || lowerMsg.includes("insufficient credits")) {
         errorCategory = "quota"
         console.error("[execStructured] Quota error:", message)

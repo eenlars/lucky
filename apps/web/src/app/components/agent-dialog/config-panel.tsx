@@ -1,6 +1,10 @@
 "use client"
 
-import { getEnabledGatewaySlugs } from "@/features/provider-llm-setup/provider-utils"
+import {
+  type ProviderConfig,
+  getEnabledGatewaySlugs,
+  getProviderConfigs,
+} from "@/features/provider-llm-setup/provider-utils"
 import { SyncStatusBadge } from "@/features/provider-llm-setup/providers/sync-status-badge"
 import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
@@ -16,7 +20,7 @@ import {
   type MCPToolName,
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react"
 
 interface ConfigPanelProps {
   node: AppNode
@@ -72,14 +76,29 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
   )
 }
 
+const DEFAULT_GATEWAY: LuckyGateway = "openrouter-api"
+const DEFAULT_MODEL_ID = "google/gemini-2.5-flash-lite"
+
+const isLuckyGateway = (value: string, configs: Record<string, ProviderConfig>): value is LuckyGateway =>
+  value in configs || value === DEFAULT_GATEWAY
+
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
   const toolsEnabled = useFeatureFlag("MCP_TOOLS")
 
-  const gateways = useMemo(() => getEnabledGatewaySlugs(), [])
+  const providerConfigs = useMemo(() => getProviderConfigs(), [])
+  const gateways = useMemo<LuckyGateway[]>(() => {
+    const enabled = getEnabledGatewaySlugs(providerConfigs).filter((gateway): gateway is LuckyGateway =>
+      isLuckyGateway(gateway, providerConfigs),
+    )
+    if (enabled.includes(DEFAULT_GATEWAY)) {
+      return enabled
+    }
+    return [DEFAULT_GATEWAY, ...enabled]
+  }, [providerConfigs])
 
   // Zustand store for model preferences
-  const { isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } = useModelPreferencesStore()
+  const { isLoading, getEnabledModels, isStale, lastSynced, forceRefresh } = useModelPreferencesStore()
 
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
@@ -87,21 +106,87 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const codeTools = node.data.codeTools || []
 
   // Provider and model state
-  const [selectedGateway, setSelectedGateway] = useState<LuckyGateway>()
+  const [selectedGateway, setSelectedGateway] = useState<LuckyGateway>(() => {
+    const existingGateway = node.data.gateway
+    if (existingGateway && isLuckyGateway(existingGateway, providerConfigs)) {
+      return existingGateway
+    }
+    return DEFAULT_GATEWAY
+  })
 
-  // Track the current provider to prevent race conditions when switching providers
-  const currentProviderRef = useRef(selectedGateway)
-
-  // Update ref when provider changes
   useEffect(() => {
-    currentProviderRef.current = selectedGateway
-  }, [selectedGateway])
+    const currentModelId = node.data.gatewayModelId ?? DEFAULT_MODEL_ID
+    const explicitGateway = node.data.gateway
+
+    let resolvedGateway: LuckyGateway | undefined
+
+    if (explicitGateway && isLuckyGateway(explicitGateway, providerConfigs)) {
+      resolvedGateway = explicitGateway
+    }
+
+    if (!resolvedGateway) {
+      const preferenceMatch = gateways.find(gateway => getEnabledModels(gateway).includes(currentModelId))
+      if (preferenceMatch) {
+        resolvedGateway = preferenceMatch
+      }
+    }
+
+    if (!resolvedGateway) {
+      const catalogMatch = gateways.find(gateway =>
+        getModelsByGateway(gateway).some(model => model.gatewayModelId === currentModelId),
+      )
+      if (catalogMatch) {
+        resolvedGateway = catalogMatch
+      }
+    }
+
+    const finalGateway = resolvedGateway ?? DEFAULT_GATEWAY
+    const updates: Partial<typeof node.data> = {}
+
+    if (!node.data.gatewayModelId) {
+      updates.gatewayModelId = DEFAULT_MODEL_ID
+    }
+
+    if (!explicitGateway || explicitGateway !== finalGateway || updates.gatewayModelId) {
+      updates.gateway = finalGateway
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updateNode(node.id, updates)
+    }
+
+    if (selectedGateway !== finalGateway) {
+      setSelectedGateway(finalGateway)
+    }
+  }, [
+    gateways,
+    getEnabledModels,
+    node.id,
+    node.data.gateway,
+    node.data.gatewayModelId,
+    providerConfigs,
+    selectedGateway,
+    updateNode,
+  ])
 
   // Load preferences on mount - always refresh to get latest from server
   // Use forceRefresh to bypass cache and ensure fresh data
   useEffect(() => {
     forceRefresh()
   }, [forceRefresh])
+
+  const handleGatewayChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const nextGateway = event.target.value
+    if (!isLuckyGateway(nextGateway, providerConfigs)) {
+      return
+    }
+
+    setSelectedGateway(nextGateway)
+
+    if (node.data.gateway !== nextGateway) {
+      updateNode(node.id, { gateway: nextGateway })
+    }
+  }
 
   // Compute available models based on user preferences and selected provider
   const availableModels = useMemo(() => {
@@ -153,8 +238,33 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     }
 
     // Otherwise show all catalog models
-    return allModels
-  }, [selectedGateway, getEnabledModels])
+    const modelsToShow = [...allModels]
+
+    if (node.data.gatewayModelId && !modelsToShow.some(m => m.gatewayModelId === node.data.gatewayModelId)) {
+      modelsToShow.unshift({
+        gatewayModelId: node.data.gatewayModelId,
+        gateway: selectedGateway,
+        runtimeEnabled: true,
+        contextLength: 0,
+        input: 0,
+        output: 0,
+        cachedInput: null,
+        intelligence: 5,
+        speed: "balanced",
+        supportsTools: false,
+        supportsVision: false,
+        supportsReasoning: false,
+        supportsAudio: false,
+        supportsVideo: false,
+        supportsJsonMode: false,
+        supportsStreaming: false,
+        pricingTier: "medium",
+        releaseDate: undefined,
+      } satisfies ModelEntry)
+    }
+
+    return modelsToShow
+  }, [selectedGateway, getEnabledModels, node.data.gatewayModelId])
 
   // Sync state when node changes
   useEffect(() => {
@@ -420,7 +530,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             <select
               id="model-provider"
               value={selectedGateway}
-              onChange={e => setSelectedGateway(e.target.value as LuckyGateway)}
+              onChange={handleGatewayChange}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               {gateways.map(gateway => (
@@ -439,11 +549,7 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             <select
               id="model-name"
               value={node.data.gatewayModelId || ""}
-              onChange={e =>
-                updateNode(node.id, {
-                  gatewayModelId: e.target.value as string,
-                })
-              }
+              onChange={e => updateNode(node.id, { gatewayModelId: e.target.value })}
               disabled={isLoading}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >

@@ -28,10 +28,10 @@ export async function GET(_req: NextRequest) {
   try {
     const { data, error } = await supabase
       .schema("app")
-      .from("provider_settings")
-      .select("provider, enabled_models, is_enabled, updated_at")
+      .from("gateway_settings")
+      .select("gateway, enabled_models, is_enabled, updated_at")
       .eq("clerk_id", userId)
-      .order("provider", { ascending: true })
+      .order("gateway", { ascending: true })
 
     if (error) {
       console.error("[GET /api/user/model-preferences] Supabase error:", error)
@@ -46,12 +46,12 @@ export async function GET(_req: NextRequest) {
 
     // Filter to valid providers
     const validData = data.filter(
-      (row): row is (typeof data)[number] & { provider: LuckyGateway } =>
-        row.provider !== null && validGateways.has(row.provider),
+      (row): row is (typeof data)[number] & { gateway: LuckyGateway } =>
+        row.gateway !== null && validGateways.has(row.gateway),
     )
 
     // Check API key status for all gateways in parallel
-    const gatewayNames = validData.map(row => row.provider)
+    const gatewayNames = validData.map(row => row.gateway)
     const keyStatusMap = await checkMultipleProviderKeys(userId, gatewayNames)
 
     // Build gateway settings - use model IDs as-is from database
@@ -62,11 +62,11 @@ export async function GET(_req: NextRequest) {
       const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
 
       return {
-        gateway: row.provider as any,
+        gateway: row.gateway as any,
         enabledModels,
         isEnabled: row.is_enabled,
         metadata: {
-          apiKeyConfigured: keyStatusMap.get(row.provider) ?? false,
+          apiKeyConfigured: keyStatusMap.get(row.gateway) ?? false,
           lastUpdated,
         },
       }
@@ -137,32 +137,32 @@ export async function PUT(req: NextRequest) {
       // Check if settings exist
       const { data: existing } = await supabase
         .schema("app")
-        .from("provider_settings")
-        .select("provider_setting_id")
+        .from("gateway_settings")
+        .select("gateway_setting_id")
         .eq("clerk_id", userId)
-        .eq("provider", gatewaySettings.gateway)
+        .eq("gateway", gatewaySettings.gateway)
         .maybeSingle()
 
       if (existing) {
         // Update existing
         return supabase
           .schema("app")
-          .from("provider_settings")
+          .from("gateway_settings")
           .update({
             enabled_models: gatewaySettings.enabledModels as ModelId[],
             is_enabled: gatewaySettings.isEnabled,
             updated_at: new Date().toISOString(),
           })
-          .eq("provider_setting_id", existing.provider_setting_id)
+          .eq("gateway_setting_id", existing.gateway_setting_id)
       }
       // Insert new
       return supabase
         .schema("app")
-        .from("provider_settings")
+        .from("gateway_settings")
         .insert([
           {
             clerk_id: userId,
-            provider: gatewaySettings.gateway,
+            gateway: gatewaySettings.gateway,
             enabled_models: gatewaySettings.enabledModels as ModelId[],
             is_enabled: gatewaySettings.isEnabled,
           },
@@ -175,7 +175,7 @@ export async function PUT(req: NextRequest) {
     const errors = results.filter(r => r.error)
     if (errors.length > 0) {
       console.error("[PUT /api/user/model-preferences] Update errors:", errors)
-      return fail("user/model-preferences:put", "Failed to update some provider settings", {
+      return fail("user/model-preferences:put", "Failed to update some gateway settings", {
         code: "UPDATE_ERROR",
         status: 500,
       })

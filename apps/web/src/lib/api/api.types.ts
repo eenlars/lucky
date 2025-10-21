@@ -19,7 +19,10 @@ export type Res<E extends Endpoint> = ApiSchemas[E] extends { res: infer R }
  * Override if any endpoint lives elsewhere.
  * For dynamic routes, use the pathParams to replace placeholders
  */
-export const endpointPath = <E extends Endpoint>(endpoint: E) => `/api/${String(endpoint)}`
+export const endpointPath = <E extends Endpoint>(endpoint: E) => {
+  const endpointStr = String(endpoint)
+  return endpointStr.startsWith("/") ? `/api${endpointStr}` : `/api/${endpointStr}`
+}
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE"
 

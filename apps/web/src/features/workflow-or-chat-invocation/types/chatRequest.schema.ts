@@ -26,6 +26,10 @@ export const ChatRequestSchema = z
     nodeId: z.string().min(1, "nodeId cannot be empty").max(200),
     gatewayModelId: z.string().max(200).optional(),
     systemPrompt: z.string().max(10000, "System prompt is too long").optional(),
+
+    //these two are sent by the api i think
+    trigger: z.string().optional(),
+    id: z.string().optional(),
   })
   .strict()
 

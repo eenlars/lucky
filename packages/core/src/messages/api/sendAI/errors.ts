@@ -95,11 +95,21 @@ export function normalizeError(error: unknown): NormalizedError {
 
     // Convert gateway to display name for friendly messages
     const gatewayDisplayName = gateway
-      ? gateway
-          .replace("-api", "")
-          .split("-")
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join("")
+      ? (() => {
+          const provider = gateway.replace("-api", "")
+          const specialCases: Record<string, string> = {
+            openai: "OpenAI",
+            openrouter: "OpenRouter",
+            anthropic: "Anthropic",
+            groq: "Groq",
+            google: "Google",
+          }
+          if (specialCases[provider]) return specialCases[provider]
+          return provider
+            .split("-")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join("")
+        })()
       : undefined
 
     let friendly: string | undefined

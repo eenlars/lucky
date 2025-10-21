@@ -43,7 +43,7 @@ const verbose = isLoggingEnabled("InvocationPipeline")
  *
  * ## Architecture Overview
  *
- * The pipeline implements a three-phase execution gatewayModelId:
+ * The pipeline implements a three-phase execution model:
  * 1. **Prepare**: Tool initialization, message preparation, strategy selection
  * 2. **Execute**: Single-call or multi-step loop execution with AI
  * 3. **Process**: Response handling, memory extraction, result formatting

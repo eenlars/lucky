@@ -30,11 +30,11 @@ export const ZExecutionSchema = z.object({
   /**
    * API keys for this workflow invocation (in-memory cache)
    *
-   * Maps gateway names (lowercase) to API key values.
-   * Example: { "openai-api": "sk-...", "groq-api": "gsk-...", "openrouter-api": "sk-or-..." }
+   * Maps environment variable names (uppercase) to API key values.
+   * Example: { "OPENAI_API_KEY": "sk-...", "GROQ_API_KEY": "gsk-...", "OPENROUTER_API_KEY": "sk-or-..." }
    *
    * IMPORTANT:
-   * - Keys are gateway names (openai-api, groq-api, openrouter-api), NOT env var names (OPENAI_API_KEY)
+   * - Keys are environment variable names (OPENAI_API_KEY, GROQ_API_KEY), NOT gateway names (openai-api)
    * - This is an OPTIONAL in-memory cache; `secrets` resolver is the primary source
    * - Used for testing and when keys are already loaded in memory
    *

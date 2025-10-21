@@ -45,14 +45,14 @@ describe("NoEnabledModelsError", () => {
   it("should handle different providers", () => {
     const error = new NoEnabledModelsError("groq")
 
-    expect(error.message).toBe("No enabled models found for  groq")
+    expect(error.message).toBe("No enabled models found for groq")
     expect(error.gateway).toBe("groq")
   })
 
   it("should handle 'all' provider", () => {
     const error = new NoEnabledModelsError("all")
 
-    expect(error.message).toBe("No enabled models found for  all")
+    expect(error.message).toBe("No enabled models found for all")
     expect(error.gateway).toBe("all")
   })
 })

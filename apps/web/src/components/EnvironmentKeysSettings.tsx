@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
-import { post } from "@/lib/api/api-client"
+import { postty } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
 import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
@@ -171,7 +171,7 @@ export default function EnvironmentKeysSettings() {
       // Save each key to the backend
       await Promise.all(
         newKeys.map(async key => {
-          await post("user/env-keys/set", {
+          await postty("user/env-keys/set", {
             key: key.name,
             value: key.value,
           })

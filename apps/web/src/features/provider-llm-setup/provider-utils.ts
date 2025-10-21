@@ -72,7 +72,7 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
     if (metadata && providerEntry) {
       configs[info.name] = {
         ...metadata,
-        slug: info.name,
+        slug: info.name.replace("-api", ""),
         secretKeyName: providerEntry.secretKeyName,
         apiKeyValuePrefix: providerEntry.apiKeyValuePrefix,
         defaultModelsCount: info.activeModels,
@@ -81,7 +81,7 @@ export function getProviderConfigs(): Record<string, ProviderConfig> {
       // Fallback for providers not in metadata
       configs[info.name] = {
         name: info.name.charAt(0).toUpperCase() + info.name.slice(1),
-        slug: info.name,
+        slug: info.name.replace("-api", ""),
         description: `${info.activeModels} models available`,
         secretKeyName: providerEntry?.secretKeyName || `${info.name.toUpperCase()}_API_KEY`,
         apiKeyValuePrefix: providerEntry?.apiKeyValuePrefix || "",

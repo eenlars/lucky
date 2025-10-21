@@ -74,7 +74,7 @@ async function transformModelsOpenRouter(roundDecimals = 6) {
       return {
         ...model,
         pricing: scaled,
-        id: `${model.id}`,
+        id: `openrouter#${model.id}`,
       }
     })
 

@@ -23,7 +23,7 @@ export type ProviderKeyStatus = {
  */
 export async function checkProviderKeyStatus(clerkId: string, gateway: LuckyGateway): Promise<ProviderKeyStatus> {
   const resolver = createSecretResolver(clerkId)
-  const keyName = getProviderKeyName(gateway)
+  const keyName = getProviderKeyName(gateway.replace(/-api$/, ""))
 
   try {
     const key = await resolver.get(keyName)
