@@ -1,14 +1,18 @@
 "use client"
 
-import { getEnabledProviderSlugs } from "@/features/provider-llm-setup/provider-utils"
+import {
+  type ProviderConfig,
+  getEnabledGatewaySlugs,
+  getProviderConfigs,
+} from "@/features/provider-llm-setup/provider-utils"
 import { SyncStatusBadge } from "@/features/provider-llm-setup/providers/sync-status-badge"
 import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import type { AppNode } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
 import { useFeatureFlag } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
-import { MODEL_CATALOG, getModelsByProvider } from "@lucky/models"
-import type { LuckyProvider } from "@lucky/shared"
+import { getModelsByGateway } from "@lucky/models/llm-catalog/catalog-queries"
+import type { LuckyGateway, ModelEntry } from "@lucky/shared"
 import {
   ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION,
   ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION,
@@ -16,7 +20,7 @@ import {
   type MCPToolName,
 } from "@lucky/tools/client"
 import { ChevronDown } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react"
 
 interface ConfigPanelProps {
   node: AppNode
@@ -72,21 +76,29 @@ function CollapsibleSection({ title, defaultOpen = true, children }: Collapsible
   )
 }
 
-// Helper function to strip provider prefix from model name for display
-function getDisplayModelName(modelName: string): string {
-  // Strip "provider#" prefix if present (e.g., "openai#gpt-5-nano" -> "gpt-5-nano")
-  const hashIndex = modelName.indexOf("#")
-  return hashIndex !== -1 ? modelName.substring(hashIndex + 1) : modelName
-}
+const DEFAULT_GATEWAY: LuckyGateway = "openrouter-api"
+const DEFAULT_MODEL_ID = "google/gemini-2.5-flash-lite"
+
+const isLuckyGateway = (value: string, configs: Record<string, ProviderConfig>): value is LuckyGateway =>
+  value in configs || value === DEFAULT_GATEWAY
 
 export function ConfigPanel({ node }: ConfigPanelProps) {
   const updateNode = useAppStore(state => state.updateNode)
   const toolsEnabled = useFeatureFlag("MCP_TOOLS")
 
-  const providers = useMemo(() => getEnabledProviderSlugs(), [])
+  const providerConfigs = useMemo(() => getProviderConfigs(), [])
+  const gateways = useMemo<LuckyGateway[]>(() => {
+    const enabled = getEnabledGatewaySlugs(providerConfigs).filter((gateway): gateway is LuckyGateway =>
+      isLuckyGateway(gateway, providerConfigs),
+    )
+    if (enabled.includes(DEFAULT_GATEWAY)) {
+      return enabled
+    }
+    return [DEFAULT_GATEWAY, ...enabled]
+  }, [providerConfigs])
 
   // Zustand store for model preferences
-  const { isLoading, loadPreferences, getEnabledModels, isStale, lastSynced, forceRefresh } = useModelPreferencesStore()
+  const { isLoading, getEnabledModels, isStale, lastSynced, forceRefresh } = useModelPreferencesStore()
 
   const [description, setDescription] = useState(node.data.description || "")
   const [systemPrompt, setSystemPrompt] = useState(node.data.systemPrompt || "")
@@ -94,24 +106,68 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
   const codeTools = node.data.codeTools || []
 
   // Provider and model state
-  const [selectedProvider, setSelectedProvider] = useState<LuckyProvider>(() => {
-    // Look up model in catalog to get actual provider (don't parse model ID string!)
-    if (node.data.modelName) {
-      const catalogEntry = MODEL_CATALOG.find(entry => entry.id === node.data.modelName)
-      if (catalogEntry && providers.includes(catalogEntry.provider)) {
-        return catalogEntry.provider
-      }
+  const [selectedGateway, setSelectedGateway] = useState<LuckyGateway>(() => {
+    const existingGateway = node.data.gateway
+    if (existingGateway && isLuckyGateway(existingGateway, providerConfigs)) {
+      return existingGateway
     }
-    return (providers[0] as LuckyProvider) || "openai"
+    return DEFAULT_GATEWAY
   })
 
-  // Track the current provider to prevent race conditions when switching providers
-  const currentProviderRef = useRef(selectedProvider)
-
-  // Update ref when provider changes
   useEffect(() => {
-    currentProviderRef.current = selectedProvider
-  }, [selectedProvider])
+    const currentModelId = node.data.gatewayModelId ?? DEFAULT_MODEL_ID
+    const explicitGateway = node.data.gateway
+
+    let resolvedGateway: LuckyGateway | undefined
+
+    if (explicitGateway && isLuckyGateway(explicitGateway, providerConfigs)) {
+      resolvedGateway = explicitGateway
+    }
+
+    if (!resolvedGateway) {
+      const preferenceMatch = gateways.find(gateway => getEnabledModels(gateway).includes(currentModelId))
+      if (preferenceMatch) {
+        resolvedGateway = preferenceMatch
+      }
+    }
+
+    if (!resolvedGateway) {
+      const catalogMatch = gateways.find(gateway =>
+        getModelsByGateway(gateway).some(model => model.gatewayModelId === currentModelId),
+      )
+      if (catalogMatch) {
+        resolvedGateway = catalogMatch
+      }
+    }
+
+    const finalGateway = resolvedGateway ?? DEFAULT_GATEWAY
+    const updates: Partial<typeof node.data> = {}
+
+    if (!node.data.gatewayModelId) {
+      updates.gatewayModelId = DEFAULT_MODEL_ID
+    }
+
+    if (!explicitGateway || explicitGateway !== finalGateway || updates.gatewayModelId) {
+      updates.gateway = finalGateway
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updateNode(node.id, updates)
+    }
+
+    if (selectedGateway !== finalGateway) {
+      setSelectedGateway(finalGateway)
+    }
+  }, [
+    gateways,
+    getEnabledModels,
+    node.id,
+    node.data.gateway,
+    node.data.gatewayModelId,
+    providerConfigs,
+    selectedGateway,
+    updateNode,
+  ])
 
   // Load preferences on mount - always refresh to get latest from server
   // Use forceRefresh to bypass cache and ensure fresh data
@@ -119,62 +175,96 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
     forceRefresh()
   }, [forceRefresh])
 
+  const handleGatewayChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const nextGateway = event.target.value
+    if (!isLuckyGateway(nextGateway, providerConfigs)) {
+      return
+    }
+
+    setSelectedGateway(nextGateway)
+
+    if (node.data.gateway !== nextGateway) {
+      updateNode(node.id, { gateway: nextGateway })
+    }
+  }
+
   // Compute available models based on user preferences and selected provider
   const availableModels = useMemo(() => {
     // Guard: Only compute if this is still the current provider (prevents race conditions)
-    const providerToFetch = selectedProvider
-    if (providerToFetch !== currentProviderRef.current) {
-      return []
-    }
+    if (!selectedGateway) return []
 
     // Get all models for the provider from catalog
-    const allModels = getModelsByProvider(providerToFetch).filter(m => m.runtimeEnabled !== false)
-    const catalogMap = new Map(allModels.map(m => [m.model, m]))
+    const allModels = getModelsByGateway(selectedGateway).filter(m => m.runtimeEnabled !== false)
+    const catalogMap = new Map(allModels.map(m => [m.gatewayModelId, m]))
 
     // Get user's enabled models for this provider
-    const enabledModelIds = getEnabledModels(providerToFetch)
+    const enabledModelIds = getEnabledModels(selectedGateway)
 
     // If user has enabled specific models, show those (even if not in catalog)
     if (enabledModelIds.length > 0) {
       // IMPORTANT: enabledModelIds may contain either:
       // - provider-specific model names (e.g., "gpt-5-nano")
-      // - OR full catalog IDs (e.g., "openai#gpt-5-nano")
+      // - OR full catalog IDs (e.g., "gpt-5-nano")
       // We need to strip provider prefix for catalog lookup, but use full catalog ID for value
       const result = enabledModelIds.map(modelId => {
-        // Strip provider prefix if present (e.g., "openai#gpt-5-nano" -> "gpt-5-nano")
-        const modelName = modelId.includes("#") ? modelId.split("#")[1] : modelId
-
-        const catalogEntry = catalogMap.get(modelName)
+        const catalogEntry = catalogMap.get(modelId)
         if (catalogEntry) {
           return catalogEntry
         }
         // Model not in catalog - create a minimal entry so it can still be selected
         // This handles new provider models not yet added to our static catalog
-        // Use # format for consistency with catalog IDs
         return {
-          id: `${providerToFetch}#${modelName}`,
-          model: modelName,
-          provider: providerToFetch,
-          active: true,
+          gatewayModelId: modelId,
+          gateway: selectedGateway,
+          runtimeEnabled: true,
           contextLength: 0,
-          intelligence: 5,
-          speed: "balanced" as const,
           input: 0,
           output: 0,
+          cachedInput: null,
+          intelligence: 5,
+          speed: "balanced",
           supportsTools: false,
           supportsVision: false,
           supportsReasoning: false,
           supportsAudio: false,
           supportsVideo: false,
-          cachedInput: null,
-        }
+          supportsJsonMode: false,
+          supportsStreaming: false,
+          pricingTier: "medium",
+          releaseDate: undefined,
+        } satisfies ModelEntry
       })
       return result
     }
 
     // Otherwise show all catalog models
-    return allModels
-  }, [selectedProvider, getEnabledModels])
+    const modelsToShow = [...allModels]
+
+    if (node.data.gatewayModelId && !modelsToShow.some(m => m.gatewayModelId === node.data.gatewayModelId)) {
+      modelsToShow.unshift({
+        gatewayModelId: node.data.gatewayModelId,
+        gateway: selectedGateway,
+        runtimeEnabled: true,
+        contextLength: 0,
+        input: 0,
+        output: 0,
+        cachedInput: null,
+        intelligence: 5,
+        speed: "balanced",
+        supportsTools: false,
+        supportsVision: false,
+        supportsReasoning: false,
+        supportsAudio: false,
+        supportsVideo: false,
+        supportsJsonMode: false,
+        supportsStreaming: false,
+        pricingTier: "medium",
+        releaseDate: undefined,
+      } satisfies ModelEntry)
+    }
+
+    return modelsToShow
+  }, [selectedGateway, getEnabledModels, node.data.gatewayModelId])
 
   // Sync state when node changes
   useEffect(() => {
@@ -439,13 +529,13 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             </label>
             <select
               id="model-provider"
-              value={selectedProvider}
-              onChange={e => setSelectedProvider(e.target.value as LuckyProvider)}
+              value={selectedGateway}
+              onChange={handleGatewayChange}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
-              {providers.map(provider => (
-                <option key={provider} value={provider}>
-                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
+              {gateways.map(gateway => (
+                <option key={gateway} value={gateway}>
+                  {gateway.charAt(0).toUpperCase() + gateway.slice(1)}
                 </option>
               ))}
             </select>
@@ -458,12 +548,8 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             </label>
             <select
               id="model-name"
-              value={node.data.modelName || ""}
-              onChange={e =>
-                updateNode(node.id, {
-                  modelName: e.target.value as string,
-                })
-              }
+              value={node.data.gatewayModelId || ""}
+              onChange={e => updateNode(node.id, { gatewayModelId: e.target.value })}
               disabled={isLoading}
               className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -473,8 +559,8 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
                 <option value="">No models enabled</option>
               ) : (
                 availableModels.map(model => (
-                  <option key={model.id} value={model.id}>
-                    {getDisplayModelName(model.model)}
+                  <option key={model.gatewayModelId} value={model.gatewayModelId}>
+                    {model.gatewayModelId}
                   </option>
                 ))
               )}
@@ -483,21 +569,21 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
             {/* Link to manage models */}
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               <a
-                href={`/settings/providers/${selectedProvider}`}
+                href={`/settings/providers/${selectedGateway}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                Manage {selectedProvider} models →
+                Manage {selectedGateway} models →
               </a>
             </p>
 
             {/* Model Metadata Display */}
             {!isLoading &&
-              node.data.modelName &&
+              node.data.gatewayModelId &&
               availableModels.length > 0 &&
               (() => {
-                const selectedModel = availableModels.find(m => m.id === node.data.modelName)
+                const selectedModel = availableModels.find(m => m.gatewayModelId === node.data.gatewayModelId)
                 if (!selectedModel) return null
 
                 return (
@@ -547,12 +633,12 @@ export function ConfigPanel({ node }: ConfigPanelProps) {
           {!isLoading && availableModels.length === 0 && (
             <div className="mt-4 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
               <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium mb-1">
-                No models enabled for {selectedProvider}
+                No models enabled for {selectedGateway}
               </p>
               <p className="text-xs text-yellow-700 dark:text-yellow-300">
                 Enable models in{" "}
                 <a
-                  href={`/settings/providers/${selectedProvider}`}
+                  href={`/settings/providers/${selectedGateway}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-yellow-900 dark:hover:text-yellow-100"

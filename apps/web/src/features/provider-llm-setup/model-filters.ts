@@ -13,7 +13,7 @@ import type { EnrichedModelInfo } from "@lucky/shared"
 export function filterModels(models: EnrichedModelInfo[], filters: ModelFilters): EnrichedModelInfo[] {
   return models.filter(model => {
     // Search filter
-    if (filters.search && !model.name.toLowerCase().includes(filters.search.toLowerCase())) {
+    if (filters.search && !model.gatewayModelId.toLowerCase().includes(filters.search.toLowerCase())) {
       return false
     }
 
@@ -68,15 +68,15 @@ export function sortModels(
       // Sort by recommendation score (same algorithm as getRecommendedModels)
       const recommendedNames = allModels ? getRecommendedModels(allModels) : getRecommendedModels(models)
       return sorted.sort((a, b) => {
-        const aIndex = recommendedNames.indexOf(a.name)
-        const bIndex = recommendedNames.indexOf(b.name)
+        const aIndex = recommendedNames.indexOf(a.gatewayModelId)
+        const bIndex = recommendedNames.indexOf(b.gatewayModelId)
         const aRank = aIndex === -1 ? Number.POSITIVE_INFINITY : aIndex
         const bRank = bIndex === -1 ? Number.POSITIVE_INFINITY : bIndex
         return aRank - bRank
       })
     }
     case "name":
-      return sorted.sort((a, b) => a.name.localeCompare(b.name))
+      return sorted.sort((a, b) => a.gatewayModelId.localeCompare(b.gatewayModelId))
     case "cost":
       return sorted.sort((a, b) => a.inputCostPer1M - b.inputCostPer1M)
     case "intelligence":
@@ -100,8 +100,8 @@ export function sortModelsWithEnabledFirst(
   const sorted = sortModels(models, sortBy, allModels)
 
   return sorted.sort((a, b) => {
-    const aEnabled = enabledModels.has(a.id)
-    const bEnabled = enabledModels.has(b.id)
+    const aEnabled = enabledModels.has(a.gatewayModelId)
+    const bEnabled = enabledModels.has(b.gatewayModelId)
     if (aEnabled && !bEnabled) return -1
     if (!aEnabled && bEnabled) return 1
     return 0
@@ -158,14 +158,14 @@ export function groupModels(models: EnrichedModelInfo[], groupBy: GroupBy): Map<
  * Get models that match the "fast" criteria
  */
 export function getFastModels(models: EnrichedModelInfo[]): string[] {
-  return models.filter(m => m.speed === "fast").map(m => m.name)
+  return models.filter(m => m.speed === "fast").map(m => m.gatewayModelId)
 }
 
 /**
  * Get models that match the "high intelligence" criteria (8+)
  */
 export function getHighIntelligenceModels(models: EnrichedModelInfo[]): string[] {
-  return models.filter(m => m.intelligence >= 8).map(m => m.name)
+  return models.filter(m => m.intelligence >= 8).map(m => m.gatewayModelId)
 }
 
 /**
@@ -200,14 +200,14 @@ export function getRecommendedModels(models: EnrichedModelInfo[]): string[] {
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
-    .map(s => s.model.name)
+    .map(s => s.model.gatewayModelId)
 }
 
 /**
  * Check if a model is recommended
  */
-export function isModelRecommended(modelName: string, models: EnrichedModelInfo[]): boolean {
-  return getRecommendedModels(models).includes(modelName)
+export function isModelRecommended(gatewayModelId: string, models: EnrichedModelInfo[]): boolean {
+  return getRecommendedModels(models).includes(gatewayModelId)
 }
 
 /**

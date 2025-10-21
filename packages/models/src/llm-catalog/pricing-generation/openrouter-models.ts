@@ -8,9 +8,8 @@ import type { ModelEntry } from "@lucky/shared"
 
 export const OPENROUTER_MODELS: ModelEntry[] = [
   {
-    id: "openrouter#anthropic/claude-3-haiku",
-    provider: "openrouter",
-    model: "anthropic/claude-3-haiku",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3-haiku",
     input: 0.25,
     output: 1.25,
     cachedInput: 0.08333333333333333,
@@ -30,9 +29,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3-opus",
-    provider: "openrouter",
-    model: "anthropic/claude-3-opus",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3-opus",
     input: 15,
     output: 75,
     cachedInput: 5,
@@ -52,9 +50,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3.5-haiku",
-    provider: "openrouter",
-    model: "anthropic/claude-3.5-haiku",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.5-haiku",
     input: 0.7999999999999999,
     output: 4,
     cachedInput: 0.26666666666666666,
@@ -74,9 +71,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3.5-haiku-20241022",
-    provider: "openrouter",
-    model: "anthropic/claude-3.5-haiku-20241022",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.5-haiku-20241022",
     input: 0.7999999999999999,
     output: 4,
     cachedInput: 0.26666666666666666,
@@ -96,9 +92,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3.5-sonnet",
-    provider: "openrouter",
-    model: "anthropic/claude-3.5-sonnet",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.5-sonnet",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -118,9 +113,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3.5-sonnet-20240620",
-    provider: "openrouter",
-    model: "anthropic/claude-3.5-sonnet-20240620",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.5-sonnet-20240620",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -140,9 +134,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3.7-sonnet",
-    provider: "openrouter",
-    model: "anthropic/claude-3.7-sonnet",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.7-sonnet",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -162,9 +155,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-3.7-sonnet:thinking",
-    provider: "openrouter",
-    model: "anthropic/claude-3.7-sonnet:thinking",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.7-sonnet:thinking",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -184,9 +176,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-haiku-4.5",
-    provider: "openrouter",
-    model: "anthropic/claude-haiku-4.5",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-haiku-4.5",
     input: 1,
     output: 5,
     cachedInput: 0.3333333333333333,
@@ -206,9 +197,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-opus-4",
-    provider: "openrouter",
-    model: "anthropic/claude-opus-4",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-opus-4",
     input: 15,
     output: 75,
     cachedInput: 5,
@@ -228,9 +218,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-opus-4.1",
-    provider: "openrouter",
-    model: "anthropic/claude-opus-4.1",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-opus-4.1",
     input: 15,
     output: 75,
     cachedInput: 5,
@@ -250,9 +239,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-sonnet-4",
-    provider: "openrouter",
-    model: "anthropic/claude-sonnet-4",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-sonnet-4",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -272,9 +260,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#anthropic/claude-sonnet-4.5",
-    provider: "openrouter",
-    model: "anthropic/claude-sonnet-4.5",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-sonnet-4.5",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -294,9 +281,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.0-flash-001",
-    provider: "openrouter",
-    model: "google/gemini-2.0-flash-001",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.0-flash-001",
     input: 0.09999999999999999,
     output: 0.39999999999999997,
     cachedInput: 0.03333333333333333,
@@ -316,9 +302,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.0-flash-exp:free",
-    provider: "openrouter",
-    model: "google/gemini-2.0-flash-exp:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.0-flash-exp:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -338,9 +323,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.0-flash-lite-001",
-    provider: "openrouter",
-    model: "google/gemini-2.0-flash-lite-001",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.0-flash-lite-001",
     input: 0.075,
     output: 0.3,
     cachedInput: 0.024999999999999998,
@@ -360,9 +344,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash",
     input: 0.3,
     output: 2.5,
     cachedInput: 0.09999999999999999,
@@ -382,9 +365,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash-image",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash-image",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash-image",
     input: 0.3,
     output: 2.5,
     cachedInput: 0.09999999999999999,
@@ -404,9 +386,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash-image-preview",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash-image-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash-image-preview",
     input: 0.3,
     output: 2.5,
     cachedInput: 0.09999999999999999,
@@ -426,9 +407,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash-lite",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash-lite",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash-lite",
     input: 0.09999999999999999,
     output: 0.39999999999999997,
     cachedInput: 0.03333333333333333,
@@ -448,9 +428,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash-lite-preview-06-17",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash-lite-preview-06-17",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash-lite-preview-06-17",
     input: 0.09999999999999999,
     output: 0.39999999999999997,
     cachedInput: 0.03333333333333333,
@@ -470,9 +449,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash-lite-preview-09-2025",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash-lite-preview-09-2025",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash-lite-preview-09-2025",
     input: 0.09999999999999999,
     output: 0.39999999999999997,
     cachedInput: 0.03333333333333333,
@@ -492,9 +470,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-flash-preview-09-2025",
-    provider: "openrouter",
-    model: "google/gemini-2.5-flash-preview-09-2025",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-flash-preview-09-2025",
     input: 0.3,
     output: 2.5,
     cachedInput: 0.09999999999999999,
@@ -514,9 +491,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-pro",
-    provider: "openrouter",
-    model: "google/gemini-2.5-pro",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-pro",
     input: 1.25,
     output: 10,
     cachedInput: 0.4166666666666667,
@@ -536,9 +512,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-pro-preview",
-    provider: "openrouter",
-    model: "google/gemini-2.5-pro-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-pro-preview",
     input: 1.25,
     output: 10,
     cachedInput: 0.4166666666666667,
@@ -558,9 +533,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemini-2.5-pro-preview-05-06",
-    provider: "openrouter",
-    model: "google/gemini-2.5-pro-preview-05-06",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemini-2.5-pro-preview-05-06",
     input: 1.25,
     output: 10,
     cachedInput: 0.4166666666666667,
@@ -580,9 +554,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-2-27b-it",
-    provider: "openrouter",
-    model: "google/gemma-2-27b-it",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-2-27b-it",
     input: 0.65,
     output: 0.65,
     cachedInput: 0.21666666666666667,
@@ -602,9 +575,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-2-9b-it",
-    provider: "openrouter",
-    model: "google/gemma-2-9b-it",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-2-9b-it",
     input: 0.01,
     output: 0.03,
     cachedInput: 0.0033333333333333335,
@@ -624,9 +596,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-2-9b-it:free",
-    provider: "openrouter",
-    model: "google/gemma-2-9b-it:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-2-9b-it:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -646,9 +617,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3-12b-it",
-    provider: "openrouter",
-    model: "google/gemma-3-12b-it",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3-12b-it",
     input: 0.03,
     output: 0.09999999999999999,
     cachedInput: 0.01,
@@ -668,9 +638,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3-12b-it:free",
-    provider: "openrouter",
-    model: "google/gemma-3-12b-it:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3-12b-it:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -690,9 +659,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3-27b-it",
-    provider: "openrouter",
-    model: "google/gemma-3-27b-it",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3-27b-it",
     input: 0.09,
     output: 0.16,
     cachedInput: 0.03,
@@ -712,9 +680,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3-27b-it:free",
-    provider: "openrouter",
-    model: "google/gemma-3-27b-it:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3-27b-it:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -734,9 +701,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3-4b-it",
-    provider: "openrouter",
-    model: "google/gemma-3-4b-it",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3-4b-it",
     input: 0.01703012,
     output: 0.0681536,
     cachedInput: 0.005676706666666666,
@@ -756,9 +722,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3-4b-it:free",
-    provider: "openrouter",
-    model: "google/gemma-3-4b-it:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3-4b-it:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -778,9 +743,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3n-e2b-it:free",
-    provider: "openrouter",
-    model: "google/gemma-3n-e2b-it:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3n-e2b-it:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -800,9 +764,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3n-e4b-it",
-    provider: "openrouter",
-    model: "google/gemma-3n-e4b-it",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3n-e4b-it",
     input: 0.02,
     output: 0.04,
     cachedInput: 0.006666666666666667,
@@ -822,9 +785,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#google/gemma-3n-e4b-it:free",
-    provider: "openrouter",
-    model: "google/gemma-3n-e4b-it:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "google/gemma-3n-e4b-it:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -844,9 +806,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3-70b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3-70b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3-70b-instruct",
     input: 0.3,
     output: 0.39999999999999997,
     cachedInput: 0.09999999999999999,
@@ -866,9 +827,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3-8b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3-8b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3-8b-instruct",
     input: 0.03,
     output: 0.06,
     cachedInput: 0.01,
@@ -888,9 +848,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.1-405b",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.1-405b",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.1-405b",
     input: 4,
     output: 4,
     cachedInput: 1.3333333333333333,
@@ -910,9 +869,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.1-405b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.1-405b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.1-405b-instruct",
     input: 0.7999999999999999,
     output: 0.7999999999999999,
     cachedInput: 0.26666666666666666,
@@ -932,9 +890,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.1-70b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.1-70b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.1-70b-instruct",
     input: 0.39999999999999997,
     output: 0.39999999999999997,
     cachedInput: 0.13333333333333333,
@@ -954,9 +911,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.1-8b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.1-8b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.1-8b-instruct",
     input: 0.02,
     output: 0.03,
     cachedInput: 0.006666666666666667,
@@ -976,9 +932,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.2-11b-vision-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.2-11b-vision-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.2-11b-vision-instruct",
     input: 0.049,
     output: 0.049,
     cachedInput: 0.016333333333333335,
@@ -998,9 +953,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.2-1b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.2-1b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.2-1b-instruct",
     input: 0.005,
     output: 0.01,
     cachedInput: 0.0016666666666666668,
@@ -1020,9 +974,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.2-3b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.2-3b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.2-3b-instruct",
     input: 0.02,
     output: 0.02,
     cachedInput: 0.006666666666666667,
@@ -1042,9 +995,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.2-3b-instruct:free",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.2-3b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.2-3b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1064,9 +1016,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.2-90b-vision-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.2-90b-vision-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.2-90b-vision-instruct",
     input: 0.35,
     output: 0.39999999999999997,
     cachedInput: 0.11666666666666665,
@@ -1086,9 +1037,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.3-70b-instruct",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.3-70b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.3-70b-instruct",
     input: 0.13,
     output: 0.38,
     cachedInput: 0.043333333333333335,
@@ -1108,9 +1058,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.3-70b-instruct:free",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.3-70b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.3-70b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1130,9 +1079,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-3.3-8b-instruct:free",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.3-8b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.3-8b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1152,9 +1100,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-4-maverick",
-    provider: "openrouter",
-    model: "meta-llama/llama-4-maverick",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-4-maverick",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.049999999999999996,
@@ -1174,9 +1121,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-4-maverick:free",
-    provider: "openrouter",
-    model: "meta-llama/llama-4-maverick:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-4-maverick:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1196,9 +1142,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-4-scout",
-    provider: "openrouter",
-    model: "meta-llama/llama-4-scout",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-4-scout",
     input: 0.08,
     output: 0.3,
     cachedInput: 0.02666666666666667,
@@ -1218,9 +1163,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-4-scout:free",
-    provider: "openrouter",
-    model: "meta-llama/llama-4-scout:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-4-scout:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1240,9 +1184,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-guard-2-8b",
-    provider: "openrouter",
-    model: "meta-llama/llama-guard-2-8b",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-guard-2-8b",
     input: 0.19999999999999998,
     output: 0.19999999999999998,
     cachedInput: 0.06666666666666667,
@@ -1262,9 +1205,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-guard-3-8b",
-    provider: "openrouter",
-    model: "meta-llama/llama-guard-3-8b",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-guard-3-8b",
     input: 0.02,
     output: 0.06,
     cachedInput: 0.006666666666666667,
@@ -1284,9 +1226,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#meta-llama/llama-guard-4-12b",
-    provider: "openrouter",
-    model: "meta-llama/llama-guard-4-12b",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-guard-4-12b",
     input: 0.18,
     output: 0.18,
     cachedInput: 0.06,
@@ -1306,9 +1247,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/codestral-2501",
-    provider: "openrouter",
-    model: "mistralai/codestral-2501",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/codestral-2501",
     input: 0.3,
     output: 0.8999999999999999,
     cachedInput: 0.09999999999999999,
@@ -1328,9 +1268,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/codestral-2508",
-    provider: "openrouter",
-    model: "mistralai/codestral-2508",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/codestral-2508",
     input: 0.3,
     output: 0.8999999999999999,
     cachedInput: 0.09999999999999999,
@@ -1350,9 +1289,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/devstral-medium",
-    provider: "openrouter",
-    model: "mistralai/devstral-medium",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/devstral-medium",
     input: 0.39999999999999997,
     output: 2,
     cachedInput: 0.13333333333333333,
@@ -1372,9 +1310,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/devstral-small",
-    provider: "openrouter",
-    model: "mistralai/devstral-small",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/devstral-small",
     input: 0.07,
     output: 0.28,
     cachedInput: 0.023333333333333334,
@@ -1394,9 +1331,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/devstral-small-2505",
-    provider: "openrouter",
-    model: "mistralai/devstral-small-2505",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/devstral-small-2505",
     input: 0.049999999999999996,
     output: 0.22,
     cachedInput: 0.016666666666666666,
@@ -1416,9 +1352,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/devstral-small-2505:free",
-    provider: "openrouter",
-    model: "mistralai/devstral-small-2505:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/devstral-small-2505:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1438,9 +1373,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/magistral-medium-2506",
-    provider: "openrouter",
-    model: "mistralai/magistral-medium-2506",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/magistral-medium-2506",
     input: 2,
     output: 5,
     cachedInput: 0.6666666666666666,
@@ -1460,9 +1394,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/magistral-medium-2506:thinking",
-    provider: "openrouter",
-    model: "mistralai/magistral-medium-2506:thinking",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/magistral-medium-2506:thinking",
     input: 2,
     output: 5,
     cachedInput: 0.6666666666666666,
@@ -1482,9 +1415,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/magistral-small-2506",
-    provider: "openrouter",
-    model: "mistralai/magistral-small-2506",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/magistral-small-2506",
     input: 0.5,
     output: 1.5,
     cachedInput: 0.16666666666666666,
@@ -1504,9 +1436,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/ministral-3b",
-    provider: "openrouter",
-    model: "mistralai/ministral-3b",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/ministral-3b",
     input: 0.04,
     output: 0.04,
     cachedInput: 0.013333333333333334,
@@ -1526,9 +1457,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/ministral-8b",
-    provider: "openrouter",
-    model: "mistralai/ministral-8b",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/ministral-8b",
     input: 0.09999999999999999,
     output: 0.09999999999999999,
     cachedInput: 0.03333333333333333,
@@ -1548,9 +1478,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-7b-instruct",
-    provider: "openrouter",
-    model: "mistralai/mistral-7b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-7b-instruct",
     input: 0.028,
     output: 0.054,
     cachedInput: 0.009333333333333334,
@@ -1570,9 +1499,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-7b-instruct-v0.1",
-    provider: "openrouter",
-    model: "mistralai/mistral-7b-instruct-v0.1",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-7b-instruct-v0.1",
     input: 0.11,
     output: 0.19,
     cachedInput: 0.03666666666666667,
@@ -1592,9 +1520,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-7b-instruct-v0.2",
-    provider: "openrouter",
-    model: "mistralai/mistral-7b-instruct-v0.2",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-7b-instruct-v0.2",
     input: 0.19999999999999998,
     output: 0.19999999999999998,
     cachedInput: 0.06666666666666667,
@@ -1614,9 +1541,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-7b-instruct-v0.3",
-    provider: "openrouter",
-    model: "mistralai/mistral-7b-instruct-v0.3",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-7b-instruct-v0.3",
     input: 0.028,
     output: 0.054,
     cachedInput: 0.009333333333333334,
@@ -1636,9 +1562,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-7b-instruct:free",
-    provider: "openrouter",
-    model: "mistralai/mistral-7b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-7b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1658,9 +1583,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-large",
-    provider: "openrouter",
-    model: "mistralai/mistral-large",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-large",
     input: 2,
     output: 6,
     cachedInput: 0.6666666666666666,
@@ -1680,9 +1604,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-large-2407",
-    provider: "openrouter",
-    model: "mistralai/mistral-large-2407",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-large-2407",
     input: 2,
     output: 6,
     cachedInput: 0.6666666666666666,
@@ -1702,9 +1625,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-large-2411",
-    provider: "openrouter",
-    model: "mistralai/mistral-large-2411",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-large-2411",
     input: 2,
     output: 6,
     cachedInput: 0.6666666666666666,
@@ -1724,9 +1646,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-medium-3",
-    provider: "openrouter",
-    model: "mistralai/mistral-medium-3",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-medium-3",
     input: 0.39999999999999997,
     output: 2,
     cachedInput: 0.13333333333333333,
@@ -1746,9 +1667,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-medium-3.1",
-    provider: "openrouter",
-    model: "mistralai/mistral-medium-3.1",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-medium-3.1",
     input: 0.39999999999999997,
     output: 2,
     cachedInput: 0.13333333333333333,
@@ -1768,9 +1688,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-nemo",
-    provider: "openrouter",
-    model: "mistralai/mistral-nemo",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-nemo",
     input: 0.02,
     output: 0.04,
     cachedInput: 0.006666666666666667,
@@ -1790,9 +1709,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-nemo:free",
-    provider: "openrouter",
-    model: "mistralai/mistral-nemo:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-nemo:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1812,9 +1730,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-saba",
-    provider: "openrouter",
-    model: "mistralai/mistral-saba",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-saba",
     input: 0.19999999999999998,
     output: 0.6,
     cachedInput: 0.06666666666666667,
@@ -1834,9 +1751,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small",
-    provider: "openrouter",
-    model: "mistralai/mistral-small",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small",
     input: 0.19999999999999998,
     output: 0.6,
     cachedInput: 0.06666666666666667,
@@ -1856,9 +1772,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small-24b-instruct-2501",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-24b-instruct-2501",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small-24b-instruct-2501",
     input: 0.049999999999999996,
     output: 0.08,
     cachedInput: 0.016666666666666666,
@@ -1878,9 +1793,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small-24b-instruct-2501:free",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-24b-instruct-2501:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small-24b-instruct-2501:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1900,9 +1814,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small-3.1-24b-instruct",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-3.1-24b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small-3.1-24b-instruct",
     input: 0.049999999999999996,
     output: 0.09999999999999999,
     cachedInput: 0.016666666666666666,
@@ -1922,9 +1835,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small-3.1-24b-instruct:free",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-3.1-24b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small-3.1-24b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1944,9 +1856,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small-3.2-24b-instruct",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-3.2-24b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small-3.2-24b-instruct",
     input: 0.06,
     output: 0.18,
     cachedInput: 0.02,
@@ -1966,9 +1877,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-small-3.2-24b-instruct:free",
-    provider: "openrouter",
-    model: "mistralai/mistral-small-3.2-24b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-small-3.2-24b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -1988,9 +1898,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mistral-tiny",
-    provider: "openrouter",
-    model: "mistralai/mistral-tiny",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mistral-tiny",
     input: 0.25,
     output: 0.25,
     cachedInput: 0.08333333333333333,
@@ -2010,9 +1919,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mixtral-8x22b-instruct",
-    provider: "openrouter",
-    model: "mistralai/mixtral-8x22b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mixtral-8x22b-instruct",
     input: 0.8999999999999999,
     output: 0.8999999999999999,
     cachedInput: 0.3,
@@ -2032,9 +1940,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/mixtral-8x7b-instruct",
-    provider: "openrouter",
-    model: "mistralai/mixtral-8x7b-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/mixtral-8x7b-instruct",
     input: 0.54,
     output: 0.54,
     cachedInput: 0.18000000000000002,
@@ -2054,9 +1961,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/pixtral-12b",
-    provider: "openrouter",
-    model: "mistralai/pixtral-12b",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/pixtral-12b",
     input: 0.09999999999999999,
     output: 0.09999999999999999,
     cachedInput: 0.03333333333333333,
@@ -2076,9 +1982,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#mistralai/pixtral-large-2411",
-    provider: "openrouter",
-    model: "mistralai/pixtral-large-2411",
+    gateway: "openrouter-api",
+    gatewayModelId: "mistralai/pixtral-large-2411",
     input: 2,
     output: 6,
     cachedInput: 0.6666666666666666,
@@ -2098,9 +2003,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#moonshotai/kimi-dev-72b",
-    provider: "openrouter",
-    model: "moonshotai/kimi-dev-72b",
+    gateway: "openrouter-api",
+    gatewayModelId: "moonshotai/kimi-dev-72b",
     input: 0.29,
     output: 1.15,
     cachedInput: 0.09666666666666666,
@@ -2120,9 +2024,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#moonshotai/kimi-dev-72b:free",
-    provider: "openrouter",
-    model: "moonshotai/kimi-dev-72b:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "moonshotai/kimi-dev-72b:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -2142,9 +2045,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#moonshotai/kimi-k2",
-    provider: "openrouter",
-    model: "moonshotai/kimi-k2",
+    gateway: "openrouter-api",
+    gatewayModelId: "moonshotai/kimi-k2",
     input: 0.14,
     output: 2.4899999999999998,
     cachedInput: 0.04666666666666667,
@@ -2164,9 +2066,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#moonshotai/kimi-k2-0905",
-    provider: "openrouter",
-    model: "moonshotai/kimi-k2-0905",
+    gateway: "openrouter-api",
+    gatewayModelId: "moonshotai/kimi-k2-0905",
     input: 0.39,
     output: 1.9,
     cachedInput: 0.13,
@@ -2186,9 +2087,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#moonshotai/kimi-k2:free",
-    provider: "openrouter",
-    model: "moonshotai/kimi-k2:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "moonshotai/kimi-k2:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -2208,9 +2108,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/chatgpt-4o-latest",
-    provider: "openrouter",
-    model: "openai/chatgpt-4o-latest",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/chatgpt-4o-latest",
     input: 5,
     output: 15,
     cachedInput: 1.6666666666666667,
@@ -2230,9 +2129,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/codex-mini",
-    provider: "openrouter",
-    model: "openai/codex-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/codex-mini",
     input: 1.5,
     output: 6,
     cachedInput: 0.5,
@@ -2252,9 +2150,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-3.5-turbo",
-    provider: "openrouter",
-    model: "openai/gpt-3.5-turbo",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-3.5-turbo",
     input: 0.5,
     output: 1.5,
     cachedInput: 0.16666666666666666,
@@ -2274,9 +2171,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-3.5-turbo-0613",
-    provider: "openrouter",
-    model: "openai/gpt-3.5-turbo-0613",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-3.5-turbo-0613",
     input: 1,
     output: 2,
     cachedInput: 0.3333333333333333,
@@ -2296,9 +2192,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-3.5-turbo-16k",
-    provider: "openrouter",
-    model: "openai/gpt-3.5-turbo-16k",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-3.5-turbo-16k",
     input: 3,
     output: 4,
     cachedInput: 1,
@@ -2318,9 +2213,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-3.5-turbo-instruct",
-    provider: "openrouter",
-    model: "openai/gpt-3.5-turbo-instruct",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-3.5-turbo-instruct",
     input: 1.5,
     output: 2,
     cachedInput: 0.5,
@@ -2340,9 +2234,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4",
-    provider: "openrouter",
-    model: "openai/gpt-4",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4",
     input: 30,
     output: 60,
     cachedInput: 10,
@@ -2362,9 +2255,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4-0314",
-    provider: "openrouter",
-    model: "openai/gpt-4-0314",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4-0314",
     input: 30,
     output: 60,
     cachedInput: 10,
@@ -2384,9 +2276,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4-1106-preview",
-    provider: "openrouter",
-    model: "openai/gpt-4-1106-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4-1106-preview",
     input: 10,
     output: 30,
     cachedInput: 3.3333333333333335,
@@ -2406,9 +2297,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4-turbo",
-    provider: "openrouter",
-    model: "openai/gpt-4-turbo",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4-turbo",
     input: 10,
     output: 30,
     cachedInput: 3.3333333333333335,
@@ -2428,9 +2318,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4-turbo-preview",
-    provider: "openrouter",
-    model: "openai/gpt-4-turbo-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4-turbo-preview",
     input: 10,
     output: 30,
     cachedInput: 3.3333333333333335,
@@ -2450,9 +2339,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4.1",
-    provider: "openrouter",
-    model: "openai/gpt-4.1",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4.1",
     input: 2,
     output: 8,
     cachedInput: 0.6666666666666666,
@@ -2472,9 +2360,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4.1-mini",
-    provider: "openrouter",
-    model: "openai/gpt-4.1-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4.1-mini",
     input: 0.39999999999999997,
     output: 1.5999999999999999,
     cachedInput: 0.13333333333333333,
@@ -2494,9 +2381,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4.1-nano",
-    provider: "openrouter",
-    model: "openai/gpt-4.1-nano",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4.1-nano",
     input: 0.09999999999999999,
     output: 0.39999999999999997,
     cachedInput: 0.03333333333333333,
@@ -2516,9 +2402,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o",
-    provider: "openrouter",
-    model: "openai/gpt-4o",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o",
     input: 2.5,
     output: 10,
     cachedInput: 0.8333333333333334,
@@ -2538,9 +2423,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-2024-05-13",
-    provider: "openrouter",
-    model: "openai/gpt-4o-2024-05-13",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-2024-05-13",
     input: 5,
     output: 15,
     cachedInput: 1.6666666666666667,
@@ -2560,9 +2444,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-2024-08-06",
-    provider: "openrouter",
-    model: "openai/gpt-4o-2024-08-06",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-2024-08-06",
     input: 2.5,
     output: 10,
     cachedInput: 0.8333333333333334,
@@ -2582,9 +2465,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-2024-11-20",
-    provider: "openrouter",
-    model: "openai/gpt-4o-2024-11-20",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-2024-11-20",
     input: 2.5,
     output: 10,
     cachedInput: 0.8333333333333334,
@@ -2604,9 +2486,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-audio-preview",
-    provider: "openrouter",
-    model: "openai/gpt-4o-audio-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-audio-preview",
     input: 2.5,
     output: 10,
     cachedInput: 0.8333333333333334,
@@ -2626,9 +2507,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-mini",
-    provider: "openrouter",
-    model: "openai/gpt-4o-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-mini",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.049999999999999996,
@@ -2648,9 +2528,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-mini-2024-07-18",
-    provider: "openrouter",
-    model: "openai/gpt-4o-mini-2024-07-18",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-mini-2024-07-18",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.049999999999999996,
@@ -2670,9 +2549,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-mini-search-preview",
-    provider: "openrouter",
-    model: "openai/gpt-4o-mini-search-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-mini-search-preview",
     input: 0.15,
     output: 0.6,
     cachedInput: 0.049999999999999996,
@@ -2692,9 +2570,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o-search-preview",
-    provider: "openrouter",
-    model: "openai/gpt-4o-search-preview",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o-search-preview",
     input: 2.5,
     output: 10,
     cachedInput: 0.8333333333333334,
@@ -2714,9 +2591,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-4o:extended",
-    provider: "openrouter",
-    model: "openai/gpt-4o:extended",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-4o:extended",
     input: 6,
     output: 18,
     cachedInput: 2,
@@ -2736,9 +2612,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5",
-    provider: "openrouter",
-    model: "openai/gpt-5",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5",
     input: 1.25,
     output: 10,
     cachedInput: 0.4166666666666667,
@@ -2758,9 +2633,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-chat",
-    provider: "openrouter",
-    model: "openai/gpt-5-chat",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-chat",
     input: 1.25,
     output: 10,
     cachedInput: 0.4166666666666667,
@@ -2780,9 +2654,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-codex",
-    provider: "openrouter",
-    model: "openai/gpt-5-codex",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-codex",
     input: 1.25,
     output: 10,
     cachedInput: 0.4166666666666667,
@@ -2802,9 +2675,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-image",
-    provider: "openrouter",
-    model: "openai/gpt-5-image",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-image",
     input: 10,
     output: 10,
     cachedInput: 3.3333333333333335,
@@ -2824,9 +2696,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-image-mini",
-    provider: "openrouter",
-    model: "openai/gpt-5-image-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-image-mini",
     input: 2.5,
     output: 2,
     cachedInput: 0.8333333333333334,
@@ -2846,9 +2717,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-mini",
-    provider: "openrouter",
-    model: "openai/gpt-5-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-mini",
     input: 0.25,
     output: 2,
     cachedInput: 0.08333333333333333,
@@ -2868,9 +2738,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-nano",
-    provider: "openrouter",
-    model: "openai/gpt-5-nano",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-nano",
     input: 0.049999999999999996,
     output: 0.39999999999999997,
     cachedInput: 0.016666666666666666,
@@ -2890,9 +2759,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-5-pro",
-    provider: "openrouter",
-    model: "openai/gpt-5-pro",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-5-pro",
     input: 15,
     output: 120,
     cachedInput: 5,
@@ -2912,9 +2780,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-oss-120b",
-    provider: "openrouter",
-    model: "openai/gpt-oss-120b",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-oss-120b",
     input: 0.04,
     output: 0.39999999999999997,
     cachedInput: 0.013333333333333334,
@@ -2934,9 +2801,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-oss-20b",
-    provider: "openrouter",
-    model: "openai/gpt-oss-20b",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-oss-20b",
     input: 0.03,
     output: 0.14,
     cachedInput: 0.01,
@@ -2956,9 +2822,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/gpt-oss-20b:free",
-    provider: "openrouter",
-    model: "openai/gpt-oss-20b:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/gpt-oss-20b:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -2978,9 +2843,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o1",
-    provider: "openrouter",
-    model: "openai/o1",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o1",
     input: 15,
     output: 60,
     cachedInput: 5,
@@ -3000,9 +2864,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o1-mini",
-    provider: "openrouter",
-    model: "openai/o1-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o1-mini",
     input: 1.1,
     output: 4.4,
     cachedInput: 0.3666666666666667,
@@ -3022,9 +2885,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o1-mini-2024-09-12",
-    provider: "openrouter",
-    model: "openai/o1-mini-2024-09-12",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o1-mini-2024-09-12",
     input: 1.1,
     output: 4.4,
     cachedInput: 0.3666666666666667,
@@ -3044,9 +2906,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o1-pro",
-    provider: "openrouter",
-    model: "openai/o1-pro",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o1-pro",
     input: 150,
     output: 600,
     cachedInput: 50,
@@ -3066,9 +2927,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o3",
-    provider: "openrouter",
-    model: "openai/o3",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o3",
     input: 2,
     output: 8,
     cachedInput: 0.6666666666666666,
@@ -3088,9 +2948,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o3-deep-research",
-    provider: "openrouter",
-    model: "openai/o3-deep-research",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o3-deep-research",
     input: 10,
     output: 40,
     cachedInput: 3.3333333333333335,
@@ -3110,9 +2969,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o3-mini",
-    provider: "openrouter",
-    model: "openai/o3-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o3-mini",
     input: 1.1,
     output: 4.4,
     cachedInput: 0.3666666666666667,
@@ -3132,9 +2990,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o3-mini-high",
-    provider: "openrouter",
-    model: "openai/o3-mini-high",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o3-mini-high",
     input: 1.1,
     output: 4.4,
     cachedInput: 0.3666666666666667,
@@ -3154,9 +3011,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o3-pro",
-    provider: "openrouter",
-    model: "openai/o3-pro",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o3-pro",
     input: 20,
     output: 80,
     cachedInput: 6.666666666666667,
@@ -3176,9 +3032,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o4-mini",
-    provider: "openrouter",
-    model: "openai/o4-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o4-mini",
     input: 1.1,
     output: 4.4,
     cachedInput: 0.3666666666666667,
@@ -3198,9 +3053,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o4-mini-deep-research",
-    provider: "openrouter",
-    model: "openai/o4-mini-deep-research",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o4-mini-deep-research",
     input: 2,
     output: 8,
     cachedInput: 0.6666666666666666,
@@ -3220,9 +3074,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#openai/o4-mini-high",
-    provider: "openrouter",
-    model: "openai/o4-mini-high",
+    gateway: "openrouter-api",
+    gatewayModelId: "openai/o4-mini-high",
     input: 1.1,
     output: 4.4,
     cachedInput: 0.3666666666666667,
@@ -3242,9 +3095,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#switchpoint/router",
-    provider: "openrouter",
-    model: "switchpoint/router",
+    gateway: "openrouter-api",
+    gatewayModelId: "switchpoint/router",
     input: 0.85,
     output: 3.4,
     cachedInput: 0.2833333333333333,
@@ -3264,9 +3116,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-3",
-    provider: "openrouter",
-    model: "x-ai/grok-3",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-3",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -3286,9 +3137,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-3-beta",
-    provider: "openrouter",
-    model: "x-ai/grok-3-beta",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-3-beta",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -3308,9 +3158,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-3-mini",
-    provider: "openrouter",
-    model: "x-ai/grok-3-mini",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-3-mini",
     input: 0.3,
     output: 0.5,
     cachedInput: 0.09999999999999999,
@@ -3330,9 +3179,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-3-mini-beta",
-    provider: "openrouter",
-    model: "x-ai/grok-3-mini-beta",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-3-mini-beta",
     input: 0.3,
     output: 0.5,
     cachedInput: 0.09999999999999999,
@@ -3352,9 +3200,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-4",
-    provider: "openrouter",
-    model: "x-ai/grok-4",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-4",
     input: 3,
     output: 15,
     cachedInput: 1,
@@ -3374,9 +3221,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-4-fast",
-    provider: "openrouter",
-    model: "x-ai/grok-4-fast",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-4-fast",
     input: 0.19999999999999998,
     output: 0.5,
     cachedInput: 0.06666666666666667,
@@ -3396,9 +3242,8 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
   },
 
   {
-    id: "openrouter#x-ai/grok-code-fast-1",
-    provider: "openrouter",
-    model: "x-ai/grok-code-fast-1",
+    gateway: "openrouter-api",
+    gatewayModelId: "x-ai/grok-code-fast-1",
     input: 0.19999999999999998,
     output: 1.5,
     cachedInput: 0.06666666666666667,

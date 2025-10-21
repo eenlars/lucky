@@ -15,7 +15,7 @@ export function toRuntimeContract(coreConfig: CoreConfig): RuntimeConfig {
     coordinationType: coreConfig.coordinationType,
     newNodeProbability: coreConfig.newNodeProbability,
     models: {
-      provider: coreConfig.models.provider,
+      gateway: coreConfig.models.gateway,
       inactive: coreConfig.models.inactive,
       defaults: coreConfig.models.defaults,
     },

@@ -178,7 +178,7 @@ export function WorkflowPromptBar() {
 
     setIsGenerating(false)
     setExecuting(false)
-  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage, router, setEditorMode, setExecuting])
+  }, [prompt, isGenerating, exportToJSON, addLog, addChatMessage, setEditorMode, setExecuting])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {

@@ -1,5 +1,5 @@
 import { requireExecutionContext } from "@lucky/core/context/executionContext"
-import type { UserModels } from "@repo/models"
+import type { UserModels } from "@lucky/models"
 
 /**
  * Get the LLMRegistry instance from execution context
@@ -17,9 +17,9 @@ import type { UserModels } from "@repo/models"
  * const userModels = registry.forUser({
  *   mode: "shared",
  *   userId: "user-123",
- *   models: ["openai#gpt-4o", "groq#llama-3.1-70b"]
+ *   models: ["gpt-4o", "llama-3.1-70b"]
  * })
- * const model = userModels.model("openai#gpt-4o")
+ * const model = userModels.model("gpt-4o")
  * ```
  */
 export function getUserModelsFromContext(): UserModels {

@@ -115,8 +115,8 @@ export class WorkFlowNode
     return this.config.description
   }
 
-  public getModelName(): string {
-    return this.config.modelName
+  public getGatewayModelId(): string {
+    return this.config.gatewayModelId
   }
 
   public getHandOffs(): string[] {

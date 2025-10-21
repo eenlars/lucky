@@ -2,7 +2,7 @@
  * catalog query and filter functions
  */
 
-import type { LuckyProvider, ModelEntry, ModelId } from "@lucky/shared"
+import type { LuckyGateway, ModelEntry, ModelId } from "@lucky/shared"
 import { isNir } from "@lucky/shared"
 import { MODEL_CATALOG } from "./catalog"
 
@@ -14,93 +14,77 @@ export function getCatalog(): ModelEntry[] {
 }
 
 /**
- * Find model by ID (format: "provider#model")
- * Case-insensitive matching
- *
- * @param id - Full model ID like "openai#gpt-4o"
- * @returns Model entry if found, undefined otherwise
- *
- * @example
- * findModelById("openai#gpt-4o")     // → ModelEntry for GPT-4o
- * findModelById("OPENAI#GPT-4O")     // → Same model (case-insensitive)
- * findModelById("gpt-4o")            // → undefined (needs provider prefix)
- */
-function findModelById(id: string): ModelEntry | undefined {
-  if (isNir(id)) {
-    return undefined
-  }
-  return MODEL_CATALOG.find(m => m.id.toLowerCase() === id.toLowerCase())
-}
-
-/**
- * Find model by name without provider prefix
+ * Find model by name without gateway prefix
  * Matches model name in multiple ways for flexibility:
- * 1. Exact match against model name field
+ * 1. Exact match against gatewayModelId
  * 2. Match against model part after # in ID
  * 3. Full ID match (fallback)
  *
- * @param inputName - Model name like "gpt-4o" or full ID
+ * @param inputName - Model name like "gpt-4o" or full ID like "gpt-4o"
  * @returns First matching model entry, undefined if not found
  *
  * @example
  * findModelByName("gpt-4o")          // → ModelEntry for GPT-4o
- * findModelByName("openai#gpt-4o")   // → Same model (full ID match)
+ * findModelByName("gpt-4o")   // → Same model (full ID match)
  * findModelByName("GPT-4O")          // → Same model (case-insensitive)
  */
-function findModelByName(inputName: ModelId): ModelEntry | undefined {
+export function findModel(inputName: ModelId): ModelEntry | undefined {
   if (isNir(inputName)) {
     return undefined
   }
-  const normalizedInputName = inputName.toLowerCase()
-  for (const m of MODEL_CATALOG) {
-    const modelIdMatches = m.id.split("#")[1]?.toLowerCase() === normalizedInputName
-    const modelNameMatches = m.model.toLowerCase() === normalizedInputName
-    const modelIdFullMatches = m.id.toLowerCase() === normalizedInputName
-    if (modelIdMatches || modelNameMatches || modelIdFullMatches) {
-      return m
+
+  const normalizedInput = inputName.trim().toLowerCase()
+
+  for (const model of MODEL_CATALOG) {
+    const normalizedGatewayModelId = model.gatewayModelId.toLowerCase()
+    const legacyId = `${model.gateway}#${model.gatewayModelId}`.toLowerCase()
+
+    // Check all possible match patterns:
+    // 1. Exact case-sensitive match with gatewayModelId
+    if (model.gatewayModelId === normalizedInput) {
+      return model
+    }
+
+    // 2. Case-insensitive match with gatewayModelId
+    if (normalizedGatewayModelId === normalizedInput) {
+      return model
+    }
+
+    // 3. legacyId ID match (gateway#modelId format)
+    if (legacyId === normalizedInput) {
+      return model
+    }
+
+    // 4. Match just the model part after # (backwards compatibility)
+    const modelIdFromFullId = legacyId.split("#")[1]
+    if (modelIdFromFullId === normalizedInput) {
+      return model
     }
   }
+
   return undefined
 }
 
-export function findModel(id: string): ModelEntry | undefined {
-  const idModel = findModelById(id)
-  const nameModel = findModelByName(id)
-  return idModel || nameModel
-}
-
-export const toNormalModelName = (model: string) => {
-  let normalizedModel = model.trim()
-  if (model.includes("#")) {
-    const [_provider, modelName] = normalizedModel.split("#")
-    normalizedModel = modelName?.trim() ?? normalizedModel
-  }
-  if (!normalizedModel) {
-    throw new Error(`Invalid model: ${model}`)
-  }
-  return normalizedModel
-}
-
 /**
- * returns all models for a provider
+ * returns all models for a gateway
  * case-sensitive, returns empty array if not found
  */
-export function getModelsByProvider(provider: LuckyProvider): ModelEntry[] {
-  if (isNir(provider)) {
+export function getModelsByGateway(gateway: LuckyGateway): ModelEntry[] {
+  if (isNir(gateway)) {
     return []
   }
-  return MODEL_CATALOG.filter(m => m.provider === provider)
+  return MODEL_CATALOG.filter(m => m.gateway === gateway)
 }
 
 /**
- * returns only runtime-enabled models for a provider
+ * returns only runtime-enabled models for a gateway
  * filters out models where runtimeEnabled === false
  */
-export function getActiveModelsByProvider(provider: string): ModelEntry[] {
-  if (isNir(provider)) {
+export function getActiveModelsByGateway(gateway: LuckyGateway): ModelEntry[] {
+  if (isNir(gateway)) {
     return []
   }
-  return MODEL_CATALOG.filter(m => m.provider === provider && m.runtimeEnabled !== false)
+  return MODEL_CATALOG.filter(m => m.gateway === gateway && m.runtimeEnabled !== false)
 }
 
 /**
@@ -111,38 +95,38 @@ export function getRuntimeEnabledModels(): ModelEntry[] {
 }
 
 /**
- * returns sorted list of providers with runtime-enabled models
+ * returns sorted list of gateways with runtime-enabled models
  */
-export function getRuntimeEnabledProviders(): string[] {
-  const providers = new Set<string>()
+export function getRuntimeEnabledGateways(): string[] {
+  const gateways = new Set<string>()
   MODEL_CATALOG.forEach(m => {
     if (m.runtimeEnabled !== false) {
-      providers.add(m.provider)
+      gateways.add(m.gateway)
     }
   })
-  return Array.from(providers).sort()
+  return Array.from(gateways).sort()
 }
 
 /**
- * returns sorted list of all providers (regardless of runtimeEnabled)
+ * returns sorted list of all gateways (regardless of runtimeEnabled)
  */
-export function getAllProviders(): string[] {
-  const providers = new Set<string>()
-  MODEL_CATALOG.forEach(m => providers.add(m.provider))
-  return Array.from(providers).sort()
+export function getAllGateways(): string[] {
+  const gateways = new Set<string>()
+  MODEL_CATALOG.forEach(m => gateways.add(m.gateway))
+  return Array.from(gateways).sort()
 }
 
 /**
- * returns provider names with count of active models
- * only includes providers with runtime-enabled models
+ * returns gateway names with count of active models
+ * only includes gateways with runtime-enabled models
  */
-export function getProviderInfo(): Array<{
+export function getGatewayInfo(): Array<{
   name: string
   activeModels: number
 }> {
-  const providers = getRuntimeEnabledProviders()
-  return providers.map(provider => ({
-    name: provider,
-    activeModels: getActiveModelsByProvider(provider).length,
+  const gateways = getRuntimeEnabledGateways()
+  return gateways.map(gateway => ({
+    name: gateway,
+    activeModels: getActiveModelsByGateway(gateway as LuckyGateway).length,
   }))
 }

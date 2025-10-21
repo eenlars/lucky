@@ -1,27 +1,20 @@
-import { createLLMRegistryForUser } from "@/features/provider-llm-setup/lib/create-llm-registry"
-import { loadProviderApiKeys } from "@/features/provider-llm-setup/lib/load-user-providers"
-import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import {
   type WorkflowLoadResult,
   loadWorkflowConfig,
 } from "@/features/workflow-or-chat-invocation/lib/config-load/database-workflow-loader"
 import { InvalidWorkflowInputError } from "@/features/workflow-or-chat-invocation/lib/errors/workflowInputError"
-import { loadMCPToolkitsForWorkflow } from "@/features/workflow-or-chat-invocation/lib/tools/mcp-toolkit-loader"
 import { validateWorkflowInput } from "@/features/workflow-or-chat-invocation/lib/validation/input-validator"
 import { activeWorkflows } from "@/features/workflow-or-chat-invocation/workflow/active-workflows"
-import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
-import { withExecutionContext } from "@lucky/core/context/executionContext"
-import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
-import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
+import { getObservationContext } from "@lucky/core/context/observationContext"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
-import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
-import type { InvocationInput, InvocationSource } from "@lucky/core/workflow/runner/types"
-import { toNormalModelName } from "@lucky/models/llm-catalog/catalog-queries"
+import type { InvocationSource } from "@lucky/core/workflow/runner/types"
+import { getModelsByGateway } from "@lucky/models"
+import { findModel } from "@lucky/models/llm-catalog/catalog-queries"
 import { type WorkflowConfigZ, genShortId } from "@lucky/shared"
-import { getModelsByProvider } from "@repo/models"
 import type { NextRequest } from "next/server"
 
 export async function POST(req: NextRequest) {
@@ -99,8 +92,8 @@ export async function POST(req: NextRequest) {
       return fail("v1/openrouter", "Workflow not found", { status: 404 })
     }
 
-    const models = load.config.nodes.map(n => toNormalModelName(n.modelName))
-    const openrouterEnabled = getModelsByProvider("openrouter").filter(entry => entry.runtimeEnabled !== false)
+    const models = load.config.nodes.map(n => n.gatewayModelId)
+    const openrouterEnabled = getModelsByGateway("openrouter-api").filter(entry => entry.runtimeEnabled !== false)
 
     const fixWrongModelsInConfig = (dsl: WorkflowConfigZ) => {
       const newConfig: WorkflowConfigZ = {
@@ -109,96 +102,13 @@ export async function POST(req: NextRequest) {
       }
       const nodes = dsl.nodes
       for (const node of nodes) {
-        if (!node.modelName.startsWith("openrouter#")) {
-          node.modelName = "google/gemini-2.5-flash"
-        } else {
-          node.modelName = toNormalModelName(node.modelName)
-        }
+        node.gatewayModelId = findModel(node.gatewayModelId)?.gatewayModelId ?? node.gatewayModelId
         newConfig.nodes.push(node)
       }
       return newConfig
     }
 
     load.config = fixWrongModelsInConfig(load.config)
-
-    // Secrets & providers
-    const secrets = createSecretResolver(principal.clerk_id, principal)
-
-    const userProviders = await loadProviderApiKeys(secrets)
-    if (!userProviders.openrouter) {
-      await cleanup()
-      return fail("v1/openrouter", "Openrouter key must be set. This can be done in settings.")
-    }
-
-    const userModels = await createLLMRegistryForUser({
-      principal,
-      userProviders,
-      userEnabledModels: openrouterEnabled,
-    })
-
-    // Optional MCP toolkits
-    const mcpToolkits = await loadMCPToolkitsForWorkflow(principal)
-
-    // Observer hookup
-    const obsId = genShortId()
-    const observer = new AgentObserver()
-    const registry = ObserverRegistry.getInstance()
-    registry.register(obsId, observer)
-
-    const id = parsed.workflowId ?? `wf_${genShortId()}`
-
-    // Build core InvocationInput
-    const invocationInput: InvocationInput = {
-      source,
-      evalInput: {
-        type: "prompt-only",
-        goal: parsed.prompt,
-        workflowId: id,
-      },
-      validation: "strict",
-      abortSignal: controller.signal,
-    }
-
-    // Execute
-    const result = await withExecutionContext(
-      {
-        principal,
-        secrets,
-        apiKeys: { openrouter: userProviders.openrouter },
-        userModels,
-        ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
-      },
-      async () => withObservationContext({ randomId: obsId, observer }, async () => invokeWorkflow(invocationInput)),
-    )
-
-    const finishedAt = new Date().toISOString()
-
-    // Cleanup observer shortly after completion
-    setTimeout(
-      () => {
-        observer.dispose()
-        registry.dispose(obsId)
-      },
-      5 * 60 * 1000,
-    )
-
-    await cleanup()
-
-    if (!result?.success) {
-      const errMsg = result?.error ?? "Workflow invocation failed"
-      return fail("v1/openrouter", errMsg, { status: 500 })
-    }
-
-    const traceId = result.data?.[0]?.workflowInvocationId ?? requestId
-    const payload = {
-      output: result,
-      invocationId: requestId,
-      traceId,
-      startedAt,
-      finishedAt,
-    }
-
-    return alrighty("v1/openrouter", { success: true, data: payload })
   } catch (error) {
     await cleanup()
     if (error instanceof InvalidWorkflowInputError) {

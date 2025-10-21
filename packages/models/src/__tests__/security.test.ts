@@ -18,8 +18,8 @@ describe("Security - Privilege Escalation", () => {
   beforeAll(() => {
     registry = createLLMRegistry({
       fallbackKeys: {
-        openai: "sk-company-fallback",
-        groq: "gsk-company-fallback",
+        "openai-api": "sk-company-fallback",
+        "groq-api": "gsk-company-fallback",
       },
     })
   })
@@ -29,7 +29,7 @@ describe("Security - Privilege Escalation", () => {
       registry.forUser({
         mode: "byok",
         userId: "attacker",
-        models: ["openai#gpt-4o-mini"],
+        models: ["gpt-4o-mini"],
         apiKeys: {},
       }),
     ).toThrow("BYOK mode requires apiKeys")
@@ -39,24 +39,26 @@ describe("Security - Privilege Escalation", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
-    expect(() => userModels.model("OpenAI#gpt-4o-mini")).toThrow()
-    expect(() => userModels.model("openai#GPT-4O-MINI")).toThrow()
+    // Exact match is allowed
+    expect(() => userModels.model("gpt-4o-mini")).not.toThrow()
+    // Case-manipulated variant should not be allowed
+    expect(() => userModels.model("GPT-4O-MINI")).toThrow()
   })
 
   it("prevents array mutation via Object.freeze", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     expect(() => {
-      ;(userModels as any).allowedModels.push("openai#gpt-4o")
+      ;(userModels as any).allowedModels.push("gpt-4o")
     }).toThrow(TypeError)
   })
 
@@ -64,23 +66,23 @@ describe("Security - Privilege Escalation", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     const cheap = userModels.tier("cheap")
     const smart = userModels.tier("smart")
 
-    expect((cheap as any).modelId).toBe("openai#gpt-4o-mini")
-    expect((smart as any).modelId).toBe("openai#gpt-4o-mini")
+    expect((cheap as any).modelId).toBe("gpt-4o-mini")
+    expect((smart as any).modelId).toBe("gpt-4o-mini")
   })
 
   it("prevents prototype pollution via __proto__", () => {
     const maliciousConfig: any = {
       mode: "byok",
       userId: "attacker",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
       __proto__: { polluted: true },
     }
 
@@ -94,7 +96,7 @@ describe("Security - Injection Attacks", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
   })
 
@@ -104,8 +106,8 @@ describe("Security - Injection Attacks", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: sqlPayload,
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     expect(userModels).toBeDefined()
@@ -115,8 +117,8 @@ describe("Security - Injection Attacks", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     const templates = ["{{7*7}}", "${7*7}", "<%= 7*7 %>"]
@@ -130,8 +132,8 @@ describe("Security - Injection Attacks", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     const ssrfPayloads = [
@@ -151,13 +153,13 @@ describe("Security - Type Confusion", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
   })
 
   it("rejects array-like objects for models param", () => {
     const arrayLike: any = {
-      0: "openai#gpt-4o-mini",
+      0: "gpt-4o-mini",
       length: 1,
     }
 
@@ -166,7 +168,7 @@ describe("Security - Type Confusion", () => {
         mode: "byok",
         userId: "user",
         models: arrayLike,
-        apiKeys: { openai: "sk-key" },
+        apiKeys: { "openai-api": "sk-key" },
       }),
     ).toThrow("models must be an array")
   })
@@ -179,7 +181,7 @@ describe("Security - Type Confusion", () => {
         mode: "byok",
         userId: "user",
         models: malicious,
-        apiKeys: { openai: "sk-key" },
+        apiKeys: { "openai-api": "sk-key" },
       }),
     ).toThrow()
   })
@@ -196,8 +198,8 @@ describe("Security - Type Confusion", () => {
       registry.forUser({
         mode: "byok",
         userId: malicious,
-        models: ["openai#gpt-4o-mini"],
-        apiKeys: { openai: "sk-key" },
+        models: ["gpt-4o-mini"],
+        apiKeys: { "openai-api": "sk-key" },
       }),
     ).toThrow("userId must be a string")
   })
@@ -208,7 +210,7 @@ describe("Security - Data Leakage", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-company-secret" },
+      fallbackKeys: { "openai-api": "sk-company-secret" },
     })
   })
 
@@ -216,7 +218,7 @@ describe("Security - Data Leakage", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     try {
@@ -231,28 +233,28 @@ describe("Security - Data Leakage", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-secret-123" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-secret-123" },
     })
 
-    const model = userModels.model("openai#gpt-4o-mini")
+    const model = userModels.model("gpt-4o-mini")
     const str = String(model)
 
     expect(str).not.toContain("sk-secret-123")
   })
 
-  it("getCatalog() does not expose provider instances", () => {
+  it("getCatalog() does not expose gateway instances", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     const catalog = userModels.getCatalog()
 
     for (const entry of catalog) {
-      expect((entry as any).provider).toBeDefined()
+      expect((entry as any).gateway).toBeDefined()
       expect((entry as any).apiKey).toBeUndefined()
       expect((entry as any).client).toBeUndefined()
     }
@@ -264,7 +266,7 @@ describe("Security - Resource Exhaustion", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
   })
 
@@ -276,7 +278,7 @@ describe("Security - Resource Exhaustion", () => {
         mode: "byok",
         userId: "user",
         models: maxModels,
-        apiKeys: { openai: "sk-key" },
+        apiKeys: { "openai-api": "sk-key" },
       }),
     ).toThrow("Too many models")
   })
@@ -291,21 +293,21 @@ describe("Security - Resource Exhaustion", () => {
       registry.forUser({
         mode: "byok",
         userId: "user",
-        models: ["openai#gpt-4o-mini"],
+        models: ["gpt-4o-mini"],
         apiKeys: maxKeys,
       }),
     ).toThrow("Too many API keys")
   })
 
   it("limits model ID length to 200 chars", () => {
-    const tooLong = `openai#${"x".repeat(194)}`
+    const tooLong = `${"x".repeat(201)}`
 
     expect(() =>
       registry.forUser({
         mode: "byok",
         userId: "user",
         models: [tooLong],
-        apiKeys: { openai: "sk-key" },
+        apiKeys: { "openai-api": "sk-key" },
       }),
     ).toThrow("Model ID too long")
   })
@@ -317,8 +319,8 @@ describe("Security - Resource Exhaustion", () => {
       registry.forUser({
         mode: "byok",
         userId: "user",
-        models: ["openai#gpt-4o-mini"],
-        apiKeys: { openai: tooLong },
+        models: ["gpt-4o-mini"],
+        apiKeys: { "openai-api": tooLong },
       }),
     ).toThrow("API key too long")
   })
@@ -327,8 +329,8 @@ describe("Security - Resource Exhaustion", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     expect(() => {
@@ -344,7 +346,7 @@ describe("Security - Business Logic", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
   })
 
@@ -353,21 +355,21 @@ describe("Security - Business Logic", () => {
       registry.forUser({
         mode: "byok",
         userId: "user",
-        models: ["openai#gpt-4o-mini"],
-        apiKeys: { openai: "   " },
+        models: ["gpt-4o-mini"],
+        apiKeys: { "openai-api": "   " },
       }),
     ).toThrow("BYOK mode requires apiKeys")
   })
 
-  it("rejects malformed model IDs (missing provider)", () => {
+  it("rejects malformed model IDs (missing gateway)", () => {
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
-    expect(() => userModels.model("openai#")).toThrow()
+    expect(() => userModels.model("")).toThrow()
     expect(() => userModels.model("#gpt-4o")).toThrow()
     expect(() => userModels.model("#")).toThrow()
   })
@@ -380,8 +382,8 @@ describe("Security - Business Logic", () => {
         registry.forUser({
           mode: "byok",
           userId: "user",
-          models: ["openai#gpt-4o-mini"],
-          apiKeys: { openai: key },
+          models: ["gpt-4o-mini"],
+          apiKeys: { "openai-api": key },
         }),
       ).toThrow("ASCII-only")
     }
@@ -393,7 +395,7 @@ describe("Security - Race Conditions", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
   })
 
@@ -403,8 +405,8 @@ describe("Security - Race Conditions", () => {
         registry.forUser({
           mode: "byok",
           userId: `user-${i}`,
-          models: ["openai#gpt-4o-mini"],
-          apiKeys: { openai: `sk-key-${i}` },
+          models: ["gpt-4o-mini"],
+          apiKeys: { "openai-api": `sk-key-${i}` },
         }),
       ),
     )
@@ -417,15 +419,15 @@ describe("Security - Race Conditions", () => {
     const user1 = registry.forUser({
       mode: "byok",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     const user2 = registry.forUser({
       mode: "byok",
       userId: "user2",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-key" },
     })
 
     const cat1 = user1.getCatalog()
@@ -441,7 +443,7 @@ describe("Security - Edge Case Configurations", () => {
 
   beforeAll(() => {
     registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback", groq: "gsk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback", "groq-api": "gsk-fallback" },
     })
   })
 
@@ -450,24 +452,24 @@ describe("Security - Edge Case Configurations", () => {
       mode: "shared",
       userId: "u",
       models: [
-        "openai#gpt-4o-mini",
-        "openai#gpt-4o-mini", // Duplicate
-        " openai#gpt-4o-mini ", // Whitespace
+        "gpt-4o-mini",
+        "gpt-4o-mini", // Duplicate
+        " gpt-4o-mini ", // Whitespace
       ],
     })
 
     // Asking for different model should fail
-    expect(() => user.model("openai#gpt-4o")).toThrow("not in user's allowed models")
+    expect(() => user.model("gpt-4o")).toThrow("not in user's allowed models")
 
     // Valid model still works
-    expect(() => user.model("openai#gpt-4o-mini")).not.toThrow()
+    expect(() => user.model("gpt-4o-mini")).not.toThrow()
   })
 
   it("unprefixed name not in allowlist fails even if in catalog", () => {
     const user = registry.forUser({
       mode: "shared",
       userId: "u",
-      models: ["groq#llama-3.1-8b-instant"],
+      models: ["llama-3.1-8b-instant"],
     })
 
     // Catalog has gpt-4o-mini, but allowlist doesn't
@@ -478,19 +480,19 @@ describe("Security - Edge Case Configurations", () => {
     const shared = registry.forUser({
       mode: "shared",
       userId: "s",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
     const byok = registry.forUser({
       mode: "byok",
       userId: "b",
-      models: ["openai#gpt-4o"],
-      apiKeys: { openai: "sk-user" },
+      models: ["gpt-4o"],
+      apiKeys: { "openai-api": "sk-user" },
     })
 
-    expect(() => shared.model("openai#gpt-4o-mini")).not.toThrow()
-    expect(() => shared.model("openai#gpt-4o")).toThrow("not in user's allowed models")
+    expect(() => shared.model("gpt-4o-mini")).not.toThrow()
+    expect(() => shared.model("gpt-4o")).toThrow("not in user's allowed models")
 
-    expect(() => byok.model("openai#gpt-4o")).not.toThrow()
-    expect(() => byok.model("openai#gpt-4o-mini")).toThrow("not in user's allowed models")
+    expect(() => byok.model("gpt-4o")).not.toThrow()
+    expect(() => byok.model("gpt-4o-mini")).toThrow("not in user's allowed models")
   })
 })

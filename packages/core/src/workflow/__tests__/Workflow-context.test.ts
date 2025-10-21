@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { createMockEvaluationInput } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -12,7 +11,8 @@ describe("Workflow ContextStore Integration", () => {
         nodeId: "test-node",
         description: "Test node",
         systemPrompt: "Test system prompt",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: ["test-node2"],
@@ -22,7 +22,8 @@ describe("Workflow ContextStore Integration", () => {
         nodeId: "test-node2",
         description: "Test node 2",
         systemPrompt: "Test system prompt 2",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: [],

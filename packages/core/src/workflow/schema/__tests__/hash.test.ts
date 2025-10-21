@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
 
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { hashWorkflow, hashWorkflowNode } from "@core/workflow/schema/hash"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 
@@ -9,7 +8,8 @@ function makeNode(overrides: Partial<WorkflowNodeConfig> = {}): WorkflowNodeConf
     nodeId: "node-1",
     description: "Test Node",
     systemPrompt: "Do things",
-    modelName: getDefaultModels().balanced,
+    gatewayModelId: "gpt-4o-mini",
+    gateway: "openai-api",
     mcpTools: [],
     codeTools: [],
     handOffs: [],
@@ -34,7 +34,8 @@ describe("hashing utilities", () => {
       nodeId: "node-1",
       description: "Test Node",
       systemPrompt: "Do things",
-      modelName: getDefaultModels().balanced,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -48,7 +49,8 @@ describe("hashing utilities", () => {
       handOffs: ["end"],
       mcpTools: [],
       codeTools: [],
-      modelName: getDefaultModels().balanced,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       nodeId: "node-1",
       memory: { foo: "DIFFERENT" },
     }
@@ -101,7 +103,8 @@ describe("hashing utilities", () => {
           nodeId: "n1",
           description: "A",
           systemPrompt: "p",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["n2"],
@@ -111,7 +114,8 @@ describe("hashing utilities", () => {
           nodeId: "n2",
           description: "B",
           systemPrompt: "p2",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -128,7 +132,8 @@ describe("hashing utilities", () => {
       handOffs: ["n2"],
       mcpTools: [],
       codeTools: [],
-      modelName: getDefaultModels().balanced,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       nodeId: "n1",
       memory: { z: "DIFF" },
     } as WorkflowNodeConfig

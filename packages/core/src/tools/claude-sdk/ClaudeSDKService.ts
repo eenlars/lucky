@@ -216,7 +216,7 @@ export class ClaudeSDKService {
       lgg.info("[ClaudeSDK] Execution successful", {
         nodeId: request.nodeId,
         requestId,
-        model: modelId,
+        gatewayModelId: modelId,
         inputTokens: usage?.input_tokens || 0,
         outputTokens: usage?.output_tokens || 0,
         cost,

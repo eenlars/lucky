@@ -107,7 +107,7 @@ Principle: MCP state is a property of a workflow invocation. Carry the toolkit(s
 
 3) Initialize MCP clients from context in tools layer
    - File: `packages/tools/src/mcp/setup.ts`
-   - Change: allow `setupMCPForNode(...)` to accept an options bag that includes either `contextToolkits` (map) or a `transportProvider(name) → transport | transportSpec`.
+   - Change: allow `setupMCPForNode(...)` to accept an options bag that includes either `contextToolkits` (map) or a `transportGateway(name) → transport | transportSpec`.
      - Flow:
        - If a context toolkit exists for `name`, create the MCP client from that transport/transportSpec and skip file/env lookup.
        - Else, fall back to current behavior: read `configPath` → env.

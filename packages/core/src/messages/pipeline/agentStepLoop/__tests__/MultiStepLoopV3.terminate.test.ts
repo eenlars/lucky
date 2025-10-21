@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { MultiStepLoopContext } from "@core/messages/pipeline/agentStepLoop/utils"
 import type { NodeInvocationCallContext } from "@core/messages/pipeline/input.types"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -58,7 +57,8 @@ describe("runMultiStepLoopV3Helper termination", () => {
         handOffs: ["end"],
         description: "test node",
         systemPrompt: "you are a helpful node",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         codeTools: [],
         mcpTools: [],
         waitingFor: [],
@@ -75,7 +75,7 @@ describe("runMultiStepLoopV3Helper termination", () => {
         data: { text: "ok", steps: [], usage: {} },
         usdCost: 0,
       }),
-      normalizeModelName: vi.fn().mockReturnValue("gpt-4.1-mini"),
+      normalizegatewayModelId: vi.fn().mockReturnValue("gpt-4.1-mini"),
     }))
 
     const { runMultiStepLoopV3Helper } = await import("@core/messages/pipeline/agentStepLoop/MultiStepLoopV3")
@@ -83,7 +83,7 @@ describe("runMultiStepLoopV3Helper termination", () => {
       ctx,
       tools: {},
       agentSteps: [],
-      model: ctx.nodeConfig.modelName,
+      gatewayModelId: ctx.nodeConfig.gatewayModelId,
       maxRounds: 1,
       verbose: false,
       addCost: () => {},

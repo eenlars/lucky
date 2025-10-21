@@ -191,20 +191,3 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
     }
   }
 }
-
-/**
- * Normalizes model names for consistent database storage and comparison.
- *
- * Ensures all model names are stored in a consistent string format
- * with trimmed whitespace to prevent storage inconsistencies.
- *
- * @param modelName - The model name to normalize
- * @returns Normalized string representation of the model name
- */
-// TODO: add model name validation against known models
-// TODO: implement model name alias resolution
-// TODO: add deprecation warnings for old model names
-export const normalizeModelName = (modelName: string): string => {
-  // ensure consistent string format and trim any whitespace
-  return String(modelName).trim()
-}

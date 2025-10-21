@@ -75,7 +75,7 @@ export const createBasicWorkflowConfig = () => ({
       nodeId: "node1",
       description: "test node",
       systemPrompt: "test system prompt",
-      modelName: "openrouter#openai/gpt-4.1-mini",
+      gatewayModelId: "openai/gpt-4.1-mini",
       mcpTools: [],
       codeTools: [],
       handOffs: [],

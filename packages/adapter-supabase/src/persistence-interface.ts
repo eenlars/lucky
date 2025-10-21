@@ -103,7 +103,7 @@ export interface NodeInvocationData {
   agentSteps?: unknown
   summary: string
   files?: string[]
-  model: string
+  gatewayModelId: string
   updatedMemory?: Record<string, string>
 }
 
@@ -116,7 +116,7 @@ export interface NodeInvocationStartData {
   workflowInvocationId: string
   workflowVersionId: string
   startTime: string
-  model: string
+  gatewayModelId: string
   attemptNo?: number // Defaults to 1 (first attempt)
 }
 

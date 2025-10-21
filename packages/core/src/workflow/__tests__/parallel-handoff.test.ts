@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { type AggregatedPayload, extractTextFromPayload } from "@core/messages/MessagePayload"
 import { WorkFlowNode } from "@core/node/WorkFlowNode"
 import { Workflow } from "@core/workflow/Workflow"
@@ -94,7 +93,8 @@ describe("Parallel handoff integration", () => {
           nodeId: "start",
           description: "Start node",
           systemPrompt: "Split the task into two parts: A and B",
-          modelName: getDefaultModels().nano,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["workerA", "workerB"],
@@ -105,7 +105,8 @@ describe("Parallel handoff integration", () => {
           description: "Worker A",
           systemPrompt:
             "Handle part A. Secret information for A is 'ALPHA'. Reply with a short answer that includes ALPHA.",
-          modelName: getDefaultModels().nano,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["join"],
@@ -115,7 +116,8 @@ describe("Parallel handoff integration", () => {
           description: "Worker B",
           systemPrompt:
             "Handle part B. Secret information for B is 'BETA'. Reply with a short answer that includes BETA.",
-          modelName: getDefaultModels().nano,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["join"],
@@ -124,7 +126,8 @@ describe("Parallel handoff integration", () => {
           nodeId: "join",
           description: "Join node",
           systemPrompt: "Aggregate results from A and B and finalize",
-          modelName: getDefaultModels().nano,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

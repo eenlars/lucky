@@ -8,7 +8,7 @@ import {
   verifyToolSetEachNodeIsUnique,
   verifyToolsUnique,
 } from "../toolsVerification"
-import { verifyModelNameExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../verifyWorkflow"
+import { verifyGatewayModelIdExists, verifyModelsAreActive, verifyNoDuplicateHandoffs } from "../verifyWorkflow"
 
 // Mock the constants module
 vi.mock("@examples/settings/constants", () => ({
@@ -83,7 +83,8 @@ const wrongExample: WorkflowConfig = {
       description:
         "Planning Node – Generates a comprehensive task list based on the request, ensuring data completeness and providing actionable next steps.",
       systemPrompt: "",
-      modelName: getDefaultModels().balanced,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["google-maps-scraper", "enhanced-store-extractor", "store-data-automation"],
@@ -94,7 +95,8 @@ const wrongExample: WorkflowConfig = {
       description:
         "Google Maps Node – Efficiently locates businesses in the area with improved accuracy, utilizing optimized search parameters.",
       systemPrompt: "",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: ["searchGoogleMaps"],
       handOffs: ["file-saver-1"],
@@ -109,7 +111,8 @@ const wrongExample: WorkflowConfig = {
       description:
         "File Saver Node – Saves detailed results, including store counts and unique addresses, to a specified output file path.",
       systemPrompt: "",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: ["todoWrite"],
       handOffs: ["end"],
@@ -119,7 +122,8 @@ const wrongExample: WorkflowConfig = {
       description:
         "Enhanced Store Extractor Node – Employs advanced algorithms to search for and extract all relevant store locations, verifying results against multiple sources for accuracy.",
       systemPrompt: "",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: ["verifyLocation"],
       handOffs: ["file-saver-1"],
@@ -134,7 +138,8 @@ const wrongExample: WorkflowConfig = {
       description:
         "Store Data Automation Node – Automatically retrieves and verifies store addresses from a dedicated API, ensuring comprehensive coverage and reducing manual effort.",
       systemPrompt: "",
-      modelName: getDefaultModels().nano,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: ["searchGoogleMaps"],
       handOffs: ["file-saver-1"],
@@ -145,14 +150,15 @@ const wrongExample: WorkflowConfig = {
   ],
 }
 
-const modelNameMissingExample: WorkflowConfig = {
+const gatewayModelIdMissingExample: WorkflowConfig = {
   entryNodeId: "planning-node",
   nodes: [
     {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: undefined as unknown as string,
+      gatewayModelId: undefined as unknown as string,
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -161,14 +167,15 @@ const modelNameMissingExample: WorkflowConfig = {
   ],
 }
 
-const invalidModelNameExample: WorkflowConfig = {
+const invalidgatewayModelIdExample: WorkflowConfig = {
   entryNodeId: "planning-node",
   nodes: [
     {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: "not-a-real-model" as unknown as string,
+      gatewayModelId: "not-a-real-model" as unknown as string,
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end"],
@@ -184,7 +191,8 @@ const duplicateHandoffsExample: WorkflowConfig = {
       nodeId: "planning-node",
       description: "Planning Node",
       systemPrompt: "",
-      modelName: getDefaultModels().balanced,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: ["end", "end"],
@@ -234,7 +242,8 @@ describe("verifyToolsUnique", () => {
           nodeId: "node1",
           description: "node with no tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -254,7 +263,8 @@ describe("verifyToolsUnique", () => {
           nodeId: "node1",
           description: "node with mixed tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoRead"],
           handOffs: ["node2"],
@@ -263,7 +273,8 @@ describe("verifyToolsUnique", () => {
           nodeId: "node2",
           description: "node with same tool names",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"], // Duplicate MCP tool
           codeTools: [],
           handOffs: ["end"],
@@ -286,7 +297,8 @@ describe("verifyToolsUnique", () => {
           nodeId: "node1",
           description: "first mcp user",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["firecrawl"],
           codeTools: [],
           handOffs: ["node2"],
@@ -295,7 +307,8 @@ describe("verifyToolsUnique", () => {
           nodeId: "node2",
           description: "second mcp user",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["firecrawl"], // Duplicate
           codeTools: [],
           handOffs: ["end"],
@@ -309,17 +322,17 @@ describe("verifyToolsUnique", () => {
   })
 })
 
-describe("verifyModelNameExists", () => {
-  it("should detect missing modelName", async () => {
-    const errors = await verifyModelNameExists(modelNameMissingExample)
+describe("verifygatewayModelIdExists", () => {
+  it("should detect missing gatewayModelId", async () => {
+    const errors = await verifyGatewayModelIdExists(gatewayModelIdMissingExample)
     expect(errors.length).toBeGreaterThan(0)
-    expect(errors[0]).toContain("missing a modelName")
+    expect(errors[0]).toContain("missing a gatewayModelId")
   })
 
-  it("should detect invalid modelName", async () => {
-    const errors = await verifyModelNameExists(invalidModelNameExample)
+  it("should detect invalid gatewayModelId", async () => {
+    const errors = await verifyGatewayModelIdExists(invalidgatewayModelIdExample)
     expect(errors.length).toBeGreaterThan(0)
-    expect(errors[0]).toContain("invalid modelName")
+    expect(errors[0]).toContain("invalid gatewayModelId")
   })
 })
 
@@ -340,7 +353,8 @@ describe("verifyAllToolsAreActive", () => {
           nodeId: "node1",
           description: "node with inactive tool",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: ["playwright" as any], // This is in INACTIVE_TOOLS
           handOffs: ["end"],
@@ -363,7 +377,8 @@ describe("verifyAllToolsAreActive", () => {
           nodeId: "node1",
           description: "node with unknown tool",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["unknownMcpTool" as any],
           codeTools: ["unknownCodeTool" as any],
           handOffs: ["end"],
@@ -386,7 +401,8 @@ describe("verifyAllToolsAreActive", () => {
           nodeId: "node1",
           description: "node with default tool",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: ["todoRead"], // This is in defaultTools
           handOffs: ["end"],
@@ -406,7 +422,8 @@ describe("verifyAllToolsAreActive", () => {
           nodeId: "node1",
           description: "node with active tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoWrite"],
           handOffs: ["end"],
@@ -437,7 +454,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node1",
           description: "first node",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoRead"],
           handOffs: ["node2"],
@@ -446,7 +464,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node2",
           description: "second node with same tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoRead"],
           handOffs: ["end"],
@@ -469,7 +488,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node1",
           description: "node with duplicate tools internally",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: ["todoRead", "todoRead"], // Duplicate
           handOffs: ["end"],
@@ -491,7 +511,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node1",
           description: "empty tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["node2"],
@@ -500,7 +521,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node2",
           description: "also empty tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -522,7 +544,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node1",
           description: "first node",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoRead"],
           handOffs: ["node2"],
@@ -531,7 +554,8 @@ describe("verifyToolSetEachNodeIsUnique", () => {
           nodeId: "node2",
           description: "second node with same tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoRead"],
           handOffs: ["end"],
@@ -553,7 +577,8 @@ describe("verifyMaxToolsPerAgent", () => {
           nodeId: "node1",
           description: "node with too many mcp tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily", "firecrawl", "browserUse", "proxy", "googleScholar", "serpAPI"], // 6 tools, limit is 3 + 2 defaultTools = 5
           codeTools: [],
           handOffs: ["end"],
@@ -576,7 +601,8 @@ describe("verifyMaxToolsPerAgent", () => {
           nodeId: "node1",
           description: "node with too many code tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: ["todoRead", "todoWrite", "searchGoogleMaps", "verifyLocation", "urlToMarkdown", "csvReader"], // 6 tools, limit is 3 + 2 defaultTools = 5
           handOffs: ["end"],
@@ -599,7 +625,8 @@ describe("verifyMaxToolsPerAgent", () => {
           nodeId: "node1",
           description: "node with acceptable tool count",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoRead", "todoWrite"],
           handOffs: ["end"],
@@ -631,7 +658,8 @@ describe("verifyModelsAreActive", () => {
           nodeId: "node1",
           description: "node with inactive model",
           systemPrompt: "test",
-          modelName: "inactive-model" as string,
+          gatewayModelId: "inactive-model" as string,
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -657,7 +685,8 @@ describe("verifyModelsAreActive", () => {
           nodeId: "node1",
           description: "node with active model",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -680,7 +709,8 @@ describe("Edge cases and comprehensive validation", () => {
           nodeId: "node1",
           description: "node with undefined tools",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: undefined as any,
           codeTools: undefined as any,
           handOffs: ["end"],
@@ -709,7 +739,8 @@ describe("Edge cases and comprehensive validation", () => {
           nodeId: "node1",
           description: "complex node 1",
           systemPrompt: "test",
-          modelName: getDefaultModels().balanced,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: ["tavily"],
           codeTools: ["todoWrite", "verifyLocation"],
           handOffs: ["node2"],
@@ -718,7 +749,8 @@ describe("Edge cases and comprehensive validation", () => {
           nodeId: "node2",
           description: "complex node 2",
           systemPrompt: "test",
-          modelName: getDefaultModels().nano,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: ["todoRead", "searchGoogleMaps"],
           handOffs: ["end"],
@@ -731,7 +763,7 @@ describe("Edge cases and comprehensive validation", () => {
     const activeErrors = await verifyAllToolsAreActive(complexWorkflow)
     const setErrors = await verifyToolSetEachNodeIsUnique(complexWorkflow)
     const maxErrors = await verifyMaxToolsPerAgent(complexWorkflow)
-    const modelErrors = await verifyModelNameExists(complexWorkflow)
+    const modelErrors = await verifyGatewayModelIdExists(complexWorkflow)
     const activeModelErrors = await verifyModelsAreActive(complexWorkflow)
 
     expect(uniqueErrors).toEqual([])

@@ -12,10 +12,10 @@ const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
 // Mock the models module
 vi.mock("@lucky/models", () => ({
   findModel: vi.fn(),
-  getActiveModelsByProvider: vi.fn(() => []),
-  mapModelNameToEasyName: vi.fn((_name: string) => "balanced"),
+  getActiveModelsByGateway: vi.fn(() => []),
+  mapGatewayModelIdToEasyName: vi.fn((_name: string) => "balanced"),
   getCatalog: vi.fn(() => []),
-  getModelsByProvider: vi.fn(() => []),
+  getModelsByGateway: vi.fn(() => []),
 }))
 
 describe("workflowSchema - model name validation", () => {
@@ -24,14 +24,14 @@ describe("workflowSchema - model name validation", () => {
     consoleWarnSpy.mockClear()
   })
 
-  const createTestWorkflow = (modelName: string) =>
+  const createTestWorkflow = (gatewayModelId: string) =>
     WorkflowConfigSchemaEasy.parse({
       nodes: [
         {
           nodeId: "test-node",
           description: "test node",
           systemPrompt: "test prompt",
-          modelName,
+          gatewayModelId,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -49,7 +49,7 @@ describe("workflowSchema - model name validation", () => {
           const workflow = createTestWorkflow(tier)
           const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-          expect(result.nodes[0].modelName).toBe(tier)
+          expect(result.nodes[0].gatewayModelId).toBe(tier)
         }
         expect(consoleWarnSpy).not.toHaveBeenCalled()
       })
@@ -63,7 +63,7 @@ describe("workflowSchema - model name validation", () => {
           const workflow = createTestWorkflow(tier)
           const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-          expect(result.nodes[0].modelName).toBe(tier.toLowerCase())
+          expect(result.nodes[0].gatewayModelId).toBe(tier.toLowerCase())
         }
         expect(consoleWarnSpy).not.toHaveBeenCalled()
       })
@@ -80,7 +80,7 @@ describe("workflowSchema - model name validation", () => {
           const workflow = createTestWorkflow(input)
           const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-          expect(result.nodes[0].modelName).toBe(expected)
+          expect(result.nodes[0].gatewayModelId).toBe(expected)
         }
         expect(consoleWarnSpy).not.toHaveBeenCalled()
       })
@@ -89,29 +89,27 @@ describe("workflowSchema - model name validation", () => {
     describe("model ID handling", () => {
       it("resolves valid model names to catalog IDs", () => {
         ;(findModel as any).mockReturnValueOnce({
-          id: "openai#gpt-4o",
-          provider: "openai",
-          model: "gpt-4o",
+          gateway: "openai-api" as const,
+          gatewayModelId: "gpt-4o",
         } as any)
 
         const workflow = createTestWorkflow("gpt-4o")
         const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-        expect(result.nodes[0].modelName).toBe("openai#gpt-4o")
+        expect(result.nodes[0].gatewayModelId).toBe("gpt-4o")
         expect(consoleWarnSpy).not.toHaveBeenCalled()
       })
 
       it("preserves already-valid catalog IDs", () => {
         ;(findModel as any).mockReturnValueOnce({
-          id: "openai#gpt-4o",
-          provider: "openai",
-          model: "gpt-4o",
+          gateway: "openai-api" as const,
+          gatewayModelId: "gpt-4o",
         } as any)
 
-        const workflow = createTestWorkflow("openai#gpt-4o")
+        const workflow = createTestWorkflow("gpt-4o")
         const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-        expect(result.nodes[0].modelName).toBe("openai#gpt-4o")
+        expect(result.nodes[0].gatewayModelId).toBe("gpt-4o")
         expect(consoleWarnSpy).not.toHaveBeenCalled()
       })
     })
@@ -123,7 +121,7 @@ describe("workflowSchema - model name validation", () => {
         const workflow = createTestWorkflow("nonexistent-model-xyz")
         const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-        expect(result.nodes[0].modelName).toBe("cheap")
+        expect(result.nodes[0].gatewayModelId).toBe("cheap")
         expect(consoleWarnSpy).toHaveBeenCalledWith(
           'Model "nonexistent-model-xyz" not found in catalog, falling back to tier: cheap',
         )
@@ -135,7 +133,7 @@ describe("workflowSchema - model name validation", () => {
         const workflow = createTestWorkflow("")
         const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-        expect(result.nodes[0].modelName).toBe("cheap")
+        expect(result.nodes[0].gatewayModelId).toBe("cheap")
         expect(consoleWarnSpy).toHaveBeenCalledWith('Model "" not found in catalog, falling back to tier: cheap')
       })
     })
@@ -146,7 +144,8 @@ describe("workflowSchema - model name validation", () => {
           nodes: [
             {
               nodeId: "test-node",
-              modelName: "old-model",
+              gatewayModelId: "old-model",
+              gateway: "openai-api",
               description: "old description",
               systemPrompt: "old prompt",
               mcpTools: ["old-tool"],
@@ -161,7 +160,7 @@ describe("workflowSchema - model name validation", () => {
         const workflow = createTestWorkflow("cheap")
         const result = handleWorkflowCompletionTierStrategy(oldWorkflow, workflow)
 
-        expect(result.nodes[0].modelName).toBe("cheap")
+        expect(result.nodes[0].gatewayModelId).toBe("cheap")
         expect(result.nodes[0].description).toBe("test node")
         expect((result.nodes[0] as any).extraField).toBe("should be preserved")
       })
@@ -181,7 +180,7 @@ describe("workflowSchema - model name validation", () => {
         const workflow = createTestWorkflow(tier)
         const result = handleWorkflowCompletionUserModelsStrategy(null, workflow)
 
-        expect(result.nodes[0].modelName).toBe(tier)
+        expect(result.nodes[0].gatewayModelId).toBe(tier)
       }
       expect(consoleWarnSpy).not.toHaveBeenCalled()
     })
@@ -190,21 +189,20 @@ describe("workflowSchema - model name validation", () => {
       const workflow = createTestWorkflow("SMART")
       const result = handleWorkflowCompletionUserModelsStrategy(null, workflow)
 
-      expect(result.nodes[0].modelName).toBe("smart")
+      expect(result.nodes[0].gatewayModelId).toBe("smart")
       expect(consoleWarnSpy).not.toHaveBeenCalled()
     })
 
     it("resolves model IDs from catalog", () => {
       ;(findModel as any).mockReturnValueOnce({
-        id: "groq#llama-3.1-70b",
-        provider: "groq",
-        model: "llama-3.1-70b",
+        gateway: "groq-api" as const,
+        gatewayModelId: "llama-3.1-70b",
       } as any)
 
-      const workflow = createTestWorkflow("groq#llama-3.1-70b")
+      const workflow = createTestWorkflow("llama-3.1-70b")
       const result = handleWorkflowCompletionUserModelsStrategy(null, workflow)
 
-      expect(result.nodes[0].modelName).toBe("groq#llama-3.1-70b")
+      expect(result.nodes[0].gatewayModelId).toBe("llama-3.1-70b")
       expect(consoleWarnSpy).not.toHaveBeenCalled()
     })
 
@@ -214,7 +212,7 @@ describe("workflowSchema - model name validation", () => {
       const workflow = createTestWorkflow("fake-model")
       const result = handleWorkflowCompletionUserModelsStrategy(null, workflow)
 
-      expect(result.nodes[0].modelName).toBe("cheap")
+      expect(result.nodes[0].gatewayModelId).toBe("cheap")
       expect(consoleWarnSpy).toHaveBeenCalledWith('Model "fake-model" not found, falling back to tier: cheap')
     })
 
@@ -223,7 +221,8 @@ describe("workflowSchema - model name validation", () => {
         nodes: [
           {
             nodeId: "test-node",
-            modelName: "old",
+            gatewayModelId: "old",
+            gateway: "openai-api",
             description: "old",
             systemPrompt: "old",
             mcpTools: [],
@@ -238,7 +237,7 @@ describe("workflowSchema - model name validation", () => {
       const workflow = createTestWorkflow("balanced")
       const result = handleWorkflowCompletionUserModelsStrategy(oldWorkflow, workflow)
 
-      expect(result.nodes[0].modelName).toBe("balanced")
+      expect(result.nodes[0].gatewayModelId).toBe("balanced")
       expect((result.nodes[0] as any).customData).toBe("preserve-me")
     })
   })
@@ -247,8 +246,8 @@ describe("workflowSchema - model name validation", () => {
     it("handles workflow with multiple nodes of mixed types", () => {
       // setup mock to handle all lookups correctly
       ;(findModel as any).mockImplementation((input: string) => {
-        if (input === "openai#gpt-4o") {
-          return { id: "openai#gpt-4o", provider: "openai", model: "gpt-4o" }
+        if (input === "gpt-4o") {
+          return { gateway: "openai-api" as const, gatewayModelId: "gpt-4o" }
         }
         return undefined
       })
@@ -257,7 +256,8 @@ describe("workflowSchema - model name validation", () => {
         nodes: [
           {
             nodeId: "n1",
-            modelName: "cheap",
+            gatewayModelId: "cheap",
+            gateway: "openai-api",
             description: "tier",
             systemPrompt: "t",
             mcpTools: [],
@@ -266,7 +266,8 @@ describe("workflowSchema - model name validation", () => {
           },
           {
             nodeId: "n2",
-            modelName: "openai#gpt-4o",
+            gatewayModelId: "gpt-4o",
+            gateway: "openai-api",
             description: "model",
             systemPrompt: "t",
             mcpTools: [],
@@ -275,7 +276,8 @@ describe("workflowSchema - model name validation", () => {
           },
           {
             nodeId: "n3",
-            modelName: "invalid",
+            gatewayModelId: "invalid",
+            gateway: "openai-api",
             description: "bad",
             systemPrompt: "t",
             mcpTools: [],
@@ -288,9 +290,9 @@ describe("workflowSchema - model name validation", () => {
 
       const result = handleWorkflowCompletionTierStrategy(null, workflow)
 
-      expect(result.nodes[0].modelName).toBe("cheap")
-      expect(result.nodes[1].modelName).toBe("openai#gpt-4o")
-      expect(result.nodes[2].modelName).toBe("cheap")
+      expect(result.nodes[0].gatewayModelId).toBe("cheap")
+      expect(result.nodes[1].gatewayModelId).toBe("gpt-4o")
+      expect(result.nodes[2].gatewayModelId).toBe("cheap")
       expect(consoleWarnSpy).toHaveBeenCalledWith('Model "invalid" not found in catalog, falling back to tier: cheap')
     })
   })

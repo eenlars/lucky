@@ -14,12 +14,11 @@ import type { ChatInterfaceProps } from "./ChatInterfaceSimulation"
 import { ChatInput } from "./components/ChatInput/ChatInput"
 import { EmptyResponseError } from "./components/EmptyResponseError"
 import { MessagesArea } from "./components/MessagesArea"
-import { copyToClipboard } from "./utils/message-utils"
-import { getMessageText } from "./utils/message-utils"
+import { copyToClipboard, getMessageText } from "./utils/message-utils"
 
 interface ChatInterfaceRealInnerProps extends ChatInterfaceProps {
   nodeId: string
-  modelName: string
+  gatewayModelId: string
   systemPrompt?: string
 }
 
@@ -31,7 +30,7 @@ function ChatInterfaceRealInner({
   maxHeight,
   className,
   nodeId,
-  modelName,
+  gatewayModelId,
   systemPrompt,
 }: ChatInterfaceRealInnerProps) {
   const { messages, sendMessage, status, error } = useChat({
@@ -39,7 +38,7 @@ function ChatInterfaceRealInner({
       api: "/api/agent/chat",
       body: {
         nodeId,
-        modelName,
+        gatewayModelId,
         systemPrompt,
       },
     }),
@@ -132,7 +131,7 @@ function ChatInterfaceRealInner({
           {/* Empty response warning - show inline after messages */}
           {showEmptyResponseWarning && (
             <div className="py-4">
-              <EmptyResponseError modelName={modelName} />
+              <EmptyResponseError gatewayModelId={gatewayModelId} />
             </div>
           )}
         </div>
@@ -157,13 +156,13 @@ function ChatInterfaceRealInner({
 
 export function ChatInterfaceReal({
   nodeId = "default-node",
-  modelName = "openai#gpt-5-nano",
+  gatewayModelId = "gpt-5-nano",
   systemPrompt,
   ...props
 }: ChatInterfaceProps) {
   return (
     <Provider initialMessages={props.initialMessages || []}>
-      <ChatInterfaceRealInner {...props} nodeId={nodeId} modelName={modelName} systemPrompt={systemPrompt} />
+      <ChatInterfaceRealInner {...props} nodeId={nodeId} gatewayModelId={gatewayModelId} systemPrompt={systemPrompt} />
     </Provider>
   )
 }

@@ -1,30 +1,28 @@
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
-import type { LuckyProvider } from "@lucky/shared"
-import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
   try {
     const body = await handleBody("providers/test-connection", request as any)
     if (isHandleBodyError(body)) return body
 
-    const { provider, apiKey } = body
+    const { gateway, apiKey } = body
 
-    // Test connection based on provider
+    // Test connection based on gateway
     let testResult: { success: boolean; error?: string; modelCount?: number }
 
-    switch (provider) {
-      case "openai":
+    switch (gateway) {
+      case "openai-api":
         testResult = await testOpenAIConnection(apiKey)
         break
-      case "groq":
+      case "groq-api":
         testResult = await testGroqConnection(apiKey)
         break
-      case "openrouter":
+      case "openrouter-api":
         testResult = await testOpenRouterConnection(apiKey)
         break
       default:
-        return fail("providers/test-connection", `Unsupported provider: ${provider}`, {
+        return fail("providers/test-connection", `Unsupported gateway: ${gateway}`, {
           code: "UNSUPPORTED_PROVIDER",
           status: 400,
         })

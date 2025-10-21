@@ -260,7 +260,7 @@ export class InvocationPipeline {
       lgg.error(`[InvocationPipeline] Execution error: ${msg}`)
       lgg.error(`[InvocationPipeline] Node context: ${this.ctx.nodeConfig.nodeId}`)
       lgg.error(`[InvocationPipeline] Workflow: ${this.ctx.workflowVersionId}`)
-      lgg.error(`[InvocationPipeline] Model: ${this.ctx.nodeConfig.modelName}`)
+      lgg.error(`[InvocationPipeline] Model: ${this.ctx.nodeConfig.gatewayModelId}`)
       lgg.error(`[InvocationPipeline] Tools available: ${Object.keys(this.tools).join(", ")}`)
 
       if (stack) {
@@ -424,7 +424,7 @@ export class InvocationPipeline {
       }
 
       const res = await sendAI({
-        model: this.ctx.nodeConfig.modelName,
+        model: this.ctx.nodeConfig.gatewayModelId,
         messages,
         mode: "text" as const,
         opts: {
@@ -480,7 +480,7 @@ export class InvocationPipeline {
     }
 
     const res = await sendAI({
-      model: this.ctx.nodeConfig.modelName,
+      model: this.ctx.nodeConfig.gatewayModelId,
       messages,
       mode: "tool" as const,
       opts: {
@@ -516,7 +516,7 @@ export class InvocationPipeline {
 
     const processed: ProcessedResponse = processResponseVercel({
       response: res.data as GenerateTextResult<ToolSet, any>,
-      modelUsed: this.ctx.nodeConfig.modelName,
+      modelUsed: this.ctx.nodeConfig.gatewayModelId,
       nodeId: this.ctx.nodeConfig.nodeId,
     })
 
@@ -548,7 +548,7 @@ export class InvocationPipeline {
       ctx: this.ctx,
       tools: this.tools,
       agentSteps: this.agentSteps,
-      model: this.ctx.nodeConfig.modelName,
+      gatewayModelId: this.ctx.nodeConfig.gatewayModelId,
       maxRounds: getEffectiveMaxSteps(this.ctx.nodeConfig.maxSteps, maxRounds),
       verbose,
       addCost: cost => this.addCost(cost),
@@ -566,7 +566,7 @@ export class InvocationPipeline {
       ctx: this.ctx,
       tools: this.tools,
       agentSteps: this.agentSteps,
-      model: this.ctx.nodeConfig.modelName,
+      gatewayModelId: this.ctx.nodeConfig.gatewayModelId,
       maxRounds: getEffectiveMaxSteps(this.ctx.nodeConfig.maxSteps, maxRounds),
       verbose,
       addCost: cost => this.addCost(cost),

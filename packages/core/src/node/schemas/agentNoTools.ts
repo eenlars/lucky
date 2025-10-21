@@ -6,7 +6,7 @@ import type { z } from "zod"
 const agentDescriptions = {
   nodeId: AGENT_KEY_EXPLANATIONS.nodeId,
   description: AGENT_KEY_EXPLANATIONS.description,
-  modelName: AGENT_KEY_EXPLANATIONS.modelName,
+  gatewayModelId: AGENT_KEY_EXPLANATIONS.gatewayModelId,
   mcpTools: "MCP tools available to this workflow node (NOT ALLOWED TO EDIT)",
   codeTools: "Code tools available to this workflow node (NOT ALLOWED TO EDIT)",
   handOffs: "Which other workflow nodes this node is allowed to hand off to (NOT ALLOWED TO EDIT)",

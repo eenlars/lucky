@@ -8,7 +8,7 @@ import { auth } from "@clerk/nextjs/server"
 import { withExecutionContext } from "@lucky/core/context/executionContext"
 import { formalizeWorkflow } from "@lucky/core/workflow/actions/generate/formalizeWorkflow"
 import type { AfterGenerationOptions, GenerationOptions } from "@lucky/core/workflow/actions/generate/generateWF.types"
-import { DEFAULT_MODELS, PROVIDERS, PROVIDER_API_KEYS, findModel } from "@lucky/models"
+import { DEFAULT_MODELS, GATEWAYS, GATEWAY_API_KEYS, findModel } from "@lucky/models"
 import { type Principal, isNir } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     const secrets = createSecretResolver(userId, principal)
 
     // Fetch API keys (user's if paying, environment if free)
-    const providerKeyNames = PROVIDERS.map(p => p.secretKeyName)
+    const providerKeyNames = GATEWAYS.map(p => p.secretKeyName)
     const apiKeys = await secrets.getAll(providerKeyNames, "environment-variables")
 
     // Fetch user models only if paying
@@ -58,17 +58,17 @@ export async function POST(req: NextRequest) {
 
     // Build provider -> API key mapping for registry
     const fallbackOverrides = Object.fromEntries(
-      PROVIDER_API_KEYS.map(keyName => {
+      GATEWAY_API_KEYS.map(keyName => {
         const provider = keyName.replace(/_API_KEY$/, "").toLowerCase()
         const value = apiKeys[keyName]
         return [provider, value]
       }).filter(([, value]) => typeof value === "string" && value.length > 0),
     )
-    const registry = getServerLLMRegistry()
+    const registry = await getServerLLMRegistry()
 
     // Use default model if needed
     if (isNir(availableModels)) {
-      const defaultModel = findModel(DEFAULT_MODELS.openai.default)
+      const defaultModel = findModel(DEFAULT_MODELS["openai-api"].default)
       if (!defaultModel || defaultModel.runtimeEnabled === false) {
         return fail("workflow/formalize", "No models available. Please configure API keys in Settings.", {
           code: "NO_MODELS_AVAILABLE",
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       availableModels = [defaultModel]
     }
 
-    const modelIds = availableModels.map(m => m.id)
+    const modelIds = availableModels.map(m => m.gatewayModelId)
     const userModelsMode = USER_PAYS_FOR_FORMALIZE ? "byok" : "shared"
     const userModelsId = USER_PAYS_FOR_FORMALIZE ? userId : `system-${userId}`
 

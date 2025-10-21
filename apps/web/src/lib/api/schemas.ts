@@ -397,13 +397,13 @@ export const apiSchemas = {
    */
   models: {
     req: z.object({
-      action: z.enum(["getActiveModelNames", "getModelV2", "getModelsByProvider"]),
-      model: z.string().optional(),
-      provider: z.string(),
+      action: z.enum(["getActiveGatewayModelIds", "getModelV2", "getModelsByGateway"]),
+      gatewayModelId: z.string().optional(),
+      gateway: z.string(),
     }),
     res: z.object({
       models: z.array(z.unknown()).optional(),
-      model: z.unknown().optional(),
+      gatewayModelId: z.unknown().optional(),
     }),
   },
 
@@ -427,7 +427,7 @@ export const apiSchemas = {
    */
   "providers/test-connection": {
     req: z.object({
-      provider: z.string().min(1),
+      gateway: z.string().min(1),
       apiKey: z.string().min(1),
     }),
     res: ApiResponse(
@@ -519,7 +519,7 @@ export const apiSchemas = {
   "ai/simple": {
     req: z.object({
       prompt: z.string().min(1),
-      model: z.string().optional(),
+      gatewayModelId: z.string().optional(),
     }),
     res: ApiResponse(
       z.object({
@@ -731,7 +731,7 @@ export const apiSchemas = {
    */
   "test/calculate-cost": {
     req: z.object({
-      model: z.string(),
+      gatewayModelId: z.string(),
       inputTokens: z.number().int().nonnegative().optional(),
       outputTokens: z.number().int().nonnegative().optional(),
       usage: z

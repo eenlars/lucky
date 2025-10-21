@@ -61,7 +61,7 @@ if (typeof (vi as any).mock === "function")
         showParameterSchemas: true,
       },
       models: {
-        provider: "openai" as const,
+        gateway: "openai-api" as const,
         inactive: new Set(),
       },
       improvement: {
@@ -170,7 +170,6 @@ if (typeof (vi as any).mock === "function")
     },
   }))
 
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { buildMessages } from "@core/messages/create/buildMessages"
 import { createMockEvaluationInput, createMockWorkflowFile } from "@core/utils/__tests__/setup/coreMocks"
@@ -188,7 +187,8 @@ describe("ContextFile End-to-End Integration", () => {
           nodeId: "test-node",
           description: "Test node that should receive contextFile info",
           systemPrompt: "You are a test agent",
-          modelName: getDefaultModels().default,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],

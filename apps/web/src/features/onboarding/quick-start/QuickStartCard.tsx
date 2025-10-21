@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { MODEL_CONFIG } from "@lucky/examples/settings/models"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
@@ -13,7 +14,8 @@ const DEMO_WORKFLOW: WorkflowConfig = {
       description: "A helpful AI assistant that answers questions",
       systemPrompt:
         "You are a helpful, friendly AI assistant. Answer questions clearly and concisely in 2-3 sentences.",
-      modelName: "anthropic/claude-3-5-haiku",
+      gateway: MODEL_CONFIG.gateway,
+      gatewayModelId: "anthropic/claude-3-5-haiku",
       mcpTools: [],
       codeTools: [],
       handOffs: [],

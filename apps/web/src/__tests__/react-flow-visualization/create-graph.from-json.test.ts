@@ -13,7 +13,7 @@ vi.mock("@/react-flow-visualization/components/nodes", () => ({
 
 // Mock runtime-only imports that node/vitest cannot resolve in this test scope
 vi.mock("@lucky/examples/settings/constants.client", () => ({
-  MODELS: { default: "openrouter#openai/gpt-4o-mini" },
+  MODELS: { default: "openai/gpt-4o-mini" },
 }))
 
 describe("create graph from JSON (typed)", () => {
@@ -25,7 +25,8 @@ describe("create graph from JSON (typed)", () => {
           nodeId: "a",
           description: "A",
           systemPrompt: "p",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["b"],
@@ -35,7 +36,8 @@ describe("create graph from JSON (typed)", () => {
           nodeId: "b",
           description: "B",
           systemPrompt: "p",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

@@ -13,7 +13,8 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
           nodeId: "step-1",
           description: "desc",
           systemPrompt: "sp",
-          modelName: "gpt-4.1-mini",
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: ["todoWrite"],
           handOffs: ["end"],
@@ -25,7 +26,6 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   }),
 }))
 
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { improveWorkflowUnified } from "@core/improvement/behavioral/judge/improveWorkflow"
 
 describe("improveWorkflowUnified sanitization (core defaults)", () => {
@@ -39,7 +39,8 @@ describe("improveWorkflowUnified sanitization (core defaults)", () => {
           nodeId: "step-1",
           description: "desc",
           systemPrompt: "sp",
-          modelName: getDefaultModels().reasoning,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

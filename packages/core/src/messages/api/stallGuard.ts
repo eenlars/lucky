@@ -19,7 +19,7 @@ import pTimeout from "p-timeout"
  *
  * @param base - Parameters for generateText function
  * @param options - Timeout configuration
- * @param options.modelName - Model name for error messages
+ * @param options.gatewayModelId - Model name for error messages
  * @param options.overallTimeoutMs - Maximum total execution time
  * @param options.stallTimeoutMs - Maximum time between progress updates
  *
@@ -36,7 +36,7 @@ import pTimeout from "p-timeout"
  * const result = await runWithStallGuard(
  *   { messages, model },
  *   {
- *     modelName: "claude-3",
+ *     gatewayModelId: "claude-3",
  *     overallTimeoutMs: 60000,
  *     stallTimeoutMs: 10000
  *   }
@@ -45,11 +45,11 @@ import pTimeout from "p-timeout"
 export async function runWithStallGuard<R>(
   base: Parameters<typeof generateText>[0],
   {
-    modelName,
+    gatewayModelId,
     overallTimeoutMs,
     stallTimeoutMs,
   }: {
-    modelName: string
+    gatewayModelId: string
     overallTimeoutMs: number
     stallTimeoutMs: number
   },
@@ -76,12 +76,12 @@ export async function runWithStallGuard<R>(
       const err = new Error(
         `
         Stall timeout (${stallTimeoutMs} ms) 
-        for ${modelName} with ${base.messages?.length} messages 
+        for ${gatewayModelId} with ${base.messages?.length} messages 
         and ${base.messages?.reduce((acc, msg) => acc + msg.content.length, 0)} chars
         `.replace(/\s+\n/g, " "),
       )
       ctrl.abort() // stop the request itself
-      console.warn("[stallGuard] stall timeout reached, aborting", { modelName, stallTimeoutMs })
+      console.warn("[stallGuard] stall timeout reached, aborting", { gatewayModelId, stallTimeoutMs })
       rejectBecauseOfStall(err) // make the race() reject with *our* error
     }, stallTimeoutMs)
   }
@@ -113,7 +113,7 @@ export async function runWithStallGuard<R>(
     // 2. stall timeout
     return await pTimeout(Promise.race([generation, stallPromise]), {
       milliseconds: overallTimeoutMs,
-      message: new Error(`Overall timeout (${overallTimeoutMs} ms) for ${modelName}`),
+      message: new Error(`Overall timeout (${overallTimeoutMs} ms) for ${gatewayModelId}`),
     })
   } finally {
     if (stallTimer) clearTimeout(stallTimer)

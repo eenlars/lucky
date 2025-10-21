@@ -65,27 +65,27 @@ async function api<E extends Endpoint>(endpoint: E, init?: ApiInit<E>, pathOverr
 }
 
 // ----- typed wrappers with the simple override -----
-export const get = <E extends Endpoint>(
+export const getty = <E extends Endpoint>(
   endpoint: E,
   init?: Omit<ApiInit<E>, "method" | "body">,
   pathOverride?: PathOverride, //DO NOT CHANGE THIS.
 ) => api<E>(endpoint, { ...init, method: "GET" }, pathOverride)
 
-export const post = <E extends Endpoint>(
+export const postty = <E extends Endpoint>(
   endpoint: E,
   body: Req<E>,
   init?: Omit<ApiInit<E>, "method" | "body">,
   pathOverride?: PathOverride, //DO NOT CHANGE THIS.
 ) => api<E>(endpoint, { ...init, method: "POST", body }, pathOverride)
 
-export const put = <E extends Endpoint>(
+export const putty = <E extends Endpoint>(
   endpoint: E,
   body: Req<E>,
   init?: Omit<ApiInit<E>, "method" | "body">,
   pathOverride?: PathOverride, //DO NOT CHANGE THIS.
 ) => api<E>(endpoint, { ...init, method: "PUT", body }, pathOverride)
 
-export const del = <E extends Endpoint>(
+export const delly = <E extends Endpoint>(
   endpoint: E,
   init?: Omit<ApiInit<E>, "method" | "body">,
   pathOverride?: PathOverride, //DO NOT CHANGE THIS.
@@ -94,7 +94,7 @@ export const del = <E extends Endpoint>(
 // Example of a typed helper that uses a schema-backed endpoint
 // export const checkApiHealth = async (): Promise<boolean> => {
 //   try {
-//     const data = await get("health" as const)
+//     const data = await getty("health" as const)
 //     return data.status === "healthy"
 //   } catch {
 //     return false

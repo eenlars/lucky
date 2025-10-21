@@ -625,7 +625,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
                 nodeId: _nodeId,
                 description,
                 systemPrompt,
-                modelName,
+                gatewayModelId,
                 mcpTools,
                 codeTools,
                 handOffs,
@@ -635,16 +635,18 @@ export const createAppStore = (initialState: AppState = defaultState) => {
                 handOffType,
                 useClaudeSDK,
                 sdkConfig,
+                gateway,
               } = node.data
 
               return {
                 nodeId: node.id, // Ensure nodeId matches the graph node id
                 description,
                 systemPrompt,
-                modelName,
+                gatewayModelId,
                 mcpTools,
                 codeTools,
                 handOffs,
+                gateway,
                 ...(memory !== undefined && { memory }),
                 ...(waitingFor !== undefined && { waitingFor }),
                 ...(waitFor !== undefined && { waitFor }),

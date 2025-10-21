@@ -186,7 +186,7 @@ All test configuration is in `vitest.config.ts` at the repository root using mul
 
 ### Shared Test Configuration
 
-The `@repo/test-config` package provides shared Vitest configuration:
+The `@lucky/test-config` package provides shared Vitest configuration:
 
 - **vitest.base.ts** - Base configuration function with common settings
 - **plugins.ts** - Shared Vite plugins (tsconfig paths resolution)

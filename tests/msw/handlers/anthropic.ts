@@ -40,7 +40,7 @@ export function anthropicHandlers(options: AnthropicHandlerOptions = {}) {
             text: "This is a test response from MSW",
           },
         ],
-        model: "claude-3-5-sonnet-20241022",
+        gatewayModelId: "claude-3-5-sonnet-20241022",
         stop_reason: "end_turn",
         usage: {
           input_tokens: 10,

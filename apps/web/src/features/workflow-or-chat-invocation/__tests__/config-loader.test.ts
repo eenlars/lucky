@@ -25,7 +25,8 @@ describe("loadWorkflowConfigFromInput", () => {
       nodes: [
         {
           nodeId: "node1",
-          modelName: "openai#gpt-4o",
+          gateway: "openrouter-api",
+          gatewayModelId: "gpt-4o",
           description: "Test node",
           mcpTools: [],
           codeTools: [],
@@ -271,7 +272,8 @@ describe("loadWorkflowConfigFromInput", () => {
       nodes: [
         {
           nodeId: "node1",
-          modelName: "openai#gpt-4o",
+          gateway: "openrouter-api",
+          gatewayModelId: "gpt-4o",
           description: "First node",
           mcpTools: [],
           codeTools: [],
@@ -281,7 +283,8 @@ describe("loadWorkflowConfigFromInput", () => {
         },
         {
           nodeId: "node2",
-          modelName: "groq#llama-3.1-8b",
+          gateway: "openrouter-api",
+          gatewayModelId: "llama-3.1-8b",
           description: "Second node",
           mcpTools: [],
           codeTools: [],

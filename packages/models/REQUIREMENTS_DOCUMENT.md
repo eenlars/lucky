@@ -37,7 +37,7 @@ export type { ModelEntry, FallbackKeys, RegistryConfig, UserConfig };
 
 ### Model Selection Methods
 
-1. **With provider prefix**: `"openai#gpt-4o-mini"` or `"openrouter#openai/gpt-4o-mini"` - Explicit selection
+1. **With provider prefix**: `"gpt-4o-mini"` or `"openrouter#openai/gpt-4o-mini"` - Explicit selection
 2. **Auto-detect from name**: `"gpt-4o-mini"` - Finds matching model in user's list
 3. **Tier selection**: `tier("cheap")` - Picks from user's models only
 
@@ -80,7 +80,7 @@ Always throws errors immediately:
 - **Explicit mode selection**: `"byok"` or `"shared"`
 - **User ID tracking** for analytics/debugging
 - **Model allowlist** - User can only access these models (format: `provider#modelname`)
-  - OpenAI: `"openai#gpt-4o"`, `"openai#gpt-4o-mini"`
+  - OpenAI: `"gpt-4o"`, `"gpt-4o-mini"`
   - Groq: `"groq#llama-3.1-70b-versatile"`
   - OpenRouter: `"openrouter#openai/gpt-4o"`, `"openrouter#meta-llama/llama-3.1-70b"`
 - **API keys** - Required for BYOK, ignored for shared
@@ -90,7 +90,7 @@ Always throws errors immediately:
 - `createLLMRegistry(config)` - Returns registry instance
 - `registry.forUser(config)` - Returns UserModels instance
 - `userModels.model(name)` - Returns AI SDK LanguageModel
-  - Preferred: `"openai#gpt-4o"` (always include provider)
+  - Preferred: `"gpt-4o"` (always include provider)
   - Also supports: `"gpt-4o"` (auto-detect from user's list)
 - `userModels.tier(tier)` - Returns AI SDK LanguageModel
 - `userModels.getCatalog()` - Returns full model catalog array
@@ -126,13 +126,13 @@ function handleUserRequest(userId: string, userConfig: UserConfig) {
   const userModels = registry.forUser({
     mode: userConfig.hasOwnKeys ? "byok" : "shared",
     userId: userId,
-    models: userConfig.selectedModels, // e.g., ["openai#gpt-4o", "groq#llama-3.1-8b", "openrouter#meta-llama/llama-3.1-70b"]
+    models: userConfig.selectedModels, // e.g., ["gpt-4o", "groq#llama-3.1-8b", "openrouter#meta-llama/llama-3.1-70b"]
     apiKeys: userConfig.apiKeys, // Only if mode="byok"
   });
 
   // Use the model
-  const model = userModels.model("openai#gpt-4o"); // Explicit provider selection
-  // OR: userModels.model("gpt-4o") - auto-detect finds openai#gpt-4o in user's list
+  const model = userModels.model("gpt-4o"); // Explicit provider selection
+  // OR: userModels.model("gpt-4o") - auto-detect finds gpt-4o in user's list
   return generateText({ model, prompt: userConfig.prompt });
 }
 ```
@@ -144,7 +144,7 @@ function handleUserRequest(userId: string, userConfig: UserConfig) {
 const byokUser = registry.forUser({
   mode: "byok",
   userId: "user-123",
-  models: ["openai#gpt-4o", "groq#llama-3.1-70b-versatile"],
+  models: ["gpt-4o", "groq#llama-3.1-70b-versatile"],
   apiKeys: {
     openai: "sk-user-abc123...",  // User's own OpenAI key
     groq: "gsk-user-xyz789..."     // User's own Groq key
@@ -155,15 +155,15 @@ const byokUser = registry.forUser({
 const sharedUser = registry.forUser({
   mode: "shared",
   userId: "user-456",
-  models: ["openai#gpt-4o-mini", "groq#openai/gpt-oss-20b"]
+  models: ["gpt-4o-mini", "groq#openai/gpt-oss-20b"]
   // No apiKeys needed - uses fallbackKeys from registry
 })
 
 // Both users can use all selection methods
-const model1 = byokUser.model("openai#gpt-4o")              // Direct selection with provider
+const model1 = byokUser.model("gpt-4o")              // Direct selection with provider
 const model2 = byokUser.model("groq#llama-3.1-70b-versatile") // Full provider#model format
 const model3 = sharedUser.tier("cheap")                     // Tier selection
-const model4 = sharedUser.model("openai#gpt-4o-mini")       // Always include provider
+const model4 = sharedUser.model("gpt-4o-mini")       // Always include provider
 ```
 
 ### Example 3: Tier Selection Logic
@@ -176,7 +176,7 @@ const model4 = sharedUser.model("openai#gpt-4o-mini")       // Always include pr
 const user1 = registry.forUser({
   mode: "shared",
   userId: "user-123",
-  models: ["openai#gpt-4o", "openai#gpt-4-turbo"]  // Both expensive models
+  models: ["gpt-4o", "gpt-4-turbo"]  // Both expensive models
 })
 
 // tier("cheap") picks the cheapest FROM USER'S LIST, not from all available models
@@ -188,8 +188,8 @@ const user2 = registry.forUser({
   mode: "shared",
   userId: "user-456",
   models: [
-    "openai#gpt-4o",                        // OpenAI direct
-    "openai#gpt-4o-mini",                   // OpenAI direct
+    "gpt-4o",                        // OpenAI direct
+    "gpt-4o-mini",                   // OpenAI direct
     "groq#openai/gpt-oss-20b",            // Groq direct
     "openrouter#openai/gpt-4o-mini"         // Same model via OpenRouter
   ]

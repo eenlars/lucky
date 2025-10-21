@@ -5,11 +5,11 @@
 
 import { logException } from "@/lib/error-logger"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
-import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
+import type { LuckyGateway, ModelId, UserGatewayPreferences } from "@lucky/shared"
 import {
-  getEnabledModelsForProvider,
+  getEnabledModelsForGateway,
   isModelEnabled,
-  setEnabledModelsForProvider,
+  setEnabledModelsForGateway,
   toggleModel as toggleModelUtil,
 } from "@lucky/shared"
 import { toast } from "sonner"
@@ -18,7 +18,7 @@ import { persist } from "zustand/middleware"
 
 export interface ModelPreferencesState {
   // State
-  preferences: UserModelPreferences | null
+  preferences: UserGatewayPreferences | null
   isLoading: boolean
   isSaving: boolean
   lastSynced: Date | null
@@ -26,12 +26,12 @@ export interface ModelPreferencesState {
 
   // Actions
   loadPreferences: () => Promise<void>
-  getEnabledModels: (provider: LuckyProvider) => ModelId[]
+  getEnabledModels: (gateway: LuckyGateway) => ModelId[]
   isEnabled: (modelId: ModelId) => boolean
-  toggleModel: (provider: LuckyProvider, modelId: ModelId) => Promise<void>
-  setProviderModels: (provider: LuckyProvider, modelIds: ModelId[]) => Promise<void>
-  removeModel: (provider: LuckyProvider, modelId: ModelId) => Promise<void>
-  removeProvider: (provider: LuckyProvider) => Promise<void>
+  toggleModel: (gateway: LuckyGateway, modelId: ModelId) => Promise<void>
+  setProviderModels: (gateway: LuckyGateway, modelIds: ModelId[]) => Promise<void>
+  removeModel: (gateway: LuckyGateway, modelId: ModelId) => Promise<void>
+  removeProvider: (gateway: LuckyGateway) => Promise<void>
   syncFromServer: () => Promise<void>
   clearError: () => void
 
@@ -44,10 +44,10 @@ export interface ModelPreferencesState {
 /**
  * Helper function to filter out deleted providers from preferences
  */
-function filterDeletedProviders(preferences: UserModelPreferences): UserModelPreferences {
+function filterDeletedProviders(preferences: UserGatewayPreferences): UserGatewayPreferences {
   return {
     ...preferences,
-    providers: preferences.providers.filter(p => p.isEnabled),
+    gateways: preferences.gateways.filter((p: { isEnabled: boolean }) => p.isEnabled),
   }
 }
 
@@ -95,9 +95,9 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Get enabled models for a provider (from local state)
-      getEnabledModels: (provider: LuckyProvider) => {
+      getEnabledModels: (gateway: LuckyGateway) => {
         const { preferences } = get()
-        return getEnabledModelsForProvider(preferences, provider)
+        return getEnabledModelsForGateway(preferences, gateway)
       },
 
       // Check if a model is enabled (from local state)
@@ -107,7 +107,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Toggle a single model on/off with optimistic update
-      toggleModel: async (provider: LuckyProvider, modelId: ModelId) => {
+      toggleModel: async (gateway: LuckyGateway, modelId: ModelId) => {
         const { preferences } = get()
 
         if (!preferences) {
@@ -120,7 +120,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
 
         // Optimistic update
         const previousPreferences = preferences
-        const updatedPreferences = toggleModelUtil(preferences, provider, modelId)
+        const updatedPreferences = toggleModelUtil(preferences, gateway, modelId)
         set({ preferences: updatedPreferences, isSaving: true, error: null })
 
         try {
@@ -157,7 +157,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Set all enabled models for a provider with optimistic update
-      setProviderModels: async (provider: LuckyProvider, modelIds: ModelId[]) => {
+      setProviderModels: async (gateway: LuckyGateway, modelIds: ModelId[]) => {
         const { preferences } = get()
 
         if (!preferences) {
@@ -170,7 +170,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
 
         // Optimistic update
         const previousPreferences = preferences
-        const updatedPreferences = setEnabledModelsForProvider(preferences, provider, modelIds)
+        const updatedPreferences = setEnabledModelsForGateway(preferences, gateway, modelIds)
         set({ preferences: updatedPreferences, isSaving: true, error: null })
 
         try {
@@ -208,7 +208,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
       },
 
       // Remove a single model from a provider with optimistic update
-      removeModel: async (provider: LuckyProvider, modelId: ModelId) => {
+      removeModel: async (gateway: LuckyGateway, modelId: ModelId) => {
         const { preferences } = get()
 
         if (!preferences) {
@@ -217,15 +217,15 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         }
 
         // Check if provider exists
-        const providerSettings = preferences.providers.find(p => p.provider === provider)
+        const providerSettings = preferences.gateways.find((p: { gateway: LuckyGateway }) => p.gateway === gateway)
         if (!providerSettings) {
-          toast.error(`Provider "${provider}" not found`)
+          toast.error(`Provider "${gateway}" not found`)
           return
         }
 
         // Check if model exists in the provider
         if (!providerSettings.enabledModels.includes(modelId)) {
-          toast.error(`Model "${modelId}" not found in provider "${provider}"`)
+          toast.error(`Model "${modelId}" not found in provider "${gateway}"`)
           return
         }
 
@@ -233,13 +233,19 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         const previousPreferences = preferences
         const updatedPreferences = {
           ...preferences,
-          providers: preferences.providers.map(p =>
-            p.provider === provider
-              ? {
-                  ...p,
-                  enabledModels: p.enabledModels.filter(m => m !== modelId),
-                }
-              : p,
+          gateways: preferences.gateways.map(
+            (p: {
+              gateway: LuckyGateway
+              enabledModels: ModelId[]
+              isEnabled: boolean
+              metadata?: { apiKeyConfigured: boolean; lastUpdated: string }
+            }) =>
+              p.gateway === gateway
+                ? {
+                    ...p,
+                    enabledModels: p.enabledModels.filter((m: ModelId) => m !== modelId),
+                  }
+                : p,
           ),
         }
         set({ preferences: updatedPreferences, isSaving: true, error: null })
@@ -274,12 +280,12 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
             error: errorMessage,
             isSaving: false,
           })
-          toast.error(`Failed to remove model: ${errorMessage}`)
+          toast.error(`Failed to remove gatewayModelId: ${errorMessage}`)
         }
       },
 
       // Remove an entire provider with optimistic update
-      removeProvider: async (provider: LuckyProvider) => {
+      removeProvider: async (gateway: LuckyGateway) => {
         const { preferences } = get()
 
         if (!preferences) {
@@ -288,9 +294,9 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         }
 
         // Check if provider exists
-        const providerExists = preferences.providers.some(p => p.provider === provider)
+        const providerExists = preferences.gateways.some((p: { gateway: LuckyGateway }) => p.gateway === gateway)
         if (!providerExists) {
-          toast.error(`Provider "${provider}" not found`)
+          toast.error(`Provider "${gateway}" not found`)
           return
         }
 
@@ -298,19 +304,21 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
         const previousPreferences = preferences
         const updatedPreferences = {
           ...preferences,
-          providers: preferences.providers.map(p =>
-            p.provider === provider
-              ? {
-                  ...p,
-                  isEnabled: false,
-                  enabledModels: [],
-                }
-              : p,
+          gateways: preferences.gateways.map(
+            (p: { gateway: LuckyGateway; isEnabled: boolean; enabledModels: ModelId[] }) =>
+              p.gateway === gateway
+                ? {
+                    ...p,
+                    isEnabled: false,
+                    enabledModels: [],
+                  }
+                : p,
           ),
         }
         set({ preferences: updatedPreferences, isSaving: true, error: null })
 
         try {
+          // todo-alrighty
           const response = await fetch("/api/user/model-preferences", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -340,7 +348,7 @@ export const useModelPreferencesStore = create<ModelPreferencesState>()(
             error: errorMessage,
             isSaving: false,
           })
-          toast.error(`Failed to remove provider: ${errorMessage}`)
+          toast.error(`Failed to remove  ${errorMessage}`)
         }
       },
 

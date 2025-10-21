@@ -42,10 +42,10 @@ export async function POST(req: NextRequest) {
     // Setup execution context
     const secrets = createSecretResolver(principal.clerk_id, principal)
     const apiKeys = await secrets.getAll(["OPENAI_API_KEY", "OPENROUTER_API_KEY"], "environment-variables")
-    const llmRegistry = getServerLLMRegistry()
+    const llmRegistry = await getServerLLMRegistry()
     const fallbackOverrides =
       typeof apiKeys.OPENAI_API_KEY === "string" && apiKeys.OPENAI_API_KEY.length > 0
-        ? { openai: apiKeys.OPENAI_API_KEY }
+        ? { "openai-api": apiKeys.OPENAI_API_KEY }
         : undefined
 
     // Create system prompt based on context type
@@ -120,7 +120,7 @@ ${JSON.stringify(currentState, null, 2)}
 Make appropriate changes based on the user's request.`
     }
 
-    const modelUsed = "openai#gpt-4o-mini"
+    const modelUsed = "gpt-4o-mini"
 
     const userModels = llmRegistry.forUser({
       mode: "shared",

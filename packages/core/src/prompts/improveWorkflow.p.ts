@@ -49,7 +49,7 @@ ${workflowToStringFromConfig(config, {
   includeToolExplanations: true,
   includeAdjacencyList: true,
   includeAgents: false, // keep it focused on structure
-  easyModelNames: false,
+  tierMappingEnabled: false,
 })}
 
 FITNESS:
@@ -138,7 +138,7 @@ ${workflowToStringFromConfig(config, {
   includeToolExplanations: true,
   includeAdjacencyList: true,
   includeAgents: false,
-  easyModelNames: false,
+  tierMappingEnabled: false,
 })}
 
 Feedback and Fitness:
@@ -227,7 +227,7 @@ ${workflowToStringFromConfig(config, {
   includeToolExplanations: true,
   includeAdjacencyList: true,
   includeAgents: false,
-  easyModelNames: false,
+  tierMappingEnabled: false,
 })}
 
 FITNESS:
@@ -301,7 +301,7 @@ ${workflowToStringFromConfig(config, {
   includeToolExplanations: true,
   includeAdjacencyList: true,
   includeAgents: false,
-  easyModelNames: false,
+  tierMappingEnabled: false,
 })}
 
 FITNESS:

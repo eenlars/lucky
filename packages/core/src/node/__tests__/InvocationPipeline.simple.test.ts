@@ -100,7 +100,7 @@ describe("InvocationPipeline System Prompt Integration", () => {
     // Mock the modules
     vi.doMock("@core/messages/api/sendAI", () => ({
       sendAI: mockSendAI,
-      normalizeModelName: vi.fn().mockReturnValue("gpt-4.1-mini"),
+      normalizegatewayModelId: vi.fn().mockReturnValue("gpt-4.1-mini"),
     }))
 
     vi.doMock("@core/code_tools/todo-manager/tool-todo-write", () => ({

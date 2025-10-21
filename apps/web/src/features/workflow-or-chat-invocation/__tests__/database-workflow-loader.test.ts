@@ -40,7 +40,7 @@ describe("getDemoWorkflow", () => {
 
     const node = result.config?.nodes[0]
     expect(node?.nodeId).toBe("assistant")
-    expect(node?.modelName).toBe("openrouter#openai/gpt-4o-mini")
+    expect(node?.gatewayModelId).toBe("openai/gpt-4o-mini")
     expect(node?.description).toBeTruthy()
     expect(node?.systemPrompt).toBeTruthy()
   })

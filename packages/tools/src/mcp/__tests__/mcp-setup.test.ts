@@ -1,10 +1,10 @@
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import type { MCPToolName } from "@lucky/tools/client"
 import { type ToolSet, tool } from "ai"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
-import type { MCPToolName } from "../registry/types"
 
 // Simple logger replacement
 const lgg = {

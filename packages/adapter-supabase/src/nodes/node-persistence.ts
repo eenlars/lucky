@@ -29,7 +29,7 @@ export class SupabaseNodePersistence implements INodePersistence {
       wf_invocation_id: data.workflowInvocationId,
       wf_version_id: data.workflowVersionId,
       start_time: data.startTime,
-      model: data.model,
+      model: data.gatewayModelId,
       status: "running",
       attempt_no: data.attemptNo ?? 1,
       output: null,
@@ -115,13 +115,13 @@ export class SupabaseNodePersistence implements INodePersistence {
     const nextVersion = existingNode?.version ? existingNode.version + 1 : 1
 
     // Extract config fields
-    const { modelName, systemPrompt, mcpTools = [], codeTools = [], description, memory, handOffs } = config as any
+    const { gatewayModelId, systemPrompt, mcpTools = [], codeTools = [], description, memory, handOffs } = config as any
 
     const insertable: TablesInsert<"NodeVersion"> = {
       node_id: nodeId,
       wf_version_id: workflowVersionId,
       version: nextVersion,
-      llm_model: modelName,
+      llm_model: gatewayModelId,
       system_prompt: systemPrompt,
       tools: [...(Array.isArray(mcpTools) ? mcpTools : []), ...(Array.isArray(codeTools) ? codeTools : [])],
       extras: {},
@@ -161,7 +161,7 @@ export class SupabaseNodePersistence implements INodePersistence {
       output: data.output as any,
       summary: data.summary,
       files: data.files,
-      model: data.model,
+      model: data.gatewayModelId,
       status: "completed",
       extras: extras as any,
       metadata: {},

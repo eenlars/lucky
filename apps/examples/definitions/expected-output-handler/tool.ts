@@ -1,4 +1,4 @@
-import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
+import { getDefaultModels } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { llmify } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"

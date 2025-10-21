@@ -1,8 +1,8 @@
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { describe, expect, it } from "vitest"
-import { extractRequiredProviders, getProviderKeyName } from "./provider-extraction"
+import { extractRequiredGateways, getProviderKeyName } from "./provider-extraction"
 
-describe("extractRequiredProviders", () => {
+describe("extractRequiredGateways", () => {
   it("should extract single provider from catalog", () => {
     const config: WorkflowConfig = {
       nodes: [
@@ -10,7 +10,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "gpt-4.1-nano",
+          gatewayModelId: "gpt-4.1-nano",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -18,9 +19,9 @@ describe("extractRequiredProviders", () => {
       ],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
-    expect(result.providers).toEqual(new Set(["openai"]))
-    expect(result.models.get("openai")).toEqual(["gpt-4.1-nano"])
+    const result = extractRequiredGateways(config)
+    expect(result.gateways).toEqual(new Set(["openai-api"]))
+    expect(result.models.get("openai-api")).toEqual(["gpt-4.1-nano"])
   })
 
   it("should extract multiple providers from catalog", () => {
@@ -30,7 +31,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "gpt-4.1-nano",
+          gatewayModelId: "gpt-4.1-nano",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -39,7 +41,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent2",
           description: "test",
           systemPrompt: "test",
-          modelName: "anthropic/claude-sonnet-4",
+          gatewayModelId: "anthropic/claude-sonnet-4",
+          gateway: "openrouter-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -47,11 +50,11 @@ describe("extractRequiredProviders", () => {
       ],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
+    const result = extractRequiredGateways(config)
     // anthropic/claude-sonnet-4 uses openrouter provider!
-    expect(result.providers).toEqual(new Set(["openai", "openrouter"]))
-    expect(result.models.get("openai")).toEqual(["gpt-4.1-nano"])
-    expect(result.models.get("openrouter")).toEqual(["anthropic/claude-sonnet-4"])
+    expect(result.gateways).toEqual(new Set(["openai-api", "openrouter-api"]))
+    expect(result.models.get("openai-api")).toEqual(["gpt-4.1-nano"])
+    expect(result.models.get("openrouter-api")).toEqual(["anthropic/claude-sonnet-4"])
   })
 
   it("should handle model not in catalog", () => {
@@ -61,7 +64,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "unknown/model",
+          gatewayModelId: "unknown/model",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -69,18 +73,19 @@ describe("extractRequiredProviders", () => {
       ],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
-    expect(result.providers.size).toBe(0)
+    const result = extractRequiredGateways(config)
+    expect(result.gateways.size).toBe(0)
   })
 
-  it("should handle nodes without modelName", () => {
+  it("should handle nodes without gatewayModelId", () => {
     const config: WorkflowConfig = {
       nodes: [
         {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "",
+          gatewayModelId: "",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -88,8 +93,8 @@ describe("extractRequiredProviders", () => {
       ],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
-    expect(result.providers.size).toBe(0)
+    const result = extractRequiredGateways(config)
+    expect(result.gateways.size).toBe(0)
   })
 
   it("should track multiple models from same provider", () => {
@@ -99,7 +104,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "gpt-4.1-nano",
+          gatewayModelId: "gpt-4.1-nano",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -108,7 +114,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent2",
           description: "test",
           systemPrompt: "test",
-          modelName: "gpt-4.1-mini",
+          gatewayModelId: "gpt-4.1-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -116,9 +123,9 @@ describe("extractRequiredProviders", () => {
       ],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
-    expect(result.providers).toEqual(new Set(["openai"]))
-    expect(result.models.get("openai")).toEqual(["gpt-4.1-nano", "gpt-4.1-mini"])
+    const result = extractRequiredGateways(config)
+    expect(result.gateways).toEqual(new Set(["openai-api"]))
+    expect(result.models.get("openai-api")).toEqual(["gpt-4.1-nano", "gpt-4.1-mini"])
   })
 
   it("should correctly identify groq provider for groq models", () => {
@@ -128,7 +135,8 @@ describe("extractRequiredProviders", () => {
           nodeId: "agent1",
           description: "test",
           systemPrompt: "test",
-          modelName: "groq#openai/gpt-oss-20b",
+          gatewayModelId: "openai/gpt-oss-20b",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -136,10 +144,10 @@ describe("extractRequiredProviders", () => {
       ],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
+    const result = extractRequiredGateways(config)
     // openai/gpt-oss-20b actually uses groq provider!
-    expect(result.providers).toEqual(new Set(["groq"]))
-    expect(result.models.get("groq")).toEqual(["groq#openai/gpt-oss-20b"])
+    expect(result.gateways).toEqual(new Set(["groq-api"]))
+    expect(result.models.get("groq-api")).toEqual(["openai/gpt-oss-20b"])
   })
 
   it("should handle empty nodes array", () => {
@@ -147,8 +155,8 @@ describe("extractRequiredProviders", () => {
       nodes: [],
       entryNodeId: "agent1",
     }
-    const result = extractRequiredProviders(config)
-    expect(result.providers.size).toBe(0)
+    const result = extractRequiredGateways(config)
+    expect(result.gateways.size).toBe(0)
     expect(result.models.size).toBe(0)
   })
 })

@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models"
+import { getRuntimeEnabledGateways, getRuntimeEnabledModels } from "@lucky/models"
+import type { LuckyGateway } from "@lucky/shared"
 import { ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION, ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 import {
   AlertCircle,
@@ -23,8 +24,8 @@ import { useMemo, useRef, useState } from "react"
 
 interface PipelineTestRequest {
   systemPrompt: string
-  provider: string
-  modelName: string
+  gateway: LuckyGateway
+  gatewayModelId: string
   maxSteps?: number
   codeTools: string[]
   mcpTools: string[]
@@ -50,26 +51,28 @@ interface PipelineTestResponse {
   error?: string
 }
 
+const defaultConfig: PipelineTestRequest = {
+  systemPrompt: "You are a helpful assistant. Use the available tools to answer questions accurately.",
+  gateway: "openrouter-api",
+  gatewayModelId: "", // Will be set to first runtime-enabled model by useMemo below
+  maxSteps: 3,
+  codeTools: ["todoRead", "todoWrite"],
+  mcpTools: [],
+  message: "Create a todo list with 3 tasks for building a web app",
+  toolStrategy: "auto",
+  mainGoal: "Test pipeline execution",
+}
+
 // Get available tools from registry
 const AVAILABLE_CODE_TOOLS = Object.keys(ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION)
 const AVAILABLE_MCP_TOOLS = Object.keys(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION)
 
 export function PipelineTester() {
   // Get active providers and models from catalog (source of truth)
-  const activeProviders = useMemo(() => getRuntimeEnabledProviders(), [])
+  const activeGateways = useMemo(() => getRuntimeEnabledGateways(), [])
   const allActiveModels = useMemo(() => getRuntimeEnabledModels(), [])
 
-  const [config, setConfig] = useState<PipelineTestRequest>({
-    systemPrompt: "You are a helpful assistant. Use the available tools to answer questions accurately.",
-    provider: "openrouter",
-    modelName: "", // Will be set to first runtime-enabled model by useMemo below
-    maxSteps: 3,
-    codeTools: ["todoRead", "todoWrite"],
-    mcpTools: [],
-    message: "Create a todo list with 3 tasks for building a web app",
-    toolStrategy: "auto",
-    mainGoal: "Test pipeline execution",
-  })
+  const [config, setConfig] = useState<PipelineTestRequest>(defaultConfig)
 
   const [isRunning, setIsRunning] = useState(false)
   const [result, setResult] = useState<PipelineTestResponse | null>(null)
@@ -80,25 +83,24 @@ export function PipelineTester() {
 
   // Filter models by selected provider
   const availableModels = useMemo(() => {
-    return allActiveModels.filter(m => m.provider === config.provider)
-  }, [allActiveModels, config.provider])
+    return allActiveModels.filter(m => m.gateway === config.gateway)
+  }, [allActiveModels, config.gateway])
 
   // Set default model when provider changes
-  const handleProviderChange = (provider: string) => {
-    const modelsForProvider = allActiveModels.filter(m => m.provider === provider)
+  const handleProviderChange = (gateway: LuckyGateway) => {
     setConfig({
       ...config,
-      provider,
-      modelName: modelsForProvider[0]?.id || "",
+      gateway,
+      gatewayModelId: availableModels.find(m => m.gateway === gateway)?.gatewayModelId || "",
     })
   }
 
   // Set initial model
   useMemo(() => {
-    if (!config.modelName && availableModels.length > 0) {
-      setConfig(prev => ({ ...prev, modelName: availableModels[0].id }))
+    if (!config.gatewayModelId && availableModels.length > 0) {
+      setConfig(prev => ({ ...prev, gatewayModelId: availableModels[0].gatewayModelId }))
     }
-  }, [availableModels, config.modelName])
+  }, [availableModels, config.gatewayModelId])
 
   const handleRun = async () => {
     setIsRunning(true)
@@ -244,13 +246,13 @@ export function PipelineTester() {
             </label>
             <select
               id="provider-select"
-              value={config.provider}
-              onChange={e => handleProviderChange(e.target.value)}
+              value={config.gateway}
+              onChange={e => handleProviderChange(e.target.value as LuckyGateway)}
               className="w-full px-3 py-2 text-sm border border-border rounded bg-background"
             >
-              {activeProviders.map(provider => (
-                <option key={provider} value={provider}>
-                  {provider === "openai" ? "OpenAI (GATEWAY)" : provider.charAt(0).toUpperCase() + provider.slice(1)}
+              {activeGateways.map(gateway => (
+                <option key={gateway} value={gateway}>
+                  {gateway.charAt(0).toUpperCase() + gateway.slice(1)}
                 </option>
               ))}
             </select>
@@ -263,15 +265,15 @@ export function PipelineTester() {
             </label>
             <select
               id="model-select"
-              value={config.modelName}
-              onChange={e => setConfig({ ...config, modelName: e.target.value })}
+              value={config.gatewayModelId}
+              onChange={e => setConfig({ ...config, gatewayModelId: e.target.value })}
               className="w-full px-3 py-2 text-sm border border-border rounded bg-background"
               disabled={availableModels.length === 0}
             >
               {availableModels.length === 0 && <option value="">No active models</option>}
               {availableModels.map(model => (
-                <option key={model.id} value={model.id}>
-                  {model.model} (${model.input}/${model.output})
+                <option key={model.gatewayModelId} value={model.gatewayModelId}>
+                  {model.gatewayModelId} (${model.input}/${model.output})
                 </option>
               ))}
             </select>

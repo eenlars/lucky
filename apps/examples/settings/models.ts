@@ -1,16 +1,17 @@
-import { DEFAULT_MODELS, getActiveModelsByProvider } from "@lucky/models"
-import type { LuckyProvider, StandardModels } from "@lucky/shared"
+import { DEFAULT_MODELS } from "@lucky/models"
+import { getActiveModelsByGateway } from "@lucky/models/llm-catalog/catalog-queries"
+import type { LuckyGateway, StandardModels } from "@lucky/shared"
 
 // model runtime configuration
 export const MODEL_CONFIG = {
-  provider: "openrouter" as const satisfies LuckyProvider,
+  gateway: "openrouter-api" as const satisfies LuckyGateway,
   inactive: ["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"] as string[],
-  defaults: DEFAULT_MODELS.openrouter,
+  defaults: DEFAULT_MODELS["openrouter-api"],
 } as const
 
 export const getDefaultModels = (): StandardModels => {
-  const provider = MODEL_CONFIG.provider
-  return DEFAULT_MODELS[provider]
+  const gateway = MODEL_CONFIG.gateway
+  return DEFAULT_MODELS[gateway]
 }
 
 /**
@@ -18,7 +19,7 @@ export const getDefaultModels = (): StandardModels => {
  * the lowest input-token price. Falls back to the configured summary model.
  */
 export const getCheapestActiveModelId = (): string => {
-  const provider = MODEL_CONFIG.provider
-  const models = getActiveModelsByProvider(provider)
-  return models.sort((a, b) => a.input - b.input)[0]?.model ?? DEFAULT_MODELS[provider].summary
+  const gateway = MODEL_CONFIG.gateway
+  const models = getActiveModelsByGateway(gateway)
+  return models.sort((a, b) => a.input - b.input)[0]?.gatewayModelId ?? DEFAULT_MODELS[gateway].summary
 }

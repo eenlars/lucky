@@ -7,7 +7,7 @@ import { type ZodRawShape, z } from "zod"
 // define a restricted shape for improvement output (excluding tools and handoffs) ———
 const restrictedNodeConfigShape = {
   description: z.string(),
-  modelName: z.enum(ACTIVE_MODEL_NAMES as unknown as [string, ...string[]]),
+  gatewayModelId: z.enum(ACTIVE_MODEL_NAMES as unknown as [string, ...string[]]),
   memory: MemorySchemaOptional,
 } as const satisfies ZodRawShape
 
@@ -15,7 +15,7 @@ const restrictedNodeConfigShape = {
 const restrictedAgentDescriptions = {
   nodeId: AGENT_KEY_EXPLANATIONS.nodeId,
   description: AGENT_KEY_EXPLANATIONS.description,
-  modelName: AGENT_KEY_EXPLANATIONS.modelName,
+  gatewayModelId: AGENT_KEY_EXPLANATIONS.gatewayModelId,
   memory: AGENT_KEY_EXPLANATIONS.memory,
   handOffs: AGENT_KEY_EXPLANATIONS.handOffs,
 } as const

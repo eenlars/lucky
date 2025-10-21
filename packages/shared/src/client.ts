@@ -66,17 +66,20 @@ export type { OutputSchema, WorkflowFile } from "./types/workflow"
 
 // Provider contracts (client-safe)
 export {
-  apiKeyValidationSchema,
-  providerConfigSchema,
-  providerKeyMappingSchema,
-  providerNameSchema,
-  providerSettingsSchema,
-  providerStatusSchema,
+  gatewayApiKeyValidationSchema,
+  gatewayConfigSchema,
+  gatewayEntrySchema,
+  gatewayKeyMappingSchema,
+  gatewayNameSchema,
+  gatewaySettingsSchema,
+  gatewayStatusSchema,
 } from "./contracts/llm-contracts/providers"
 export type {
-  ApiKeyValidation,
-  ProviderConfig,
-  ProviderKeyMapping,
-  ProviderSettings,
-  ProviderStatus,
+  GatewayApiKeyValidation,
+  GatewayConfig,
+  GatewayEntry,
+  GatewayKeyMapping,
+  GatewaySettings,
+  GatewayStatus,
+  LuckyGateway,
 } from "./contracts/llm-contracts/providers"

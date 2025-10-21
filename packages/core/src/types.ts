@@ -1,4 +1,5 @@
 import type { LegacyRuntimeConfig } from "@core/core-config/compat"
+import type { LuckyGateway } from "@lucky/shared"
 import type { RuntimeConfig } from "@lucky/shared/contracts/config"
 
 export type FlowCoordinationType = RuntimeConfig["coordinationType"]
@@ -32,8 +33,6 @@ export type FullFlowRuntimeConfig = {
   PATHS: FlowPathsConfig
   MODELS: {
     inactive: string[]
-    provider: FlowModelProvider
+    gateway: LuckyGateway
   }
 }
-
-export type FlowModelProvider = RuntimeConfig["models"]["provider"]

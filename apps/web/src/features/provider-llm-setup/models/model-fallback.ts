@@ -4,19 +4,19 @@
  */
 
 import { findModel } from "@lucky/models"
-import type { ModelEntry, UserModelPreferences } from "@lucky/shared"
+import type { ModelEntry, UserGatewayPreferences } from "@lucky/shared"
 
 /**
  * Get all enabled model IDs from user preferences
  */
-export function getAllEnabledModelIds(preferences: UserModelPreferences | null): Set<string> {
+export function getAllEnabledModelIds(preferences: UserGatewayPreferences | null): Set<string> {
   const enabledIds = new Set<string>()
 
   if (!preferences) return enabledIds
 
-  for (const provider of preferences.providers) {
-    if (provider.isEnabled) {
-      for (const modelId of provider.enabledModels) {
+  for (const gateway of preferences.gateways) {
+    if (gateway.isEnabled) {
+      for (const modelId of gateway.enabledModels) {
         enabledIds.add(modelId)
       }
     }
@@ -29,7 +29,7 @@ export function getAllEnabledModelIds(preferences: UserModelPreferences | null):
  * Check if a model ID exists in user's enabled models
  * Handles both catalog ID format (provider#model) and plain model names
  */
-export function isModelInPreferences(modelId: string, preferences: UserModelPreferences | null): boolean {
+export function isModelInPreferences(modelId: string, preferences: UserGatewayPreferences | null): boolean {
   if (!preferences) return false
 
   const enabledIds = getAllEnabledModelIds(preferences)
@@ -39,12 +39,12 @@ export function isModelInPreferences(modelId: string, preferences: UserModelPref
 
   // Try finding in catalog and checking with catalog ID
   const catalogEntry = findModel(modelId)
-  if (catalogEntry && enabledIds.has(catalogEntry.id)) return true
+  if (catalogEntry && enabledIds.has(catalogEntry.gatewayModelId)) return true
 
-  // Try matching without provider prefix (e.g., "gpt-4o-mini" matches "openai#gpt-4o-mini")
+  // Try matching without provider prefix (e.g., "gpt-4o-mini" matches "gpt-4o-mini")
   for (const enabledId of enabledIds) {
-    const modelName = enabledId.includes("#") ? enabledId.split("#")[1] : enabledId
-    if (modelName === modelId) return true
+    const gatewayModelId = enabledId.includes("#") ? enabledId.split("#")[1] : enabledId
+    if (gatewayModelId === modelId) return true
   }
 
   return false
@@ -54,7 +54,7 @@ export function isModelInPreferences(modelId: string, preferences: UserModelPref
  * Pick the best available model from user's preferences
  * Tries to match the intelligence/speed tier of the original model
  */
-export function pickFallbackModel(originalModelId: string, preferences: UserModelPreferences | null): string | null {
+export function pickFallbackModel(originalModelId: string, preferences: UserGatewayPreferences | null): string | null {
   if (!preferences) return null
 
   // Get original model's characteristics
@@ -80,10 +80,10 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
     if (sameIntelligence.length > 0) {
       // Prefer same speed if possible
       const sameSpeed = sameIntelligence.find(m => m.speed === originalModel.speed)
-      if (sameSpeed) return sameSpeed.id
+      if (sameSpeed) return sameSpeed.gatewayModelId
 
       // Otherwise return first with same intelligence
-      return sameIntelligence[0].id
+      return sameIntelligence[0].gatewayModelId
     }
   }
 
@@ -98,5 +98,5 @@ export function pickFallbackModel(originalModelId: string, preferences: UserMode
     return speedScore(b) - speedScore(a)
   })
 
-  return sorted[0]?.id || null
+  return sorted[0]?.gatewayModelId || null
 }

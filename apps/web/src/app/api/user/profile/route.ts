@@ -1,5 +1,5 @@
 import { personalProfileSchema } from "@/features/profile/schemas/profile.schema"
-import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"

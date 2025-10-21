@@ -35,7 +35,6 @@ import { tool as humanApproval } from "./human-approval/tool"
 import { tool as humanHelp } from "./human-help/tool"
 
 // Web/Scraping Tools
-import { tool as firecrawlAPI } from "./api-caller-firecrawl/tool"
 import { tool as browserAutomation } from "./browser-automation/tool"
 import { tool as searchGoogleMaps } from "./googlescraper/tool"
 import urlToMarkdown from "./url-to-markdown/tool"
@@ -146,11 +145,6 @@ export const TOOL_TOOLKITS: ToolkitRegistry = {
     ]),
 
     createToolkit("web", "Web scraping and data collection tools for extracting information from websites", [
-      {
-        toolName: "firecrawlAPI",
-        toolFunc: firecrawlAPI,
-        description: "Scrape websites using Firecrawl API with structured data extraction",
-      },
       {
         toolName: "searchGoogleMaps",
         toolFunc: searchGoogleMaps,

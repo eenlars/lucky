@@ -1,14 +1,15 @@
 /**
- * Check if API keys are configured in lockbox for given providers
- * Does NOT validate keys with provider APIs (that would be slow)
+ * Check if API keys are configured in lockbox for given gateways
+ * Does NOT validate keys with gateway APIs (that would be slow)
  * Just checks if the key exists and is non-empty
  */
 
 import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
+import type { LuckyGateway } from "@lucky/shared"
 import { createSecretResolver } from "./secretResolver"
 
 export type ProviderKeyStatus = {
-  provider: string
+  gateway: LuckyGateway
   keyConfigured: boolean
   keyName: string
   lastChecked: string
@@ -20,21 +21,21 @@ export type ProviderKeyStatus = {
  * @param provider Provider name (e.g., "openai", "anthropic")
  * @returns Status indicating if key is configured
  */
-export async function checkProviderKeyStatus(clerkId: string, provider: string): Promise<ProviderKeyStatus> {
+export async function checkProviderKeyStatus(clerkId: string, gateway: LuckyGateway): Promise<ProviderKeyStatus> {
   const resolver = createSecretResolver(clerkId)
-  const keyName = getProviderKeyName(provider)
+  const keyName = getProviderKeyName(gateway.replace(/-api$/, ""))
 
   try {
     const key = await resolver.get(keyName)
     return {
-      provider,
+      gateway,
       keyConfigured: Boolean(key && key.trim().length > 0),
       keyName,
       lastChecked: new Date().toISOString(),
     }
   } catch {
     return {
-      provider,
+      gateway,
       keyConfigured: false,
       keyName,
       lastChecked: new Date().toISOString(),
@@ -43,17 +44,20 @@ export async function checkProviderKeyStatus(clerkId: string, provider: string):
 }
 
 /**
- * Check multiple providers' API keys in parallel
+ * Check multiple gateways' API keys in parallel
  * @param clerkId User's Clerk ID
- * @param providers Array of provider names
- * @returns Map of provider name to key status
+ * @param gateways Array of gateways
+ * @returns Map of gateway to key status
  */
-export async function checkMultipleProviderKeys(clerkId: string, providers: string[]): Promise<Map<string, boolean>> {
-  const statuses = await Promise.all(providers.map(provider => checkProviderKeyStatus(clerkId, provider)))
+export async function checkMultipleProviderKeys(
+  clerkId: string,
+  gateways: LuckyGateway[],
+): Promise<Map<LuckyGateway, boolean>> {
+  const statuses = await Promise.all(gateways.map(gateway => checkProviderKeyStatus(clerkId, gateway)))
 
-  const statusMap = new Map<string, boolean>()
+  const statusMap = new Map<LuckyGateway, boolean>()
   for (const status of statuses) {
-    statusMap.set(status.provider, status.keyConfigured)
+    statusMap.set(status.gateway, status.keyConfigured)
   }
   return statusMap
 }

@@ -9,7 +9,6 @@ export interface VercelUsage {
   completionTokens: number
   totalTokens: number
 }
-export type PricingLevel = "low" | "medium" | "high"
 
 /**
  * Calculate the USD cost breakdown for input, output, and total tokens.
@@ -39,29 +38,4 @@ export function calculateCostV2(model: string, usage: TokenUsage): number {
   cost += (usage.outputTokens / 1_000_000) * modelPricing.output
 
   return cost
-}
-
-export function getPricingLevelV2(model: string): PricingLevel {
-  const modelConfig = findModel(model)
-  if (!modelConfig) {
-    console.warn(`No pricing found for model: ${model}`)
-    return "medium"
-  }
-
-  const inputPrice = modelConfig.input
-
-  const ranges = {
-    low: 0.5,
-    medium: 1,
-    high: 2,
-  }
-
-  if (inputPrice < ranges.low) {
-    return "low"
-  }
-  if (inputPrice < ranges.medium) {
-    return "medium"
-  }
-
-  return "high"
 }

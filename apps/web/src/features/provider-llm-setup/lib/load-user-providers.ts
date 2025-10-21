@@ -1,46 +1,33 @@
 "use server"
 import { MissingApiKeysError } from "@/features/secret-management/lib/errors/general"
-import { PROVIDERS, PROVIDER_API_KEYS } from "@lucky/models"
+import { GATEWAYS, GATEWAY_API_KEYS } from "@lucky/models"
+import { isNir } from "@lucky/shared"
 import type { SecretResolver } from "@lucky/shared/contracts/ingestion"
-import type { LuckyProvider } from "@lucky/shared/contracts/llm-contracts/providers"
-import { isNir } from "@repo/shared"
+import type { LuckyGateway } from "@lucky/shared/contracts/llm-contracts/providers"
 
-export type UserProviders = Record<LuckyProvider, string>
+export type UserGateways = Partial<Record<LuckyGateway, string>>
 
 /**
- * Load API keys for all available providers.
- *
- * Fetches provider API keys from secrets and returns only providers with valid keys.
- * Uses the PROVIDERS catalog to validate provider names - only returns known providers.
- *
- * @param secrets - Secret resolver for fetching API keys
- * @returns Map of provider IDs to API key values (only providers with actual keys)
- *
- * @example
- * const apiKeys = await loadProviderApiKeys(secrets)
- * // Returns: { openai: "sk-...", groq: "gsk_..." }
- * // Note: Only includes providers that have actual API keys configured
+ * Load API keys for all configured gateways from user secrets.
+ * Only returns gateways that have valid, non-empty API keys.
  */
-export async function loadProviderApiKeys(secrets: SecretResolver): Promise<Record<LuckyProvider, string>> {
-  const keys = await secrets.getAll([...PROVIDER_API_KEYS], "environment-variables")
+export async function loadProviderApiKeys(secrets: SecretResolver): Promise<UserGateways> {
+  const keys = await secrets.getAll([...GATEWAY_API_KEYS], "environment-variables")
 
-  // if keys is empty, return an error.
   if (isNir(keys)) {
     throw new MissingApiKeysError(
-      [...PROVIDER_API_KEYS],
-      PROVIDERS.map(p => p.displayName),
+      [...GATEWAY_API_KEYS],
+      GATEWAYS.map(g => g.displayName),
     )
   }
 
-  // Build entries for all providers from the catalog
-  const entries: [LuckyProvider, string][] = []
-
-  for (const provider of PROVIDERS) {
-    const apiKey = keys[provider.secretKeyName]
+  const entries: [LuckyGateway, string][] = []
+  for (const gateway of GATEWAYS) {
+    const apiKey = keys[gateway.secretKeyName]
     if (apiKey && apiKey.trim().length > 0) {
-      entries.push([provider.provider, apiKey])
+      entries.push([gateway.gateway, apiKey])
     }
   }
 
-  return Object.fromEntries(entries) as Record<LuckyProvider, string>
+  return Object.fromEntries(entries)
 }

@@ -36,7 +36,7 @@ export interface ChatInterfaceProps {
   /** Use simulated responses instead of real AI calls (default: true) */
   useSimulation?: boolean
   /** Model name for real AI calls (e.g., "openai/gpt-4") */
-  modelName?: string
+  gatewayModelId?: string
   /** Node ID for agent context (used in real mode) */
   nodeId?: string
   /** System prompt for the agent (used in real mode) */

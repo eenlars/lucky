@@ -1,5 +1,4 @@
 // Use standardized test setup
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { StateManagementError } from "@core/utils/errors/WorkflowErrors"
@@ -47,7 +46,7 @@ vi.mock("@examples/settings/constants", () => ({
       showParameterSchemas: true,
     },
     models: {
-      provider: "openai" as const,
+      gateway: "openai-api" as const,
       inactive: [],
     },
     improvement: {
@@ -150,7 +149,7 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
     },
     usdCost: 0.01,
   }),
-  normalizeModelName: vi.fn().mockReturnValue("gpt-4.1-mini"),
+  normalizegatewayModelId: vi.fn().mockReturnValue("gpt-4.1-mini"),
 }))
 
 // Align processResponse mock with actual exported names and shapes
@@ -343,7 +342,8 @@ describe("InvocationPipeline", () => {
       handOffs: ["node1"],
       description: "test node description",
       systemPrompt: "test system prompt",
-      modelName: getDefaultModels().default,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       codeTools: [],
       mcpTools: [],
       waitingFor: [],

@@ -56,8 +56,8 @@ function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeDa
   const _IconComponent = data?.icon ? iconMapping[data.icon] : undefined
 
   // show raw model id (e.g., openai/gpt-4o-mini)
-  const displayModelName = (() => {
-    const full = data?.modelName || ""
+  const displayGatewayModelId = (() => {
+    const full = data?.gatewayModelId || ""
     if (!full) return null
     return full
   })()
@@ -279,10 +279,10 @@ function WorkflowNode({ id, data, children }: { id: string; data: WorkflowNodeDa
                 >
                   {data?.nodeId}
                 </h3>
-                {!isStartOrEndNode && displayModelName && (
+                {!isStartOrEndNode && displayGatewayModelId && (
                   <div className="flex items-center gap-1 text-[9px] text-gray-400 dark:text-gray-500">
                     <span className="w-1 h-1 rounded-full bg-green-500" />
-                    <span className="truncate">{displayModelName}</span>
+                    <span className="truncate">{displayGatewayModelId}</span>
                   </div>
                 )}
               </div>

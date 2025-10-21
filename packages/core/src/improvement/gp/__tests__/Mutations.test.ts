@@ -20,7 +20,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       inactive: new Set(),
-      provider: "openai",
+      gateway: "openai-api" as const,
     },
     improvement: {
       flags: {
@@ -47,7 +47,7 @@ vi.mock("@examples/settings/constants", () => ({
     coordinationType: "sequential",
   },
   MODELS: {
-    default: "openrouter#google/gemini-2.5-flash-lite",
+    default: "google/gemini-2.5-flash-lite",
   },
   PATHS: {
     root: "/test",
@@ -95,7 +95,6 @@ vi.mock("@core/improvement/gp/rsc/debug/dummyGenome", () => ({
 }))
 
 // isNir is used from real implementation; no mocking
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import { MutationCoordinator } from "@core/improvement/gp/operators/mutations/MutationCoordinator"
 import { createDummyGenome } from "@core/improvement/gp/rsc/debug/dummyGenome"
@@ -119,7 +118,8 @@ describe("Mutations", () => {
           nodeId: `node-${id}`,
           description: `description ${id}`,
           systemPrompt: `prompt ${id}`,
-          modelName: getDefaultModels().default,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api" as const,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -168,7 +168,8 @@ describe("Mutations", () => {
             nodeId: "mutated-node",
             description: "mutated prompt",
             systemPrompt: "mutated prompt",
-            modelName: getDefaultModels().default,
+            gatewayModelId: "gpt-4o-mini",
+            gateway: "openai-api" as const,
             mcpTools: [],
             codeTools: [],
             handOffs: [],

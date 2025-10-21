@@ -10,7 +10,7 @@ import { MODEL_CONFIG, getDefaultModels } from "./models"
 import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
 
 export const MODELS = getDefaultModels()
-export { getDefaultModels }
+export { MODEL_CONFIG, getDefaultModels }
 
 export const CONFIG = {
   coordinationType: "sequential" as FlowCoordinationType,

@@ -1,10 +1,10 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
-import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
-const config = getCoreConfig()
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { persistWorkflow } from "@core/utils/persistence/file/resultPersistence"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
+const config = getCoreConfig()
 
 describe("resultPersistence", () => {
   const testWorkflowConfig: WorkflowConfig = {
@@ -17,7 +17,8 @@ describe("resultPersistence", () => {
         codeTools: [],
         mcpTools: [],
         description: "Test node",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
       },
     ],
   }
@@ -244,7 +245,8 @@ describe("resultPersistence", () => {
             codeTools: [],
             mcpTools: [],
             description: "Starter node",
-            modelName: getDefaultModels().default,
+            gatewayModelId: "gpt-4o-mini",
+            gateway: "openai-api",
           },
           {
             nodeId: "processor",
@@ -253,7 +255,8 @@ describe("resultPersistence", () => {
             codeTools: [],
             mcpTools: [],
             description: "Processor node",
-            modelName: getDefaultModels().default,
+            gatewayModelId: "gpt-4o-mini",
+            gateway: "openai-api",
           },
         ],
       }

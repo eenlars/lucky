@@ -13,7 +13,7 @@ export interface MultiStepLoopContext {
   ctx: NodeInvocationCallContext
   tools: ToolSet
   agentSteps: AgentStep[]
-  model: string
+  gatewayModelId: string
   maxRounds: number
   verbose: boolean
   addCost: (cost: number) => void

@@ -12,8 +12,7 @@ import { buildSimpleMessage } from "@core/messages/create/buildSimpleMessage"
 import { CreateSummaryPrompt } from "@core/prompts/createSummary.p"
 import { llmify, truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { JSONN } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { JSONN, isNir } from "@lucky/shared"
 import chalk from "chalk"
 import z from "zod"
 
@@ -39,7 +38,7 @@ const BYTES_FOR_SUMMARY = 200
 const createAISummary = async (
   prompt: string,
   description: string,
-  model: string = getDefaultModels().summary,
+  gatewayModelId: string = getDefaultModels().summary,
   schema?: z.ZodSchema,
 ): Promise<{ summary: string; usdCost: number } | null> => {
   try {
@@ -51,8 +50,8 @@ const createAISummary = async (
     })
 
     const result = schema
-      ? await sendAI({ messages, model, mode: "structured", schema })
-      : await sendAI({ messages, model, mode: "text" })
+      ? await sendAI({ messages, model: gatewayModelId, mode: "structured", schema })
+      : await sendAI({ messages, model: gatewayModelId, mode: "text" })
 
     if (result.success) {
       const summary = schema ? result.data.summary : result.data?.text

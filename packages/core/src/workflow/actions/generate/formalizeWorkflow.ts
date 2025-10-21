@@ -17,7 +17,7 @@ import {
   handleWorkflowCompletionUserModelsStrategy,
 } from "@core/workflow/schema/workflowSchema"
 import { sanitizeConfigTools } from "@core/workflow/utils/sanitizeTools"
-import { mapModelNameToEasyName, normalizeModelName } from "@lucky/models"
+import { mapGatewayModelIdToEasyName, normalizeGatewayModelId } from "@lucky/models"
 import { R, type RS, withDescriptions } from "@lucky/shared"
 import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 
@@ -29,8 +29,8 @@ import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
  * while preserving user's explicit model choices:
  *
  * STEP 1: SIMPLIFICATION (Before AI generation)
- * - Input: Complex model names like "openrouter#openai/gpt-4", "anthropic#claude-opus"
- * - Transform: mapModelNameToEasyName() converts to simple tier names ("cheap", "fast", "smart", "balanced")
+ * - Input: Complex model names like "openai/gpt-4", "anthropic#claude-opus"
+ * - Transform: mapGatewayModelIdToEasyName() converts to simple tier names ("cheap", "fast", "smart", "balanced")
  * - Purpose: AI works with simple tier vocabulary instead of complex provider#model strings
  * - Location: Line 49-54 (normalizedConfigNodes)
  *
@@ -40,7 +40,7 @@ import { ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
  *
  * STEP 3: RESTORATION (After AI generation)
  * - For nodes that existed in the old workflow: RESTORE original model name
- *   Example: Node "analyzer" had "openrouter#openai/gpt-4" → preserve this exact choice
+ *   Example: Node "analyzer" had "openai/gpt-4" → preserve this exact choice
  * - For new nodes: Keep AI's choice (validated tier name or model ID)
  *   Example: New node "summarizer" with "cheap" → keep "cheap" for execution-time resolution
  *
@@ -80,7 +80,7 @@ export async function formalizeWorkflow(
   const normalizedConfigNodes = baseSanitized?.nodes.map(node => {
     return {
       ...node,
-      modelName: mapModelNameToEasyName(node.modelName),
+      gatewayModelId: mapGatewayModelIdToEasyName(node.gatewayModelId),
     }
   })
 
@@ -143,7 +143,7 @@ Create 1 workflow configuration for: ${prompt}
     success: response.success,
     durationMs: sendAIDurationMs,
     usdCost: response.usdCost ?? 0,
-    model: getDefaultModels().balanced,
+    gatewayModelId: getDefaultModels().balanced,
   })
 
   if (!response.success) {
@@ -152,10 +152,10 @@ Create 1 workflow configuration for: ${prompt}
     console.error("[formalizeWorkflow] sendAI error", {
       error: response.error,
       durationMs: sendAIDurationMs,
-      model: requestedModel,
+      gatewayModelId: requestedModel,
     })
     return R.error(
-      `Failed to generate workflow in formalizeWorkflow (model: ${requestedModel}). Error: ${response.error}`,
+      `Failed to generate workflow in formalizeWorkflow (gatewayModelId: ${requestedModel}). Error: ${response.error}`,
       response.usdCost || 0,
     )
   }
@@ -170,11 +170,13 @@ Create 1 workflow configuration for: ${prompt}
   }
 
   // STEP 3: Restore original model names for existing nodes (see MODEL NAME FLOW comment above)
-  handledWorkflow = restoreOriginalModelNames(options.workflowConfig ?? null, handledWorkflow)
+  // Track which nodes existed in the old workflow so we don't normalize their restored model names
+  const oldNodeIds = new Set(options.workflowConfig?.nodes.map(n => n.nodeId) ?? [])
+  handledWorkflow = restoreOriginalGatewayModelIds(options.workflowConfig ?? null, handledWorkflow)
 
   // defensively sanitize any inactive/unknown tools that may have crept in
   const sanitizedHandledWorkflow = sanitizeConfigTools(handledWorkflow)
-  const normalizedWorkflow = normalizeWorkflowModels(sanitizedHandledWorkflow, modelStrategy)
+  const normalizedWorkflow = normalizeWorkflowModels(sanitizedHandledWorkflow, modelStrategy, oldNodeIds)
 
   // For immediate UI feedback, skip verification by default unless explicitly requested
   if (options.verifyWorkflow === "none" || !options.verifyWorkflow) {
@@ -219,7 +221,7 @@ Create 1 workflow configuration for: ${prompt}
     nodeCount: finalConfig.nodes.length,
   })
 
-  const normalizedFinalConfig = normalizeWorkflowModels(finalConfig, modelStrategy)
+  const normalizedFinalConfig = normalizeWorkflowModels(finalConfig, modelStrategy, oldNodeIds)
 
   return R.success(normalizedFinalConfig, response.usdCost + cost)
 }
@@ -232,7 +234,10 @@ Create 1 workflow configuration for: ${prompt}
  * @param newWorkflow - Workflow returned by AI with simplified model names
  * @returns Workflow with original model names restored for existing nodes
  */
-function restoreOriginalModelNames(oldWorkflow: WorkflowConfig | null, newWorkflow: WorkflowConfig): WorkflowConfig {
+function restoreOriginalGatewayModelIds(
+  oldWorkflow: WorkflowConfig | null,
+  newWorkflow: WorkflowConfig,
+): WorkflowConfig {
   if (!oldWorkflow) return newWorkflow
 
   const nodes = newWorkflow.nodes.map(node => {
@@ -240,12 +245,12 @@ function restoreOriginalModelNames(oldWorkflow: WorkflowConfig | null, newWorkfl
 
     if (oldNode) {
       // Node existed in old workflow - restore its original model name
-      // This preserves user's explicit model choice (e.g., "openrouter#openai/gpt-4")
-      return { ...node, modelName: oldNode.modelName }
+      // This preserves user's explicit model choice (e.g., "openai/gpt-4")
+      return { ...node, gatewayModelId: oldNode.gatewayModelId }
     }
 
     // New node - keep AI's choice (tier name like "cheap" or specific model ID)
-    // TODO: If modelName is a tier like "cheap", resolve to best available model for user
+    // TODO: If gatewayModelId is a tier like "cheap", resolve to best available model for user
     // This requires access to user's model configuration and fallback logic
     return node
   })
@@ -259,15 +264,22 @@ function restoreOriginalModelNames(oldWorkflow: WorkflowConfig | null, newWorkfl
 function normalizeWorkflowModels(
   config: WorkflowConfig,
   _modelSelectionStrategy: ModelSelectionStrategy,
+  oldNodeIds: Set<string> = new Set(),
 ): WorkflowConfig {
   const nodes = config.nodes.map(node => {
-    if (!node.modelName) return node
+    if (!node.gatewayModelId) return node
 
-    const normalizedModelName = normalizeModelName(node.modelName)
+    // Skip normalization for nodes that existed in the old workflow
+    // Their model names were already restored to the user's original choice
+    if (oldNodeIds.has(node.nodeId)) {
+      return node
+    }
+
+    const normalizedGatewayModelId = normalizeGatewayModelId(node.gatewayModelId)
 
     // If normalization changed the name, update the node
-    if (normalizedModelName !== node.modelName) {
-      return { ...node, modelName: normalizedModelName }
+    if (normalizedGatewayModelId !== node.gatewayModelId) {
+      return { ...node, gatewayModelId: normalizedGatewayModelId }
     }
 
     return node

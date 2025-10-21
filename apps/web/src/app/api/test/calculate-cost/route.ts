@@ -1,7 +1,7 @@
 import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { calculateCostV2 } from "@core/messages/api/vercel/pricing/calculatePricing"
 import type { TokenUsage } from "@lucky/shared"
-import { type NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const body = await handleBody("test/calculate-cost", request)
     if (isHandleBodyError(body)) return body
 
-    const { model, inputTokens, outputTokens, usage } = body
+    const { gatewayModelId, inputTokens, outputTokens, usage } = body
 
     // Accept both formats: flat {inputTokens, outputTokens} OR {usage: {...}}
     const tokenUsage: TokenUsage = usage || {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       cachedInputTokens: 0,
     }
 
-    const cost = calculateCostV2(model, tokenUsage)
+    const cost = calculateCostV2(gatewayModelId, tokenUsage)
 
     // Return flat structure (cost and currency at top level)
     return alrighty("test/calculate-cost", {

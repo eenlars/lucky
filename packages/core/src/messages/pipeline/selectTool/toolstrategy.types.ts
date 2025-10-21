@@ -10,7 +10,7 @@ export interface SelectToolStrategyOptions<T extends ToolSet> {
   agentSteps: AgentStep[]
   roundsLeft: number
   systemMessage: string
-  model: string
+  gatewayModelId: string
 }
 
 /**

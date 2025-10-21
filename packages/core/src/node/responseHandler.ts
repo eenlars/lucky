@@ -187,7 +187,7 @@ export async function handleSuccess(
       agentSteps: response.agentSteps,
       summary: response.summary ?? "",
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      model: context.nodeConfig.modelName,
+      gatewayModelId: context.nodeConfig.gatewayModelId,
       updatedMemory: updatedMemory || undefined,
     }
     const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
@@ -264,7 +264,7 @@ export async function handleError({
       agentSteps,
       summary,
       files: filesUsed.length > 0 ? filesUsed : undefined,
-      model: context.nodeConfig.modelName,
+      gatewayModelId: context.nodeConfig.gatewayModelId,
     }
     const result = await context.persistence.nodes.saveNodeInvocation(nodeInvocationData)
     nodeInvocationId = result.nodeInvocationId

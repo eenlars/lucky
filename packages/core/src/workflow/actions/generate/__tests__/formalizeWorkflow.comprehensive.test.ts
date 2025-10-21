@@ -27,7 +27,8 @@ const mockSendAIResponse: TResponse<WorkflowConfig> = {
         nodeId: "main",
         description: "Main node",
         systemPrompt: "Do the task",
-        modelName: "balanced",
+        gatewayModelId: "balanced",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: [],
@@ -49,15 +50,15 @@ vi.mock("@core/core-config/coreConfig", async () => {
     ...original,
     getCoreConfig: () => defaultConfig,
     getDefaultModels: () => ({
-      summary: "openai#gpt-4o-mini",
-      nano: "openai#gpt-4o-mini",
-      low: "openai#gpt-4o-mini",
-      balanced: "openai#gpt-4o",
-      high: "openai#gpt-4o",
-      default: "openai#gpt-4o-mini",
-      fitness: "openai#gpt-4o-mini",
-      reasoning: "openai#gpt-4o",
-      fallback: "openai#gpt-4o-mini",
+      summary: "gpt-4o-mini",
+      nano: "gpt-4o-mini",
+      low: "gpt-4o-mini",
+      balanced: "gpt-4o",
+      high: "gpt-4o",
+      default: "gpt-4o-mini",
+      fitness: "gpt-4o-mini",
+      reasoning: "gpt-4o",
+      fallback: "gpt-4o-mini",
     }),
   }
 })
@@ -105,7 +106,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "main",
             description: "Main node",
             systemPrompt: "Do the task",
-            modelName: "balanced",
+            gatewayModelId: "balanced",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -127,7 +129,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "analyzer",
             description: "Analyze data",
             systemPrompt: "Analyze the input",
-            modelName: "openai#gpt-4o", // Complex model name
+            gatewayModelId: "gpt-4o",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -140,7 +143,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "analyzer",
           description: "Analyze data",
           systemPrompt: "Analyze the input",
-          modelName: "smart", // AI works with tier names
+          gatewayModelId: "smart",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -158,7 +162,7 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           messages: expect.arrayContaining([
             expect.objectContaining({
               role: "system",
-              content: expect.stringContaining('"modelName": "smart"'), // Should be simplified
+              content: expect.stringContaining('"gatewayModelId": "smart"'), // Should be simplified
             }),
           ]),
         }),
@@ -173,7 +177,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "analyzer",
             description: "Analyze data",
             systemPrompt: "Analyze the input",
-            modelName: "openrouter#anthropic/claude-3.5-sonnet", // Specific user choice
+            gatewayModelId: "anthropic/claude-3.5-sonnet",
+            gateway: "openai-api", // Specific user choice
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -187,7 +192,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "analyzer",
           description: "Analyze data - improved",
           systemPrompt: "Analyze the input thoroughly",
-          modelName: "smart", // AI changed to tier
+          gatewayModelId: "smart",
+          gateway: "openai-api", // AI changed to tier
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -204,7 +210,7 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
 
       // Original model name should be restored
       const analyzerNode = result.data!.nodes.find(n => n.nodeId === "analyzer")
-      expect(analyzerNode?.modelName).toBe("openrouter#anthropic/claude-3.5-sonnet")
+      expect(analyzerNode?.gatewayModelId).toBe("anthropic/claude-3.5-sonnet")
     })
 
     it("keeps AI's model choice for new nodes", async () => {
@@ -215,7 +221,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "main",
             description: "Main task",
             systemPrompt: "Do main task",
-            modelName: "openai#gpt-4o",
+            gatewayModelId: "gpt-4o",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -229,7 +236,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "main",
           description: "Main task",
           systemPrompt: "Do main task",
-          modelName: "smart",
+          gatewayModelId: "smart",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["summarizer"],
@@ -238,7 +246,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "summarizer",
           description: "Summarize results",
           systemPrompt: "Summarize",
-          modelName: "cheap", // New node - AI chose "cheap"
+          gatewayModelId: "cheap",
+          gateway: "openai-api", // New node - AI chose "cheap"
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -254,11 +263,11 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
 
       // Existing node: restored to original
       const mainNode = result.data!.nodes.find(n => n.nodeId === "main")
-      expect(mainNode?.modelName).toBe("openai#gpt-4o")
+      expect(mainNode?.gatewayModelId).toBe("gpt-4o")
 
       // New node: keeps AI's tier choice
       const summarizerNode = result.data!.nodes.find(n => n.nodeId === "summarizer")
-      expect(summarizerNode?.modelName).toBe("cheap")
+      expect(summarizerNode?.gatewayModelId).toBe("cheap")
     })
 
     it("handles mixed workflow with existing and new nodes correctly", async () => {
@@ -269,7 +278,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "node1",
             description: "First node",
             systemPrompt: "Task 1",
-            modelName: "openrouter#anthropic/claude-sonnet-4",
+            gatewayModelId: "anthropic/claude-sonnet-4",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: ["node2"],
@@ -278,7 +288,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "node2",
             description: "Second node",
             systemPrompt: "Task 2",
-            modelName: "openai#gpt-4o-mini",
+            gatewayModelId: "gpt-4o-mini",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -292,7 +303,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "node1",
           description: "First node - updated",
           systemPrompt: "Task 1 enhanced",
-          modelName: "smart",
+          gatewayModelId: "smart",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["node2", "node3"],
@@ -301,7 +313,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "node2",
           description: "Second node - updated",
           systemPrompt: "Task 2 enhanced",
-          modelName: "cheap",
+          gatewayModelId: "cheap",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -310,7 +323,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "node3",
           description: "New validator node",
           systemPrompt: "Validate results",
-          modelName: "balanced",
+          gatewayModelId: "balanced",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -326,14 +340,14 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
 
       // Existing nodes: original models restored
       const node1 = result.data!.nodes.find(n => n.nodeId === "node1")
-      expect(node1?.modelName).toBe("openrouter#anthropic/claude-sonnet-4")
+      expect(node1?.gatewayModelId).toBe("anthropic/claude-sonnet-4")
 
       const node2 = result.data!.nodes.find(n => n.nodeId === "node2")
-      expect(node2?.modelName).toBe("openai#gpt-4o-mini")
+      expect(node2?.gatewayModelId).toBe("gpt-4o-mini")
 
       // New node: AI's tier choice kept
       const node3 = result.data!.nodes.find(n => n.nodeId === "node3")
-      expect(node3?.modelName).toBe("balanced")
+      expect(node3?.gatewayModelId).toBe("balanced")
     })
 
     it("normalizes tier names to lowercase", async () => {
@@ -342,7 +356,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Do task",
-          modelName: "SMART", // Uppercase tier
+          gatewayModelId: "SMART",
+          gateway: "openai-api", // Uppercase tier
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -354,7 +369,7 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data!.nodes[0].modelName).toBe("smart") // Normalized to lowercase
+      expect(result.data!.nodes[0].gatewayModelId).toBe("smart") // Normalized to lowercase
     })
   })
 
@@ -367,15 +382,14 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
 
       expect(result.success).toBe(true)
       // Tier names should be preserved
-      expect(["cheap", "fast", "smart", "balanced"]).toContain(result.data!.nodes[0].modelName)
+      expect(["cheap", "fast", "smart", "balanced"]).toContain(result.data!.nodes[0].gatewayModelId)
     })
 
     it("applies user-models strategy correctly", async () => {
       const userModels = [
         {
-          id: "openai#gpt-4o",
-          provider: "openai" as const,
-          model: "gpt-4o",
+          gatewayModelId: "gpt-4o",
+          gateway: "openai-api" as const,
           input: 5.0,
           output: 15.0,
           cachedInput: null,
@@ -398,7 +412,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Do task",
-          modelName: "smart",
+          gatewayModelId: "smart",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -412,7 +427,7 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
 
       expect(result.success).toBe(true)
       // Should still preserve tier for user-models strategy
-      expect(result.data!.nodes[0].modelName).toBe("smart")
+      expect(result.data!.nodes[0].gatewayModelId).toBe("smart")
     })
   })
 
@@ -425,7 +440,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
             nodeId: "main",
             description: "Main",
             systemPrompt: "Task",
-            modelName: "openai#gpt-4o",
+            gatewayModelId: "gpt-4o",
+            gateway: "openai-api",
             mcpTools: ["unknownMCPTool" as any],
             codeTools: ["unknownCodeTool" as any],
             handOffs: [],
@@ -454,7 +470,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Task",
-          modelName: "balanced",
+          gatewayModelId: "balanced",
+          gateway: "openai-api",
           mcpTools: ["hallucinated_mcp_tool" as any],
           codeTools: ["hallucinated_code_tool" as any],
           handOffs: [],
@@ -476,7 +493,8 @@ describe("formalizeWorkflow - core transformation pipeline", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Task",
-          modelName: "balanced",
+          gatewayModelId: "balanced",
+          gateway: "openai-api",
           mcpTools: ["filesystem"],
           codeTools: ["computer" as any], // Use a valid code tool name
           handOffs: [],
@@ -507,7 +525,8 @@ describe("formalizeWorkflow - verification modes", () => {
             nodeId: "main",
             description: "Main",
             systemPrompt: "Task",
-            modelName: "balanced",
+            gatewayModelId: "balanced",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -580,7 +599,8 @@ describe("formalizeWorkflow - verification modes", () => {
             nodeId: "main",
             description: "Main",
             systemPrompt: "Task",
-            modelName: "balanced",
+            gatewayModelId: "balanced",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -652,7 +672,7 @@ describe("formalizeWorkflow - error handling", () => {
     })
 
     expect(result.success).toBe(false)
-    expect(result.error).toContain("openai#gpt-4o") // Default balanced model
+    expect(result.error).toContain("gpt-4o") // Default balanced model
   })
 
   it("preserves cost even when AI fails", async () => {
@@ -688,7 +708,8 @@ describe("formalizeWorkflow - edge cases", () => {
             nodeId: "start",
             description: "Start node",
             systemPrompt: "Begin task",
-            modelName: "balanced",
+            gatewayModelId: "balanced",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -705,7 +726,7 @@ describe("formalizeWorkflow - edge cases", () => {
 
     expect(result.success).toBe(true)
     expect(result.data!.nodes).toHaveLength(1)
-    expect(result.data!.nodes[0].modelName).toBe("balanced")
+    expect(result.data!.nodes[0].gatewayModelId).toBe("balanced")
   })
 
   it("handles workflow with workflowGoal provided", async () => {
@@ -716,7 +737,8 @@ describe("formalizeWorkflow - edge cases", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Task",
-          modelName: "openai#gpt-4o",
+          gatewayModelId: "gpt-4o",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -764,7 +786,8 @@ describe("formalizeWorkflow - edge cases", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Task",
-          modelName: "openai#gpt-4o",
+          gatewayModelId: "gpt-4o",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -780,7 +803,8 @@ describe("formalizeWorkflow - edge cases", () => {
         nodeId: "main",
         description: "Main - updated",
         systemPrompt: "Task - enhanced",
-        modelName: "smart",
+        gatewayModelId: "smart",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: ["end"],
@@ -796,7 +820,7 @@ describe("formalizeWorkflow - edge cases", () => {
     const mainNode = result.data!.nodes[0]
 
     // Original model restored
-    expect(mainNode.modelName).toBe("openai#gpt-4o")
+    expect(mainNode.gatewayModelId).toBe("gpt-4o")
 
     // Other properties should be merged from old config
     expect(mainNode.waitFor).toEqual(["dependency"])
@@ -810,7 +834,8 @@ describe("formalizeWorkflow - edge cases", () => {
         nodeId: "main",
         description: "Main",
         systemPrompt: "Task",
-        modelName: "invalid-tier-name",
+        gatewayModelId: "invalid-tier-name",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: [],
@@ -823,7 +848,7 @@ describe("formalizeWorkflow - edge cases", () => {
 
     expect(result.success).toBe(true)
     // Invalid tier should fall back to "cheap"
-    expect(result.data!.nodes[0].modelName).toBe("cheap")
+    expect(result.data!.nodes[0].gatewayModelId).toBe("cheap")
   })
 })
 
@@ -840,7 +865,8 @@ describe("formalizeWorkflow - prompt construction", () => {
             nodeId: "main",
             description: "Main",
             systemPrompt: "Task",
-            modelName: "balanced",
+            gatewayModelId: "balanced",
+            gateway: "openai-api",
             mcpTools: [],
             codeTools: [],
             handOffs: [],
@@ -861,7 +887,8 @@ describe("formalizeWorkflow - prompt construction", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Task",
-          modelName: "openai#gpt-4o",
+          gatewayModelId: "gpt-4o",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -905,6 +932,6 @@ describe("formalizeWorkflow - prompt construction", () => {
     })
 
     const sendAICall = vi.mocked(sendAI).mock.calls[0][0]
-    expect(sendAICall.model).toBe("openai#gpt-4o") // balanced model from mock
+    expect(sendAICall.model).toBe("gpt-4o") // balanced model from mock
   })
 })

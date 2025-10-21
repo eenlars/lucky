@@ -85,32 +85,28 @@ export type { HandoffType, WorkflowConfigZ, WorkflowNodeConfig } from "./contrac
 
 // Provider contracts
 export {
-  apiKeyValidationSchema,
-  catalogIdSchema,
+  gatewayApiKeyValidationSchema,
+  gatewayConfigSchema,
+  gatewayEntrySchema,
+  gatewayKeyMappingSchema,
+  gatewayNameSchema,
+  gatewaySettingsSchema,
+  gatewayStatusSchema,
   modelIdSchema,
-  providerConfigSchema,
-  providerKeyMappingSchema,
-  providerNameSchema,
-  providerSettingsSchema,
-  // Alias: clarify this is UI/status provider config shape (not the enum)
-  providerConfigSchema as providerStatusConfigSchema,
-  providerStatusSchema,
-  userModelPreferencesSchema,
-  userProviderSettingsSchema,
+  userGatewayPreferencesSchema,
+  userGatewaySettingsSchema,
 } from "./contracts/llm-contracts/providers"
 export type {
-  ApiKeyValidation,
-  CatalogId,
-  LuckyProvider,
+  GatewayApiKeyValidation,
+  GatewayConfig,
+  GatewayEntry,
+  GatewayKeyMapping,
+  GatewaySettings,
+  GatewayStatus,
+  LuckyGateway,
   ModelId,
-  ProviderConfig,
-  ProviderKeyMapping,
-  ProviderSettings,
-  ProviderStatus,
-  // Alias: clarify meaning at import sites
-  ProviderConfig as ProviderStatusConfig,
-  UserModelPreferences,
-  UserProviderSettings,
+  UserGatewayPreferences,
+  UserGatewaySettings,
 } from "./contracts/llm-contracts/providers"
 
 // Model contracts
@@ -121,7 +117,6 @@ export {
   modelPricingSchema,
   modelPricingTierSchema,
   modelSpeedSchema,
-  providerEntrySchema,
   tierNameSchema,
 } from "./contracts/llm-contracts/models"
 export type {
@@ -131,7 +126,6 @@ export type {
   ModelPricing,
   ModelPricingTier,
   ModelSpeed,
-  ProviderEntry,
   TierName,
 } from "./contracts/llm-contracts/models"
 

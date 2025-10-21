@@ -1,6 +1,6 @@
 import path from "node:path"
 import dotenv from "dotenv"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, it } from "vitest"
 
 // Load env from repo root to support local runs without global integration setup
 const repoRoot = path.resolve(__dirname, "../../../../..")
@@ -24,7 +24,7 @@ const _availableProviders = (Object.keys(providerKey) as Provider[]).filter(p =>
 // Minimal prompts
 const _prompts = ["Reply with one short sentence about testing.", "Respond with the word: ok", "State the number 42"]
 
-// NOTE: The codebase now uses a single active provider from configuration (getCurrentProvider()).
+// NOTE: The codebase now uses a single active provider from configuration (getCurrentGateway()).
 // The legacy per-request provider parameter is no longer supported.
 // TODO: Rewrite this suite to validate behavior for the configured provider only,
 //       gated by the presence of a real API key, or move to an e2e/integration-only lane.

@@ -3,10 +3,10 @@
  * Supports both BYOK (Bring Your Own Key) and shared key scenarios
  */
 
-import { isValidApiKey } from "@lucky/models/utils/apikey"
 import { isNir } from "@lucky/shared"
 import type { FallbackKeys, RegistryConfig, UserConfig } from "./types"
 import { UserModels } from "./user-models"
+import { isValidApiKey } from "./utils/apikey"
 
 // Resource limits to prevent DOS attacks
 const MAX_MODELS_PER_USER = 100
@@ -18,14 +18,14 @@ function normalizeFallbackKeys(keys: FallbackKeys | undefined, context: "fallbac
   if (!keys) return {}
 
   const normalized: FallbackKeys = {}
-  for (const [provider, key] of Object.entries(keys)) {
+  for (const [gateway, key] of Object.entries(keys)) {
     if (key == null) {
       continue
     }
 
     if (typeof key !== "string") {
       const prefix = context === "fallback" ? "Fallback" : "Override"
-      throw new Error(`${prefix} API key for provider "${provider}" must be a string`)
+      throw new Error(`${prefix} API key for gateway "${gateway}" must be a string`)
     }
 
     if (key.length === 0) {
@@ -35,16 +35,16 @@ function normalizeFallbackKeys(keys: FallbackKeys | undefined, context: "fallbac
     if (key.length > MAX_API_KEY_LENGTH) {
       const prefix = context === "fallback" ? "Fallback" : "Override"
       throw new Error(
-        `${prefix} API key too long for provider "${provider}": maximum ${MAX_API_KEY_LENGTH} characters allowed`,
+        `${prefix} API key too long for gateway "${gateway}": maximum ${MAX_API_KEY_LENGTH} characters allowed`,
       )
     }
 
     if (!isValidApiKey(key)) {
       const prefix = context === "fallback" ? "Invalid fallback" : "Invalid override"
-      throw new Error(`${prefix} API key for provider "${provider}": API keys must be ASCII-only`)
+      throw new Error(`${prefix} API key for gateway "${gateway}": API keys must be ASCII-only`)
     }
 
-    normalized[provider as keyof FallbackKeys] = key
+    normalized[gateway as keyof FallbackKeys] = key
   }
 
   return normalized
@@ -86,7 +86,8 @@ export class LLMRegistry {
       if (typeof modelId !== "string") {
         throw new Error(`Model ID must be a string, got ${typeof modelId}`)
       }
-      if (modelId.length > MAX_MODEL_ID_LENGTH) {
+      const trimmed = modelId.trim()
+      if (trimmed.length >= MAX_MODEL_ID_LENGTH) {
         throw new Error(`Model ID too long: maximum ${MAX_MODEL_ID_LENGTH} characters allowed`)
       }
     }
@@ -104,17 +105,15 @@ export class LLMRegistry {
       }
 
       // validate each API key
-      for (const [provider, key] of Object.entries(config.apiKeys)) {
+      for (const [gateway, key] of Object.entries(config.apiKeys)) {
         if (isNir(key) || key.trim().length === 0) {
           continue // skip empty keys
         }
         if (key.length > MAX_API_KEY_LENGTH) {
-          throw new Error(
-            `API key too long for provider "${provider}": maximum ${MAX_API_KEY_LENGTH} characters allowed`,
-          )
+          throw new Error(`API key too long for gateway "${gateway}": maximum ${MAX_API_KEY_LENGTH} characters allowed`)
         }
         if (!isValidApiKey(key)) {
-          throw new Error(`Invalid API key for provider "${provider}": API keys must be ASCII-only`)
+          throw new Error(`Invalid API key for gateway "${gateway}": API keys must be ASCII-only`)
         }
       }
 

@@ -67,7 +67,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       inactive: new Set(),
-      provider: "openai",
+      gateway: "openai-api" as const,
     },
     limits: {
       rateWindowMs: 1000,

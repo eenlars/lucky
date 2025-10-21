@@ -9,7 +9,7 @@ import { type ZodRawShape, z } from "zod"
 export const baseWorkflowNodeConfigShape = {
   nodeId: z.string(),
   description: z.string(),
-  modelName: z.enum(ACTIVE_MODEL_NAMES as unknown as [string, ...string[]]),
+  gatewayModelId: z.enum(ACTIVE_MODEL_NAMES as unknown as [string, ...string[]]),
   mcpTools: z.array(z.enum(ACTIVE_MCP_TOOL_NAMES as unknown as [string, ...string[]])),
   codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES as unknown as [string, ...string[]])),
   systemPrompt: z.string(),
@@ -44,7 +44,7 @@ export const AGENT_KEY_EXPLANATIONS = {
     "High-level description of what this workflow node does (short, 1-2 sentences). this is different from the system prompt.",
   systemPrompt: systemPromptExplanation,
   memory: `Memory storage for workflow node insights: ${memoryInstructions}`,
-  modelName: `Model enum (${ACTIVE_MODEL_NAMES_WITH_INFO})`,
+  gatewayModelId: `Model enum (${ACTIVE_MODEL_NAMES_WITH_INFO})`,
   handOffs: "Permitted hand-off workflow node IDs",
   handOffType:
     "Optional handoff strategy for this node: 'sequential' (default), 'parallel' (fan-out to all handOffs), or 'conditional' (model decides one).",
