@@ -54,48 +54,52 @@ export const groupInvocationsByNode = (invocations: NodeInvocationExtended[]): N
 
   return Array.from(map.values()).sort((a, b) => a.invocations[0].start_time.localeCompare(b.invocations[0].start_time))
 }
-
 export const normalizeNodeInvocation = (
-  raw: Record<string, unknown> & {
+  raw: Tables<"NodeInvocation"> & {
     NodeVersion: Tables<"NodeVersion"> | null
     inputs?: MessageMetadata[]
     outputs?: MessageMetadata[]
     output?: unknown
   },
-): NodeInvocationExtended | null => {
+): NodeInvocationExtended => {
   const { NodeVersion: nodeDef, inputs = [], outputs = [], output: legacyOutput, ...rest } = raw
 
-  if (!nodeDef) return null
+  const hasLegacyOutput =
+    legacyOutput !== undefined &&
+    legacyOutput !== null &&
+    typeof legacyOutput !== "function" &&
+    typeof legacyOutput !== "symbol"
 
-  const normalisedOutputs =
-    outputs.length > 0 || legacyOutput == null
+  // If there are no structured outputs but there is a legacy output,
+  // synthesize a single Message entry from the legacy payload.
+  const normalizedOutputs =
+    Array.isArray(outputs) && outputs.length > 0
       ? outputs
-      : [
-          {
-            msg_id: nanoid(),
-            seq: 0,
-            role: "assistant" as Tables<"Message">["role"],
-            payload: wrapLegacyPayload(legacyOutput) as Json,
-            created_at: (rest.end_time ?? rest.start_time ?? "") as string,
-            wf_invocation_id: rest.wf_version_id as string,
-            origin_invocation_id: rest.node_invocation_id as string,
-            target_invocation_id: null,
-            from_node_id: rest.node_id as string,
-            to_node_id: null,
-          } satisfies TablesInsert<"Message">,
-        ]
+      : hasLegacyOutput
+        ? [
+            {
+              msg_id: nanoid(),
+              seq: 0,
+              role: "assistant" as Tables<"Message">["role"],
+              payload: wrapLegacyPayload(legacyOutput) as Json,
+              created_at: (rest.end_time ?? rest.start_time ?? new Date().toISOString()) as string,
+              // ✅ Use invocation id if available; fall back to version id if that's all we have
+              wf_invocation_id: (rest as any).wf_invocation_id ?? (rest as any).wf_version_id,
+              origin_invocation_id: rest.node_invocation_id as string,
+              target_invocation_id: null,
+              from_node_id: rest.node_id as string,
+              to_node_id: null,
+            } satisfies TablesInsert<"Message">,
+          ]
+        : []
 
   return {
     ...rest,
-    node: nodeDef,
+    // Do NOT drop the record if NodeVersion is missing.
+    // Preserve it so callers can still see the invocation & messages.
+    node: nodeDef ?? ({} as Tables<"NodeVersion">),
     inputs,
-    outputs: normalisedOutputs,
-    output:
-      legacyOutput !== undefined &&
-      legacyOutput !== null &&
-      typeof legacyOutput !== "function" &&
-      typeof legacyOutput !== "symbol"
-        ? (legacyOutput as Tables<"NodeInvocation">["output"])
-        : null,
-  } as NodeInvocationExtended
+    outputs: normalizedOutputs,
+    output: hasLegacyOutput ? (legacyOutput as Tables<"NodeInvocation">["output"]) : null,
+  }
 }

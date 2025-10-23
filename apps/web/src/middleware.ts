@@ -8,14 +8,14 @@ const isApiRoute = createRouteMatcher([
   "/api/v1/invoke(.*)",
 ])
 
-const isProtectedRoute = createRouteMatcher(["/(.*)"])
+const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"])
 export default clerkMiddleware(
   async (auth, req) => {
     // Skip Clerk protection for API routes that handle their own auth
     if (isApiRoute(req)) {
       return
     }
-    if (isProtectedRoute(req)) await auth.protect()
+    if (!isPublicRoute(req)) await auth.protect()
   },
   {
     debug: process.env.NODE_ENV === "development" && process.env.CLERK_DEBUG === "1",
