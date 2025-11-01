@@ -20,7 +20,7 @@ let prevMcpSecretPath: string | undefined
 type SetupMCPForNodeFn = (toolNames: MCPToolName[], workflowId: string) => Promise<ToolSet>
 let setupMCPForNode: SetupMCPForNodeFn
 
-vi.mock("ai/mcp-stdio", () => {
+vi.mock("@ai-sdk/mcp/mcp-stdio", () => {
   interface MockTransportOptions {
     command: string
     args: string[]
@@ -35,7 +35,7 @@ vi.mock("ai/mcp-stdio", () => {
   return { Experimental_StdioMCPTransport }
 })
 
-vi.mock("ai", () => {
+vi.mock("@ai-sdk/mcp", () => {
   interface MockTransportOptions {
     command: string
     args: string[]

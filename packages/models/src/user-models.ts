@@ -80,7 +80,7 @@ export class UserModels {
     const apiKey = keys[catalogEntry.gateway]
 
     if (!apiKey) {
-      throw new Error(`API key not configured for gateway: ${catalogEntry.gateway}`)
+      throw new Error(`Gateway not configured: ${catalogEntry.gateway}`)
     }
 
     let model: LanguageModel

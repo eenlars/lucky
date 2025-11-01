@@ -84,7 +84,7 @@ describe("BYOK User Lifecycle - Full Integration", () => {
       expect(() => userModels.model("gpt-4o-mini")).not.toThrow()
 
       // Groq model fails with clear error
-      expect(() => userModels.model("llama-3.1-8b-instant")).toThrow("Gateway not configured: groq")
+      expect(() => userModels.model("llama-3.1-8b-instant")).toThrow("Gateway not configured: groq-api")
     })
 
     it("user cannot access models outside their allowlist", () => {
@@ -383,7 +383,7 @@ describe("BYOK User Lifecycle - Full Integration", () => {
       })
 
       // This should fail - user doesn't have Groq key configured
-      expect(() => userModels.model("llama-3.1-8b-instant")).toThrow("Gateway not configured: groq")
+      expect(() => userModels.model("llama-3.1-8b-instant")).toThrow("Gateway not configured: groq-api")
     })
 
     it("rejects malformed model IDs with clear errors", () => {
