@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createRLSClient } from "@/lib/supabase/server-rls"
 import {
   type MessageMetadata,
   type NodeGroup,
@@ -21,7 +21,7 @@ export interface NodeInvocationsResult {
  * Only fetches essential Message fields to avoid timeouts on large payloads.
  */
 export async function nodeInvocations(workflowInvocationId: string): Promise<NodeInvocationsResult> {
-  const supabase = await createClient({ keyType: "service" })
+  const supabase = await createRLSClient()
   const { data: invocations, error } = await supabase
     .from("NodeInvocation")
     .select(
@@ -60,8 +60,6 @@ export async function nodeInvocations(workflowInvocationId: string): Promise<Nod
   const nodeInvocations: NodeInvocationExtended[] = (invocations ?? [])
     .map(normalizeNodeInvocation)
     .filter((inv): inv is NodeInvocationExtended => inv !== null)
-
-  console.log("nodeInvocations", nodeInvocations)
 
   const groups = groupInvocationsByNode(nodeInvocations)
 

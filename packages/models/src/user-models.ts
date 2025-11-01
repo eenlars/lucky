@@ -16,17 +16,13 @@ import { MODEL_CATALOG } from "./llm-catalog/catalog"
 import { findModel } from "./llm-catalog/catalog-queries"
 import { selectModelForTier } from "./tier-selection"
 
-type GatewayInstance =
-  | ReturnType<typeof createOpenAI>
-  | ReturnType<typeof createGroq>
-  | ReturnType<typeof createOpenRouter>
-
 export class UserModels {
   private userId: string
   private mode: "byok" | "shared"
   private allowedModels: readonly string[]
   private allowedModelSet: Set<string>
-  private gateways: Map<string, GatewayInstance>
+  private apiKeys: FallbackKeys
+  private fallbackKeys: FallbackKeys
 
   constructor(
     userId: string,
@@ -46,27 +42,8 @@ export class UserModels {
       throw new Error("BYOK mode requires apiKeys")
     }
 
-    // Initialize gateways with appropriate keys
-    const keys = mode === "byok" ? apiKeys : fallbackKeys
-    this.gateways = this.initializeGateways(keys)
-  }
-
-  private initializeGateways(keys: FallbackKeys): Map<string, GatewayInstance> {
-    const gateways = new Map<string, GatewayInstance>()
-
-    if (keys["openai-api"]) {
-      gateways.set("openai-api", createOpenAI({ apiKey: keys["openai-api"] }))
-    }
-
-    if (keys["groq-api"]) {
-      gateways.set("groq-api", createGroq({ apiKey: keys["groq-api"] }))
-    }
-
-    if (keys["openrouter-api"]) {
-      gateways.set("openrouter-api", createOpenRouter({ apiKey: keys["openrouter-api"] }))
-    }
-
-    return gateways
+    this.apiKeys = apiKeys
+    this.fallbackKeys = fallbackKeys
   }
 
   /**
@@ -100,36 +77,32 @@ export class UserModels {
     }
 
     const resolvedName = catalogEntry.gatewayModelId
+    const keys = this.mode === "byok" ? this.apiKeys : this.fallbackKeys
+    const apiKey = keys[catalogEntry.gateway]
 
-    // Check gateway is configured
-    const gateway = this.gateways.get(catalogEntry.gateway)
-    if (!gateway) {
-      throw new Error(`Gateway not configured: ${catalogEntry.gateway}`)
+    if (!apiKey) {
+      throw new Error(`API key not configured for gateway: ${catalogEntry.gateway}`)
     }
 
-    // Return ai sdk model with modelId property for testing/tracking
-    // Pass options through to gateway (e.g., reasoning configuration for OpenRouter)
-    let gatewayModelId: LanguageModel
-
-    if (catalogEntry.gateway === "openrouter-api") {
-      gatewayModelId = gateway(resolvedName, options)
-    } else if (catalogEntry.gateway === "openai-api") {
-      gatewayModelId = gateway(resolvedName, options)
+    let model: LanguageModel
+    if (catalogEntry.gateway === "openai-api") {
+      model = createOpenAI({ apiKey })(resolvedName)
     } else if (catalogEntry.gateway === "groq-api") {
-      gatewayModelId = gateway(resolvedName, options)
+      model = createGroq({ apiKey })(resolvedName)
+    } else if (catalogEntry.gateway === "openrouter-api") {
+      model = createOpenRouter({ apiKey })(resolvedName, options)
     } else {
-      throw new Error(`Unsupported  ${catalogEntry.gateway}`)
+      throw new Error(`Unsupported gateway: ${catalogEntry.gateway}`)
     }
 
-    // Add modelId for tracking without type assertion by using Object.defineProperty
-    Object.defineProperty(gatewayModelId, "modelId", {
+    Object.defineProperty(model, "modelId", {
       value: catalogEntry.gatewayModelId,
       writable: false,
       enumerable: true,
       configurable: false,
     })
 
-    return gatewayModelId
+    return model
   }
 
   private isModelAllowed(catalogEntry: ModelEntry): boolean {

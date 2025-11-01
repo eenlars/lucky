@@ -124,7 +124,7 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
 
     if (isModelValidationError) {
       // Minimal logging for model validation errors
-      lgg.warn(`⚠️  Invalid gatewayModelId: ${req.model} - ${errMessageForLog}`)
+      lgg.warn(`⚠️  Invalid gatewayModelId: ${requestedModel} - ${errMessageForLog}`)
     } else if (!isArgValidationError && !isTypeValidationText) {
       // only log concise details for unexpected errors
       lgg.error("execTool error", errMessageForLog, {
