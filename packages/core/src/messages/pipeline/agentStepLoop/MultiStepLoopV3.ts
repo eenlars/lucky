@@ -77,7 +77,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
       agentSteps: agentSteps,
       roundsLeft: maxRounds - round,
       systemMessage: ctx.nodeConfig.systemPrompt,
-      model: ctx.nodeConfig.modelName,
+      gatewayModelId: ctx.nodeConfig.gatewayModelId,
     })
 
     debugPrompts.push(llmify(debugPrompt))
@@ -210,7 +210,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
       error,
       usdCost,
     } = await sendAI({
-      model: ctx.nodeConfig.modelName,
+      model: ctx.nodeConfig.gatewayModelId,
       mode: "tool",
       debug: true,
       messages: [
@@ -260,7 +260,7 @@ export async function runMultiStepLoopV3Helper(context: MultiStepLoopContext): P
 
     const { agentSteps: processedAgentSteps, usdCost: processedUsdCost } = responseToAgentSteps({
       response: toolUseResponse,
-      modelUsed: ctx.nodeConfig.modelName,
+      modelUsed: ctx.nodeConfig.gatewayModelId,
       nodeId: ctx.nodeConfig.nodeId,
       originatedFrom: `tool_used:${selected}:with_plan:${strategy.plan}`,
     })

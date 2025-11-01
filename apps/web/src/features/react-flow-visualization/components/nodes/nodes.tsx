@@ -3,7 +3,7 @@ import { nanoid } from "nanoid"
 
 import type { iconMapping } from "@/features/react-flow-visualization/components/ui/icon-mapping"
 import type { WorkflowNodeConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { MODELS } from "@lucky/examples/settings/constants.client"
+import { MODELS, MODEL_CONFIG } from "@lucky/examples/settings/constants.client"
 
 import { BranchNode } from "./branch-node"
 import { ConnectorNode } from "./connector-node"
@@ -221,7 +221,8 @@ export function createNodeByType({
       nodeType: type,
       description: data?.description ?? "",
       systemPrompt: data?.systemPrompt ?? "",
-      modelName: data?.modelName ?? MODELS.default,
+      gatewayModelId: data?.gatewayModelId ?? MODELS.default,
+      gateway: data?.gateway ?? MODEL_CONFIG.gateway,
       mcpTools: data?.mcpTools ?? [],
       codeTools: data?.codeTools ?? [],
       handOffs: data?.handOffs ?? [],

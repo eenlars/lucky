@@ -1,20 +1,19 @@
 /**
  * Unit tests for LLM model registry
- * Tests catalog, providers, registry creation, and user model access
+ * Tests catalog, gateways, registry creation, and user model access
  */
 
-import type { LuckyProvider } from "@lucky/shared"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { MOCK_CATALOG } from "./fixtures/mock-catalog"
 
 vi.mock("../llm-catalog/catalog", () => ({
   MODEL_CATALOG: MOCK_CATALOG,
 }))
 
-import { findModel, getCatalog, getModelsByProvider } from "../llm-catalog/catalog-queries"
-import { PROVIDERS } from "../llm-catalog/providers"
+import { getGatewayDisplayName, getGatewayKeyName } from "../gateway-utils"
+import { findModel, getCatalog, getModelsByGateway } from "../llm-catalog/catalog-queries"
+import { GATEWAYS } from "../llm-catalog/providers"
 import { createLLMRegistry } from "../llm-registry"
-import { getProviderDisplayName, getProviderKeyName } from "../provider-utils"
 
 describe("Model Catalog", () => {
   it("has unique IDs and validates all invariants", () => {
@@ -24,25 +23,24 @@ describe("Model Catalog", () => {
 
     const seen = new Set<string>()
     for (const entry of MOCK_CATALOG) {
-      expect(entry.id).toBeDefined()
-      expect(typeof entry.id).toBe("string")
-      expect(entry.id.length).toBeGreaterThan(2)
-      expect(entry.provider).toBeDefined()
-      expect(entry.model).toBeDefined()
+      expect(entry.gateway).toBeDefined()
+      expect(typeof entry.gateway).toBe("string")
+      expect(entry.gateway.length).toBeGreaterThan(0)
+      expect(entry.gatewayModelId).toBeDefined()
+      expect(typeof entry.gatewayModelId).toBe("string")
+      expect(entry.gatewayModelId.length).toBeGreaterThan(0)
       expect(typeof entry.input).toBe("number")
       expect(typeof entry.output).toBe("number")
       expect(typeof entry.contextLength).toBe("number")
       expect(typeof entry.intelligence).toBe("number")
 
-      // ID uniqueness
-      expect(seen.has(entry.id)).toBe(false)
-      seen.add(entry.id)
+      // ID uniqueness (using gateway#gatewayModelId format)
+      const fullId = `${entry.gateway}#${entry.gatewayModelId}`
+      expect(seen.has(fullId)).toBe(false)
+      seen.add(fullId)
 
-      // ID format: provider#model
-      expect(entry.id.includes("#")).toBe(true)
-      const [p, m] = entry.id.split("#")
-      expect(p).toBeTruthy()
-      expect(m).toBeTruthy()
+      // Gateway format check
+      expect(entry.gateway).toMatch(/-api$/)
 
       // Positivity checks
       expect(entry.input).toBeGreaterThanOrEqual(0)
@@ -61,12 +59,12 @@ describe("Model Catalog", () => {
 
   it("getCatalog returns defensive copy preventing shared references", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
     const user = registry.forUser({
       mode: "shared",
       userId: "u1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     const a = user.getCatalog()
@@ -75,50 +73,52 @@ describe("Model Catalog", () => {
 
     // Mutate returned array & objects
     a.pop()
-    ;(a[0] as any).id = "tampered#id"
+    ;(a[0] as any).gatewayModelId = "tampered-model"
 
     // Fetch again - should be unaffected
     const b = user.getCatalog()
     expect(b.length).toBe(originalLength)
-    expect(b[0].id).toBe(aFirst.id)
+    expect(b[0].gatewayModelId).toBe(aFirst.gatewayModelId)
   })
 
   it("finds models by ID when exists", () => {
     const firstModel = MOCK_CATALOG[0]
-    const model = findModel(firstModel.id)
+    const fullId = `${firstModel.gateway}#${firstModel.gatewayModelId}`
+    const model = findModel(fullId)
     expect(model).toBeDefined()
-    expect(model?.id).toBe(firstModel.id)
+    expect(model?.gateway).toBe(firstModel.gateway)
+    expect(model?.gatewayModelId).toBe(firstModel.gatewayModelId)
   })
 
   it("finds models by name when exists", () => {
     const firstModel = MOCK_CATALOG[0]
-    const modelName = firstModel.model
-    const models = findModel(modelName)
+    const gatewayModelId = firstModel.gatewayModelId
+    const models = findModel(gatewayModelId)
     expect(models).toBeDefined()
   })
 
-  it("gets models by provider", () => {
-    const openaiModels = getModelsByProvider("openai")
+  it("gets models by gateway", () => {
+    const openaiModels = getModelsByGateway("openai-api")
     expect(openaiModels.length).toBeGreaterThan(0)
-    expect(openaiModels.every(m => m.provider === "openai")).toBe(true)
+    expect(openaiModels.every(m => m.gateway === "openai-api")).toBe(true)
   })
 })
 
-describe("Provider Helpers", () => {
-  it("PROVIDERS is defined and contains providers", () => {
-    expect(PROVIDERS).toBeDefined()
-    expect(Array.isArray(PROVIDERS)).toBe(true)
-    expect(PROVIDERS.length).toBeGreaterThan(0)
+describe("Gateway Helpers", () => {
+  it("GATEWAYS is defined and contains gateways", () => {
+    expect(GATEWAYS).toBeDefined()
+    expect(Array.isArray(GATEWAYS)).toBe(true)
+    expect(GATEWAYS.length).toBeGreaterThan(0)
   })
 
-  it("getProviderDisplayName formats provider names", () => {
-    expect(getProviderDisplayName("openai")).toBeTruthy()
-    expect(getProviderDisplayName("anthropic")).toBeTruthy()
+  it("getGatewayDisplayName formats gateway names", () => {
+    expect(getGatewayDisplayName("OPENAI_API_KEY")).toBeTruthy()
+    expect(getGatewayDisplayName("OPENAI_API_KEY")).toBeTruthy()
   })
 
-  it("getProviderKeyName returns environment variable names", () => {
-    expect(getProviderKeyName("openai")).toContain("API_KEY")
-    expect(getProviderKeyName("anthropic")).toContain("API_KEY")
+  it("getGatewayKeyName returns environment variable names", () => {
+    expect(getGatewayKeyName("openai-api")).toContain("API_KEY")
+    expect(getGatewayKeyName("anthropic")).toContain("API_KEY")
   })
 })
 
@@ -126,8 +126,8 @@ describe("LLMRegistry", () => {
   it("creates registry with fallback keys", () => {
     const registry = createLLMRegistry({
       fallbackKeys: {
-        openai: "sk-test-key",
-        groq: "gsk-test-key",
+        "openai-api": "sk-test-key",
+        "groq-api": "gsk-test-key",
       },
     })
 
@@ -137,7 +137,7 @@ describe("LLMRegistry", () => {
 
   it("throws on invalid mode", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
 
     expect(() =>
@@ -151,7 +151,7 @@ describe("LLMRegistry", () => {
 
   it("rejects non-array models input", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
 
     expect(() =>
@@ -173,9 +173,9 @@ describe("LLMRegistry", () => {
 
   it("ignores caller mutations to models array after forUser", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
-    const allowed = ["openai#gpt-4o-mini"]
+    const allowed = ["gpt-4o-mini"]
     const user = registry.forUser({
       mode: "shared",
       userId: "u",
@@ -186,41 +186,41 @@ describe("LLMRegistry", () => {
     allowed.length = 0
 
     // Should still work with original list
-    expect(() => user.model("openai#gpt-4o-mini")).not.toThrow()
+    expect(() => user.model("gpt-4o-mini")).not.toThrow()
   })
 
   it("same userId returns isolated instances with different configs", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
 
     const a = registry.forUser({
       mode: "shared",
       userId: "same",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
     const b = registry.forUser({
       mode: "shared",
       userId: "same",
-      models: ["openai#gpt-4o"],
+      models: ["gpt-4o"],
     })
 
     expect(a).not.toBe(b)
-    expect(() => a.model("openai#gpt-4o-mini")).not.toThrow()
-    expect(() => a.model("openai#gpt-4o")).toThrow("not in user's allowed models")
-    expect(() => b.model("openai#gpt-4o")).not.toThrow()
-    expect(() => b.model("openai#gpt-4o-mini")).toThrow("not in user's allowed models")
+    expect(() => a.model("gpt-4o-mini")).not.toThrow()
+    expect(() => a.model("gpt-4o")).toThrow("not in user's allowed models")
+    expect(() => b.model("gpt-4o")).not.toThrow()
+    expect(() => b.model("gpt-4o-mini")).toThrow("not in user's allowed models")
   })
 
   it("creates user instance in shared mode", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
 
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     expect(userModels).toBeDefined()
@@ -228,14 +228,14 @@ describe("LLMRegistry", () => {
 
   it("creates user instance in BYOK mode", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-fallback" },
+      fallbackKeys: { "openai-api": "sk-fallback" },
     })
 
     const userModels = registry.forUser({
       mode: "byok",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-user-key" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-user-key" },
     })
 
     expect(userModels).toBeDefined()
@@ -243,14 +243,14 @@ describe("LLMRegistry", () => {
 
   it("BYOK mode requires apiKeys and rejects empty objects", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
 
     expect(() =>
       registry.forUser({
         mode: "byok",
         userId: "user1",
-        models: ["openai#gpt-4o"],
+        models: ["gpt-4o"],
       }),
     ).toThrow("BYOK mode requires apiKeys")
 
@@ -258,7 +258,7 @@ describe("LLMRegistry", () => {
       registry.forUser({
         mode: "byok",
         userId: "user1",
-        models: ["openai#gpt-4o"],
+        models: ["gpt-4o"],
         apiKeys: {},
       }),
     ).toThrow("BYOK mode requires apiKeys")
@@ -266,21 +266,21 @@ describe("LLMRegistry", () => {
 
   it("isolates different users", () => {
     const registry = createLLMRegistry({
-      fallbackKeys: { openai: "sk-test" },
+      fallbackKeys: { "openai-api": "sk-test" },
     })
 
     const user1 = registry.forUser({
       mode: "byok",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
-      apiKeys: { openai: "sk-user1" },
+      models: ["gpt-4o-mini"],
+      apiKeys: { "openai-api": "sk-user1" },
     })
 
     const user2 = registry.forUser({
       mode: "byok",
       userId: "user2",
-      models: ["openai#gpt-4o"],
-      apiKeys: { openai: "sk-user2" },
+      models: ["gpt-4o"],
+      apiKeys: { "openai-api": "sk-user2" },
     })
 
     expect(user1).not.toBe(user2)
@@ -293,28 +293,28 @@ describe("UserModels", () => {
   beforeEach(() => {
     registry = createLLMRegistry({
       fallbackKeys: {
-        openai: "sk-fallback",
-        groq: "gsk-fallback",
+        "openai-api": "sk-fallback",
+        "groq-api": "gsk-fallback",
       },
     })
   })
 
-  it("returns model with provider prefix", () => {
+  it("returns model with gateway prefix", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
-    const model = userModels.model("openai#gpt-4o-mini")
+    const model = userModels.model("gpt-4o-mini")
     expect(model).toBeDefined()
   })
 
-  it("auto-detects provider from unprefixed name", () => {
+  it("auto-detects gateway from unprefixed name", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     const model = userModels.model("gpt-4o-mini")
@@ -325,17 +325,17 @@ describe("UserModels", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
-    expect(() => userModels.model("openai#gpt-4o")).toThrow()
+    expect(() => userModels.model("gpt-4o")).toThrow()
   })
 
   it("tier('cheap') selects cheapest model", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini", "openai#gpt-4o"],
+      models: ["gpt-4o-mini", "gpt-4o"],
     })
 
     const model = userModels.tier("cheap")
@@ -346,7 +346,7 @@ describe("UserModels", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini", "openai#gpt-4o"],
+      models: ["gpt-4o-mini", "gpt-4o"],
     })
 
     const model = userModels.tier("smart")
@@ -357,7 +357,7 @@ describe("UserModels", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     const cat1 = userModels.getCatalog()
@@ -372,22 +372,22 @@ describe("UserModels", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     const cheap = userModels.tier("cheap")
-    expect((cheap as any).modelId).toBe("openai#gpt-4o-mini")
+    expect((cheap as any).modelId).toBe("gpt-4o-mini")
   })
 
   it("all operations complete synchronously without async", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini", "openai#gpt-3.5-turbo"],
+      models: ["gpt-4o-mini", "gpt-3.5-turbo"],
     })
 
     // Verify operations are synchronous (don't return promises)
-    const m = userModels.model("openai#gpt-4o-mini")
+    const m = userModels.model("gpt-4o-mini")
     expect(m).toBeDefined()
     expect(m).not.toBeInstanceOf(Promise)
 
@@ -404,7 +404,7 @@ describe("UserModels", () => {
     const userModels = registry.forUser({
       mode: "shared",
       userId: "user1",
-      models: ["openai#gpt-4o-mini"],
+      models: ["gpt-4o-mini"],
     })
 
     expect(() => userModels.tier("mystery" as any)).toThrow("Unknown tier: mystery")

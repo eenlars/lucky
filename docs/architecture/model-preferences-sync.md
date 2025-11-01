@@ -205,7 +205,7 @@ These are out of scope for this PR but could be added later:
 ### Refresh doesn't update data
 
 - Check network tab for API errors
-- Verify Supabase RLS policies allow reading provider_settings
+- Verify Supabase RLS policies allow reading gateway_settings
 - Check browser console for Zustand errors
 
 ### Multi-tab issues

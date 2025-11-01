@@ -211,9 +211,8 @@ function transformModel(model: ModelSchemaOpenRouter): ModelEntry {
   }
 
   return {
-    id: `openrouter#${model.id}`,
-    provider: "openrouter",
-    model: model.id,
+    gateway: "openrouter-api",
+    gatewayModelId: model.id,
     input: inputPrice,
     output: outputPrice,
     cachedInput,
@@ -251,9 +250,8 @@ function generateCatalogCode(models: ModelEntry[]): string {
 
   for (const model of models) {
     lines.push("  {")
-    lines.push(`    id: "${model.id}",`)
-    lines.push(`    provider: "${model.provider}",`)
-    lines.push(`    model: "${model.model}",`)
+    lines.push(`    gateway: "${model.gateway}",`)
+    lines.push(`    gatewayModelId: "${model.gatewayModelId}",`)
     lines.push(`    input: ${model.input},`)
     lines.push(`    output: ${model.output},`)
     lines.push(`    cachedInput: ${model.cachedInput},`)
@@ -300,22 +298,22 @@ async function main() {
   // filter to only desired providers (customize this as needed)
   const filtered = transformed.filter(
     m =>
-      m.model.includes("google/") ||
-      m.model.includes("openai/") ||
-      m.model.includes("anthropic/") ||
-      m.model.includes("switchpoint/") ||
-      m.model.includes("meta-llama/") ||
-      m.model.includes("mistralai/") ||
-      m.model.includes("x-ai/") ||
-      m.model.includes("moonshotai/"),
+      m.gatewayModelId.includes("google/") ||
+      m.gatewayModelId.includes("openai/") ||
+      m.gatewayModelId.includes("anthropic/") ||
+      m.gatewayModelId.includes("switchpoint/") ||
+      m.gatewayModelId.includes("meta-llama/") ||
+      m.gatewayModelId.includes("mistralai/") ||
+      m.gatewayModelId.includes("x-ai/") ||
+      m.gatewayModelId.includes("moonshotai/"),
   )
 
   console.log(`Filtered to ${filtered.length} models`)
 
   // sort by provider and model name
   filtered.sort((a, b) => {
-    if (a.model < b.model) return -1
-    if (a.model > b.model) return 1
+    if (a.gatewayModelId < b.gatewayModelId) return -1
+    if (a.gatewayModelId > b.gatewayModelId) return 1
     return 0
   })
 

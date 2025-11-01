@@ -54,7 +54,7 @@ export interface InvokeAgentInput {
  * const result = await invokeNode({
  *   nodeConfig: {
  *     nodeId: "analyzer",
- *     model: "claude-3-sonnet",
+ *     gatewayModelId: "claude-3-sonnet",
  *     systemPrompt: "Analyze the input data",
  *     tools: ["codeAnalysis"]
  *   },

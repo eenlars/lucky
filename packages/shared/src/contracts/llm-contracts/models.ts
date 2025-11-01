@@ -4,50 +4,11 @@
  */
 
 import { z } from "zod"
-import { catalogIdSchema, providerNameSchema } from "./providers"
+import { gatewayNameSchema } from "./providers"
 
 // ============================================================================
 // MODELS CONFIGURATION
 // ============================================================================
-
-/**
- * Provider availability configuration - single source of truth.
- * Providers marked as disabled will not be initialized even if API keys are present.
- * In development mode, all providers are enabled for testing.
- */
-const isDevelopment = process.env.NODE_ENV === "development"
-
-export const PROVIDER_AVAILABILITY = {
-  openai: true,
-  openrouter: true,
-  groq: true, // Enable Groq in all environments for proper BYOK isolation
-} as const
-
-export const ModelProviderSchema = z.enum(["openrouter", "openai", "groq"]).default("openrouter")
-
-/**
- * Provider entry schema - defines provider metadata for models package
- *
- * @example
- * {
- *   provider: "openai",
- *   displayName: "OpenAI",
- *   secretKeyName: "OPENAI_API_KEY",  // Environment variable name
- *   apiKeyValuePrefix: "sk-"          // Prefix in actual key value
- * }
- */
-export const providerEntrySchema = z.object({
-  /** Provider identifier (e.g., "openai", "groq") */
-  provider: providerNameSchema,
-  /** Display name for UI (e.g., "OpenAI", "Groq") */
-  displayName: z.string(),
-  /** Environment variable name for API key (e.g., "OPENAI_API_KEY") */
-  secretKeyName: z.string(),
-  /** Prefix that appears in actual API key values (e.g., "sk-" for OpenAI, "gsk_" for Groq) */
-  apiKeyValuePrefix: z.string(),
-})
-
-export type ProviderEntry = z.infer<typeof providerEntrySchema>
 
 export const ModelDefaultsSchema = z.object({
   summary: z.string().default("google/gemini-2.5-flash"),
@@ -62,12 +23,11 @@ export const ModelDefaultsSchema = z.object({
 })
 
 export const ModelsConfigSchema = z.object({
-  provider: ModelProviderSchema,
+  gateway: gatewayNameSchema.default("openai-api"),
   inactive: z.array(z.string()).default(["moonshotai/kimi-k2", "x-ai/grok-4", "qwen/qwq-32b:free"]),
   defaults: ModelDefaultsSchema.default({}),
 })
 
-export type ModelProvider = z.infer<typeof ModelProviderSchema>
 export type ModelDefaults = z.infer<typeof ModelDefaultsSchema>
 export type ModelsConfig = z.infer<typeof ModelsConfigSchema>
 
@@ -124,12 +84,10 @@ export type ModelPricing = z.infer<typeof modelPricingSchema>
 
 export const modelEntrySchema = z.object({
   // Identity
-  /** Catalog lookup ID ("<provider>#<model>" format) - DO NOT use for API calls! */
-  id: catalogIdSchema,
   /** Provider name (determines which API endpoint to use) */
-  provider: providerNameSchema,
+  gateway: gatewayNameSchema,
   /** Model identifier in provider-specific format - USE THIS for API calls! ALSO THIS CAN POSSIBLY CONTAIN '/'! */
-  model: z.string().min(1),
+  gatewayModelId: z.string().min(1),
 
   // Pricing (per 1M tokens in USD)
   input: z.number().min(0),
@@ -186,8 +144,8 @@ export type ModelEntry = z.infer<typeof modelEntrySchema>
  * Subset of ModelEntry with fields most relevant for UI
  */
 export const enrichedModelInfoSchema = z.object({
-  id: catalogIdSchema,
-  name: z.string(),
+  gatewayModelId: z.string(),
+  gateway: gatewayNameSchema,
   contextLength: z.number().int().positive(),
   supportsTools: z.boolean(),
   supportsVision: z.boolean(),

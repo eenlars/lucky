@@ -26,7 +26,7 @@ export function TestPanel({ node }: TestPanelProps) {
       api: "/api/agent/chat",
       body: {
         nodeId: node.id,
-        modelName: node.data.modelName ?? "openrouter#anthropic/claude-3.5-sonnet",
+        gatewayModelId: node.data.gatewayModelId ?? "anthropic/claude-3.5-sonnet",
         systemPrompt: node.data.systemPrompt,
       },
     }),
@@ -130,7 +130,7 @@ export function TestPanel({ node }: TestPanelProps) {
             <div className="flex items-center gap-2">
               <div className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400 font-medium flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                {node.data.modelName?.split("/").pop() || "Claude"}
+                {node.data.gatewayModelId?.split("/").pop() || "Claude"}
               </div>
               {messages.length > 0 && (
                 <button
@@ -196,7 +196,7 @@ export function TestPanel({ node }: TestPanelProps) {
 
       {/* AI Devtools - Development only */}
       {process.env.NODE_ENV === "development" && (
-        <AIDevtools modelId={node.data.modelName ?? "openrouter#anthropic/claude-3.5-sonnet"} />
+        <AIDevtools modelId={node.data.gatewayModelId ?? "anthropic/claude-3.5-sonnet"} />
       )}
     </div>
   )

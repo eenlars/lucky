@@ -1,6 +1,6 @@
 # @lucky/models
 
-Multi-provider AI model management with user isolation, BYOK support, and tier-based selection.
+Multi-gateway AI model management with user isolation, BYOK support, and tier-based selection.
 
 ## Overview
 
@@ -10,7 +10,7 @@ Thin wrapper around Vercel AI SDK that handles:
 - BYOK (Bring Your Own Key) vs shared API keys
 - Tier-based model selection (cheap/fast/smart/balanced)
 - Centralized pricing catalog with 50+ models
-- Provider instance caching
+- Gateway instance caching
 
 ## Quick Start
 
@@ -21,9 +21,9 @@ import { generateText } from "ai";
 // 1. Initialize once at startup
 const registry = createLLMRegistry({
   fallbackKeys: {
-    openai: process.env.OPENAI_API_KEY,
-    groq: process.env.GROQ_API_KEY,
-    openrouter: process.env.OPENROUTER_API_KEY,
+    "openai-api": process.env.OPENAI_API_KEY,
+    "groq-api": process.env.GROQ_API_KEY,
+    "openrouter-api": process.env.OPENROUTER_API_KEY,
   },
 });
 
@@ -31,15 +31,15 @@ const registry = createLLMRegistry({
 const userModels = registry.forUser({
   mode: "byok", // or "shared"
   userId: "user-123",
-  models: ["openai#gpt-4o", "groq#llama-3.1-70b-versatile"],
+  models: ["gpt-4o", "llama-3.1-70b-versatile"],
   apiKeys: {
-    openai: "sk-user-provided-key",
-    groq: "gsk-user-provided-key",
+    "openai-api": "sk-user-provided-key",
+    "groq-api": "gsk-user-provided-key",
   },
 });
 
 // 3. Get models
-const model = userModels.model("openai#gpt-4o");
+const model = userModels.model("gpt-4o");
 const result = await generateText({ model, prompt: "..." });
 
 // Or use tier selection
@@ -61,14 +61,14 @@ Each user gets their own `UserModels` instance with:
 const userA = registry.forUser({
   mode: "shared",
   userId: "user-a",
-  models: ["openai#gpt-4o", "openai#gpt-4-turbo"]
+  models: ["gpt-4o", "gpt-4-turbo"]
 })
 
 // User B with budget models
 const userB = registry.forUser({
   mode: "byok",
   userId: "user-b",
-  models: ["openai#gpt-4o-mini", "groq#openai/gpt-oss-20b"],
+  models: ["gpt-4o-mini", "openai/gpt-oss-20b"],
   apiKeys: { openai: "sk-...", groq: "gsk-..." }
 })
 
@@ -85,7 +85,7 @@ userB.tier("cheap")  // → llama-3.1-8b-instant (cheapest in user B's list)
 const userModels = registry.forUser({
   mode: "byok",
   userId: "user-123",
-  models: ["openai#gpt-4o"],
+  models: ["gpt-4o"],
   apiKeys: {
     openai: "sk-user-provided-key", // User's own key
   },
@@ -98,7 +98,7 @@ const userModels = registry.forUser({
 const userModels = registry.forUser({
   mode: "shared",
   userId: "user-456",
-  models: ["openai#gpt-4o-mini"],
+  models: ["gpt-4o-mini"],
   // Uses fallbackKeys from registry initialization
 });
 ```
@@ -117,9 +117,9 @@ const userModels = registry.forUser({
   mode: "shared",
   userId: "user-123",
   models: [
-    "openai#gpt-4o",           // intelligence: 9, cost: $2.50/$10
-    "openai#gpt-4o-mini",      // intelligence: 8, cost: $0.15/$0.60
-    ""groq#openai/gpt-oss-20b"" // intelligence: 7, cost: $0.05/$0.08
+    "gpt-4o",           // intelligence: 9, cost: $2.50/$10
+    "gpt-4o-mini",      // intelligence: 8, cost: $0.15/$0.60
+    ""openai/gpt-oss-20b"" // intelligence: 7, cost: $0.05/$0.08
   ]
 })
 
@@ -153,7 +153,7 @@ Create a user-specific models instance.
 const userModels = registry.forUser({
   mode: "byok" | "shared",
   userId: string,
-  models: string[],           // e.g., ["openai#gpt-4o", "groq#llama-3.1-70b-versatile"]
+  models: string[],           // e.g., ["gpt-4o", "llama-3.1-70b-versatile"]
   apiKeys?: {                 // Required for mode="byok"
     openai?: string
     groq?: string
@@ -168,20 +168,20 @@ Get a model by name. Returns AI SDK `LanguageModel`.
 
 ```typescript
 // With provider prefix (recommended)
-const model = userModels.model("openai#gpt-4o");
+const model = userModels.model("gpt-4o");
 
 // Auto-detect from user's list
-const model = userModels.model("gpt-4o"); // finds openai#gpt-4o
+const model = userModels.model("gpt-4o"); // finds gpt-4o
 
 // OpenRouter models use full path
-const model = userModels.model("openrouter#openai/gpt-4o");
+const model = userModels.model("openai/gpt-4o");
 ```
 
 **Error cases:**
 
 - Model not in catalog → `"Model not found: {name}"`
 - Model not in user's list → `"Model \"{name}\" not in user's allowed models"`
-- Provider not configured → `"Provider not configured: {provider}"`
+- Gateway not configured → `"Gateway not configured: {gateway}"`
 
 ### `userModels.tier(tierName)`
 
@@ -203,18 +203,18 @@ const catalog = userModels.getCatalog(); // ModelEntry[]
 
 ### Model ID Format
 
-All models use the format: `{provider}#{model}`
+All models use the format: `{gateway}#{model}`
 
-- **OpenAI**: `openai#gpt-4o`, `openai#gpt-4o-mini`
-- **Groq**: `groq#llama-3.1-70b-versatile`, `"groq#openai/gpt-oss-20b"`
+- **OpenAI**: `gpt-4o`, `gpt-4o-mini`
+- **Groq**: `groq#llama-3.1-70b-versatile`, `"openai/gpt-oss-20b"`
 - **OpenRouter**: `openrouter#openai/gpt-4o`, `openrouter#meta-llama/llama-3.1-70b`
 
 ### ModelEntry Structure
 
 ```typescript
 interface ModelEntry {
-  id: string; // "openai#gpt-4o"
-  provider: "openai" | "groq" | "openrouter";
+  id: string; // "gpt-4o"
+  gateway: "openai-api" | "groq-api" | "openrouter-api";
   model: string; // API model name
   input: number; // $ per 1M input tokens
   output: number; // $ per 1M output tokens
@@ -238,52 +238,52 @@ import {
   findModelById,
   findModelByName,
   getCatalog,
-  getModelsByProvider,
+  getModelsByGateway,
   getRuntimeEnabledModels,
 } from "@lucky/models";
 
 // Find specific model
-const model = findModelById("openai#gpt-4o");
-const model = findModelByName("gpt-4o"); // searches across providers
+const model = findModelById("gpt-4o");
+const model = findModelByName("gpt-4o"); // searches across gateways
 
 // Get all models
 const allModels = getCatalog();
 
-// Filter by provider
-const openaiModels = getModelsByProvider("openai");
+// Filter by gateway
+const openaiModels = getModelsByGateway("openai");
 
 // Only runtime-enabled models
 const activeModels = getRuntimeEnabledModels();
 ```
 
-## Provider Configuration
+## Gateway Configuration
 
-### Supported Providers
+### Supported Gateways
 
 - **OpenAI** - Direct access to GPT models
 - **Groq** - Fast inference for Llama and Mixtral models
-- **OpenRouter** - Gateway to 50+ models from multiple providers
+- **OpenRouter** - Gateway to 50+ models from multiple gateways
 
-### Provider Validation
+### Gateway Validation
 
 ```typescript
 import {
-  validateProviderKeys,
-  getRequiredProviderKeys,
-  formatMissingProviders,
+  validateGatewayKeys,
+  getRequiredGatewayKeys,
+  formatMissingGateways,
 } from "@lucky/models";
 
-// Check which providers need keys
-const required = getRequiredProviderKeys(); // ["openai", "groq", "openrouter"]
+// Check which gateways need keys
+const required = getRequiredGatewayKeys(); // ["openai", "groq", "openrouter"]
 
 // Validate configuration
-const validation = validateProviderKeys({
+const validation = validateGatewayKeys({
   openai: process.env.OPENAI_API_KEY,
   groq: undefined, // missing
 });
 
 if (!validation.isValid) {
-  console.error(formatMissingProviders(validation.missing));
+  console.error(formatMissingGateways(validation.missing));
   // "Missing API keys for: Groq (GROQ_API_KEY)"
 }
 ```
@@ -327,7 +327,7 @@ app.post("/api/chat", async (req, res) => {
 const userModels = registry.forUser({
   mode: "shared",
   userId: "user-123",
-  models: ["openai#gpt-4o", "openai#gpt-4o-mini"],
+  models: ["gpt-4o", "gpt-4o-mini"],
 });
 
 try {
@@ -371,7 +371,7 @@ UserModels (per request)
   ├─ Mode (BYOK or shared)
   ├─ Allowed models list
   ├─ API keys (user's or fallback)
-  ├─ Provider instances (cached)
+  ├─ Gateway instances (cached)
   └─ Methods:
       ├─ model(name) → LanguageModel
       ├─ tier(name) → LanguageModel

@@ -6,6 +6,7 @@ import { NextResponse } from "next/server"
 export async function GET(_request: Request, { params }: { params: Promise<{ wf_inv_id: string }> }) {
   // Require authentication
   const { isAuthenticated } = await auth()
+  console.log("isAuthenticated", isAuthenticated)
   if (!isAuthenticated) return new NextResponse("Unauthorized", { status: 401 })
 
   const supabase = await createRLSClient()
@@ -19,6 +20,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ wf_
       .select("wf_invocation_id")
       .eq("wf_invocation_id", wf_inv_id)
       .limit(1)
+
+    console.log("exists", exists)
 
     if (existsError) {
       console.error("Error verifying workflow invocation existence:", existsError)

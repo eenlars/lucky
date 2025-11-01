@@ -11,7 +11,7 @@ vi.mock("@/react-flow-visualization/components/nodes", () => ({
   }),
 }))
 vi.mock("@lucky/examples/settings/constants.client", () => ({
-  MODELS: { default: "openrouter#openai/gpt-4o-mini" },
+  MODELS: { default: "openai/gpt-4o-mini" },
 }))
 
 describe("workflow-data normalization", () => {
@@ -22,7 +22,8 @@ describe("workflow-data normalization", () => {
           nodeId: "n1",
           description: "",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: ["n2"],
@@ -32,7 +33,8 @@ describe("workflow-data normalization", () => {
           nodeId: "n2",
           description: "",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -55,7 +57,8 @@ describe("workflow-data normalization", () => {
           nodeId: "x",
           description: "",
           systemPrompt: "",
-          modelName: MODELS.default,
+          gateway: "openrouter-api",
+          gatewayModelId: MODELS.default,
           mcpTools: [],
           codeTools: [],
           handOffs: [],

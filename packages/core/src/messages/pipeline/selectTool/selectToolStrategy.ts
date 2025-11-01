@@ -9,7 +9,7 @@ export type ExperimentalStepFunction<TOOLS extends ToolSet> = (options: {
   steps: Array<StepResult<TOOLS>>
   stepNumber: number
   maxSteps: number
-  model: LanguageModel
+  gatewayModelId: LanguageModel
 }) => PromiseLike<
   | {
       model?: LanguageModel
@@ -43,7 +43,7 @@ export function createPrepareStepStrategy<T extends ToolSet>(
     }
   | undefined
 > {
-  return async ({ steps, stepNumber, model: _model }) => {
+  return async ({ steps, stepNumber, model }) => {
     const config = getCoreConfig()
     if (isNir(tools) || config.tools.autoSelectTools) {
       return undefined // Use default settings
@@ -59,10 +59,10 @@ export function createPrepareStepStrategy<T extends ToolSet>(
       return undefined
     }
 
-    const model = getDefaultModels().nano
+    const gatewayModelId = getDefaultModels().nano
 
     // Analyze previous steps to understand context
-    const previousStepsContext = processStepsV2(steps, model) ?? {
+    const previousStepsContext = processStepsV2(steps, gatewayModelId) ?? {
       agentSteps: [],
     }
 
@@ -116,7 +116,7 @@ Consider:
 
     try {
       const response = await sendAI({
-        model,
+        model: gatewayModelId,
         messages: stepAnalysisPrompt,
         mode: "structured",
         schema: StepStrategySchema,

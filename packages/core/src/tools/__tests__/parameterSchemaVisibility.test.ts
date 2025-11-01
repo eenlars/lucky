@@ -1,5 +1,4 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
-import { getCoreConfig, initCoreConfig } from "@core/core-config/coreConfig"
+import { getCoreConfig, getDefaultModels, initCoreConfig } from "@core/core-config/coreConfig"
 import { tool, zodSchema } from "ai"
 import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -54,7 +53,7 @@ describe("Parameter Schema Visibility", () => {
       agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
-      model: getDefaultModels().default,
+      gatewayModelId: getDefaultModels().default,
     })
 
     expect(sendAISpy).toBeDefined()
@@ -99,7 +98,7 @@ describe("Parameter Schema Visibility", () => {
       agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
-      model: getDefaultModels().default,
+      gatewayModelId: getDefaultModels().default,
     })
 
     expect(sendAISpy?.mock.calls.length ?? 0).toBeGreaterThan(0)
@@ -150,7 +149,7 @@ describe("Parameter Schema Visibility", () => {
       agentSteps: [],
       roundsLeft: 3,
       systemMessage: "Test system message",
-      model: getDefaultModels().default,
+      gatewayModelId: getDefaultModels().default,
     })
 
     expect(sendAISpy?.mock.calls.length ?? 0).toBeGreaterThan(0)

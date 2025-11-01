@@ -34,26 +34,26 @@ describe("MissingApiKeysError", () => {
 
 describe("NoEnabledModelsError", () => {
   it("should create error with correct message and provider", () => {
-    const error = new NoEnabledModelsError("openai")
+    const error = new NoEnabledModelsError("openai-api")
 
     expect(error.name).toBe("NoEnabledModelsError")
-    expect(error.message).toBe("No enabled models found for provider: openai")
-    expect(error.provider).toBe("openai")
+    expect(error.message).toBe("No enabled models found for openai-api")
+    expect(error.gateway).toBe("openai-api")
     expect(error).toBeInstanceOf(Error)
   })
 
   it("should handle different providers", () => {
     const error = new NoEnabledModelsError("groq")
 
-    expect(error.message).toBe("No enabled models found for provider: groq")
-    expect(error.provider).toBe("groq")
+    expect(error.message).toBe("No enabled models found for groq")
+    expect(error.gateway).toBe("groq")
   })
 
   it("should handle 'all' provider", () => {
     const error = new NoEnabledModelsError("all")
 
-    expect(error.message).toBe("No enabled models found for provider: all")
-    expect(error.provider).toBe("all")
+    expect(error.message).toBe("No enabled models found for all")
+    expect(error.gateway).toBe("all")
   })
 })
 

@@ -5,7 +5,6 @@ import type { CodeToolName, MCPToolName } from "@lucky/tools"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 import {
-  type ToolType,
   areAllToolkitToolsSelected,
   countToolkitToolsSelected,
   getToolDescription,

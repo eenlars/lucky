@@ -50,7 +50,8 @@ const DEMO_WORKFLOW: WorkflowConfigZ = {
     {
       nodeId: "assistant",
       description: "A helpful AI assistant that responds to your questions",
-      modelName: "openrouter#openai/gpt-4o-mini",
+      gatewayModelId: "openai/gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       systemPrompt:

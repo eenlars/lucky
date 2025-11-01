@@ -375,7 +375,7 @@ export async function queueRun({
           workflowInvocationId,
           workflowVersionId: _workflowVersionId,
           startTime: nodeStartTimeISO,
-          model: targetNode.toConfig().modelName,
+          gatewayModelId: targetNode.toConfig().gatewayModelId,
           attemptNo: 1, // First attempt (retries not yet implemented)
         })
         currentNodeInvocationId = result.nodeInvocationId

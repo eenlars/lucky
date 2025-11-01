@@ -3,7 +3,7 @@
  */
 export class NoEnabledModelsError extends Error {
   constructor(public readonly provider: string) {
-    super(`No enabled models found for provider: ${provider}`)
+    super(`No enabled models found for ${provider}`)
     this.name = "NoEnabledModelsError"
   }
 }

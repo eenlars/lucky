@@ -49,7 +49,7 @@ const baseSchema = {
 export interface WorkflowAnalysisParams {
   transcript: string
   fitness: FitnessOfWorkflow
-  model: string
+  gatewayModelId: string
   previousMemory?: Record<string, string>
 }
 
@@ -62,14 +62,14 @@ export async function analyzeWorkflowBottlenecks(
   workflow: Workflow,
   params: WorkflowAnalysisParams,
 ): Promise<WorkflowAnalysisResult> {
-  const { transcript, fitness, model: modelName, previousMemory = {} } = params
+  const { transcript, fitness, gatewayModelId, previousMemory = {} } = params
 
   lgg.log("🔍 Analyzing workflow bottlenecks...")
   lgg.log()
 
   const { data, success, error, usdCost } = await sendAI({
     messages: WorkflowAnalysisPrompts.analyzeWorkflow(transcript, workflow, fitness, previousMemory),
-    model: modelName,
+    model: gatewayModelId,
     mode: "structured",
     schema: z.object({
       ...baseSchema,

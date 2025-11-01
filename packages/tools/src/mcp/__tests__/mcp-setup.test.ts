@@ -1,10 +1,10 @@
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import type { MCPToolName } from "@lucky/tools/client"
 import { type ToolSet, tool } from "ai"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
-import type { MCPToolName } from "../registry/types"
 
 // Simple logger replacement
 const lgg = {
@@ -20,7 +20,7 @@ let prevMcpSecretPath: string | undefined
 type SetupMCPForNodeFn = (toolNames: MCPToolName[], workflowId: string) => Promise<ToolSet>
 let setupMCPForNode: SetupMCPForNodeFn
 
-vi.mock("ai/mcp-stdio", () => {
+vi.mock("@ai-sdk/mcp/mcp-stdio", () => {
   interface MockTransportOptions {
     command: string
     args: string[]
@@ -35,7 +35,7 @@ vi.mock("ai/mcp-stdio", () => {
   return { Experimental_StdioMCPTransport }
 })
 
-vi.mock("ai", () => {
+vi.mock("@ai-sdk/mcp", () => {
   interface MockTransportOptions {
     command: string
     args: string[]

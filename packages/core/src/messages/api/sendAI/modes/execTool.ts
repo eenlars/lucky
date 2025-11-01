@@ -51,10 +51,12 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
   try {
     // TODO: add tool compatibility validation for model
     // TODO: implement smart tool selection based on model capabilities
-    const modelName: string = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
+    const gatewayModelId: string = shouldUseModelFallback(requestedModel)
+      ? getFallbackModel(requestedModel)
+      : requestedModel
 
     const models = await getModelsInstance()
-    const model = models.resolve(modelName)
+    const model = models.resolve(gatewayModelId)
 
     // TODO: add dynamic tool parameter optimization
     // TODO: implement tool execution planning and sequencing
@@ -71,14 +73,14 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
     // TODO: add tool execution progress tracking
     // TODO: create tool-specific timeout configurations
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(baseOptions, {
-      modelName: modelName,
+      gatewayModelId: gatewayModelId,
       overallTimeoutMs: 300_000,
       stallTimeoutMs: 200_000,
     })
 
     // TODO: add tool execution cost analysis and optimization
     // TODO: implement tool usage budgeting and alerts
-    const usd = calculateUsageCost(gen.usage, modelName)
+    const usd = calculateUsageCost(gen.usage, gatewayModelId)
     if (opts.saveOutputs) await saveResultOutput(gen)
     getSpendingTracker().addCost(usd)
 
@@ -122,12 +124,12 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
 
     if (isModelValidationError) {
       // Minimal logging for model validation errors
-      lgg.warn(`⚠️  Invalid model: ${requestedModel} - ${errMessageForLog}`)
+      lgg.warn(`⚠️  Invalid gatewayModelId: ${requestedModel} - ${errMessageForLog}`)
     } else if (!isArgValidationError && !isTypeValidationText) {
       // only log concise details for unexpected errors
       lgg.error("execTool error", errMessageForLog, {
         statusCode: (debugForLog as any)?.statusCode,
-        provider: (debugForLog as any)?.provider,
+        gateway: (debugForLog as any)?.gateway,
         url: (debugForLog as any)?.url,
         toolChoice: opts.toolChoice,
         tools: Object.keys(opts.tools ?? {}),

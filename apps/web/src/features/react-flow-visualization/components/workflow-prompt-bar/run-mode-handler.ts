@@ -1,4 +1,4 @@
-import { post } from "@/lib/api/api-client"
+import { postty } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
 import { toWorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 
@@ -52,7 +52,7 @@ export async function executeRunMode(
     await new Promise(resolve => setTimeout(resolve, 200))
     onProgress?.("Validating workflow configuration...")
 
-    const { error, data } = await post("workflow/verify", {
+    const { error, data } = await postty("workflow/verify", {
       workflow: cfgMaybe,
       mode: "dsl",
     })
@@ -76,7 +76,7 @@ export async function executeRunMode(
     onProgress?.("That workflow looks good...")
 
     const nodes = cfgMaybe.nodes
-    const response = await post("v1/openrouter", {
+    const response = await postty("v1/openrouter", {
       prompt: prompt,
       dslConfig: {
         nodes,

@@ -1,6 +1,5 @@
 "use client"
 
-import { cn } from "@/lib/utils"
 import { Maximize2, Minimize2, X } from "lucide-react"
 
 export interface SidePanelHeaderProps {

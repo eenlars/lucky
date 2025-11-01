@@ -80,32 +80,32 @@ export type Database = {
         }
         Relationships: []
       }
-      provider_settings: {
+      gateway_settings: {
         Row: {
           clerk_id: string
           created_at: string
           enabled_models: Json
+          gateway: string
+          gateway_setting_id: string
           is_enabled: boolean
-          provider: string
-          provider_setting_id: string
           updated_at: string
         }
         Insert: {
           clerk_id: string
           created_at?: string
           enabled_models?: Json
+          gateway: string
+          gateway_setting_id?: string
           is_enabled?: boolean
-          provider: string
-          provider_setting_id?: string
           updated_at?: string
         }
         Update: {
           clerk_id?: string
           created_at?: string
           enabled_models?: Json
+          gateway?: string
+          gateway_setting_id?: string
           is_enabled?: boolean
-          provider?: string
-          provider_setting_id?: string
           updated_at?: string
         }
         Relationships: []
@@ -223,10 +223,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      sub: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      sub: { Args: never; Returns: string }
     }
     Enums: {
       severity_level: "info" | "warn" | "error" | "debug" | "fatal"

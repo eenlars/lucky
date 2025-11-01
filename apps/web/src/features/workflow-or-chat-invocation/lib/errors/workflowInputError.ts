@@ -32,8 +32,8 @@ export class MissingApiKeysError extends Error {
  * Thrown when no enabled models are found for a provider
  */
 export class NoEnabledModelsError extends Error {
-  constructor(public readonly provider: string) {
-    super(`No enabled models found for provider: ${provider}`)
+  constructor(public readonly gateway: string) {
+    super(`No enabled models found for ${gateway}`)
     this.name = "NoEnabledModelsError"
   }
 }

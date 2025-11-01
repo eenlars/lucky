@@ -57,6 +57,9 @@ export async function execStructured<S extends ZodTypeAny>(
 
   try {
     const { genObject } = await import("@core/messages/api/genObject")
+    // Note: Do not require execution context here. Structured mode relies on genObject
+    // which works with just the model string. Avoid resolving models from context to
+    // keep this path usable in tests/dev without full workflow context.
     let genResult: Awaited<ReturnType<typeof genObject>>
 
     // TODO: make timeout configurable based on schema complexity
@@ -164,7 +167,7 @@ export async function execStructured<S extends ZodTypeAny>(
         errorCategory = "validation"
         severity = "warn"
         isUserError = true
-        console.warn("[execStructured] Invalid model:", model, "-", message)
+        console.warn("[execStructured] Invalid gatewayModelId:", requestedModel, "-", message)
       } else if (lowerMsg.includes("quota") || lowerMsg.includes("insufficient credits")) {
         errorCategory = "quota"
         console.error("[execStructured] Quota error:", message)

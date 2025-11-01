@@ -1,7 +1,6 @@
 // basic tests for genome class without complex mocking
 // TODO: despite title "basic tests", still has extensive mock setup
 // consider using actual test utilities instead of inline mocks
-import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import { createMockEvaluationInputGeneric, setupCoreTest } from "@core/utils/__tests__/setup/coreMocks"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -47,7 +46,7 @@ vi.mock("@examples/settings/constants", () => ({
       enable: { mcp: false, code: true },
     },
     models: {
-      provider: "openai" as const,
+      gateway: "openai-api" as const,
       inactive: new Set(),
     },
     improvement: {
@@ -224,7 +223,8 @@ describe("Genome Basic Tests", () => {
         nodeId: "test-node",
         description: "test description",
         systemPrompt: "test system prompt",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: [],

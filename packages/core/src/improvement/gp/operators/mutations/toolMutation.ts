@@ -56,7 +56,7 @@ export class ToolMutation implements MutationOperator {
     try {
       // get human-readable workflow description for AI context
       const workflowDescription = parent.toString({
-        easyModelNames: true,
+        tierMappingEnabled: true,
       })
 
       // incorporate evolutionary feedback if enabled

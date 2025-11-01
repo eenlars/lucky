@@ -14,7 +14,7 @@ describe("normalizeError", () => {
         },
         responseBodySnippet: JSON.stringify({
           error: {
-            message: "openrouter#meta-llama/llama-4-maverick:free is not a valid model ID",
+            message: "meta-llama/llama-4-maverick:free is not a valid model ID",
             code: 400,
           },
           user_id: "user_test123",
@@ -23,8 +23,8 @@ describe("normalizeError", () => {
 
       const result = normalizeError(mockError)
 
-      expect(result.message).toBe("openrouter#meta-llama/llama-4-maverick:free is not a valid model ID")
-      expect(result.debug.provider).toBe("OpenRouter")
+      expect(result.message).toBe("meta-llama/llama-4-maverick:free is not a valid model ID")
+      expect(result.debug.gateway).toBe("openrouter-api")
       expect(result.debug.statusCode).toBe(400)
       expect(result.debug.responseBodySnippet).toContain("is not a valid model ID")
     })
@@ -63,7 +63,7 @@ describe("normalizeError", () => {
       const result = normalizeError(mockError)
 
       expect(result.message).toContain("Authentication failed")
-      expect(result.debug.provider).toBe("OpenAI")
+      expect(result.debug.gateway).toBe("openai-api")
     })
 
     it("should handle alternative message format from responseBodySnippet", () => {

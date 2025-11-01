@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { getCoreConfig } from "@core/core-config/coreConfig"
 import { agentDescriptionsWithTools } from "@core/node/schemas/agentWithTools"
 import { MemorySchemaOptional } from "@core/utils/memory/memorySchema"
 
@@ -17,7 +18,7 @@ export const WorkflowNodeConfigSchema = z.object({
   description: z.string(),
   systemPrompt: z.string(),
   // accept any model string - validation happens at runtime via userModels.model() or userModels.tier()
-  modelName: z.string().refine(name => typeof name === "string" && name.length > 0, {
+  gatewayModelId: z.string().refine(name => typeof name === "string" && name.length > 0, {
     message: "Model name must be a non-empty string",
   }),
   mcpTools: z.array(z.enum(ACTIVE_MCP_TOOL_NAMES)),
@@ -47,17 +48,17 @@ export const WorkflowNodeConfigSchemaDisplay = z.object({
   nodeId: z.string(),
   description: z.string(),
   systemPrompt: z.string(),
-  modelName: z.string().transform(modelName => {
+  gatewayModelId: z.string().transform(gatewayModelId => {
     // try to find the model in the catalog (by catalog ID or API name)
-    const catalogEntry = findModel(modelName)
+    const catalogEntry = findModel(gatewayModelId)
 
     if (catalogEntry) {
       // model exists, use its catalog ID
-      return catalogEntry.id
+      return catalogEntry.gatewayModelId
     }
 
     // model not found - fallback to cheap tier (most compatible)
-    console.warn(`Model "${modelName}" not found in catalog, falling back to tier: cheap`)
+    console.warn(`Model "${gatewayModelId}" not found in catalog, falling back to tier: cheap`)
     return "cheap"
   }),
   mcpTools: z.array(z.string()), // allow any string for legacy tools
@@ -86,7 +87,7 @@ export const WorkflowNodeConfigSchemaEasy = z.object({
   systemPrompt: z.string(),
   // accept tier names ("cheap", "fast", "smart", "balanced") or full model IDs
   // the AI should prefer tier names for simplicity; mapping to actual models happens later
-  modelName: z.string(),
+  gatewayModelId: z.string(),
   mcpTools: z.array(z.enum(ACTIVE_MCP_TOOL_NAMES)),
   codeTools: z.array(z.enum(ACTIVE_CODE_TOOL_NAMES_WITH_DEFAULT)),
   handOffs: z.array(z.string()),
@@ -98,7 +99,7 @@ export const WorkflowNodeConfigSchemaEasy = z.object({
 // guide the AI to use tier names instead of provider model IDs
 const agentDescriptionsWithToolsEasy = {
   ...agentDescriptionsWithTools,
-  modelName:
+  gatewayModelId:
     "Model tier for this node. Must be exactly one of: 'cheap' | 'fast' | 'smart' | 'balanced'. Choose based on task complexity. cheap=simple tasks, fast=quick responses, smart=complex reasoning, balanced=general purpose. Do NOT output provider model IDs here; mapping to actual models happens later.",
 } as const
 
@@ -130,31 +131,35 @@ export const handleWorkflowCompletionTierStrategy = (
     const oldNode = oldWorkflow?.nodes?.find(n => n.nodeId === partialNode.nodeId)
 
     // validate model name - either a valid tier or an existing model
-    let validatedModelName = partialNode.modelName
-    const modelNameLower = partialNode.modelName?.toLowerCase()
+    let validatedGatewayModelId = partialNode.gatewayModelId
+    const gatewayModelIdLower = partialNode.gatewayModelId?.toLowerCase()
 
     // check if it's a tier name
     const validTiers = tierNameSchema.options
-    const isTier = validTiers.includes(modelNameLower as TierName)
+    const isTier = validTiers.includes(gatewayModelIdLower as TierName)
 
     if (isTier) {
       // normalize tier name to lowercase
-      validatedModelName = modelNameLower
+      validatedGatewayModelId = gatewayModelIdLower
     } else {
       // not a tier - validate it's a real model
-      const catalogEntry = findModel(partialNode.modelName)
+      const catalogEntry = findModel(partialNode.gatewayModelId)
       if (catalogEntry) {
-        validatedModelName = catalogEntry.id
+        validatedGatewayModelId = catalogEntry.gatewayModelId
       } else {
         // model not found - fallback to cheap tier for safety
-        console.warn(`Model "${partialNode.modelName}" not found in catalog, falling back to tier: cheap`)
-        validatedModelName = "cheap"
+        console.warn(`Model "${partialNode.gatewayModelId}" not found in catalog, falling back to tier: cheap`)
+        validatedGatewayModelId = "cheap"
       }
     }
 
-    const fullNode = { ...partialNode, modelName: validatedModelName }
+    const fullNode = { ...partialNode, gatewayModelId: validatedGatewayModelId }
 
-    return oldNode ? { ...oldNode, ...fullNode } : fullNode
+    const nodeWithGateway = oldNode
+      ? { ...oldNode, ...fullNode }
+      : { ...fullNode, gateway: getCoreConfig().models.gateway }
+
+    return nodeWithGateway
   })
 
   return {
@@ -177,28 +182,31 @@ export const handleWorkflowCompletionUserModelsStrategy = (
     const oldNode = oldWorkflow?.nodes?.find(n => n.nodeId === partialNode.nodeId)
 
     // validate model name
-    let validatedModelName = partialNode.modelName
-    const modelNameLower = partialNode.modelName?.toLowerCase()
+    let validatedGatewayModelId = partialNode.gatewayModelId
+    const gatewayModelIdLower = partialNode.gatewayModelId?.toLowerCase()
 
     // check if it's a valid tier
-    const isTier = validTiers.includes(modelNameLower as TierName)
+    const isTier = validTiers.includes(gatewayModelIdLower as TierName)
 
     if (isTier) {
       // normalize tier name to lowercase
-      validatedModelName = modelNameLower
+      validatedGatewayModelId = gatewayModelIdLower
     } else {
       // validate it's a real model
-      const catalogEntry = findModel(partialNode.modelName)
+      const catalogEntry = findModel(partialNode.gatewayModelId)
       if (catalogEntry) {
-        validatedModelName = catalogEntry.id
+        validatedGatewayModelId = catalogEntry.gatewayModelId
       } else {
-        console.warn(`Model "${partialNode.modelName}" not found, falling back to tier: cheap`)
-        validatedModelName = "cheap"
+        console.warn(`Model "${partialNode.gatewayModelId}" not found, falling back to tier: cheap`)
+        validatedGatewayModelId = "cheap"
       }
     }
 
-    const fullNode = { ...partialNode, modelName: validatedModelName }
-    return oldNode ? { ...oldNode, ...fullNode } : fullNode
+    const fullNode = { ...partialNode, gatewayModelId: validatedGatewayModelId }
+    const nodeWithGateway = oldNode
+      ? { ...oldNode, ...fullNode }
+      : { ...fullNode, gateway: getCoreConfig().models.gateway }
+    return nodeWithGateway
   })
 
   return {

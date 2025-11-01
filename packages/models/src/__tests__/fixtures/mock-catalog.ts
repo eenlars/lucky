@@ -23,9 +23,8 @@ import type { ModelEntry } from "@lucky/shared"
  */
 export const MOCK_OPENAI_MODELS: ModelEntry[] = [
   {
-    id: "openai#gpt-4o-mini",
-    provider: "openai",
-    model: "gpt-4o-mini",
+    gateway: "openai-api",
+    gatewayModelId: "gpt-4o-mini",
     input: 0.15,
     output: 0.6,
     cachedInput: null,
@@ -43,9 +42,8 @@ export const MOCK_OPENAI_MODELS: ModelEntry[] = [
     supportsVideo: false,
   },
   {
-    id: "openai#gpt-3.5-turbo",
-    provider: "openai",
-    model: "gpt-3.5-turbo",
+    gateway: "openai-api",
+    gatewayModelId: "gpt-3.5-turbo",
     input: 0.5,
     output: 1.5,
     cachedInput: null,
@@ -63,9 +61,8 @@ export const MOCK_OPENAI_MODELS: ModelEntry[] = [
     supportsVideo: false,
   },
   {
-    id: "openai#gpt-4o",
-    provider: "openai",
-    model: "gpt-4o",
+    gateway: "openai-api",
+    gatewayModelId: "gpt-4o",
     input: 2.5,
     output: 10.0,
     cachedInput: null,
@@ -89,9 +86,8 @@ export const MOCK_OPENAI_MODELS: ModelEntry[] = [
  */
 export const MOCK_GROQ_MODELS: ModelEntry[] = [
   {
-    id: "groq#llama-3.3-70b-versatile",
-    provider: "groq",
-    model: "llama-3.3-70b-versatile",
+    gateway: "groq-api",
+    gatewayModelId: "llama-3.3-70b-versatile",
     input: 0.59,
     output: 0.79,
     cachedInput: null,
@@ -109,9 +105,8 @@ export const MOCK_GROQ_MODELS: ModelEntry[] = [
     supportsVideo: false,
   },
   {
-    id: "groq#llama-3.1-8b-instant",
-    provider: "groq",
-    model: "llama-3.1-8b-instant",
+    gateway: "groq-api",
+    gatewayModelId: "llama-3.1-8b-instant",
     input: 0.05,
     output: 0.08,
     cachedInput: null,
@@ -135,9 +130,8 @@ export const MOCK_GROQ_MODELS: ModelEntry[] = [
  */
 export const MOCK_OPENROUTER_MODELS: ModelEntry[] = [
   {
-    id: "openrouter#meta-llama/llama-3.1-8b-instruct:free",
-    provider: "openrouter",
-    model: "meta-llama/llama-3.1-8b-instruct:free",
+    gateway: "openrouter-api",
+    gatewayModelId: "meta-llama/llama-3.1-8b-instruct:free",
     input: 0,
     output: 0,
     cachedInput: null,
@@ -155,9 +149,8 @@ export const MOCK_OPENROUTER_MODELS: ModelEntry[] = [
     supportsVideo: false,
   },
   {
-    id: "openrouter#anthropic/claude-3.5-sonnet",
-    provider: "openrouter",
-    model: "anthropic/claude-3.5-sonnet",
+    gateway: "openrouter-api",
+    gatewayModelId: "anthropic/claude-3.5-sonnet",
     input: 3.0,
     output: 15.0,
     cachedInput: null,

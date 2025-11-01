@@ -73,7 +73,7 @@ export function LogEntry({ log }: { log: LogEntryType }) {
       message: log.message,
       ...(log.input && { input: log.input }),
       ...(log.output && { output: log.output }),
-      ...(log.model && { model: log.model }),
+      ...(log.model && { gatewayModelId: log.model }),
       ...(log.duration && { duration_ms: log.duration }),
       ...(log.tokens && { tokens: log.tokens }),
       ...(log.cost && { cost_usd: log.cost }),

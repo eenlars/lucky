@@ -19,7 +19,7 @@ export function initCore() {
   initCoreConfig({
     paths: PATHS,
     models: {
-      provider: CONFIG.models.provider,
+      gateway: CONFIG.models.gateway,
       defaults: MODELS,
       inactive: CONFIG.models.inactive,
     },

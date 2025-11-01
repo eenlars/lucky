@@ -1,7 +1,7 @@
-import type { UserProviders } from "@/features/provider-llm-setup/lib/load-user-providers"
+import type { UserGateways } from "@/features/provider-llm-setup/lib/load-user-providers"
 import { getServerLLMRegistry } from "@/features/provider-llm-setup/llm-registry"
 import type { ModelEntry, UserModels } from "@lucky/models"
-import type { LuckyProvider, Principal } from "@repo/shared"
+import type { LuckyGateway, Principal } from "@lucky/shared"
 
 export async function createLLMRegistryForUser({
   principal,
@@ -9,22 +9,22 @@ export async function createLLMRegistryForUser({
   userEnabledModels,
 }: {
   principal: Principal
-  userProviders: UserProviders
+  userProviders: UserGateways
   userEnabledModels: ModelEntry[]
-  fallbackKeys?: Record<string, string>
+  fallbackKeys?: Partial<Record<string, string>>
 }): Promise<UserModels> {
-  const llmRegistry = getServerLLMRegistry()
-  const apiKeys: Partial<Record<LuckyProvider, string>> = {
-    openai: userProviders.openai,
-    groq: userProviders.groq,
-    openrouter: userProviders.openrouter,
+  const llmRegistry = await getServerLLMRegistry()
+  const apiKeys: Partial<Record<LuckyGateway, string>> = {
+    "openai-api": userProviders["openai-api"],
+    "groq-api": userProviders["groq-api"],
+    "openrouter-api": userProviders["openrouter-api"],
     // todo add anthropic once ready.
   }
 
   const userModels = llmRegistry.forUser({
     mode: "byok",
     userId: principal.clerk_id,
-    models: userEnabledModels.map(m => m.id),
+    models: userEnabledModels.map(m => m.gatewayModelId),
     apiKeys: apiKeys,
   })
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 /**
- * remove all node_modules and dist folders from the monorepo.
+ * nuclear clean: removes ALL build artifacts, caches, and temporary files from the monorepo.
+ * removes: node_modules, dist, .turbo, .tmp, .cache, .next, coverage, .tsbuildinfo, bun.lock, .DS_Store
  * useful when you need a completely clean slate.
  *
  * usage:
@@ -14,7 +15,7 @@ import { join } from "node:path"
 const rootDir = join(import.meta.dir, "..")
 
 console.log("🧹 starting superclean...")
-console.log("removing all node_modules and dist folders...\n")
+console.log("removing all build artifacts, caches, and temporary files...\n")
 
 try {
   // remove all node_modules
@@ -38,9 +39,51 @@ try {
     stdio: "inherit",
   })
 
+  // remove all .tmp directories
+  console.log("→ removing .tmp directories...")
+  execSync('find . -name ".tmp" -type d -prune -exec rm -rf "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
+  // remove all .cache directories
+  console.log("→ removing .cache directories...")
+  execSync('find . -name ".cache" -type d -prune -exec rm -rf "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
+  // remove all .next directories (Next.js build cache)
+  console.log("→ removing .next directories...")
+  execSync('find . -name ".next" -type d -prune -exec rm -rf "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
+  // remove all coverage directories
+  console.log("→ removing coverage directories...")
+  execSync('find . -name "coverage" -type d -prune -exec rm -rf "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
+  // remove all .tsbuildinfo files
+  console.log("→ removing .tsbuildinfo files...")
+  execSync('find . -name "*.tsbuildinfo" -type f -exec rm -f "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
   // remove all bun.lock files
   console.log("→ removing bun.lock files...")
   execSync('find . -name "bun.lock" -type f -exec rm -f "{}" +', {
+    cwd: rootDir,
+    stdio: "inherit",
+  })
+
+  // remove all .DS_Store files (macOS)
+  console.log("→ removing .DS_Store files...")
+  execSync('find . -name ".DS_Store" -type f -exec rm -f "{}" +', {
     cwd: rootDir,
     stdio: "inherit",
   })

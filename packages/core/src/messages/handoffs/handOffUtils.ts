@@ -1,4 +1,4 @@
-import { getCoreConfig, getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
+import { getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { Payload } from "@core/messages/MessagePayload"
 import type { WorkflowMessage } from "@core/messages/WorkflowMessage"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"

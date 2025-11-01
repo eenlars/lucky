@@ -468,7 +468,7 @@ export type Database = {
           publisher_org_id: string
           repo_url: string | null
           search_text: string | null
-          search_tsv: unknown | null
+          search_tsv: unknown
           server_id: string
           short_description: string
           slug: string
@@ -483,7 +483,7 @@ export type Database = {
           publisher_org_id: string
           repo_url?: string | null
           search_text?: string | null
-          search_tsv?: unknown | null
+          search_tsv?: unknown
           server_id?: string
           short_description: string
           slug: string
@@ -498,7 +498,7 @@ export type Database = {
           publisher_org_id?: string
           repo_url?: string | null
           search_text?: string | null
-          search_tsv?: unknown | null
+          search_tsv?: unknown
           server_id?: string
           short_description?: string
           slug?: string

@@ -18,7 +18,7 @@ export type LocalMCPTransportStdio = TransportCommon & {
 
 export type LocalMCPTransportOAuth = TransportCommon & {
   type: "oauth"
-  provider: string
+  gateway: string
   token: string
   scopes?: string[]
 }
@@ -61,7 +61,7 @@ const isTransport = (value: LocalMCPTransport): boolean => {
     return typeof value.command === "string" && value.command.length > 0
   }
   if (value.type === "oauth") {
-    return typeof value.provider === "string" && typeof value.token === "string"
+    return typeof value.gateway === "string" && typeof value.token === "string"
   }
   return false
 }

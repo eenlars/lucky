@@ -5,9 +5,10 @@
 
 import fs from "node:fs"
 import path from "node:path"
+import { experimental_createMCPClient } from "@ai-sdk/mcp"
+import { Experimental_StdioMCPTransport } from "@ai-sdk/mcp/mcp-stdio"
+import type { MCPToolkitMap } from "@lucky/shared"
 import type { ToolSet } from "ai"
-import { experimental_createMCPClient } from "ai"
-import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
 import type { MCPToolName } from "../registry/types"
 
 // Environment variable substitution utility
@@ -219,7 +220,7 @@ export async function setupMCPForNode(
   toolNames: MCPToolName[] | null | undefined,
   workflowId: string,
   configPath?: string,
-  opts?: { toolkits?: import("@lucky/shared").MCPToolkitMap },
+  opts?: { toolkits?: MCPToolkitMap },
 ): Promise<ToolSet> {
   const safeToolNames: MCPToolName[] = Array.isArray(toolNames) ? toolNames : []
   if (safeToolNames.length === 0) {

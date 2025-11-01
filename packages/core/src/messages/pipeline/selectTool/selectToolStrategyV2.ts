@@ -24,7 +24,7 @@ const verboseOverride = true
 export async function selectToolStrategyV2<T extends ToolSet>(
   options: SelectToolStrategyOptions<T>,
 ): Promise<StrategyResult<T>> {
-  const { tools, identityPrompt, agentSteps, roundsLeft, systemMessage, model } = options
+  const { tools, identityPrompt, agentSteps, roundsLeft, systemMessage, gatewayModelId } = options
 
   if (isNir(tools) || Object.keys(tools).length === 0) {
     // this should never happen.
@@ -115,7 +115,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
       usdCost,
       error,
     } = await sendAI({
-      model,
+      model: gatewayModelId,
       messages: analysisMessages,
       mode: "structured",
       schema: DecisionSchema,
@@ -139,7 +139,7 @@ export async function selectToolStrategyV2<T extends ToolSet>(
         // console.log(chalk.blueBright.bold("toolName:", decision.toolName))
 
         // console.log(chalk.yellow.bold("agentSteps:", agentSteps))
-        // console.log(chalk.cyan.bold("model:", model))
+        // console.log(chalk.cyan.bold("gatewayModelId:", gatewayModelId))
         // console.log(chalk.green.bold("tools:", fullToolListWithArgs))
       }
 

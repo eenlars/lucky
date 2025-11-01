@@ -57,12 +57,12 @@ export async function POST(req: NextRequest) {
       },
     }
 
-    const llmRegistry = getServerLLMRegistry()
+    const llmRegistry = await getServerLLMRegistry()
 
     const userModels = llmRegistry.forUser({
       mode: "shared",
       userId: userId,
-      models: availableModels.map(m => m.id),
+      models: availableModels.map(m => m.gatewayModelId),
     })
 
     // Run formalizeWorkflow with execution context using shared system keys

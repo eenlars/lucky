@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * Script to migrate ALL database model configurations to openai#gpt-5-nano
+ * Script to migrate ALL database model configurations to gpt-5-nano
  *
  * This script updates:
- * 1. app.provider_settings.enabled_models (user model preferences) - APP SCHEMA
+ * 1. app.gateway_settings.enabled_models (user model preferences) - APP SCHEMA
  * 2. public.NodeVersion.llm_model (historical node configurations) - PUBLIC SCHEMA
- * 3. public.WorkflowVersion.dsl (workflow configurations with modelName) - PUBLIC SCHEMA
+ * 3. public.WorkflowVersion.dsl (workflow configurations with gatewayModelId) - PUBLIC SCHEMA
  *
  * Note: Uses two different schemas:
- * - "app" schema: provider_settings
+ * - "app" schema: gateway_settings
  * - "public" schema: NodeVersion, WorkflowVersion
  *
  * Safety features:
@@ -30,10 +30,10 @@ import { createClient } from "@supabase/supabase-js"
 // Configuration
 // ============================================================================
 
-const TARGET_MODEL = "openai#gpt-5-nano" // Catalog ID format (provider#model)
+const TARGET_MODEL = "gpt-5-nano" // Catalog ID format (provider#model)
 
 interface MigrationStats {
-  providerSettings: {
+  gatewaySettings: {
     totalRecords: number
     updatedRecords: number
     totalModelsReplaced: number
@@ -81,13 +81,13 @@ async function createBackup() {
   const client = getClient()
 
   // Fetch all relevant data from their respective schemas
-  const providerSettings = await client.schema("app").from("provider_settings").select("*").throwOnError()
+  const gatewaySettings = await client.schema("app").from("gateway_settings").select("*").throwOnError()
   const nodeVersions = await client.from("NodeVersion").select("*").throwOnError()
   const workflowVersions = await client.from("WorkflowVersion").select("*").throwOnError()
 
   const backup = {
     timestamp,
-    providerSettings: providerSettings.data,
+    gatewaySettings: gatewaySettings.data,
     nodeVersions: nodeVersions.data,
     workflowVersions: workflowVersions.data,
   }
@@ -102,7 +102,7 @@ async function createBackup() {
 
   writeFileSync(backupFile, JSON.stringify(backup, null, 2))
   console.log(`✅ Backup created: ${backupFile}`)
-  console.log(`   - Provider settings: ${providerSettings.data?.length ?? 0} records`)
+  console.log(`   - Gateway settings: ${gatewaySettings.data?.length ?? 0} records`)
   console.log(`   - Node versions: ${nodeVersions.data?.length ?? 0} records`)
   console.log(`   - Workflow versions: ${workflowVersions.data?.length ?? 0} records`)
 
@@ -113,11 +113,11 @@ async function createBackup() {
 // Migration Functions
 // ============================================================================
 
-async function migrateProviderSettings(dryRun: boolean): Promise<MigrationStats["providerSettings"]> {
-  console.log("\n🔄 Migrating app.provider_settings.enabled_models...")
+async function migrateGatewaySettings(dryRun: boolean): Promise<MigrationStats["gatewaySettings"]> {
+  console.log("\n🔄 Migrating app.gateway_settings.enabled_models...")
 
   const client = getClient()
-  const { data: records, error } = await client.schema("app").from("provider_settings").select("*")
+  const { data: records, error } = await client.schema("app").from("gateway_settings").select("*")
 
   if (error) throw error
   if (!records || records.length === 0) {
@@ -131,27 +131,27 @@ async function migrateProviderSettings(dryRun: boolean): Promise<MigrationStats[
   for (const record of records) {
     const enabledModels = (record.enabled_models as string[]) || []
 
-    // Check if any model needs updating (anything that's not already openai#gpt-5-nano)
+    // Check if any model needs updating (anything that's not already gpt-5-nano)
     const needsUpdate = enabledModels.some(model => model !== TARGET_MODEL)
 
     if (needsUpdate) {
       const originalCount = enabledModels.length
       const newModels = [TARGET_MODEL] // Set to single model
 
-      console.log(`   ${dryRun ? "[DRY RUN] Would update" : "Updating"} record ${record.provider_setting_id}:`)
-      console.log(`     Provider: ${record.provider}`)
+      console.log(`   ${dryRun ? "[DRY RUN] Would update" : "Updating"} record ${record.gateway_setting_id}:`)
+      console.log(`     Provider: ${record.gateway}`)
       console.log(`     Old models: ${JSON.stringify(enabledModels)}`)
       console.log(`     New models: ${JSON.stringify(newModels)}`)
 
       if (!dryRun) {
         const { error: updateError } = await client
           .schema("app")
-          .from("provider_settings")
+          .from("gateway_settings")
           .update({
             enabled_models: newModels,
             updated_at: new Date().toISOString(),
           })
-          .eq("provider_setting_id", record.provider_setting_id)
+          .eq("gateway_setting_id", record.gateway_setting_id)
 
         if (updateError) {
           console.error(`     ❌ Error updating: ${updateError.message}`)
@@ -258,13 +258,13 @@ async function migrateWorkflowVersions(dryRun: boolean): Promise<MigrationStats[
     let nodesUpdatedInWorkflow = 0
 
     const updatedNodes = dsl.nodes.map((node: any) => {
-      if (node.modelName && node.modelName !== TARGET_MODEL) {
+      if (node.gatewayModelId && node.gatewayModelId !== TARGET_MODEL) {
         console.log(
-          `     ${dryRun ? "[DRY RUN] Would update" : "Updating"} node ${node.nodeId}: ${node.modelName} → ${TARGET_MODEL}`,
+          `     ${dryRun ? "[DRY RUN] Would update" : "Updating"} node ${node.nodeId}: ${node.gatewayModelId} → ${TARGET_MODEL}`,
         )
         workflowNeedsUpdate = true
         nodesUpdatedInWorkflow++
-        return { ...node, modelName: TARGET_MODEL }
+        return { ...node, gatewayModelId: TARGET_MODEL }
       }
       return node
     })
@@ -310,7 +310,7 @@ async function migrateWorkflowVersions(dryRun: boolean): Promise<MigrationStats[
 
 async function migrate(options: { dryRun: boolean; createBackup: boolean }) {
   console.log("🚀 Starting model configuration migration")
-  console.log(`   Target model: ${TARGET_MODEL}`)
+  console.log(`   Target gatewayModelId: ${TARGET_MODEL}`)
   console.log(`   Mode: ${options.dryRun ? "DRY RUN (no changes will be made)" : "EXECUTE (changes will be applied)"}`)
   console.log("")
 
@@ -320,14 +320,14 @@ async function migrate(options: { dryRun: boolean; createBackup: boolean }) {
   }
 
   const stats: MigrationStats = {
-    providerSettings: { totalRecords: 0, updatedRecords: 0, totalModelsReplaced: 0 },
+    gatewaySettings: { totalRecords: 0, updatedRecords: 0, totalModelsReplaced: 0 },
     nodeVersions: { totalRecords: 0, updatedRecords: 0 },
     workflowVersions: { totalRecords: 0, updatedRecords: 0, totalNodesUpdated: 0 },
   }
 
   try {
     // Run all migrations
-    stats.providerSettings = await migrateProviderSettings(options.dryRun)
+    stats.gatewaySettings = await migrateGatewaySettings(options.dryRun)
     stats.nodeVersions = await migrateNodeVersions(options.dryRun)
     stats.workflowVersions = await migrateWorkflowVersions(options.dryRun)
 
@@ -335,10 +335,10 @@ async function migrate(options: { dryRun: boolean; createBackup: boolean }) {
     console.log(`\n${"=".repeat(80)}`)
     console.log("📊 MIGRATION SUMMARY")
     console.log("=".repeat(80))
-    console.log("\nProvider Settings (app.provider_settings):")
-    console.log(`  Total records: ${stats.providerSettings.totalRecords}`)
-    console.log(`  ${options.dryRun ? "Would update" : "Updated"}: ${stats.providerSettings.updatedRecords}`)
-    console.log(`  Models replaced: ${stats.providerSettings.totalModelsReplaced}`)
+    console.log("\nGateway Settings (app.gateway_settings):")
+    console.log(`  Total records: ${stats.gatewaySettings.totalRecords}`)
+    console.log(`  ${options.dryRun ? "Would update" : "Updated"}: ${stats.gatewaySettings.updatedRecords}`)
+    console.log(`  Models replaced: ${stats.gatewaySettings.totalModelsReplaced}`)
 
     console.log("\nNode Versions (public.NodeVersion):")
     console.log(`  Total records: ${stats.nodeVersions.totalRecords}`)
@@ -350,7 +350,7 @@ async function migrate(options: { dryRun: boolean; createBackup: boolean }) {
     console.log(`  Nodes updated: ${stats.workflowVersions.totalNodesUpdated}`)
 
     const totalUpdates =
-      stats.providerSettings.updatedRecords + stats.nodeVersions.updatedRecords + stats.workflowVersions.updatedRecords
+      stats.gatewaySettings.updatedRecords + stats.nodeVersions.updatedRecords + stats.workflowVersions.updatedRecords
 
     console.log(`\n${"=".repeat(80)}`)
     if (options.dryRun) {

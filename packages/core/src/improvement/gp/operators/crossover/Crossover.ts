@@ -69,7 +69,7 @@ export class Crossover {
       includeAdjacencyList: true,
       includeAgents: true,
       includeMemory: true,
-      easyModelNames: true,
+      tierMappingEnabled: true,
     }
 
     // safely stringify fitness; parents may not have been evaluated yet

@@ -1,7 +1,7 @@
 // Workflow templates for quick start
 
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import { getDefaultModels } from "@lucky/examples/settings/models"
+import { MODEL_CONFIG, getDefaultModels } from "@lucky/examples/settings/models"
 
 export interface WorkflowTemplate {
   id: string
@@ -25,7 +25,8 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: [],
-          modelName: getDefaultModels().default,
+          gateway: MODEL_CONFIG.gateway,
+          gatewayModelId: getDefaultModels().default,
         },
       ],
     },
@@ -44,7 +45,8 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: ["recipe_generator"],
-          modelName: getDefaultModels().default,
+          gateway: MODEL_CONFIG.gateway,
+          gatewayModelId: getDefaultModels().default,
         },
         {
           nodeId: "recipe_generator",
@@ -53,7 +55,8 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: ["nutrition_analyzer"],
-          modelName: getDefaultModels().default,
+          gateway: MODEL_CONFIG.gateway,
+          gatewayModelId: getDefaultModels().default,
         },
         {
           nodeId: "nutrition_analyzer",
@@ -62,7 +65,8 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
           mcpTools: [],
           codeTools: [],
           handOffs: [],
-          modelName: getDefaultModels().default,
+          gateway: MODEL_CONFIG.gateway,
+          gatewayModelId: getDefaultModels().default,
         },
       ],
     },
