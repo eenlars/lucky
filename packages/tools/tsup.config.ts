@@ -19,6 +19,7 @@ export default defineConfig({
     /^@examples\/.*/,
     "ai",
     "zod",
+    /^zod\/.*/,
     "@modelcontextprotocol/sdk",
     "glob",
     "node:fs",
@@ -31,4 +32,5 @@ export default defineConfig({
     "stream",
     "crypto",
   ],
+  onSuccess: "echo 'Build complete'",
 })

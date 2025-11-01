@@ -23,11 +23,26 @@ function migrateWorkflowConfig(dsl: any): WorkflowConfig {
   const version = dsl.__schema_version || 0
   let migrated = { ...dsl }
 
-  // v0 -> v1: Add __schema_version field (legacy workflows)
+  // v0 -> v1: Migrate modelName to gatewayModelId and add gateway field
   if (version < 1) {
     migrated = {
       ...migrated,
       __schema_version: 1,
+      nodes: (migrated.nodes || []).map((node: any) => {
+        // Transform modelName to gatewayModelId if present
+        const gatewayModelId = node.gatewayModelId || node.modelName || "gpt-5-nano"
+
+        // Add gateway field if missing (use from config or default to openai-api)
+        const gateway = node.gateway || getCoreConfig().models.gateway || "openai-api"
+
+        return {
+          ...node,
+          gatewayModelId,
+          gateway,
+          // Remove old modelName field
+          modelName: undefined,
+        }
+      }),
     }
   }
 
