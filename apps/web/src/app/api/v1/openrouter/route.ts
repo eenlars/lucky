@@ -1,18 +1,28 @@
-import {
-  type WorkflowLoadResult,
-  loadWorkflowConfig,
-} from "@/features/workflow-or-chat-invocation/lib/config-load/database-workflow-loader"
+import { createLLMRegistryForUser } from "@/features/provider-llm-setup/lib/create-llm-registry"
+import { type UserGateways, loadProviderApiKeys } from "@/features/provider-llm-setup/lib/load-user-providers"
+import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
+import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
+import { loadWorkflowConfig } from "@/features/workflow-or-chat-invocation/lib/config-load/database-workflow-loader"
 import { InvalidWorkflowInputError } from "@/features/workflow-or-chat-invocation/lib/errors/workflowInputError"
+import { loadMCPToolkitsForWorkflow } from "@/features/workflow-or-chat-invocation/lib/tools/mcp-toolkit-loader"
 import { validateWorkflowInput } from "@/features/workflow-or-chat-invocation/lib/validation/input-validator"
 import { activeWorkflows } from "@/features/workflow-or-chat-invocation/workflow/active-workflows"
-import { fail, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { authenticateRequest } from "@/lib/auth/principal"
 import { ensureCoreInit } from "@/lib/ensure-core-init"
 import { logException } from "@/lib/error-logger"
-import { getObservationContext } from "@lucky/core/context/observationContext"
+import {
+  formatGatewayDisplayNames,
+  getRequiredGateways,
+  validateGatewayKeys,
+} from "@/lib/validation/gateway-validation"
+import { withExecutionContext } from "@lucky/core/context/executionContext"
+import { getObservationContext, withObservationContext } from "@lucky/core/context/observationContext"
+import { AgentObserver } from "@lucky/core/utils/observability/AgentObserver"
 import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegistry"
-import type { InvocationSource } from "@lucky/core/workflow/runner/types"
-import { getModelsByGateway } from "@lucky/models"
+import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
+import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
+import type { InvocationInput } from "@lucky/core/workflow/runner/types"
 import { findModel } from "@lucky/models/llm-catalog/catalog-queries"
 import { type WorkflowConfigZ, genShortId } from "@lucky/shared"
 import type { NextRequest } from "next/server"
@@ -55,13 +65,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine source from parsed input
-    let source: InvocationSource
-    if ("workflowVersionId" in parsed && parsed.workflowVersionId) {
+    let source: any
+    if ("workflowVersionId" in parsed) {
       source = { kind: "version", id: parsed.workflowVersionId }
-    } else if ("dslConfig" in parsed && parsed.dslConfig) {
-      source = { kind: "dsl", config: parsed.dslConfig }
     } else if ("filename" in parsed) {
-      throw new Error("Not possible with filename")
+      source = { kind: "filename", path: parsed.filename }
+    } else if ("dslConfig" in parsed) {
+      source = { kind: "dsl", config: parsed.dslConfig }
     } else {
       await cleanup()
       return fail("v1/openrouter", "Invalid request: must specify workflowVersionId, filename, or dslConfig", {
@@ -70,18 +80,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Security validation (e.g., filename only allowed for api_key auth)
-    validateWorkflowInput(principal, undefined)
+    validateWorkflowInput(principal, source.kind === "filename" ? source.path : undefined)
 
     // Load workflow config (database resolves parent→latest; demo fallback preserved)
     // - For DSL: we skip DB load; for version/parent we load to get schemas and provider requirements
-    const load: WorkflowLoadResult =
+    const load =
       source.kind === "dsl"
         ? {
             success: true as const,
             config: source.config,
             inputSchema: source.config?.inputSchema,
             resolvedWorkflowVersionId: undefined,
-            source,
+            source: "dsl" as const,
           }
         : await loadWorkflowConfig(source.id, principal, undefined, {
             returnDemoOnNotFound: principal.auth_method === "session",
@@ -92,9 +102,7 @@ export async function POST(req: NextRequest) {
       return fail("v1/openrouter", "Workflow not found", { status: 404 })
     }
 
-    const models = load.config.nodes.map(n => n.gatewayModelId)
-    const openrouterEnabled = getModelsByGateway("openrouter-api").filter(entry => entry.runtimeEnabled !== false)
-
+    // Fix model IDs to ensure they use the correct gatewayModelId from catalog
     const fixWrongModelsInConfig = (dsl: WorkflowConfigZ) => {
       const newConfig: WorkflowConfigZ = {
         nodes: [],
@@ -109,12 +117,121 @@ export async function POST(req: NextRequest) {
     }
 
     load.config = fixWrongModelsInConfig(load.config)
+
+    // Secrets & gateways
+    const secrets = createSecretResolver(principal.clerk_id, principal)
+
+    // Only fetch what the workflow needs
+    const { gateways } = getRequiredGateways(load.config, "v1/openrouter")
+    // 1) User BYOK (preferred)
+    const userGateways = await loadProviderApiKeys(secrets)
+    // 2) Env/company fallback (namespaced) — allowed only for API-key auth
+    const envFallback =
+      principal.auth_method === "api_key" ? await secrets.getAll(Array.from(gateways), "environment-variables") : {}
+    // Build consolidated gateway map with correct precedence
+    const consolidated: UserGateways = {}
+    for (const g of gateways) {
+      const key = userGateways[g] ?? envFallback[g]
+      if (key) consolidated[g] = key
+    }
+
+    // For session-auth, enforce presence
+    if (principal.auth_method === "session") {
+      const missingGateways = validateGatewayKeys(Array.from(gateways), consolidated)
+      if (missingGateways.length) {
+        const missingKeyNames = missingGateways.map(getProviderKeyName)
+        const display = formatGatewayDisplayNames(missingKeyNames)
+        await cleanup()
+        const msg = `This workflow requires ${display.join(", ")} ${display.length === 1 ? "API key" : "API keys"} to run. Configure ${display.length === 1 ? "it" : "them"} in Settings → Providers.`
+        return fail("v1/openrouter", msg, { status: 400 })
+      }
+    }
+
+    // Models & registry
+    const enabledModels = await getUserModelsSetup({ principal }, Array.from(gateways))
+    const userModels = await createLLMRegistryForUser({
+      principal,
+      userProviders: consolidated,
+      userEnabledModels: enabledModels,
+      fallbackKeys: consolidated,
+    })
+
+    // Optional MCP toolkits
+    const mcpToolkits = await loadMCPToolkitsForWorkflow(principal)
+
+    // Observer hookup
+    const obsId = genShortId()
+    const observer = new AgentObserver()
+    const registry = ObserverRegistry.getInstance()
+    registry.register(obsId, observer)
+
+    // Build evalInput for prompt-only invocation
+    // This endpoint expects a simple prompt, not full evaluation inputs
+    if (!parsed.prompt) {
+      await cleanup()
+      return fail("v1/openrouter", "Missing 'prompt' in request body", { status: 400 })
+    }
+
+    const evalInput = {
+      type: "prompt-only" as const,
+      goal: parsed.prompt,
+      workflowId: parsed.workflowId ?? `wf_id_${genShortId()}`,
+    }
+
+    // Build core InvocationInput
+    const invocationInput: InvocationInput = {
+      source,
+      evalInput,
+      validation: "strict",
+      abortSignal: controller.signal,
+    }
+
+    // Execute
+    const result = await withExecutionContext(
+      {
+        principal,
+        secrets,
+        apiKeys: consolidated,
+        userModels,
+        ...(mcpToolkits ? { mcp: { toolkits: mcpToolkits } } : {}),
+      },
+      async () => withObservationContext({ randomId: obsId, observer }, async () => invokeWorkflow(invocationInput)),
+    )
+
+    const finishedAt = new Date().toISOString()
+
+    // Cleanup observer shortly after completion
+    setTimeout(
+      () => {
+        observer.dispose()
+        registry.dispose(obsId)
+      },
+      5 * 60 * 1000,
+    )
+
+    await cleanup()
+
+    if (!result?.success) {
+      const errMsg = result?.error ?? "Workflow invocation failed"
+      return fail("v1/openrouter", errMsg, { status: 500 })
+    }
+
+    const traceId = result.data?.[0]?.workflowInvocationId ?? requestId
+    const payload = {
+      output: result,
+      invocationId: requestId,
+      traceId,
+      startedAt,
+      finishedAt,
+    }
+
+    return alrighty("v1/openrouter", { success: true, data: payload })
   } catch (error) {
     await cleanup()
     if (error instanceof InvalidWorkflowInputError) {
       return fail("v1/openrouter", error.message, { status: 403 })
     }
-    logException(error, { location: "/api/v1/invoke" })
+    logException(error, { location: "/api/v1/openrouter" })
     return fail("v1/openrouter", `Unexpected error: ${String(error)}`, { status: 500 })
   }
 }
