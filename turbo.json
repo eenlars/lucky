@@ -47,6 +47,11 @@
       "persistent": true,
       "passThroughEnv": ["VERCEL_OIDC_TOKEN", "ANTH_SECRET_KEY"]
     },
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
     "lint": {
       "dependsOn": ["^build"]
     },

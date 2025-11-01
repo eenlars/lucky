@@ -39,6 +39,7 @@
     "web:dev:direct": "cd apps/web && bun run dev",
     "dev": "bun --env-file .env --env-file .env.local turbo run dev",
     "build": "bun --env-file .env --env-file .env.local turbo run build",
+    "start": "bun --env-file .env --env-file .env.local turbo run start --filter=together",
     "build:shared": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/shared",
     "build:models": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/models",
     "build:tools": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/tools",

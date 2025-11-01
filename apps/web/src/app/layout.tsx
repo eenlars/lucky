@@ -44,7 +44,11 @@ export default async function RootLayout({
     (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
 
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        cssLayerName: "clerk", // Required for Tailwind 4 compatibility
+      }}
+    >
       <SupabaseTokenBridge />
       <GlobalErrorHandler />
       <QueryProvider>

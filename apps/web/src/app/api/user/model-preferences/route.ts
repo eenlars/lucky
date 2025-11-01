@@ -133,46 +133,48 @@ export async function PUT(req: NextRequest) {
     }
 
     // Update each gateway's settings
-    const updatePromises = preferences.gateways.map(async gatewaySettings => {
-      // Check if settings exist
-      const { data: existing } = await supabase
-        .schema("app")
-        .from("gateway_settings")
-        .select("gateway_setting_id")
-        .eq("clerk_id", userId)
-        .eq("gateway", gatewaySettings.gateway)
-        .maybeSingle()
+    const updatePromises = preferences.gateways.map(
+      async (gatewaySettings: UserGatewayPreferences["gateways"][number]) => {
+        // Check if settings exist
+        const { data: existing } = await supabase
+          .schema("app")
+          .from("gateway_settings")
+          .select("gateway_setting_id")
+          .eq("clerk_id", userId)
+          .eq("gateway", gatewaySettings.gateway)
+          .maybeSingle()
 
-      if (existing) {
-        // Update existing
+        if (existing) {
+          // Update existing
+          return supabase
+            .schema("app")
+            .from("gateway_settings")
+            .update({
+              enabled_models: gatewaySettings.enabledModels as ModelId[],
+              is_enabled: gatewaySettings.isEnabled,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("gateway_setting_id", existing.gateway_setting_id)
+        }
+        // Insert new
         return supabase
           .schema("app")
           .from("gateway_settings")
-          .update({
-            enabled_models: gatewaySettings.enabledModels as ModelId[],
-            is_enabled: gatewaySettings.isEnabled,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("gateway_setting_id", existing.gateway_setting_id)
-      }
-      // Insert new
-      return supabase
-        .schema("app")
-        .from("gateway_settings")
-        .insert([
-          {
-            clerk_id: userId,
-            gateway: gatewaySettings.gateway,
-            enabled_models: gatewaySettings.enabledModels as ModelId[],
-            is_enabled: gatewaySettings.isEnabled,
-          },
-        ])
-    })
+          .insert([
+            {
+              clerk_id: userId,
+              gateway: gatewaySettings.gateway,
+              enabled_models: gatewaySettings.enabledModels as ModelId[],
+              is_enabled: gatewaySettings.isEnabled,
+            },
+          ])
+      },
+    )
 
     const results = await Promise.all(updatePromises)
 
     // Check for errors
-    const errors = results.filter(r => r.error)
+    const errors = results.filter((r: { error: unknown }) => r.error)
     if (errors.length > 0) {
       console.error("[PUT /api/user/model-preferences] Update errors:", errors)
       return fail("user/model-preferences:put", "Failed to update some gateway settings", {
