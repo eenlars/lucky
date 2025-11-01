@@ -24,7 +24,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -45,7 +45,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -87,7 +87,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -129,7 +129,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -150,7 +150,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -171,7 +171,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -192,7 +192,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -213,7 +213,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -234,7 +234,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -255,7 +255,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -276,7 +276,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -318,7 +318,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -339,7 +339,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -381,7 +381,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -402,7 +402,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -444,7 +444,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -465,7 +465,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -486,7 +486,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -570,7 +570,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -591,7 +591,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -612,7 +612,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -633,7 +633,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -654,7 +654,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -675,7 +675,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -696,7 +696,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -717,7 +717,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -738,7 +738,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -759,7 +759,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -780,7 +780,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -801,7 +801,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -822,7 +822,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -843,7 +843,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -864,7 +864,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -885,7 +885,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -906,7 +906,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -927,7 +927,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -948,7 +948,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -969,7 +969,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -990,7 +990,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1011,7 +1011,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1032,7 +1032,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1053,7 +1053,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1074,7 +1074,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1095,7 +1095,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1116,7 +1116,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1137,7 +1137,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1158,7 +1158,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1200,7 +1200,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1221,7 +1221,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1242,7 +1242,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1263,7 +1263,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1284,7 +1284,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1305,7 +1305,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1326,7 +1326,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1368,7 +1368,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1389,7 +1389,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1410,7 +1410,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1431,7 +1431,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1452,7 +1452,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1473,7 +1473,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1494,7 +1494,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1515,7 +1515,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1536,7 +1536,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1578,7 +1578,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1599,7 +1599,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1620,7 +1620,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1641,7 +1641,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1662,7 +1662,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1683,7 +1683,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1704,7 +1704,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1725,7 +1725,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1746,7 +1746,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1767,7 +1767,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1788,7 +1788,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1809,7 +1809,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1830,7 +1830,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1851,7 +1851,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1872,7 +1872,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1893,7 +1893,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1914,7 +1914,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1935,7 +1935,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1956,7 +1956,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1977,7 +1977,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -1998,7 +1998,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2019,7 +2019,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2040,7 +2040,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2061,7 +2061,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2082,7 +2082,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2103,7 +2103,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2124,7 +2124,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2145,7 +2145,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 8,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2166,7 +2166,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2187,7 +2187,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2208,7 +2208,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2229,7 +2229,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2250,7 +2250,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2271,7 +2271,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2292,7 +2292,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2313,7 +2313,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2334,7 +2334,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2355,7 +2355,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2376,7 +2376,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2397,7 +2397,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2418,7 +2418,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2439,7 +2439,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2460,7 +2460,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2481,7 +2481,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2502,7 +2502,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2523,7 +2523,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2544,7 +2544,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2565,7 +2565,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2586,7 +2586,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2607,7 +2607,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 9,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2628,7 +2628,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2649,7 +2649,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2670,7 +2670,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2691,7 +2691,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2712,7 +2712,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 8,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2733,7 +2733,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 6,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2796,7 +2796,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2817,7 +2817,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2838,7 +2838,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 4,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2859,7 +2859,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "slow",
     intelligence: 10,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2880,7 +2880,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 10,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2901,7 +2901,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 10,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2943,7 +2943,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "slow",
     intelligence: 10,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2964,7 +2964,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "slow",
     intelligence: 10,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -2985,7 +2985,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 10,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3006,7 +3006,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 10,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3048,7 +3048,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 8,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3069,7 +3069,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3090,7 +3090,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 8,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3111,7 +3111,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 7,
     pricingTier: "medium",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3132,7 +3132,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3153,7 +3153,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3174,7 +3174,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3195,7 +3195,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "fast",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3216,7 +3216,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 8,
     pricingTier: "high",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3237,7 +3237,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 5,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 
@@ -3258,7 +3258,7 @@ export const OPENROUTER_MODELS: ModelEntry[] = [
     speed: "balanced",
     intelligence: 6,
     pricingTier: "low",
-    runtimeEnabled: false,
+    runtimeEnabled: true,
     uiHiddenInProd: false,
   },
 ]

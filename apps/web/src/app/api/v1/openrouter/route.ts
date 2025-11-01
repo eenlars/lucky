@@ -1,6 +1,5 @@
 import { createLLMRegistryForUser } from "@/features/provider-llm-setup/lib/create-llm-registry"
 import { type UserGateways, loadProviderApiKeys } from "@/features/provider-llm-setup/lib/load-user-providers"
-import { getUserModelsSetup } from "@/features/provider-llm-setup/lib/user-models-get"
 import { createSecretResolver } from "@/features/secret-management/lib/secretResolver"
 import { loadWorkflowConfig } from "@/features/workflow-or-chat-invocation/lib/config-load/database-workflow-loader"
 import { InvalidWorkflowInputError } from "@/features/workflow-or-chat-invocation/lib/errors/workflowInputError"
@@ -23,7 +22,7 @@ import { ObserverRegistry } from "@lucky/core/utils/observability/ObserverRegist
 import { getProviderKeyName } from "@lucky/core/workflow/provider-extraction"
 import { invokeWorkflow } from "@lucky/core/workflow/runner/invokeWorkflow"
 import type { InvocationInput } from "@lucky/core/workflow/runner/types"
-import { findModel } from "@lucky/models/llm-catalog/catalog-queries"
+import { findModel, getModelsByGateway } from "@lucky/models/llm-catalog/catalog-queries"
 import { type WorkflowConfigZ, genShortId } from "@lucky/shared"
 import type { NextRequest } from "next/server"
 
@@ -147,12 +146,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Models & registry
-    const enabledModels = await getUserModelsSetup({ principal }, Array.from(gateways))
+    // OpenRouter endpoint: Use ALL available models for all gateways, not just user-enabled ones
+    // This allows the endpoint to work out-of-the-box without requiring model configuration
+    const allModelsForGateways = Array.from(gateways).flatMap(gateway => getModelsByGateway(gateway))
+
     const userModels = await createLLMRegistryForUser({
       principal,
       userProviders: consolidated,
-      userEnabledModels: enabledModels,
+      userEnabledModels: allModelsForGateways,
       fallbackKeys: consolidated,
     })
 
