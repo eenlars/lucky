@@ -3,12 +3,12 @@
  * Script to migrate ALL database model configurations to gpt-5-nano
  *
  * This script updates:
- * 1. app.provider_settings.enabled_models (user model preferences) - APP SCHEMA
+ * 1. app.gateway_settings.enabled_models (user model preferences) - APP SCHEMA
  * 2. public.NodeVersion.llm_model (historical node configurations) - PUBLIC SCHEMA
  * 3. public.WorkflowVersion.dsl (workflow configurations with gatewayModelId) - PUBLIC SCHEMA
  *
  * Note: Uses two different schemas:
- * - "app" schema: provider_settings
+ * - "app" schema: gateway_settings
  * - "public" schema: NodeVersion, WorkflowVersion
  *
  * Safety features:

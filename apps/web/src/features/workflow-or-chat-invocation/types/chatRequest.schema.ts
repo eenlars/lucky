@@ -35,7 +35,7 @@ export const ChatRequestSchema = z
 
 export type ChatRequest = z.infer<typeof ChatRequestSchema>
 
-export type ProviderSettingsRow = {
+export type GatewaySettingsRow = {
   gateway: string | null
   enabled_models: unknown
   is_enabled: boolean | null
