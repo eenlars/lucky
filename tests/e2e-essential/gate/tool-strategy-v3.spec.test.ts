@@ -25,7 +25,7 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
   const systemMessage = "Choose the correct tool for the user request."
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
   afterEach(() => {
     vi.restoreAllMocks()
@@ -55,7 +55,7 @@ describe("[gate] selectToolStrategyV3 integration (deterministic)", () => {
       agentSteps: [],
       roundsLeft: 1,
       systemMessage,
-      model: MODEL,
+      gatewayModelId: MODEL,
     })
 
     expect(typeof debugPrompt).toBe("string")

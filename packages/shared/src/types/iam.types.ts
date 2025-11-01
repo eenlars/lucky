@@ -154,22 +154,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_clerk_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      is_org_admin: {
-        Args: { p_org_id: string }
-        Returns: boolean
-      }
-      is_org_member: {
-        Args: { p_org_id: string }
-        Returns: boolean
-      }
-      sub: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      current_clerk_id: { Args: never; Returns: string }
+      is_org_admin: { Args: { p_org_id: string }; Returns: boolean }
+      is_org_member: { Args: { p_org_id: string }; Returns: boolean }
+      sub: { Args: never; Returns: string }
     }
     Enums: {
       org_role: "owner" | "admin" | "member"

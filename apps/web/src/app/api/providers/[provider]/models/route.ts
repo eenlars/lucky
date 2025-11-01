@@ -1,8 +1,6 @@
-import { alrighty } from "@/lib/api/server"
-import { handleBody, isHandleBodyError } from "@/lib/api/server"
-import { getModelsByProvider } from "@lucky/models"
-import { isUIVisibleModel } from "@lucky/models/pricing/model-lookup"
-import { type EnrichedModelInfo, providerNameSchema } from "@lucky/shared"
+import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
+import { getModelsByGateway, isUIVisibleModel } from "@lucky/models"
+import { type EnrichedModelInfo, gatewayNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -26,7 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
   const body = await handleBody("providers/[provider]/models", req)
   if (isHandleBodyError(body)) return body
 
-  const validationResult = providerNameSchema.safeParse(provider)
+  const validationResult = gatewayNameSchema.safeParse(provider)
 
   if (!validationResult.success) {
     return NextResponse.json({ error: "Invalid provider" }, { status: 400 })
@@ -46,13 +44,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
     let modelIds: string[]
 
     switch (validatedProvider) {
-      case "openai":
+      case "openai-api":
         modelIds = await fetchOpenAIModels(body.apiKey)
         break
-      case "groq":
+      case "groq-api":
         modelIds = await fetchGroqModels(body.apiKey)
         break
-      case "openrouter":
+      case "openrouter-api":
         modelIds = await fetchOpenRouterModels(body.apiKey)
         break
       default:
@@ -62,13 +60,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
     // Enrich with metadata from MODEL_CATALOG if requested
     let result: string[] | EnrichedModelInfo[]
     if (includeMetadata) {
-      const catalogModels = getModelsByProvider(validatedProvider)
+      const catalogModels = getModelsByGateway(validatedProvider)
       // Create map with both formats: with and without provider prefix
       const catalogMap = new Map<string, (typeof catalogModels)[0]>()
       for (const model of catalogModels) {
-        catalogMap.set(model.model, model)
+        catalogMap.set(model.gatewayModelId, model)
         // Also map without prefix for OpenRouter/Groq format matching
-        const withoutPrefix = model.model.replace(/^[^#]+#/, "")
+        const withoutPrefix = model.gatewayModelId.replace(/^[^#]+#/, "")
         catalogMap.set(withoutPrefix, model)
       }
       const isDevelopment = process.env.NODE_ENV === "development"
@@ -81,8 +79,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
           // In development, show all; in production, hide UI-hidden models
           if (catalogEntry && (isDevelopment || isUIVisibleModel(catalogEntry, process.env.NODE_ENV))) {
             return {
-              id: catalogEntry.id,
-              name: catalogEntry.model,
+              gateway: catalogEntry.gateway,
+              gatewayModelId: catalogEntry.gatewayModelId,
               contextLength: catalogEntry.contextLength,
               supportsTools: catalogEntry.supportsTools,
               supportsVision: catalogEntry.supportsVision,
@@ -137,8 +135,8 @@ async function fetchOpenAIModels(apiKey: string): Promise<string[]> {
 
   // Filter to only GPT models and sort by ID
   const models = data.data
-    .filter((model: { id: string }) => {
-      const id = model.id
+    .filter((m: { id: string }) => {
+      const id = m.id
       return (
         id.startsWith("gpt-") ||
         id.startsWith("o1") ||
@@ -147,7 +145,7 @@ async function fetchOpenAIModels(apiKey: string): Promise<string[]> {
         id.includes("gpt4")
       )
     })
-    .map((model: { id: string }) => model.id)
+    .map((m: { id: string }) => m.id)
     .sort()
 
   return models
@@ -168,7 +166,7 @@ async function fetchGroqModels(apiKey: string): Promise<string[]> {
   const data = await response.json()
 
   // Extract model IDs and sort
-  const models = data.data.map((model: { id: string }) => model.id).sort()
+  const models = data.data.map((m: { id: string }) => m.id).sort()
 
   return models
 }
@@ -188,7 +186,7 @@ async function fetchOpenRouterModels(apiKey: string): Promise<string[]> {
   const data = await response.json()
 
   // Extract model IDs and sort
-  const models = data.data.map((model: { id: string }) => model.id).sort()
+  const models = data.data.map((m: { id: string }) => m.id).sort()
 
   return models
 }

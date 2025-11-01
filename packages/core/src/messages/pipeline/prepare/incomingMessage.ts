@@ -25,7 +25,7 @@ export async function prepareIncomingMessage(
   const incomingText = extractTextFromPayload(ctx.workflowMessageIncoming.payload)
 
   const { data: prepareThinking } = await sendAI({
-    model: ctx.nodeConfig.modelName,
+    model: ctx.nodeConfig.gatewayModelId,
     mode: "text",
     // todo speed and accuracy: this is inefficient when the task is simple. also, the assumptions might steer the algorithm too far.
     messages: [

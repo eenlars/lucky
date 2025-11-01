@@ -1,6 +1,6 @@
-import { validateAndResolveModel } from "@/lib/models/model-fallback"
+import { isModelInPreferences, pickFallbackModel } from "@/features/provider-llm-setup/models/model-fallback"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
-import type { UserModelPreferences } from "@lucky/shared"
+import type { UserGatewayPreferences } from "@lucky/shared"
 import { type AppEdge, createEdge } from "../components/edges/edges"
 import { type AppNode, type WorkflowNodeData, createNodeByType } from "../components/nodes/nodes"
 
@@ -10,7 +10,7 @@ import { type AppNode, type WorkflowNodeData, createNodeByType } from "../compon
  */
 export const initialSetupConfig = (
   workflowConfig: WorkflowConfig,
-  userPreferences?: UserModelPreferences | null,
+  userPreferences?: UserGatewayPreferences | null,
 ): { edges: AppEdge[]; nodes: AppNode[] } => {
   const edges: AppEdge[] = []
   const nodes: AppNode[] = []
@@ -31,23 +31,29 @@ export const initialSetupConfig = (
 
   for (const node of workflowConfig.nodes || []) {
     // Validate and resolve model against user preferences
-    let resolvedModelName = node.modelName
-    if (userPreferences) {
-      const { modelId, wasFallback } = validateAndResolveModel(node.modelName, userPreferences)
-      resolvedModelName = modelId
+    let resolvedGatewayModelId = node.gatewayModelId
 
-      if (wasFallback) {
+    if (userPreferences && !isModelInPreferences(node.gatewayModelId, userPreferences)) {
+      const fallback = pickFallbackModel(node.gatewayModelId, userPreferences)
+      if (fallback) {
+        resolvedGatewayModelId = fallback
         console.warn(
-          `[workflow-data] Node "${node.nodeId}": Model "${node.modelName}" not in user preferences. Using fallback: "${modelId}"`,
+          `[workflow-data] Node "${node.nodeId}": Model "${node.gatewayModelId}" not in user preferences. Using fallback: "${fallback}"`,
+        )
+      } else {
+        console.error(
+          `[workflow-data] Node "${node.nodeId}": Model "${node.gatewayModelId}" not in user preferences and no fallback available.`,
         )
       }
     }
 
     const nodeData: WorkflowNodeData = {
       nodeId: node.nodeId,
+      nodeType: "transform-node",
       description: node.description,
       systemPrompt: node.systemPrompt,
-      modelName: resolvedModelName,
+      gatewayModelId: resolvedGatewayModelId,
+      gateway: node.gateway,
       mcpTools: node.mcpTools || [],
       codeTools: node.codeTools || [],
       handOffs: node.handOffs || [],
@@ -102,7 +108,7 @@ export const initialSetupConfig = (
  */
 export const toFrontendWorkflowConfig = (
   workflowConfig: WorkflowConfig,
-  userPreferences?: UserModelPreferences | null,
+  userPreferences?: UserGatewayPreferences | null,
 ): { edges: AppEdge[]; nodes: AppNode[] } => {
   return initialSetupConfig(workflowConfig, userPreferences)
 }

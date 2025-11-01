@@ -49,7 +49,7 @@ vi.mock("@examples/settings/constants", () => {
 
   const MODELS_T: FullFlowRuntimeConfig["MODELS"] = {
     inactive: [],
-    provider: "openai",
+    gateway: "openai-api" as const,
   }
 
   const CONFIG_T: FlowRuntimeConfig = {
@@ -98,12 +98,12 @@ vi.mock("@examples/settings/constants", () => {
     },
     models: {
       inactive: [],
-      provider: MODELS_T.provider,
+      gateway: MODELS_T.gateway,
       defaults: {
-        summary: "openrouter#google/gemini-2.5-flash-lite",
-        nano: "openrouter#google/gemini-2.5-flash-lite",
-        low: "openrouter#google/gemini-2.5-flash-lite",
-        medium: "gpt-4.1-mini",
+        summary: "google/gemini-2.5-flash-lite",
+        nano: "google/gemini-2.5-flash-lite",
+        low: "google/gemini-2.5-flash-lite",
+        balanced: "gpt-4.1-mini",
         high: "gpt-4.1",
         default: "gpt-4.1-nano",
         fitness: "gpt-4.1-mini",

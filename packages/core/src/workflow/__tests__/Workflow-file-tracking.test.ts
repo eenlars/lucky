@@ -1,4 +1,3 @@
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { createMockEvaluationInput, createMockWorkflow } from "@core/utils/__tests__/setup/coreMocks"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
@@ -11,7 +10,8 @@ describe("Workflow File Tracking", () => {
         nodeId: "test-node",
         description: "Test node",
         systemPrompt: "Test system prompt",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: [],
@@ -28,7 +28,8 @@ describe("Workflow File Tracking", () => {
         nodeId: "test-node",
         description: "Test node",
         systemPrompt: "Test system prompt",
-        modelName: getDefaultModels().default,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         mcpTools: [],
         codeTools: [],
         handOffs: [],

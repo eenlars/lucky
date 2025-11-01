@@ -36,7 +36,7 @@ vi.mock("../RunService", () => ({
 }))
 
 // Mock Population helper methods that are used in initialize()
-vi.mock("@core/improvement/gp/resources/utils", () => ({
+vi.mock("@core/improvement/gp/rsc/utils", () => ({
   EvolutionUtils: {
     calculateStats: vi.fn().mockReturnValue({
       avgFitness: 0.7,

@@ -12,19 +12,19 @@ import {
 import { create } from "zustand"
 import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware"
 
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { setColorModeCookie } from "@/features/react-flow-visualization/components/actions/cookies"
 import { type AppEdge, createEdge } from "@/features/react-flow-visualization/components/edges/edges"
 import nodesConfig, {
-  createNodeByType,
   type AppNode,
   type AppNodeType,
   type WorkflowNodeData,
+  createNodeByType,
 } from "@/features/react-flow-visualization/components/nodes/nodes"
 import { CITY_NAMES } from "@/features/react-flow-visualization/lib/city-names"
 import { toFrontendWorkflowConfig } from "@/features/react-flow-visualization/lib/workflow-data"
 import { requiresHandle } from "@/features/react-flow-visualization/store/edge-validation"
 import { logException } from "@/lib/error-logger"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
 import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 import { layoutGraph } from "./layout"
 
@@ -625,7 +625,7 @@ export const createAppStore = (initialState: AppState = defaultState) => {
                 nodeId: _nodeId,
                 description,
                 systemPrompt,
-                modelName,
+                gatewayModelId,
                 mcpTools,
                 codeTools,
                 handOffs,
@@ -635,16 +635,18 @@ export const createAppStore = (initialState: AppState = defaultState) => {
                 handOffType,
                 useClaudeSDK,
                 sdkConfig,
+                gateway,
               } = node.data
 
               return {
                 nodeId: node.id, // Ensure nodeId matches the graph node id
                 description,
                 systemPrompt,
-                modelName,
+                gatewayModelId,
                 mcpTools,
                 codeTools,
                 handOffs,
+                gateway,
                 ...(memory !== undefined && { memory }),
                 ...(waitingFor !== undefined && { waitingFor }),
                 ...(waitFor !== undefined && { waitFor }),

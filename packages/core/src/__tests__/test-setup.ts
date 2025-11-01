@@ -88,7 +88,7 @@ vi.mock("@examples/settings/constants", () => ({
       showParameterSchemas: true,
     },
     models: {
-      provider: "openai" as const,
+      gateway: "openai-api" as const,
       inactive: [],
     },
     improvement: {
@@ -143,14 +143,14 @@ vi.mock("@examples/settings/constants", () => ({
   MODELS: {
     summary: "google/gemini-2.0-flash-001",
     nano: "google/gemini-2.0-flash-001",
-    default: "openrouter#openai/gpt-4.1-mini",
+    default: "openai/gpt-4.1-mini",
     free: "qwen/qwq-32b:free",
     free2: "deepseek/deepseek-r1-0528:free",
-    low: "openrouter#openai/gpt-4.1-nano",
-    medium: "openrouter#openai/gpt-4.1-mini",
-    high: "openrouter#openai/gpt-4.1-mini",
-    fitness: "openrouter#openai/gpt-4.1-mini",
-    reasoning: "openrouter#openai/gpt-4.1-mini",
+    low: "openai/gpt-4.1-nano",
+    medium: "openai/gpt-4.1-mini",
+    high: "openai/gpt-4.1-mini",
+    fitness: "openai/gpt-4.1-mini",
+    reasoning: "openai/gpt-4.1-mini",
     fallbackOpenRouter: "switchpoint/router",
   },
   PATHS: {

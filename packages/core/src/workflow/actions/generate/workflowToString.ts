@@ -8,7 +8,7 @@ import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
  * Options for converting a `Workflow` to a readable string.
  */
 export interface SimplifyOptions {
-  easyModelNames: boolean
+  tierMappingEnabled: boolean
   includeToolExplanations?: boolean
   includeAdjacencyList?: boolean
   includeAgents?: boolean
@@ -20,7 +20,7 @@ const defaultOptions = {
   includeAdjacencyList: true,
   includeAgents: false,
   includeMemory: false,
-  easyModelNames: false,
+  tierMappingEnabled: false,
 }
 
 //toString method for a workflow. has options to include tool explanations, adjacency list, and agents
@@ -30,7 +30,7 @@ export function workflowToString(workflow: Workflow, options: SimplifyOptions): 
     includeAdjacencyList = defaultOptions.includeAdjacencyList,
     includeAgents = defaultOptions.includeAgents,
     includeMemory = defaultOptions.includeMemory,
-    easyModelNames = defaultOptions.easyModelNames,
+    tierMappingEnabled = defaultOptions.tierMappingEnabled,
   } = options
 
   let totalString = ""
@@ -46,7 +46,7 @@ export function workflowToString(workflow: Workflow, options: SimplifyOptions): 
   }
   if (includeAdjacencyList) totalString += workflowToAdjacencyList(workflow.getConfig())
 
-  if (includeAgents) totalString += explainAgents(workflow.getConfig().nodes, easyModelNames)
+  if (includeAgents) totalString += explainAgents(workflow.getConfig().nodes, tierMappingEnabled)
 
   if (includeMemory) totalString += JSON.stringify(workflow.getMemory())
   return totalString

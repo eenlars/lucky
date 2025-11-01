@@ -57,6 +57,9 @@ export async function execStructured<S extends ZodTypeAny>(
 
   try {
     const { genObject } = await import("@core/messages/api/genObject")
+    // Note: Do not require execution context here. Structured mode relies on genObject
+    // which works with just the model string. Avoid resolving models from context to
+    // keep this path usable in tests/dev without full workflow context.
     let genResult: Awaited<ReturnType<typeof genObject>>
 
     // TODO: make timeout configurable based on schema complexity
@@ -139,39 +142,66 @@ export async function execStructured<S extends ZodTypeAny>(
     // TODO: implement error recovery mechanisms
     // TODO: add error reporting and analytics
     const { message, debug } = normalizeError(err)
-    console.error("[execStructured] error", { message })
 
     // Classify error for better tracking
     let errorCategory = "unknown"
     let severity: "error" | "warn" = "error"
+    let isUserError = false
 
     if (typeof message === "string") {
-      if (message.toLowerCase().includes("quota") || message.toLowerCase().includes("insufficient credits")) {
+      const lowerMsg = message.toLowerCase()
+
+      // User input validation errors - don't spam logs
+      const isKnownModelError =
+        lowerMsg.includes("is not a valid model id") ||
+        lowerMsg.includes("does not exist") ||
+        lowerMsg.includes("model_not_found") ||
+        lowerMsg.includes("model not found")
+
+      const isBadRequestModelError =
+        debug?.statusCode === 400 &&
+        lowerMsg.includes("model") &&
+        (lowerMsg.includes("invalid") || lowerMsg.includes("unsupported") || lowerMsg.includes("unknown"))
+
+      if (isKnownModelError || isBadRequestModelError) {
+        errorCategory = "validation"
+        severity = "warn"
+        isUserError = true
+        console.warn("[execStructured] Invalid gatewayModelId:", requestedModel, "-", message)
+      } else if (lowerMsg.includes("quota") || lowerMsg.includes("insufficient credits")) {
         errorCategory = "quota"
-      } else if (message.toLowerCase().includes("authentication") || message.toLowerCase().includes("api key")) {
+        console.error("[execStructured] Quota error:", message)
+      } else if (lowerMsg.includes("authentication") || lowerMsg.includes("api key")) {
         errorCategory = "auth"
-      } else if (message.toLowerCase().includes("rate limit")) {
+        console.error("[execStructured] Auth error:", message)
+      } else if (lowerMsg.includes("rate limit")) {
         errorCategory = "rate_limit"
         severity = "warn"
-      } else if (message.toLowerCase().includes("schema") || message.toLowerCase().includes("validation")) {
+      } else if (lowerMsg.includes("schema") || lowerMsg.includes("validation")) {
         errorCategory = "schema_validation"
+      } else {
+        console.error("[execStructured] error", { message })
       }
+    } else {
+      console.error("[execStructured] error", { message })
     }
 
-    // Log to backend for tracking
-    logException(err, {
-      location: `core/execStructured/${errorCategory}`,
-      context: {
-        model,
-        messageCount: messages.length,
-        hasSchema: Boolean(schema),
-        errorCategory,
-        debug,
-      },
-      severity,
-    }).catch(logErr => {
-      console.error("Failed to log error to backend:", logErr)
-    })
+    // Only log to backend for non-user errors
+    if (!isUserError) {
+      logException(err, {
+        location: `core/execStructured/${errorCategory}`,
+        context: {
+          model,
+          messageCount: messages.length,
+          hasSchema: Boolean(schema),
+          errorCategory,
+          debug,
+        },
+        severity,
+      }).catch(logErr => {
+        console.error("Failed to log error to backend:", logErr)
+      })
+    }
 
     return {
       success: false,

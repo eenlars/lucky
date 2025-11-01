@@ -18,7 +18,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
 
 import { modelEntrySchema } from "@lucky/shared"
-import { MODEL_CATALOG } from "../src/pricing/catalog"
+import { MODEL_CATALOG } from "../src/llm-catalog/catalog"
 
 interface ValidationError {
   modelId: string
@@ -49,7 +49,7 @@ class CatalogValidator {
     const seenIds = new Set<string>()
 
     for (const model of MODEL_CATALOG) {
-      const modelId = model.id || "unknown"
+      const modelId = `${model.gateway}#${model.gatewayModelId}`
 
       // Validate against Zod schema
       const zodResult = modelEntrySchema.safeParse(model)
@@ -61,36 +61,25 @@ class CatalogValidator {
       }
 
       // Check required fields exist (double-check after Zod)
-      if (!model.provider || !model.model || !model.id) {
-        this.addError(modelId, "required", "Missing required fields (id, provider, or model)")
+      if (!model.gateway || !model.gatewayModelId) {
+        this.addError(modelId, "required", "Missing required fields (gateway or gatewayModelId)")
         continue
       }
 
       // Check for duplicate IDs
-      if (seenIds.has(model.id)) {
+      if (seenIds.has(modelId)) {
         this.addError(modelId, "id", "Duplicate catalog ID found")
       }
-      seenIds.add(model.id)
+      seenIds.add(modelId)
 
-      // Check catalog ID format: <provider>#<model>
-      if (!model.id.includes("#")) {
-        this.addError(modelId, "id", 'ID must follow format "<provider>#<model>"')
-      } else {
-        const [prefix] = model.id.split("#", 1)
-        if (!prefix) {
-          this.addError(modelId, "id", 'ID must follow format "<provider>#<model>"')
-        } else if (prefix !== model.provider) {
-          this.addError(
-            modelId,
-            "provider",
-            `Catalog ID prefix "${prefix}" does not match provider "${model.provider}"`,
-          )
-        }
+      // Check gateway format
+      if (!model.gateway.includes("-api")) {
+        this.addError(modelId, "gateway", `Gateway must follow format "<provider>-api", got: "${model.gateway}"`)
       }
 
       // Check provider is lowercase
-      if (model.provider !== model.provider.toLowerCase()) {
-        this.addError(modelId, "provider", `Provider must be lowercase: "${model.provider}"`)
+      if (model.gateway !== model.gateway.toLowerCase()) {
+        this.addError(modelId, "gateway", `Gateway must be lowercase: "${model.gateway}"`)
       }
 
       // Check pricing values
@@ -124,11 +113,23 @@ class CatalogValidator {
   }
 
   private addError(modelId: string, field: string, message: string): void {
-    this.errors.push({ modelId, field, message, severity: "error", location: this.getLocation(modelId) })
+    this.errors.push({
+      modelId,
+      field,
+      message,
+      severity: "error",
+      location: this.getLocation(modelId),
+    })
   }
 
   private addWarning(modelId: string, field: string, message: string): void {
-    this.warnings.push({ modelId, field, message, severity: "warning", location: this.getLocation(modelId) })
+    this.warnings.push({
+      modelId,
+      field,
+      message,
+      severity: "warning",
+      location: this.getLocation(modelId),
+    })
   }
 
   private printResults(): boolean {
@@ -157,7 +158,11 @@ class CatalogValidator {
     // Print summary
     if (!hasErrors && this.warnings.length === 0) {
       console.log("✅ MODEL_CATALOG validation passed!")
-      console.log(`   ${MODEL_CATALOG.length} models validated, ${MODEL_CATALOG.filter(m => m.active).length} active`)
+      console.log(
+        `   ${MODEL_CATALOG.length} models validated, ${
+          MODEL_CATALOG.filter(m => m.runtimeEnabled !== false).length
+        } runtime-enabled`,
+      )
     } else {
       console.log("\nSummary:")
       console.log(`  Total models: ${MODEL_CATALOG.length}`)
@@ -171,7 +176,7 @@ class CatalogValidator {
 
 // Run validation
 const repoRoot = path.resolve(import.meta.dir, "../../..")
-const catalogDir = path.resolve(import.meta.dir, "../src/pricing")
+const catalogDir = path.resolve(import.meta.dir, "../src")
 
 const modelLocationMap = collectModelLocations(catalogDir, repoRoot)
 
@@ -201,9 +206,20 @@ function collectModelLocations(directory: string, root: string, map = new Map<st
     const lines = fileContents.split(/\r?\n/)
 
     for (let index = 0; index < lines.length; index++) {
-      const match = lines[index].match(/\bid\s*:\s*["'`]([^"'`]+)["'`]/)
-      if (match && !map.has(match[1])) {
-        map.set(match[1], `${relativePath}:${index + 1}`)
+      // Look for gatewayModelId field to infer model ID
+      const match = lines[index].match(/gatewayModelId\s*:\s*["'`]([^"'`]+)["'`]/)
+      if (match) {
+        // Try to find the gateway field nearby
+        const contextStart = Math.max(0, index - 5)
+        const contextEnd = Math.min(lines.length, index + 5)
+        const context = lines.slice(contextStart, contextEnd).join("\n")
+        const gatewayMatch = context.match(/gateway\s*:\s*["'`]([^"'`]+)["'`]/)
+        if (gatewayMatch) {
+          const fullId = `${gatewayMatch[1]}#${match[1]}`
+          if (!map.has(fullId)) {
+            map.set(fullId, `${relativePath}:${index + 1}`)
+          }
+        }
       }
     }
   }

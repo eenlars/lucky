@@ -22,23 +22,22 @@ import crypto from "node:crypto"
 import { getCoreConfig, isLoggingEnabled } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import { MutationCoordinator } from "@core/improvement/gp/operators/mutations/MutationCoordinator"
-import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
-import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
-import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
+import { createDummyGenome } from "@core/improvement/gp/rsc/debug/dummyGenome"
+import { EvolutionUtils } from "@core/improvement/gp/rsc/utils"
+import { workflowConfigToGenome } from "@core/improvement/gp/rsc/wrappers"
 import { SharedWorkflowPrompts } from "@core/prompts/workflowAnalysisPrompts"
 import type { FlowEvolutionMode } from "@core/types"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
 import { createWorkflowVersion, ensureWorkflowExists } from "@core/utils/persistence/workflow/registerWorkflow"
-import { getActiveModelNames } from "@core/utils/spending/functions"
+import { getActiveGatewayModelIds } from "@core/utils/spending/functions"
 import { Workflow } from "@core/workflow/Workflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import { guard } from "@core/workflow/schema/errorMessages"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { R, type RS, genShortId } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { R, type RS, genShortId, isNir } from "@lucky/shared"
 import type { IPersistence } from "@together/adapter-supabase"
-import type { EvolutionContext, GenomeEvaluationResults, WorkflowGenome } from "./resources/gp.types"
+import type { EvolutionContext, GenomeEvaluationResults, WorkflowGenome } from "./rsc/gp.types"
 
 /**
  * A Genome *is* a workflow: it carries the workflow-level behaviour supplied by
@@ -194,7 +193,7 @@ export class Genome extends Workflow {
 
       // default method: generate completely new workflow from scratch
       // select random model for diversity in initial population
-      const activeModels = getActiveModelNames()
+      const activeModels = getActiveGatewayModelIds()
       const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({
@@ -263,7 +262,7 @@ export class Genome extends Workflow {
       // Use the already-computed problem analysis passed from Workflow.prepareWorkflow()
       const enhancedAnalysis = problemAnalysis
 
-      const activeModels = getActiveModelNames()
+      const activeModels = getActiveGatewayModelIds()
       const randomModel = activeModels[Math.floor(Math.random() * activeModels.length)]
 
       const generatedWorkflowForGenomeFromIdea = await Workflow.ideaToWorkflow({

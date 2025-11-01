@@ -1,3 +1,5 @@
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import { loadEnv } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 /**
@@ -5,7 +7,8 @@ import tsconfigPaths from "vite-tsconfig-paths"
  */
 import { defineConfig } from "vitest/config"
 
-const sharedPlugins = [tsconfigPaths({ projects: ["./tsconfig.paths.json"] })]
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const sharedPlugins = [tsconfigPaths({ projects: [resolve(__dirname, "./tsconfig.paths.json")] })]
 const env = loadEnv("test", process.cwd(), "")
 const baseTestOptions = {
   globals: true,

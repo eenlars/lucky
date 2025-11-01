@@ -1,0 +1,97 @@
+"use server"
+
+import { NoEnabledModelsError } from "@/features/provider-llm-setup/errors/general"
+import { UnknownDatabaseError } from "@/lib/db/errors/errors"
+import { createContextAwareClient } from "@/lib/supabase/context-aware-client"
+import { createRLSClient } from "@/lib/supabase/server-rls"
+import { findModel } from "@lucky/models"
+import { type Database, type ModelEntry, type Principal, isNir } from "@lucky/shared"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { LuckyGateway } from "packages/shared"
+
+/**
+ * Server-side model utilities for fetching user-specific model data.
+ * These functions interact with the database and should only run on the server.
+ */
+
+/**
+ * Fetch user's available models from the database.
+ * Converts enabled model IDs to full ModelEntry objects from the catalog.
+ *
+ * @param clerkId - The authenticated user's Clerk ID
+ * @returns Array of ModelEntry objects for all enabled models across all enabled providers
+ *
+ * @example
+ * ```ts
+ * const models = await getUserModels(clerkId)
+ * // Returns: [{ id: "gpt-4o", gateway: "openai-api", gatewayModelId: "gpt-4o", ... }, ...]
+ * ```
+ */
+export async function getUserModelsSetup(
+  auth: { clerkId: string } | { principal: Principal },
+  onlyIncludeGateways?: LuckyGateway[],
+): Promise<ModelEntry[]> {
+  let supabase: SupabaseClient<Database>
+  let clerkId: string
+
+  if ("clerkId" in auth) {
+    // Direct clerk ID auth
+    clerkId = auth.clerkId
+    supabase = await createRLSClient()
+  } else {
+    // Principal-based auth
+    clerkId = auth.principal.clerk_id
+    supabase = await createContextAwareClient(auth.principal)
+  }
+
+  const { data, error } = await supabase
+    .schema("app")
+    .from("gateway_settings")
+    .select("gateway, enabled_models, is_enabled")
+    .eq("clerk_id", clerkId)
+    .eq("is_enabled", true) // Only get enabled gateways
+
+  if (error) {
+    throw new UnknownDatabaseError(`[getUserModels] No enabled models found for user "${clerkId}"`)
+  }
+
+  // Collect all enabled model IDs
+  const allEnabledModelIds = new Set<string>()
+  for (const row of data) {
+    const enabledModels = (row.enabled_models as string[]) || []
+    for (const modelId of Object.values(enabledModels)) {
+      allEnabledModelIds.add(modelId)
+    }
+  }
+
+  // Convert model IDs to ModelEntry objects
+  const modelEntries: ModelEntry[] = []
+  for (const modelId of allEnabledModelIds) {
+    const entry = findModel(modelId)
+
+    // Skip if model not found in catalog
+    if (!entry) {
+      console.warn(`[getUserModels] Model "${modelId}" not found in catalog - skipping`)
+      continue
+    }
+
+    // Skip if gateway filtering is enabled and this gateway is not included
+    if (!isNir(onlyIncludeGateways) && !onlyIncludeGateways.includes(entry.gateway)) {
+      console.warn(`[getUserModels] Model "${modelId}" gateway "${entry.gateway}" not in allowed gateways - skipping`)
+      continue
+    }
+
+    // Only include runtime-enabled models
+    if (entry.runtimeEnabled !== false) {
+      modelEntries.push(entry)
+    } else {
+      console.warn(`[getUserModels] Model "${modelId}" is disabled at runtime - skipping`)
+    }
+  }
+
+  if (isNir(modelEntries)) {
+    throw new NoEnabledModelsError(`[getUserModels] No enabled models found for user "${clerkId}"`)
+  }
+
+  return modelEntries
+}

@@ -12,7 +12,7 @@ const codeToolsList = ACTIVE_CODE_TOOL_NAMES.join(", ")
 export const agentDescriptionsWithTools = {
   nodeId: AGENT_KEY_EXPLANATIONS.nodeId,
   description: AGENT_KEY_EXPLANATIONS.description,
-  modelName: AGENT_KEY_EXPLANATIONS.modelName,
+  gatewayModelId: AGENT_KEY_EXPLANATIONS.gatewayModelId,
   mcpTools: `MCP external tools (${mcpToolsList}). MAX ${getCoreConfig().tools.maxToolsPerAgent} tools`,
   codeTools: `Code internal tools (${codeToolsList}). MAX ${getCoreConfig().tools.maxToolsPerAgent} tools`,
   handOffs: AGENT_KEY_EXPLANATIONS.handOffs,

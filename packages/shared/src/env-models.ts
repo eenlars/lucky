@@ -99,6 +99,14 @@ export const clerkClient = z.object({
   NEXT_PUBLIC_CLERK_EXPECTED_ISSUER: httpsUrl.optional(),
 })
 
+// --- Redis Configuration
+export const redisConfig = z.object({
+  REDIS_ENABLED: z.enum(["true", "false"]).optional(),
+  REDIS_HOST: z.string().optional(),
+  REDIS_PORT: z.string().optional(),
+  REDIS_PASSWORD: z.string().optional(),
+})
+
 // --- Core Runtime Toggles
 export const coreToggles = z.object({
   REQUIRE_PERSISTENCE: z.enum(["1", "0"]).optional(),
@@ -361,6 +369,34 @@ export const docs: VarDoc[] = [
     example: "",
     section: "Optional runtime configuration",
   },
+  {
+    key: "REDIS_ENABLED",
+    required: false,
+    description: "Enable Redis for workflow state management (defaults to false if not set)",
+    example: "false",
+    section: "Redis - Workflow state",
+  },
+  {
+    key: "REDIS_HOST",
+    required: false,
+    description: "Redis server host (required if REDIS_ENABLED=true)",
+    example: "localhost",
+    section: "Redis - Workflow state",
+  },
+  {
+    key: "REDIS_PORT",
+    required: false,
+    description: "Redis server port",
+    example: "6379",
+    section: "Redis - Workflow state",
+  },
+  {
+    key: "REDIS_PASSWORD",
+    required: false,
+    description: "Redis server password (required if REDIS_ENABLED=true)",
+    example: "",
+    section: "Redis - Workflow state",
+  },
 ]
 
 // --- Type exports
@@ -372,3 +408,4 @@ export type ToolProvidersEnv = z.infer<typeof toolProviders>
 export type ClerkServerEnv = z.infer<typeof clerkServer>
 export type ClerkClientEnv = z.infer<typeof clerkClient>
 export type CoreTogglesEnv = z.infer<typeof coreToggles>
+export type RedisConfigEnv = z.infer<typeof redisConfig>

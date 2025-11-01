@@ -9,12 +9,12 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useShallow } from "zustand/react/shallow"
 
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import AppContextMenu from "@/features/react-flow-visualization/components/app-context-menu"
 import SidebarLayout from "@/features/react-flow-visualization/components/layouts/sidebar-layout/SidebarLayout"
 import Workflow from "@/features/react-flow-visualization/components/workflow/Workflow"
-import type { WorkflowValidationError } from "@/features/react-flow-visualization/store/app-store"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
+import { useRunnerStore } from "@/stores/runner-store"
 
 import EditorHeader from "./EditorHeader"
 import JSONEditor from "./JSONEditor"
@@ -58,54 +58,14 @@ async function loadFromDSLClientDisplay(dslConfig: any) {
   return output.config
 }
 
-/**
- * Parse validation errors from API response into WorkflowValidationError objects
- */
-function parseValidationErrors(apiErrors: any): WorkflowValidationError[] {
-  if (!apiErrors) return []
-
-  // Handle array of error strings
-  if (Array.isArray(apiErrors)) {
-    return apiErrors
-      .filter((e: any) => e) // filter out empty
-      .map((e: any, i: number) => ({
-        id: `error-${i}-${Date.now()}`,
-        title: typeof e === "string" ? e.split(":")[0] || "Validation Error" : "Validation Error",
-        description: typeof e === "string" ? e : JSON.stringify(e),
-        severity: "error" as const,
-      }))
-  }
-
-  // Handle single error object
-  if (typeof apiErrors === "object") {
-    return [
-      {
-        id: `error-0-${Date.now()}`,
-        title: apiErrors.message || "Validation Error",
-        description: apiErrors.details || JSON.stringify(apiErrors),
-        severity: "error" as const,
-      },
-    ]
-  }
-
-  // Fallback
-  return [
-    {
-      id: `error-0-${Date.now()}`,
-      title: "Validation Error",
-      description: String(apiErrors),
-      severity: "error" as const,
-    },
-  ]
-}
-
 type EditMode = "graph" | "json" | "eval"
 
 interface EditModeSelectorProps {
   workflowVersion?: Tables<"WorkflowVersion">
+  initialMode?: "create-new" | "editing"
 }
 
-export default function EditModeSelector({ workflowVersion }: EditModeSelectorProps) {
+export default function EditModeSelector({ workflowVersion, initialMode }: EditModeSelectorProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<EditMode>("graph")
@@ -116,6 +76,18 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
 
   // Load model preferences early
   const { loadPreferences, preferences } = useModelPreferencesStore()
+
+  // Set editor mode from runner store
+  const setEditorMode = useRunnerStore(state => state.setEditorMode)
+
+  // Set initial editor mode on mount
+  useEffect(() => {
+    if (initialMode) {
+      setEditorMode(initialMode)
+    } else if (workflowVersion) {
+      setEditorMode("editing")
+    }
+  }, [initialMode, workflowVersion, setEditorMode])
 
   const {
     nodes: _nodes,
@@ -128,7 +100,6 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
     updateWorkflowJSON,
     syncJSONToGraph,
     organizeLayout,
-    addValidationErrors,
     clearValidationErrors,
   } = useAppStore(
     useShallow(state => ({
@@ -142,7 +113,6 @@ export default function EditModeSelector({ workflowVersion }: EditModeSelectorPr
       updateWorkflowJSON: state.updateWorkflowJSON,
       syncJSONToGraph: state.syncJSONToGraph,
       organizeLayout: state.organizeLayout,
-      addValidationErrors: state.addValidationErrors,
       clearValidationErrors: state.clearValidationErrors,
     })),
   )

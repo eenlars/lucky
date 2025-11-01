@@ -24,7 +24,7 @@ Every model is defined in `packages/models/src/pricing/catalog.ts` with this str
 ```typescript
 export interface ModelEntry {
   id: string              // Full ID: "anthropic/claude-sonnet-4"
-  provider: string        // Which API to use: "openrouter"
+  gateway: string        // Which API to use: "openrouter"
   model: string           // Model identifier for the API
   input: number           // Cost per 1M input tokens
   output: number          // Cost per 1M output tokens
@@ -37,7 +37,7 @@ Example from the catalog:
 ```typescript
 {
   id: "anthropic/claude-sonnet-4",
-  provider: "openrouter",  // ← The ACTUAL provider API to use!
+  gateway: "openrouter",  // ← The ACTUAL provider API to use!
   model: "anthropic/claude-sonnet-4",
   input: 3,
   output: 15,
@@ -49,9 +49,9 @@ Example from the catalog:
 
 Some models are only available through aggregator services like OpenRouter:
 
-- **Direct Access**: `"openrouter#openai/gpt-4.1-nano"` → provider: `"openai"` → OpenAI API
-- **Via OpenRouter**: `"anthropic/claude-sonnet-4"` → provider: `"openrouter"` → OpenRouter API
-- **Via Groq**: `"openrouter#openai/gpt-oss-20b"` → provider: `"groq"` → Groq API
+- **Direct Access**: `"openrouter#openai/gpt-4.1-nano"` →  `"openai"` → OpenAI API
+- **Via OpenRouter**: `"anthropic/claude-sonnet-4"` →  `"openrouter"` → OpenRouter API
+- **Via Groq**: `"openrouter#openai/gpt-oss-20b"` →  `"groq"` → Groq API
 
 The model ID keeps the original vendor name for clarity, but the `provider` field tells you which API to actually call.
 
@@ -73,7 +73,7 @@ import { MODEL_CATALOG } from "@lucky/models/pricing/catalog"
 
 const modelId = "anthropic/claude-sonnet-4"
 const catalogEntry = MODEL_CATALOG.find(entry => entry.id === modelId)
-const provider = catalogEntry.provider  // "openrouter" ✓
+const provider = catalogEntry.gateway  // "openrouter" ✓
 ```
 
 ## Provider API Key Mapping
@@ -142,7 +142,7 @@ if (modelId === "anthropic/claude-sonnet-4") {
 
 ```typescript
 import { MODEL_CATALOG } from "@lucky/models/pricing/catalog"
-import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
 
 function extractRequiredProviders(config: WorkflowConfig) {
   const providers = new Set<string>()
@@ -159,7 +159,7 @@ function extractRequiredProviders(config: WorkflowConfig) {
     }
 
     // Use the provider field, not string parsing!
-    providers.add(entry.provider)
+    providers.add(entry.gateway)
   }
 
   return providers

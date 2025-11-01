@@ -1,3 +1,5 @@
+@layer theme, base, clerk, components, utilities;
+
 @import "@xyflow/react/dist/style.css" layer(base);
 
 @import "tailwindcss";

@@ -10,7 +10,7 @@ import { MODEL_CONFIG, getDefaultModels } from "./models"
 import { TOOL_CONFIG, TOOL_IMPROVEMENT_CONFIG } from "./tools"
 
 export const MODELS = getDefaultModels()
-export { getDefaultModels }
+export { MODEL_CONFIG, getDefaultModels }
 
 export const CONFIG = {
   coordinationType: "sequential" as FlowCoordinationType,
@@ -33,7 +33,7 @@ export const CONFIG = {
     maxNodes: 20,
     handoffContent: "full" as "summary" | "full",
     prepareProblem: true,
-    prepareProblemMethod: "ai" as "ai" | "workflow",
+    prepareProblemMethod: "none" as "ai" | "workflow" | "none",
     prepareProblemWorkflowVersionId: "a1373554",
   },
 

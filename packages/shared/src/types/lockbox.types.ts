@@ -124,10 +124,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      sub: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      sub: { Args: never; Returns: string }
       validate_bearer_token: {
         Args: { p_secret_hash: string }
         Returns: {

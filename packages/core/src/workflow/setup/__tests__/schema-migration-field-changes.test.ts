@@ -1,5 +1,5 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 import { WorkflowConfigHandler } from "../WorkflowLoader"
 
 describe("Schema Migration - Field Changes", () => {
@@ -17,7 +17,8 @@ describe("Schema Migration - Field Changes", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Test",
-          modelName: "gpt-4.1-mini",
+          gatewayModelId: "gpt-4.1-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -40,7 +41,8 @@ describe("Schema Migration - Field Changes", () => {
           nodeId: "main",
           description: "Main",
           systemPrompt: "Test",
-          modelName: "gpt-4.1-mini",
+          gatewayModelId: "gpt-4.1-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],
@@ -66,7 +68,8 @@ describe("Schema Migration - Field Changes", () => {
           nodeId: "entry",
           description: "Entry node",
           systemPrompt: "Test",
-          modelName: "gpt-4.1-mini",
+          gatewayModelId: "gpt-4.1-mini",
+          gateway: "openai-api",
           mcpTools: [],
           codeTools: [],
           handOffs: ["end"],

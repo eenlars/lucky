@@ -6,7 +6,7 @@
  * exploring different workflow architectures during evolution.
  */
 
-import { failureTracker } from "@core/improvement/gp/resources/tracker"
+import { failureTracker } from "@core/improvement/gp/rsc/tracker"
 import { lgg } from "@core/utils/logging/Logger"
 import { Workflow } from "@core/workflow/Workflow"
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
@@ -43,7 +43,7 @@ export class NodeOperations {
       try {
         const { success, data } = await Workflow.formalizeWorkflow(
           `Add a new specialized node to enhance this workflow with additional capabilities. 
-          this is the parent workflow: ${parent.toString({ easyModelNames: true })}
+          this is the parent workflow: ${parent.toString({ tierMappingEnabled: true })}
           the goal is to fix bugs given an input.        
           `,
           {

@@ -21,7 +21,7 @@ import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
 import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
-import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
+import { getModelsInstance } from "@core/models/models-instance"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
 import { getSpendingTracker } from "@core/utils/spending/trackerContext"
@@ -51,9 +51,12 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
   try {
     // TODO: add tool compatibility validation for model
     // TODO: implement smart tool selection based on model capabilities
-    const modelName: string = shouldUseModelFallback(requestedModel) ? getFallbackModel(requestedModel) : requestedModel
+    const gatewayModelId: string = shouldUseModelFallback(requestedModel)
+      ? getFallbackModel(requestedModel)
+      : requestedModel
 
-    const model = await getLanguageModelWithReasoning(modelName, opts)
+    const models = await getModelsInstance()
+    const model = models.resolve(gatewayModelId)
 
     // TODO: add dynamic tool parameter optimization
     // TODO: implement tool execution planning and sequencing
@@ -70,14 +73,14 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
     // TODO: add tool execution progress tracking
     // TODO: create tool-specific timeout configurations
     const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(baseOptions, {
-      modelName: modelName,
+      gatewayModelId: gatewayModelId,
       overallTimeoutMs: 300_000,
       stallTimeoutMs: 200_000,
     })
 
     // TODO: add tool execution cost analysis and optimization
     // TODO: implement tool usage budgeting and alerts
-    const usd = calculateUsageCost(gen.usage, modelName)
+    const usd = calculateUsageCost(gen.usage, gatewayModelId)
     if (opts.saveOutputs) await saveResultOutput(gen)
     getSpendingTracker().addCost(usd)
 
@@ -109,11 +112,24 @@ export async function execTool(req: ToolRequest): Promise<TResponse<GenerateText
     // prepare normalized info for logging without dumping full error object
     const { message: errMessageForLog, debug: debugForLog } = normalizeError(error)
 
-    if (!isArgValidationError && !isTypeValidationText) {
+    // Check if this is a model validation error
+    const isModelValidationError =
+      typeof errMessageForLog === "string" &&
+      (errMessageForLog.toLowerCase().includes("is not a valid model id") ||
+        errMessageForLog.toLowerCase().includes("does not exist") ||
+        errMessageForLog.toLowerCase().includes("model_not_found") ||
+        errMessageForLog.toLowerCase().includes("model not found") ||
+        ((debugForLog as any)?.statusCode === 400 &&
+          (errMessageForLog.toLowerCase().includes("model") || errMessageForLog.toLowerCase().includes("invalid"))))
+
+    if (isModelValidationError) {
+      // Minimal logging for model validation errors
+      lgg.warn(`⚠️  Invalid gatewayModelId: ${requestedModel} - ${errMessageForLog}`)
+    } else if (!isArgValidationError && !isTypeValidationText) {
       // only log concise details for unexpected errors
       lgg.error("execTool error", errMessageForLog, {
         statusCode: (debugForLog as any)?.statusCode,
-        provider: (debugForLog as any)?.provider,
+        gateway: (debugForLog as any)?.gateway,
         url: (debugForLog as any)?.url,
         toolChoice: opts.toolChoice,
         tools: Object.keys(opts.tools ?? {}),

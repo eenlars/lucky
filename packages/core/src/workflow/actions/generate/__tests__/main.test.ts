@@ -39,7 +39,7 @@ describe("describeWorkflow", () => {
     } as unknown as Workflow
 
     const { workflowToString } = await import("../workflowToString")
-    const result = workflowToString(mockWorkflow, { easyModelNames: false })
+    const result = workflowToString(mockWorkflow, { tierMappingEnabled: false })
 
     expect(result).toBe("Tool explanations\nAdjacency list\n")
     expect(mockExplainSubsetOfTools).toHaveBeenCalledWith(["tool1", "tool2", "tool3"])

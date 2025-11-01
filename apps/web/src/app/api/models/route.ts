@@ -1,56 +1,55 @@
 import { alrighty, handleBody, isHandleBodyError } from "@/lib/api/server"
-import { getActiveModelNames } from "@lucky/core/utils/spending/functions"
-import { findModelByName, getModelsByProvider } from "@lucky/models"
-import { getRuntimeEnabledModels } from "@lucky/models/pricing/catalog"
-import { providerNameSchema } from "@lucky/shared"
+import { getActiveGatewayModelIds } from "@lucky/core/utils/spending/functions"
+import { findModel, getModelsByGateway, getRuntimeEnabledModels } from "@lucky/models"
+import { gatewayNameSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
 // POST /api/models
-// Fetches available models from the provider's API and enriches with catalog metadata
-// Body: { action: "getActiveModelNames" | "getModelV2" | "getModelsByProvider", model?: string, provider: string }
+// Fetches available models from the gateway's API and enriches with catalog metadata
+// Body: { action: "getActiveGatewayModelIds" | "getModelV2" | "getModelsByGateway", gatewayModelId?: string, gateway?: string }
 export async function POST(request: NextRequest) {
   const body = await handleBody("models", request)
   if (isHandleBodyError(body)) return body
 
   try {
-    const { action, model, provider } = body
+    const { action, gatewayModelId, gateway } = body
 
-    if (action === "getActiveModelNames") {
-      if (!provider) {
-        return NextResponse.json({ error: "Provider is required for getActiveModelNames" }, { status: 400 })
+    if (action === "getActiveGatewayModelIds") {
+      if (!gateway) {
+        return NextResponse.json({ error: "Gateway is required for getActiveGatewayModelIds" }, { status: 400 })
       }
-      const validatedProvider = providerNameSchema.parse(provider)
-      const models = getActiveModelNames(validatedProvider)
+      const validatedGateway = gatewayNameSchema.parse(gateway)
+      const models = getActiveGatewayModelIds(validatedGateway)
       return alrighty("models", { models })
     }
 
     if (action === "getModelV2") {
-      if (!model) {
-        return NextResponse.json({ error: "Model name is required" }, { status: 400 })
+      if (!gatewayModelId) {
+        return NextResponse.json({ error: "Model ID is required" }, { status: 400 })
       }
-      const modelInfo = findModelByName(model)
+      const modelInfo = findModel(gatewayModelId)
       if (!modelInfo) {
         return NextResponse.json({ error: "Model not found" }, { status: 404 })
       }
-      return alrighty("models", { model: modelInfo })
+      return alrighty("models", { gatewayModelId: modelInfo })
     }
 
-    if (action === "getModelsByProvider") {
-      if (!provider) {
-        // Return all runtime-enabled models if no provider specified
+    if (action === "getModelsByGateway") {
+      if (!gateway) {
+        // Return all runtime-enabled models if no gateway specified
         const models = getRuntimeEnabledModels()
         return alrighty("models", { models })
       }
-      // Return models for specific provider
-      const validatedProvider = providerNameSchema.parse(provider)
-      const models = getModelsByProvider(validatedProvider).filter(m => m.runtimeEnabled)
+      // Return models for specific gateway
+      const validatedGateway = gatewayNameSchema.parse(gateway)
+      const models = getModelsByGateway(validatedGateway).filter(m => m.runtimeEnabled !== false)
       return alrighty("models", { models })
     }
 
     return NextResponse.json(
-      { error: "Invalid action. Use 'getActiveModelNames', 'getModelV2', or 'getModelsByProvider'" },
+      { error: "Invalid action. Use 'getActiveGatewayModelIds', 'getModelV2', or 'getModelsByGateway'" },
       { status: 400 },
     )
   } catch (error) {

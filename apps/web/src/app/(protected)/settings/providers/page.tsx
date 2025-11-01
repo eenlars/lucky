@@ -2,16 +2,16 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getEnabledGatewaySlugs, getProviderConfigs } from "@/features/provider-llm-setup/provider-utils"
 import { SyncStatusBadge } from "@/features/provider-llm-setup/providers/sync-status-badge"
-import { getEnabledProviderSlugs, getProviderConfigs } from "@/lib/providers/provider-utils"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
 interface ProviderCardData {
-  provider: string
+  gateway: string
   hasApiKey: boolean
 }
 
@@ -32,18 +32,19 @@ export default function ProvidersPage() {
     setIsLoading(true)
     try {
       const keysResponse = await fetch("/api/user/env-keys")
-      const keysData = keysResponse.ok ? await keysResponse.json() : { keys: [] }
-      const keyNames = new Set(keysData.keys.map((k: { name: string }) => k.name))
+      const keysData = keysResponse.ok ? await keysResponse.json() : { data: [] }
+      const keys = Array.isArray(keysData?.data) ? keysData.data : []
+      const keyNames = new Set(keys.map((k: { name: string }) => k.name))
 
       const providerConfigs = getProviderConfigs()
-      const providerSlugs = getEnabledProviderSlugs(providerConfigs)
+      const gatewaySlugs = getEnabledGatewaySlugs(providerConfigs)
 
-      const providerData: ProviderCardData[] = providerSlugs.map(provider => {
-        const config = providerConfigs[provider]
-        const hasApiKey = keyNames.has(config.apiKeyName)
+      const providerData: ProviderCardData[] = gatewaySlugs.map(gateway => {
+        const config = providerConfigs[gateway]
+        const hasApiKey = keyNames.has(config.secretKeyName)
 
         return {
-          provider,
+          gateway,
           hasApiKey,
         }
       })
@@ -98,11 +99,11 @@ export default function ProvidersPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {providers.map(providerData => {
-          const config = getProviderConfigs()[providerData.provider]
+          const config = getProviderConfigs()[providerData.gateway]
           const Icon = config.icon
 
           return (
-            <Card key={providerData.provider} className="transition-shadow hover:shadow-md">
+            <Card key={providerData.gateway} className="transition-shadow hover:shadow-md">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   {config.logo ? (

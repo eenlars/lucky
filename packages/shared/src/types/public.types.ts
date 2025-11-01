@@ -719,22 +719,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_clerk_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      gen_prefixed_id: {
-        Args: { p_prefix: string }
-        Returns: string
-      }
-      gen_short_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      owns_workflow: {
-        Args: { p_workflow_id: string }
-        Returns: boolean
-      }
+      current_clerk_id: { Args: never; Returns: string }
+      gen_prefixed_id: { Args: { p_prefix: string }; Returns: string }
+      gen_short_id: { Args: never; Returns: string }
+      owns_workflow: { Args: { p_workflow_id: string }; Returns: boolean }
       owns_workflow_invocation: {
         Args: { p_wf_invocation_id: string }
         Returns: boolean
@@ -743,14 +731,8 @@ export type Database = {
         Args: { p_wf_version_id: string }
         Returns: boolean
       }
-      require_authenticated: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      sub: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      require_authenticated: { Args: never; Returns: undefined }
+      sub: { Args: never; Returns: string }
     }
     Enums: {
       EvolutionRunStatus: "running" | "completed" | "failed" | "interrupted"

@@ -42,7 +42,7 @@ export type {
 export type {
   StandardModels,
   TokenUsage,
-} from "./types/models"
+} from "./contracts/llm-contracts/models-old"
 
 // Memory schemas (client-safe)
 export * from "./utils/memory/memorySchema"
@@ -66,17 +66,20 @@ export type { OutputSchema, WorkflowFile } from "./types/workflow"
 
 // Provider contracts (client-safe)
 export {
-  apiKeyValidationSchema,
-  providerConfigSchema,
-  providerKeyMappingSchema,
-  providerNameSchema,
-  providerSettingsSchema,
-  providerStatusSchema,
-} from "./contracts/providers"
+  gatewayApiKeyValidationSchema,
+  gatewayConfigSchema,
+  gatewayEntrySchema,
+  gatewayKeyMappingSchema,
+  gatewayNameSchema,
+  gatewaySettingsSchema,
+  gatewayStatusSchema,
+} from "./contracts/llm-contracts/providers"
 export type {
-  ApiKeyValidation,
-  ProviderConfig,
-  ProviderKeyMapping,
-  ProviderSettings,
-  ProviderStatus,
-} from "./contracts/providers"
+  GatewayApiKeyValidation,
+  GatewayConfig,
+  GatewayEntry,
+  GatewayKeyMapping,
+  GatewaySettings,
+  GatewayStatus,
+  LuckyGateway,
+} from "./contracts/llm-contracts/providers"

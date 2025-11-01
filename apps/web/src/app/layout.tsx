@@ -1,4 +1,5 @@
 import { GlobalErrorHandler } from "@/app/_providers/GlobalErrorHandler"
+import { ProviderHealthCheck } from "@/app/_providers/ProviderHealthCheck"
 import { QueryProvider } from "@/app/_providers/QueryProvider"
 import { SupabaseTokenBridge } from "@/app/_providers/SupabaseTokenBridge"
 import { IntegratedSidebar } from "@/app/components/sidebar/integrated-sidebar"
@@ -43,7 +44,11 @@ export default async function RootLayout({
     (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
 
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        cssLayerName: "clerk", // Required for Tailwind 4 compatibility
+      }}
+    >
       <SupabaseTokenBridge />
       <GlobalErrorHandler />
       <QueryProvider>
@@ -60,6 +65,7 @@ export default async function RootLayout({
                 </a>
                 <NextTopLoader />
                 <SignedIn>
+                  <ProviderHealthCheck />
                   <CredentialStatusBanner />
                   <IntegratedSidebar />
                 </SignedIn>

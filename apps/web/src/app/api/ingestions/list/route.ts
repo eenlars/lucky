@@ -1,4 +1,4 @@
-import { alrighty, fail } from "@/lib/api/server"
+import { alrighty } from "@/lib/api/server"
 import { listDataSets } from "@/lib/db/dataset"
 import { logException } from "@/lib/error-logger"
 import { createClient } from "@/lib/supabase/server"

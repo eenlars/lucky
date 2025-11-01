@@ -6,38 +6,22 @@
  * Always look up models in MODEL_CATALOG to get the actual API provider.
  */
 
-import type { LuckyProvider, ModelId, UserModelPreferences } from "../contracts/providers"
-import { providerNameSchema } from "../contracts/providers"
-
-/**
- * Normalize a model name to a full model ID
- * If it already includes the provider prefix, return as-is
- * Otherwise, prepend the provider
- *
- * @param provider - The provider name (e.g., "openai")
- * @param modelName - The model name (e.g., "gpt-4o" or "openrouter#openai/gpt-4o")
- * @returns Full model ID (e.g., "openrouter#openai/gpt-4o")
- */
-export function normalizeModelId(provider: string, modelName: string): ModelId {
-  if (modelName.includes("/")) return modelName as ModelId
-  return `${provider}/${modelName}` as ModelId
-}
+import type { LuckyGateway, ModelId, UserGatewayPreferences } from "../contracts/llm-contracts/providers"
 
 /**
  * Get user's enabled models for a specific provider
  *
  * @param preferences - User's model preferences
- * @param provider - Provider name to filter by
- * @returns Array of enabled model IDs for that provider
+ * @param gateway - Gateway name to filter by
+ * @returns Array of enabled model IDs for that gateway
  */
-export function getEnabledModelsForProvider(
-  preferences: UserModelPreferences | null,
-  provider: LuckyProvider,
+export function getEnabledModelsForGateway(
+  preferences: UserGatewayPreferences | null,
+  gateway: LuckyGateway,
 ): ModelId[] {
-  const validatedProvider = providerNameSchema.parse(provider)
   if (!preferences) return []
 
-  const providerSettings = preferences.providers.find(p => p.provider === validatedProvider)
+  const providerSettings = preferences.gateways.find(p => p.gateway === gateway)
   return providerSettings?.enabledModels || []
 }
 
@@ -48,10 +32,10 @@ export function getEnabledModelsForProvider(
  * @param modelId - Full model ID to check
  * @returns True if the model is enabled
  */
-export function isModelEnabled(preferences: UserModelPreferences | null, modelId: ModelId): boolean {
+export function isModelEnabled(preferences: UserGatewayPreferences | null, modelId: ModelId): boolean {
   if (!preferences) return false
 
-  return preferences.providers.some(p => p.enabledModels.includes(modelId))
+  return preferences.gateways.some(p => p.enabledModels.includes(modelId))
 }
 
 /**
@@ -60,10 +44,10 @@ export function isModelEnabled(preferences: UserModelPreferences | null, modelId
  * @param preferences - User's model preferences
  * @returns Set of all enabled model IDs
  */
-export function getAllEnabledModels(preferences: UserModelPreferences | null): Set<ModelId> {
+export function getAllEnabledModels(preferences: UserGatewayPreferences | null): Set<ModelId> {
   if (!preferences) return new Set()
 
-  const allModels = preferences.providers.flatMap(p => p.enabledModels)
+  const allModels = preferences.gateways.flatMap(p => p.enabledModels)
   return new Set(allModels)
 }
 
@@ -71,44 +55,43 @@ export function getAllEnabledModels(preferences: UserModelPreferences | null): S
  * Update enabled models for a specific provider
  *
  * @param preferences - Current user preferences
- * @param provider - Provider to update
+ * @param gateway - Gateway to update
  * @param enabledModels - New list of enabled model IDs
  * @returns Updated preferences
  */
-export function setEnabledModelsForProvider(
-  preferences: UserModelPreferences,
-  provider: LuckyProvider,
+export function setEnabledModelsForGateway(
+  preferences: UserGatewayPreferences,
+  gateway: LuckyGateway,
   enabledModels: ModelId[],
-): UserModelPreferences {
-  const validatedProvider = providerNameSchema.parse(provider)
-  const existingProviderIndex = preferences.providers.findIndex(p => p.provider === validatedProvider)
+): UserGatewayPreferences {
+  const existingProviderIndex = preferences.gateways.findIndex(p => p.gateway === gateway)
 
   if (existingProviderIndex >= 0) {
     // Update existing provider
-    const updatedProviders = [...preferences.providers]
-    updatedProviders[existingProviderIndex] = {
-      ...updatedProviders[existingProviderIndex],
+    const updatedGateways = [...preferences.gateways]
+    updatedGateways[existingProviderIndex] = {
+      ...updatedGateways[existingProviderIndex],
       enabledModels,
       metadata: {
-        ...updatedProviders[existingProviderIndex].metadata,
-        apiKeyConfigured: updatedProviders[existingProviderIndex].metadata?.apiKeyConfigured ?? false,
+        ...updatedGateways[existingProviderIndex].metadata,
+        apiKeyConfigured: updatedGateways[existingProviderIndex].metadata?.apiKeyConfigured ?? false,
         lastUpdated: new Date().toISOString(),
       },
     }
 
     return {
       ...preferences,
-      providers: updatedProviders,
+      gateways: updatedGateways,
       lastSynced: new Date().toISOString(),
     }
   }
-  // Add new provider
+  // Add new gateway
   return {
     ...preferences,
-    providers: [
-      ...preferences.providers,
+    gateways: [
+      ...preferences.gateways,
       {
-        provider: validatedProvider,
+        gateway,
         enabledModels,
         isEnabled: true,
         metadata: {
@@ -125,20 +108,19 @@ export function setEnabledModelsForProvider(
  * Toggle a single model on/off
  *
  * @param preferences - Current user preferences
- * @param provider - Provider the model belongs to
+ * @param gateway - Gateway the model belongs to
  * @param modelId - Model ID to toggle
  * @returns Updated preferences
  */
 export function toggleModel(
-  preferences: UserModelPreferences,
-  provider: LuckyProvider,
+  preferences: UserGatewayPreferences,
+  gateway: LuckyGateway,
   modelId: ModelId,
-): UserModelPreferences {
-  const validatedProvider = providerNameSchema.parse(provider)
-  const enabledModels = getEnabledModelsForProvider(preferences, validatedProvider)
+): UserGatewayPreferences {
+  const enabledModels = getEnabledModelsForGateway(preferences, gateway)
   const isEnabled = enabledModels.includes(modelId)
 
   const newEnabledModels = isEnabled ? enabledModels.filter(id => id !== modelId) : [...enabledModels, modelId]
 
-  return setEnabledModelsForProvider(preferences, validatedProvider, newEnabledModels)
+  return setEnabledModelsForGateway(preferences, gateway, newEnabledModels)
 }

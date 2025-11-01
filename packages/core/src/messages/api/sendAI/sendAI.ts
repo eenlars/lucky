@@ -31,7 +31,6 @@ import { execStructured } from "@core/messages/api/sendAI/modes/execStructured"
 import { execText } from "@core/messages/api/sendAI/modes/execText"
 import { execTool } from "@core/messages/api/sendAI/modes/execTool"
 import type { SendAI, StructuredRequest, TextRequest, ToolRequest } from "@core/messages/api/sendAI/types"
-import { validateAndResolveModel } from "@core/messages/api/sendAI/validateModel"
 
 /**
  * Internal implementation of sendAI that handles request validation,
@@ -80,18 +79,13 @@ async function _sendAIInternal(req: TextRequest | ToolRequest | StructuredReques
     }
   }
 
-  /* ---- normalize and validate model ---- */
-  // Validate model is active for current provider - throws if inactive
-  try {
-    req.model = validateAndResolveModel(req.model, getDefaultModels().default)
-  } catch (error) {
-    return {
-      success: false,
-      data: null,
-      error: error instanceof Error ? error.message : String(error),
-      debug_input: req.messages,
-      debug_output: null,
-    }
+  /* ---- normalize model ---- */
+  // Use default model if none specified
+  req.model = req.model ?? getDefaultModels().default
+
+  if (req.model.includes("#")) {
+    const [_provider, model] = req.model.split("#")
+    req.model = model
   }
 
   /* ---- delegate to mode‑specific helper ---- */
@@ -141,7 +135,7 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
 
   // log which file is requesting sendAI by inspecting the stack trace
   const stack = new Error().stack
-  let callerFile: string | undefined = undefined
+  let callerFile = ""
   if (stack) {
     // find the first stack line outside this file
     const lines = stack.split("\n")
@@ -196,21 +190,4 @@ export const sendAI: SendAI = async (req: TextRequest | ToolRequest | Structured
       }
     }
   }
-}
-
-/**
- * Normalizes model names for consistent database storage and comparison.
- *
- * Ensures all model names are stored in a consistent string format
- * with trimmed whitespace to prevent storage inconsistencies.
- *
- * @param modelName - The model name to normalize
- * @returns Normalized string representation of the model name
- */
-// TODO: add model name validation against known models
-// TODO: implement model name alias resolution
-// TODO: add deprecation warnings for old model names
-export const normalizeModelName = (modelName: string): string => {
-  // ensure consistent string format and trim any whitespace
-  return String(modelName).trim()
 }

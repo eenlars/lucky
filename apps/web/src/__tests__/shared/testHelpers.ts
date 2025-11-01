@@ -21,7 +21,6 @@ export const createMockToolExecutionContext = (
 // reset all vitest mocks - call this in beforeEach
 export const resetAllTestMocks = () => {
   vi.clearAllMocks()
-  vi.resetAllMocks()
 }
 
 // common beforeEach setup for vitest tests
@@ -76,7 +75,7 @@ export const createBasicWorkflowConfig = () => ({
       nodeId: "node1",
       description: "test node",
       systemPrompt: "test system prompt",
-      modelName: "openrouter#openai/gpt-4.1-mini",
+      gatewayModelId: "openai/gpt-4.1-mini",
       mcpTools: [],
       codeTools: [],
       handOffs: [],

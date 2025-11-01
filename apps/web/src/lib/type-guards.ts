@@ -30,19 +30,6 @@ export function hasNumberProperty<K extends string>(obj: unknown, key: K): obj i
   return hasProperty(obj, key) && typeof (obj as Record<K, unknown>)[key] === "number"
 }
 
-export function isNodeChange(change: unknown): change is { type: string; id: string } {
-  return isRecord(change) && hasStringProperty(change, "type") && hasStringProperty(change, "id")
-}
-
-export function hasCryptoRandomUUID(crypto: unknown): crypto is { randomUUID: () => string } {
-  return (
-    typeof crypto === "object" &&
-    crypto !== null &&
-    "randomUUID" in crypto &&
-    typeof (crypto as Record<string, unknown>).randomUUID === "function"
-  )
-}
-
 // database record type guards
 export function isDatasetRecord(record: unknown): record is {
   dataset_record_id: string
@@ -99,57 +86,4 @@ export function isAggregatedPayload(payload: unknown): payload is {
 
 export function isSequentialPayload(payload: unknown): payload is { kind: "sequential" } {
   return isRecord(payload) && hasStringProperty(payload, "kind") && payload.kind === "sequential"
-}
-
-// migration-specific type guards
-export function hasScoreAndAccuracy(data: unknown): data is { data: { score: number; accuracy: number } } {
-  return (
-    isRecord(data) &&
-    hasProperty(data, "data") &&
-    isRecord(data.data) &&
-    hasNumberProperty(data.data, "score") &&
-    hasNumberProperty(data.data, "accuracy")
-  )
-}
-
-export function hasScoreAndDataAccuracy(data: unknown): data is { data: { score: number; dataAccuracy: number } } {
-  return (
-    isRecord(data) &&
-    hasProperty(data, "data") &&
-    isRecord(data.data) &&
-    hasNumberProperty(data.data, "score") &&
-    hasNumberProperty(data.data, "dataAccuracy")
-  )
-}
-
-export function hasScore(data: unknown): data is { score: number } {
-  return isRecord(data) && hasNumberProperty(data, "score")
-}
-
-// agent step type guards
-export function hasReturnProperty(step: unknown): step is { return: unknown } {
-  return isRecord(step) && hasProperty(step, "return")
-}
-
-export function hasNameProperty(step: unknown): step is { name: string } {
-  return isRecord(step) && hasStringProperty(step, "name")
-}
-
-export function hasResultProperty(response: unknown): response is { result: unknown } {
-  return isRecord(response) && hasProperty(response, "result")
-}
-
-// json parsing type guards
-export function isJsonString(value: unknown): value is string {
-  if (typeof value !== "string") return false
-  try {
-    JSON.parse(value)
-    return true
-  } catch {
-    return false
-  }
-}
-
-export function isArrayOfRecords(value: unknown): value is Array<Record<string, unknown>> {
-  return Array.isArray(value) && value.every(item => isRecord(item))
 }

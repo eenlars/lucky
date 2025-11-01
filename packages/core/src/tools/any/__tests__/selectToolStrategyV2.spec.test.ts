@@ -40,7 +40,7 @@ const mockTools: ToolSet = {
 describe("selectToolStrategyV2 Integration Tests", () => {
   let identityPrompt: string
   let agentSteps: AgentSteps
-  const model = getDefaultModels().medium
+  const model = getDefaultModels().balanced
 
   beforeEach(() => {
     identityPrompt = "Please create a simple todo list with items: buy groceries, walk the dog, finish project"
@@ -60,7 +60,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps,
       roundsLeft: 5,
       systemMessage,
-      model,
+      gatewayModelId: model,
     })
 
     expect(result.type).toBe("tool")
@@ -115,7 +115,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps: completedagentSteps,
       roundsLeft: 1, // Only 1 round left
       systemMessage,
-      model,
+      gatewayModelId: model,
     })
 
     expect(result.type).toBe("terminate")
@@ -160,7 +160,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps: duplicateagentSteps,
       roundsLeft: 2,
       systemMessage,
-      model,
+      gatewayModelId: model,
     })
 
     // Should terminate due to repeated calls or select a different useful tool
@@ -187,7 +187,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps: [],
       roundsLeft: 5,
       systemMessage,
-      model,
+      gatewayModelId: model,
     })
 
     expect(result.type).toBe("tool")
@@ -209,7 +209,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps,
       roundsLeft: 5,
       systemMessage: "Help with todo management",
-      model,
+      gatewayModelId: model,
     })
 
     expect(result.type).toBe("terminate")
@@ -234,7 +234,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps: [],
       roundsLeft: 5,
       systemMessage: actionSystemMessage,
-      model,
+      gatewayModelId: model,
     })
 
     // Prefer tool selection, but allow terminate due to LLM variability
@@ -254,7 +254,7 @@ describe("selectToolStrategyV2 Integration Tests", () => {
       agentSteps,
       roundsLeft: 1, // Only 1 round left
       systemMessage: "Create a todo list",
-      model,
+      gatewayModelId: model,
     })
 
     // Should either terminate or pick the most important tool

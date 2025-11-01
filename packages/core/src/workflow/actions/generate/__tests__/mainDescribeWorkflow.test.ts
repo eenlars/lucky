@@ -40,7 +40,7 @@ describe("describeWorkflow", () => {
       includeToolExplanations: true,
       includeAdjacencyList: false,
       includeAgents: false,
-      easyModelNames: false,
+      tierMappingEnabled: false,
     })
 
     console.log("Result with tool explanations:", result)
@@ -53,7 +53,7 @@ describe("describeWorkflow", () => {
       includeToolExplanations: false,
       includeAdjacencyList: false,
       includeAgents: false,
-      easyModelNames: false,
+      tierMappingEnabled: false,
     })
 
     console.log("Result without tool explanations:", result)
@@ -82,7 +82,7 @@ describe("describeWorkflow", () => {
       includeToolExplanations: true,
       includeAdjacencyList: false,
       includeAgents: false,
-      easyModelNames: false,
+      tierMappingEnabled: false,
     })
 
     console.log("Result with no tools:", result)
@@ -109,7 +109,7 @@ describe("describeWorkflow", () => {
       includeToolExplanations: true,
       includeAdjacencyList: false,
       includeAgents: false,
-      easyModelNames: false,
+      tierMappingEnabled: false,
     })
 
     console.log("Result with invalid tools:", result)

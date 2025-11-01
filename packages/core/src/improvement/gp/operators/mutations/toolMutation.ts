@@ -7,7 +7,7 @@
  */
 
 import { getCoreConfig, getDefaultModels } from "@core/core-config/coreConfig"
-import { EvolutionUtils } from "@core/improvement/gp/resources/utils"
+import { EvolutionUtils } from "@core/improvement/gp/rsc/utils"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { GENERALIZATION_LIMITS } from "@core/prompts/generalizationLimits"
 import { lgg } from "@core/utils/logging/Logger"
@@ -56,7 +56,7 @@ export class ToolMutation implements MutationOperator {
     try {
       // get human-readable workflow description for AI context
       const workflowDescription = parent.toString({
-        easyModelNames: true,
+        tierMappingEnabled: true,
       })
 
       // incorporate evolutionary feedback if enabled

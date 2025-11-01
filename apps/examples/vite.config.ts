@@ -87,10 +87,15 @@ export default defineConfig(({ mode }) => {
             return true
           }
 
-          // Allow internal module imports (@core, @shared). Also externalize
+          // Allow internal module imports (@core, @shared, @lucky). Also externalize
           // @examples/* to avoid circular resolution when @lucky/tools lazily
           // imports from @examples during its own bundling graph.
-          if (id.startsWith("@core/") || id.startsWith("@shared/") || id.startsWith("@examples/")) {
+          if (
+            id.startsWith("@core/") ||
+            id.startsWith("@shared/") ||
+            id.startsWith("@examples/") ||
+            id.startsWith("@lucky/")
+          ) {
             return true
           }
 

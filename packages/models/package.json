@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Multi-provider model configuration and registry for Vercel AI SDK",
+  "description": "Multi-gateway model configuration and registry for Vercel AI SDK",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "files": ["dist"],
@@ -30,6 +30,26 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./llm-catalog/catalog-queries": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/catalog-queries.ts"
+    },
+    "./llm-catalog/catalog": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/catalog.ts"
+    },
+    "./llm-catalog/providers": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/providers.ts"
+    },
+    "./llm-catalog/defaults": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "ts": "./src/llm-catalog/defaults.ts"
+    },
     "./server": {
       "types": "./dist/server.d.ts",
       "node": {
@@ -53,6 +73,11 @@
       "types": "./dist/pricing/catalog.d.ts",
       "import": "./dist/pricing/catalog.js",
       "ts": "./src/pricing/catalog.ts"
+    },
+    "./utils/apikey": {
+      "types": "./dist/utils/apikey.d.ts",
+      "import": "./dist/utils/apikey.js",
+      "ts": "./src/utils/apikey.ts"
     }
   },
   "dependencies": {

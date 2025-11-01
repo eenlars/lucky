@@ -156,7 +156,7 @@ export function PurposeSection({ node }: PurposeSectionProps) {
       <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
         <span>⚡ ~2s response time</span>
         <span>💰 ~{estimatedCost} per run</span>
-        {node.data.modelName && <span>🤖 {node.data.modelName.split("/").pop()}</span>}
+        {node.data.gatewayModelId && <span>🤖 {node.data.gatewayModelId.split("/").pop()}</span>}
       </div>
     </div>
   )

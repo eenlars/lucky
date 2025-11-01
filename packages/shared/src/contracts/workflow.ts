@@ -1,5 +1,6 @@
 import type { JSONSchema7 } from "json-schema"
 import { z } from "zod"
+import { gatewayNameSchema } from "../client"
 import { JsonSchemaZ } from "../utils/validateJsonSchema"
 
 /**
@@ -9,14 +10,15 @@ export const HandoffTypeSchema = z.enum(["conditional", "sequential", "parallel"
 
 /**
  * Declarative configuration for a single workflow node.
- * modelName accepts any model from any provider - validation happens at runtime
+ * gatewayModelId accepts any model from any provider - validation happens at runtime
  */
 export const WorkflowNodeConfigSchema = z.object({
   __schema_version: z.number().optional(),
   nodeId: z.string(),
   description: z.string(),
   systemPrompt: z.string(),
-  modelName: z.string(),
+  gatewayModelId: z.string(),
+  gateway: gatewayNameSchema,
   mcpTools: z.array(z.string()),
   codeTools: z.array(z.string()),
   handOffs: z.array(z.string()),
@@ -79,7 +81,7 @@ export const WorkflowConfigSchema = z.object({
 })
 
 export type WorkflowNodeConfig = z.infer<typeof WorkflowNodeConfigSchema>
-export type WorkflowConfig = z.infer<typeof WorkflowConfigSchema>
+export type WorkflowConfigZ = z.infer<typeof WorkflowConfigSchema>
 export type HandoffType = z.infer<typeof HandoffTypeSchema>
 export type JsonSchemaDefinition = JSONSchema7
 export type NodeLayout = z.infer<typeof NodeLayoutSchema>

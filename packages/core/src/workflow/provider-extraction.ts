@@ -1,76 +1,66 @@
-import { findModelByName } from "@lucky/models"
-import type { WorkflowConfig } from "@lucky/shared/contracts/workflow"
+import type { WorkflowConfig } from "@lucky/core/workflow/schema/workflow.types"
+import { GATEWAYS, findModel } from "@lucky/models"
+import type { LuckyGateway } from "@lucky/shared"
 
-export type RequiredProviders = {
-  providers: Set<string> // e.g., ["openai", "openrouter"]
-  models: Map<string, string[]> // provider -> model names
+export type RequiredGateways = {
+  gateways: Set<LuckyGateway>
+  models: Map<LuckyGateway, string[]>
 }
 
 /**
- * Extract all providers required by a workflow by analyzing node configs.
- * Looks up each model in the catalog to determine which provider API it uses.
- *
- * NOTE: Workflows store model names in API format (e.g., "gpt-4o-mini", "anthropic/claude-sonnet-4"),
- * not catalog IDs. We look up by the `model` field, not the `id` field.
+ * Extracts gateways and models required by a workflow configuration
  */
-export function extractRequiredProviders(config: WorkflowConfig): RequiredProviders {
-  const providers = new Set<string>()
-  const models = new Map<string, string[]>()
+export function extractRequiredGateways(config: WorkflowConfig): RequiredGateways {
+  const gateways = new Set<LuckyGateway>()
+  const models = new Map<LuckyGateway, string[]>()
 
   for (const nodeConfig of config.nodes) {
-    const modelName = nodeConfig.modelName
-    if (!modelName) continue
+    const { gatewayModelId, nodeId } = nodeConfig
+    if (!gatewayModelId) continue
 
-    // Look up model by its API name (the `model` field in catalog)
-    const catalogEntry = findModelByName(modelName)
-
+    const catalogEntry = findModel(gatewayModelId)
     if (!catalogEntry) {
-      console.warn(`[extractProviders] Model not found in catalog: ${modelName} (node: ${nodeConfig.nodeId})`)
+      console.warn(`Model not found in catalog: ${gatewayModelId} (node: ${nodeId})`)
       continue
     }
 
-    const provider = catalogEntry.provider.toLowerCase()
-    providers.add(provider)
+    const { gateway } = catalogEntry
+    gateways.add(gateway)
 
-    if (!models.has(provider)) {
-      models.set(provider, [])
-    }
-    const providerModels = models.get(provider)
-    if (providerModels) {
-      providerModels.push(modelName)
-    }
+    const gatewayModels = models.get(gateway) ?? []
+    gatewayModels.push(gatewayModelId)
+    models.set(gateway, gatewayModels)
   }
 
-  return { providers, models }
+  return { gateways, models }
 }
 
 /**
- * Map provider names to their API key environment variable names
+ * Map gateway names to their API key environment variable names
  */
 export function getProviderKeyName(provider: string): string {
-  const mapping: Record<string, string> = {
-    openai: "OPENAI_API_KEY",
-    openrouter: "OPENROUTER_API_KEY",
-    anthropic: "ANTHROPIC_API_KEY",
-    groq: "GROQ_API_KEY",
+  const providerEntry = GATEWAYS.find(p => p.gateway === provider.toLowerCase())
+  if (providerEntry) {
+    return providerEntry.secretKeyName
   }
-  return mapping[provider] || `${provider.toUpperCase()}_API_KEY`
+  // Fallback for unknown gateways (e.g., Anthropic)
+  return `${provider.toUpperCase()}_API_KEY`
 }
 
 /**
- * Map API key names to user-friendly provider display names
+ * Map API key names to user-friendly gateway display names
  * For unknown keys, converts HUGGING_FACE_API_KEY -> "Hugging Face"
  */
 export function getProviderDisplayName(keyName: string): string {
-  const mapping: Record<string, string> = {
-    OPENAI_API_KEY: "OpenAI",
-    OPENROUTER_API_KEY: "OpenRouter",
-    ANTHROPIC_API_KEY: "Anthropic",
-    GROQ_API_KEY: "Groq",
+  // Look up in PROVIDERS first
+  const providerEntry = GATEWAYS.find(p => p.secretKeyName === keyName)
+  if (providerEntry) {
+    return providerEntry.displayName
   }
 
-  if (mapping[keyName]) {
-    return mapping[keyName]
+  // Known legacy gateways not in GATEWAYS
+  if (keyName === "ANTHROPIC_API_KEY") {
+    return "Anthropic"
   }
 
   // Fallback: convert HUGGING_FACE_API_KEY -> "Hugging Face"

@@ -1,9 +1,8 @@
-import { getCoreConfig, getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
+import { getDefaultModels, isLoggingEnabled } from "@core/core-config/coreConfig"
 import { sendAI } from "@core/messages/api/sendAI/sendAI"
 import { truncater } from "@core/utils/common/llmify"
 import { lgg } from "@core/utils/logging/Logger"
-import { JSONN } from "@lucky/shared"
-import { R, type RS } from "@lucky/shared"
+import { JSONN, R, type RS } from "@lucky/shared"
 import type { ModelMessage } from "ai"
 import type { z } from "zod"
 

@@ -19,7 +19,7 @@ import { ToolManager } from "../toolManager"
  * 6. Extract tool usage and validate sequential execution
  */
 
-const model = getDefaultModels().medium
+const model = getDefaultModels().balanced
 
 describe("MultiStep2 integration - todoRead and todoWrite", () => {
   // TODO: this test appears to be an integration test that makes real database calls
@@ -83,7 +83,8 @@ describe("MultiStep2 integration - todoRead and todoWrite", () => {
         handOffs: ["end"],
         description: "MultiStep2 test node with todo tools",
         systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
-        modelName: model,
+        gatewayModelId: model,
+        gateway: "openai-api",
         codeTools: [],
         mcpTools: [],
         waitingFor: [],

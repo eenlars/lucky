@@ -1,8 +1,8 @@
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import { MODEL_CATALOG, findModel } from "@lucky/models"
+import { findModel } from "@lucky/models"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock the LLM call to return a config that erroneously includes an inactive code tool
+// Mock the LLM call to return a workflow with tier name "balanced"
 vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   sendAI: vi.fn().mockResolvedValue({
     success: true,
@@ -13,7 +13,8 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
           nodeId: "main",
           description: "desc",
           systemPrompt: "Do the thing",
-          modelName: "medium",
+          gatewayModelId: "balanced",
+          gateway: "openai-api",
           // simulate LLM echoing the inactive tool back
           mcpTools: [],
           codeTools: ["testInactiveTool"], // Using a fake tool we'll mark as inactive
@@ -44,7 +45,7 @@ vi.mock("@core/core-config/coreConfig", async () => {
       summary: "gpt-5-nano",
       nano: "gpt-5-nano",
       low: "gpt-5-mini",
-      medium: "gpt-5-mini",
+      balanced: "gpt-5-mini",
       high: "gpt-5",
       default: "gpt-5-nano",
       fitness: "gpt-5-mini",
@@ -54,7 +55,6 @@ vi.mock("@core/core-config/coreConfig", async () => {
   }
 })
 
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 
 describe("formalizeWorkflow sanitization (core defaults)", () => {
@@ -70,7 +70,8 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
           nodeId: "main",
           description: "Main node",
           systemPrompt: "Do the thing",
-          modelName: getDefaultModels().default,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           // inactive tool present in base config to simulate creep
           mcpTools: [],
           codeTools: ["testInactiveTool" as any],
@@ -94,25 +95,11 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     }
   })
 
-  it("normalizes legacy model names into catalog IDs", async () => {
-    const baseConfig: WorkflowConfig = {
-      entryNodeId: "main",
-      nodes: [
-        {
-          nodeId: "main",
-          description: "Main node",
-          systemPrompt: "Do the thing",
-          modelName: MODEL_CATALOG.find(m => m.model === "gpt-5-mini")?.model ?? "",
-          mcpTools: [],
-          codeTools: [],
-          handOffs: ["end"],
-          memory: {},
-        },
-      ],
-    }
-
+  it("preserves tier names for execution-time resolution", async () => {
+    // No base config - generate a new workflow from scratch
+    // The mock returns a node with gatewayModelId "balanced" (tier name)
+    // Tier names are preserved for execution-time resolution (not converted to catalog IDs)
     const { success, data } = await formalizeWorkflow("Normalize models", {
-      workflowConfig: baseConfig,
       verifyWorkflow: "none",
     })
 
@@ -120,12 +107,20 @@ describe("formalizeWorkflow sanitization (core defaults)", () => {
     expect(data).toBeDefined()
     if (!data) throw new Error("formalizeWorkflow returned no data")
 
-    const normalizedModels = data.nodes.map(node => node.modelName)
-    for (const model of normalizedModels) {
-      expect(model, `Model ${model} should resolve in catalog`).toBeDefined()
-      expect(findModel(model)).toBeTruthy()
-    }
+    // Mock returns "balanced" which should be preserved as a tier name
+    // Tier names (cheap, fast, smart, balanced) are preserved for execution-time resolution
+    // They get resolved to actual models when the workflow executes, not during generation
+    const normalizedModels = data.nodes.map(node => node.gatewayModelId)
 
-    expect(normalizedModels).toContain("openai#gpt-5-mini")
+    // Verify tier name "balanced" is preserved (normalized to lowercase)
+    expect(normalizedModels).toContain("balanced")
+
+    // Verify it's a valid tier name
+    const tierNames = ["cheap", "fast", "smart", "balanced"]
+    for (const model of normalizedModels) {
+      const isTierName = tierNames.includes(model)
+      const isInCatalog = findModel(model) !== undefined
+      expect(isTierName || isInCatalog, `Model ${model} should be either a tier name or in catalog`).toBe(true)
+    }
   })
 })

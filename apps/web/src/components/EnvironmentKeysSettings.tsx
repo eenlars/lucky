@@ -5,8 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
+import { postty } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
-import { extractFetchError } from "@/lib/utils/extract-fetch-error"
 import { AlertCircle, Check, Copy, Eye, EyeOff, Key, Loader2, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -171,15 +171,10 @@ export default function EnvironmentKeysSettings() {
       // Save each key to the backend
       await Promise.all(
         newKeys.map(async key => {
-          const response = await fetch("/api/user/env-keys", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: key.name, value: key.value }),
+          await postty("user/env-keys/set", {
+            key: key.name,
+            value: key.value,
           })
-          if (!response.ok) {
-            const errorDetails = await extractFetchError(response)
-            throw new Error(`Failed to save ${key.name}: ${errorDetails}`)
-          }
         }),
       )
       setKeys(newKeys)

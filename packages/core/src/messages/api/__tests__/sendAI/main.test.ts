@@ -19,9 +19,12 @@ vi.mock("@core/clients/openrouterClient", () => ({
   openrouter: vi.fn((model: string) => `mocked-${model}`),
 }))
 
-vi.mock("@core/models/getLanguageModel", () => ({
-  getLanguageModel: vi.fn((model: string) => `mocked-${model}`),
-  getLanguageModelWithReasoning: vi.fn((model: string, _opts?: any) => `mocked-${model}`),
+vi.mock("@core/models/models-instance", () => ({
+  getModelsInstance: vi.fn(() =>
+    Promise.resolve({
+      resolve: vi.fn((model: string) => `mocked-${model}`),
+    }),
+  ),
 }))
 
 vi.mock("@core/utils/spending/SpendingTracker", () => ({
@@ -64,7 +67,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       inactive: new Set(),
-      provider: "openai",
+      gateway: "openai-api" as const,
     },
     limits: {
       rateWindowMs: 1000,

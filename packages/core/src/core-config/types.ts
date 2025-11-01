@@ -3,7 +3,7 @@
  * These types define the complete configuration surface for core.
  */
 
-import type { LuckyProvider } from "@lucky/shared"
+import type { LuckyGateway } from "@lucky/shared"
 
 /**
  * Filesystem paths configuration.
@@ -35,12 +35,12 @@ export interface CorePathsConfig {
 
 /**
  * Models configuration
- * Note: Using string instead of AnyModelName to avoid TypeScript memory issues.
+ * Note: Using string instead of AnyGatewayModelId to avoid TypeScript memory issues.
  * Runtime validation is handled by Zod schemas in contracts package.
  */
 export interface CoreModelsConfig {
   /** Model provider (openrouter, openai, groq) */
-  readonly provider: LuckyProvider
+  readonly gateway: LuckyGateway
   /** Inactive models that should not be used */
   readonly inactive: string[]
   /** Default models for different tiers */
@@ -48,7 +48,7 @@ export interface CoreModelsConfig {
     readonly summary: string
     readonly nano: string
     readonly low: string
-    readonly medium: string
+    readonly balanced: string
     readonly high: string
     readonly default: string
     readonly fitness: string
@@ -121,7 +121,7 @@ export interface CoreWorkflowConfig {
   /** Whether to prepare problem before execution */
   readonly prepareProblem: boolean
   /** Problem preparation method */
-  readonly prepareProblemMethod: "ai" | "workflow"
+  readonly prepareProblemMethod: "ai" | "workflow" | "none"
   /** Workflow version ID for problem preparation */
   readonly prepareProblemWorkflowVersionId: string
   /** Whether to enable parallel execution */

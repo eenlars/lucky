@@ -57,7 +57,7 @@ export type {
 export type {
   StandardModels,
   TokenUsage,
-} from "./types/models"
+} from "./contracts/llm-contracts/models-old"
 
 // Memory schemas
 export * from "./utils/memory/memorySchema"
@@ -81,37 +81,33 @@ export type { OutputSchema, WorkflowFile } from "./types/workflow"
 
 // Workflow contracts
 export { HandoffTypeSchema, WorkflowConfigSchema, WorkflowNodeConfigSchema } from "./contracts/workflow"
-export type { HandoffType, WorkflowConfig, WorkflowNodeConfig } from "./contracts/workflow"
+export type { HandoffType, WorkflowConfigZ, WorkflowNodeConfig } from "./contracts/workflow"
 
 // Provider contracts
 export {
-  apiKeyValidationSchema,
-  catalogIdSchema,
+  gatewayApiKeyValidationSchema,
+  gatewayConfigSchema,
+  gatewayEntrySchema,
+  gatewayKeyMappingSchema,
+  gatewayNameSchema,
+  gatewaySettingsSchema,
+  gatewayStatusSchema,
   modelIdSchema,
-  providerConfigSchema,
-  providerKeyMappingSchema,
-  providerNameSchema,
-  providerSettingsSchema,
-  // Alias: clarify this is UI/status provider config shape (not the enum)
-  providerConfigSchema as providerStatusConfigSchema,
-  providerStatusSchema,
-  userModelPreferencesSchema,
-  userProviderSettingsSchema,
-} from "./contracts/providers"
+  userGatewayPreferencesSchema,
+  userGatewaySettingsSchema,
+} from "./contracts/llm-contracts/providers"
 export type {
-  ApiKeyValidation,
-  CatalogId,
-  LuckyProvider,
+  GatewayApiKeyValidation,
+  GatewayConfig,
+  GatewayEntry,
+  GatewayKeyMapping,
+  GatewaySettings,
+  GatewayStatus,
+  LuckyGateway,
   ModelId,
-  ProviderConfig,
-  ProviderKeyMapping,
-  ProviderSettings,
-  ProviderStatus,
-  // Alias: clarify meaning at import sites
-  ProviderConfig as ProviderStatusConfig,
-  UserModelPreferences,
-  UserProviderSettings,
-} from "./contracts/providers"
+  UserGatewayPreferences,
+  UserGatewaySettings,
+} from "./contracts/llm-contracts/providers"
 
 // Model contracts
 export {
@@ -120,18 +116,18 @@ export {
   modelEntrySchema,
   modelPricingSchema,
   modelPricingTierSchema,
-  modelSelectionSchema,
   modelSpeedSchema,
-} from "./contracts/models"
+  tierNameSchema,
+} from "./contracts/llm-contracts/models"
 export type {
   EnrichedModelInfo,
   ModelCapabilities,
   ModelEntry,
   ModelPricing,
   ModelPricingTier,
-  ModelSelection,
   ModelSpeed,
-} from "./contracts/models"
+  TierName,
+} from "./contracts/llm-contracts/models"
 
 // Error contracts
 export { ErrorReportSchema, SeverityLevelSchema } from "./contracts/error"
@@ -207,12 +203,12 @@ export {
 
 // Agent event types
 export type {
-  AgentEvent,
-  AgentStartEvent,
   AgentEndEvent,
   AgentErrorEvent,
-  AgentToolStartEvent,
+  AgentEvent,
+  AgentStartEvent,
   AgentToolEndEvent,
+  AgentToolStartEvent,
 } from "./types/agentEvents"
 
 // NOTE: obs and file saver utilities use Node.js APIs (AsyncLocalStorage, fs, path)

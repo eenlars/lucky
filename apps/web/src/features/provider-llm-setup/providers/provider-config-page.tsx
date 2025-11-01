@@ -2,15 +2,16 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getProviderConfigs, testConnection, validateApiKey } from "@/features/provider-llm-setup/provider-utils"
 import { ModelGrid } from "@/features/provider-llm-setup/providers/model-selection/ModelGrid"
 import { ProviderConfigSkeleton } from "@/features/provider-llm-setup/providers/provider-skeleton"
+import { useModelPreferencesStore } from "@/features/provider-llm-setup/store/model-preferences-store"
 import { Input } from "@/features/react-flow-visualization/components/ui/input"
 import { Label } from "@/features/react-flow-visualization/components/ui/label"
+import { postty } from "@/lib/api/api-client"
 import { logException } from "@/lib/error-logger"
-import { getProviderConfigs, testConnection, validateApiKey } from "@/lib/providers/provider-utils"
 import { extractFetchError } from "@/lib/utils/extract-fetch-error"
-import { useModelPreferencesStore } from "@/stores/model-preferences-store"
-import type { EnrichedModelInfo, LuckyProvider } from "@lucky/shared"
+import type { EnrichedModelInfo, LuckyGateway } from "@lucky/shared"
 import { AlertCircle, ArrowLeft, CheckCircle2, Copy, ExternalLink, Eye, EyeOff, Loader2, RefreshCw } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -18,15 +19,15 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 interface ProviderConfigPageProps {
-  provider: LuckyProvider
+  gateway: LuckyGateway
 }
 
 /**
  * Provider configuration page for managing API keys and model preferences.
  * Model preferences are auto-saved via Zustand store with optimistic updates.
  */
-export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
-  const config = getProviderConfigs()[provider]
+export function ProviderConfigPage({ gateway }: ProviderConfigPageProps) {
+  const config = getProviderConfigs()[gateway]
   const Icon = config.icon
 
   // Zustand store for model preferences (auto-saves on toggle)
@@ -56,8 +57,8 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   // Available models from provider API (not user preferences)
   const [availableModels, setAvailableModels] = useState<EnrichedModelInfo[]>([])
 
-  // Get enabled models from Zustand store (full model IDs like "openrouter#openai/gpt-4o")
-  const enabledModelIds = getEnabledModels(provider)
+  // Get enabled models from Zustand store (full model IDs like "openai/gpt-4o")
+  const enabledModelIds = getEnabledModels(gateway)
   const enabledModels = new Set(enabledModelIds)
 
   // Load preferences from store on mount
@@ -78,7 +79,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
   const loadConfiguration = async () => {
     setIsLoading(true)
     try {
-      const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.apiKeyName)}`)
+      const keyResponse = await fetch(`/api/user/env-keys/${encodeURIComponent(config.secretKeyName)}`)
       if (keyResponse.ok) {
         const keyData: { value: string } = await keyResponse.json()
         setApiKey(keyData.value)
@@ -106,7 +107,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsLoadingModels(true)
     try {
-      const response = await fetch(`/api/providers/${provider}/models`, {
+      const response = await fetch(`/api/providers/${gateway}/models`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ apiKey: key, includeMetadata: true }),
@@ -143,7 +144,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
    * On success, loads available models from the provider.
    */
   const handleTestConnection = async () => {
-    const validation = validateApiKey(provider, apiKey)
+    const validation = validateApiKey(gateway, apiKey)
     if (!validation.valid) {
       setValidationError(validation.error || null)
       toast.error(validation.error)
@@ -155,7 +156,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
     setValidationError(null)
 
     try {
-      const result = await testConnection(provider, apiKey)
+      const result = await testConnection(gateway, apiKey)
 
       if (result.success) {
         setTestStatus("success")
@@ -182,7 +183,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
    * Note: Model preferences are auto-saved immediately via Zustand store.
    */
   const handleSave = async () => {
-    const validation = validateApiKey(provider, apiKey)
+    const validation = validateApiKey(gateway, apiKey)
     if (!validation.valid) {
       setValidationError(validation.error || null)
       toast.error(validation.error)
@@ -196,19 +197,10 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
     setIsSaving(true)
     try {
-      const keyResponse = await fetch("/api/user/env-keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: config.apiKeyName,
-          value: apiKey,
-        }),
+      await postty("user/env-keys/set", {
+        key: config.secretKeyName,
+        value: apiKey,
       })
-
-      if (!keyResponse.ok) {
-        const errorDetails = await extractFetchError(keyResponse)
-        throw new Error(errorDetails)
-      }
 
       setIsConfigured(true)
       setHasUnsavedKeyChanges(false)
@@ -227,29 +219,37 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
 
   /**
    * Toggle a single model on/off. Auto-saves via Zustand store with optimistic updates.
-   * @param modelId Full model ID (e.g., "openrouter#openai/gpt-4o")
+   * @param modelId Full model ID (e.g., "openai/gpt-4o")
    */
-  const handleToggleModel = (modelId: string) => {
-    toggleModelInStore(provider, modelId)
+  const handleToggleModel = async (modelId: string) => {
+    const willEnable = !enabledModels.has(modelId)
+
+    await toggleModelInStore(gateway, modelId)
+
+    const { error } = useModelPreferencesStore.getState()
+    if (!error) {
+      const modelName = availableModels.find(model => model.gatewayModelId === modelId)?.gatewayModelId || modelId
+      toast.success(`${modelName} ${willEnable ? "enabled" : "disabled"} and saved`)
+    }
   }
 
   /**
    * Bulk toggle models. Auto-saves via Zustand store.
-   * @param modelIds Array of full model IDs (e.g., ["openrouter#openai/gpt-4o", "openrouter#openai/gpt-4o-mini"])
+   * @param modelIds Array of full model IDs (e.g., ["openai/gpt-4o", "openai/gpt-4o-mini"])
    * @param enable true to enable models, false to disable them
    */
   const handleBulkToggleModels = (modelIds: string[], enable: boolean) => {
     if (enable) {
       // Add models to existing enabled set
-      const currentEnabled = getEnabledModels(provider)
+      const currentEnabled = getEnabledModels(gateway)
       const newEnabled = Array.from(new Set([...currentEnabled, ...modelIds]))
-      setProviderModels(provider, newEnabled)
+      setProviderModels(gateway, newEnabled)
     } else {
       // Remove models from enabled set
-      const currentEnabled = getEnabledModels(provider)
+      const currentEnabled = getEnabledModels(gateway)
       const toDisable = new Set(modelIds)
       const newEnabled = currentEnabled.filter(id => !toDisable.has(id))
-      setProviderModels(provider, newEnabled)
+      setProviderModels(gateway, newEnabled)
     }
   }
 
@@ -331,7 +331,7 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
                     <Input
                       id="api-key"
                       type={isVisible ? "text" : "password"}
-                      placeholder={`${config.apiKeyPrefix}...`}
+                      placeholder={`${config.apiKeyValuePrefix}...`}
                       value={apiKey}
                       onChange={e => handleApiKeyChange(e.target.value)}
                       autoComplete="off"
@@ -405,7 +405,9 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
               </div>
 
               <div className="p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground">Your key is stored securely</p>
+                <p className="text-xs text-muted-foreground">
+                  Your key is stored in a vault, only available by your api key.
+                </p>
               </div>
             </div>
           </CardContent>
@@ -427,36 +429,6 @@ export function ProviderConfigPage({ provider }: ProviderConfigPageProps) {
             />
           </CardContent>
         </Card>
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div>{hasUnsavedKeyChanges && <p className="text-sm text-muted-foreground">Unsaved changes</p>}</div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                loadConfiguration()
-                setHasUnsavedKeyChanges(false)
-                setValidationError(null)
-                setTestStatus("idle")
-              }}
-              disabled={isSaving || !hasUnsavedKeyChanges}
-              className="w-full sm:w-auto"
-            >
-              Reset
-            </Button>
-            <Button onClick={handleSave} disabled={isSaving || !hasUnsavedKeyChanges} className="w-full sm:w-auto">
-              {isSaving ? (
-                <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import { InvocationPipeline } from "../../messages/pipeline/InvocationPipeline"
 import type { NodeInvocationCallContext } from "../../messages/pipeline/input.types"
 import { ToolManager } from "../toolManager"
 
-const model = getDefaultModels().medium
+const model = getDefaultModels().balanced
 
 describe("MultiStep3 integration - todoRead and todoWrite", () => {
   // TODO: this test is nearly identical to MultiStep2.spec.test.ts with only difference
@@ -52,7 +52,8 @@ describe("MultiStep3 integration - todoRead and todoWrite", () => {
         codeTools: ["todoRead", "todoWrite"],
         description: "MultiStep3 test node with todo tools",
         systemPrompt: "First, read the current todos. Then write a new todo item: 'Complete integration test'.",
-        modelName: model,
+        gatewayModelId: model,
+        gateway: "openai-api",
         handOffs: ["end"],
         waitingFor: [],
       },

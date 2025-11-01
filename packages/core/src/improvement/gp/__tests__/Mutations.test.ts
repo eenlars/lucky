@@ -2,7 +2,7 @@
 // TODO: overly complex mocking setup makes tests brittle
 // CONFIG mock contains many properties not needed for mutation tests
 // consider extracting minimal mocks to test utilities
-import type { EvolutionContext } from "@core/improvement/gp/resources/gp.types"
+import type { EvolutionContext } from "@core/improvement/gp/rsc/gp.types"
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock runtime constants at top level
@@ -20,7 +20,7 @@ vi.mock("@examples/settings/constants", () => ({
     },
     models: {
       inactive: new Set(),
-      provider: "openai",
+      gateway: "openai-api" as const,
     },
     improvement: {
       flags: {
@@ -47,7 +47,7 @@ vi.mock("@examples/settings/constants", () => ({
     coordinationType: "sequential",
   },
   MODELS: {
-    default: "openrouter#google/gemini-2.5-flash-lite",
+    default: "google/gemini-2.5-flash-lite",
   },
   PATHS: {
     root: "/test",
@@ -73,7 +73,7 @@ vi.mock("@core/workflow/actions/generate/formalizeWorkflow", () => ({
   formalizeWorkflow: vi.fn(),
 }))
 
-vi.mock("@core/improvement/gp/resources/wrappers", () => ({
+vi.mock("@core/improvement/gp/rsc/wrappers", () => ({
   workflowConfigToGenome: vi.fn(),
 }))
 
@@ -90,21 +90,20 @@ vi.mock("@core/messages/api/sendAI/sendAI", () => ({
   }),
 }))
 
-vi.mock("@core/improvement/gp/resources/debug/dummyGenome", () => ({
+vi.mock("@core/improvement/gp/rsc/debug/dummyGenome", () => ({
   createDummyGenome: vi.fn(),
 }))
 
 // isNir is used from real implementation; no mocking
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import { Genome } from "@core/improvement/gp/Genome"
 import { MutationCoordinator } from "@core/improvement/gp/operators/mutations/MutationCoordinator"
-import { createDummyGenome } from "@core/improvement/gp/resources/debug/dummyGenome"
-import { workflowConfigToGenome } from "@core/improvement/gp/resources/wrappers"
+import { createDummyGenome } from "@core/improvement/gp/rsc/debug/dummyGenome"
+import { workflowConfigToGenome } from "@core/improvement/gp/rsc/wrappers"
 import { formalizeWorkflow } from "@core/workflow/actions/generate/formalizeWorkflow"
 import type { EvaluationInput } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
 import type { RS } from "@lucky/shared"
-import type { WorkflowGenome } from "../resources/gp.types"
+import type { WorkflowGenome } from "../rsc/gp.types"
 
 // Cast mocked functions for type safety
 const mockFormalizeWorkflow = formalizeWorkflow as unknown as Mock
@@ -119,7 +118,8 @@ describe("Mutations", () => {
           nodeId: `node-${id}`,
           description: `description ${id}`,
           systemPrompt: `prompt ${id}`,
-          modelName: getDefaultModels().default,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api" as const,
           mcpTools: [],
           codeTools: [],
           handOffs: [],
@@ -168,7 +168,8 @@ describe("Mutations", () => {
             nodeId: "mutated-node",
             description: "mutated prompt",
             systemPrompt: "mutated prompt",
-            modelName: getDefaultModels().default,
+            gatewayModelId: "gpt-4o-mini",
+            gateway: "openai-api" as const,
             mcpTools: [],
             codeTools: [],
             handOffs: [],

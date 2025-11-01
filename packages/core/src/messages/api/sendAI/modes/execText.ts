@@ -22,11 +22,10 @@ import { normalizeError } from "@core/messages/api/sendAI/errors"
 import { retryWithBackoff } from "@core/messages/api/sendAI/utils/retry"
 import { runWithStallGuard } from "@core/messages/api/stallGuard"
 import { calculateUsageCost } from "@core/messages/api/vercel/pricing/vercelUsage"
-import { getLanguageModelWithReasoning } from "@core/models/getLanguageModel"
+import { getModelsInstance } from "@core/models/models-instance"
 import { logException } from "@core/utils/error-tracking/errorLogger"
 import { lgg } from "@core/utils/logging/Logger"
 import { saveResultOutput } from "@core/utils/persistence/saveResult"
-import { getCurrentProvider } from "@core/utils/spending/provider"
 import { getSpendingTracker } from "@core/utils/spending/trackerContext"
 import { isNir } from "@lucky/shared"
 import { type GenerateTextResult, type ToolSet, type generateText, stepCountIs } from "ai"
@@ -56,9 +55,10 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
 
   // TODO: add model capability validation for text generation
   // TODO: implement intelligent model selection based on prompt characteristics
-  const modelName: string = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
+  const gatewayModelId: string = shouldUseModelFallback(wanted) ? getFallbackModel(wanted) : wanted
 
-  const model = await getLanguageModelWithReasoning(modelName, opts)
+  const models = await getModelsInstance()
+  const model = models.resolve(gatewayModelId)
 
   try {
     // TODO: add dynamic parameter optimization based on prompt analysis
@@ -81,18 +81,18 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       attempt: number
       reason: string
       usage?: any
-      provider: string
-      model: string
+      gateway: string
+      gatewayModelId: string
     }> = []
 
     const attemptOnce = async () => {
       const gen = await runWithStallGuard<GenerateTextResult<ToolSet, any>>(baseOptions, {
-        modelName: modelName,
+        gatewayModelId: gatewayModelId,
         overallTimeoutMs,
         stallTimeoutMs,
       })
 
-      const usd = calculateUsageCost(gen?.usage, modelName)
+      const usd = calculateUsageCost(gen?.usage, gatewayModelId)
       if (opts.saveOutputs && gen) await saveResultOutput(gen)
       getSpendingTracker().addCost(usd)
       return gen
@@ -109,20 +109,18 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
             attempt: attemptsDebug.length + 1,
             reason: "empty-text",
             usage: gen?.usage,
-            provider: String(getCurrentProvider()),
-            model: String(modelName),
+            gateway: "unknown",
+            gatewayModelId: String(gatewayModelId),
           })
           lgg.warn(
-            `execText empty response (attempt ${attemptsDebug.length}/${attempts}) from ${String(
-              getCurrentProvider(),
-            )} for ${String(modelName)}`,
+            `execText empty response (attempt ${attemptsDebug.length}/${attempts}) for ${String(gatewayModelId)}`,
           )
         }
         return !hasText
       },
     })
 
-    const usd = calculateUsageCost(result?.usage, modelName)
+    const usd = calculateUsageCost(result?.usage, gatewayModelId)
     const text = result?.text
     const hasText = !isNir(text?.trim?.())
     if (hasText) {
@@ -140,21 +138,22 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       success: false,
       data: null,
       usdCost: usd,
-      error: `Empty response from ${String(getCurrentProvider())} for model ${String(modelName)} after ${attempts} attempt(s).`,
+      error: `Empty response from model ${String(gatewayModelId)} after ${attempts} attempt(s).`,
       debug_input: messages,
       debug_output: { lastGen: result, attempts: attemptsDebug },
     }
   } catch (err) {
+    console.error("execText error", err)
     // TODO: implement comprehensive error classification system
     // TODO: add error recovery strategies beyond fallback
     // TODO: create error analytics and reporting
     const { message, debug } = normalizeError(err)
 
     // Enhanced error logging with full context for debugging
-    const provider = getCurrentProvider()
+    const provider = gatewayModelId
     const errorContext = {
       provider,
-      model: modelName,
+      gatewayModelId: gatewayModelId,
       error: message,
       debug,
       requestInfo: {
@@ -165,54 +164,75 @@ export async function execText(req: TextRequest): Promise<TResponse<{ text: stri
       },
     }
 
-    lgg.error("❌ execText failed", JSON.stringify(errorContext, null, 2))
-
-    // Determine severity based on error type
+    // Determine severity and category based on error type
     let severity: "error" | "warn" = "error"
     let errorCategory = "unknown"
+    let isUserError = false
 
-    // Log quota/auth errors with extra visibility
+    // Categorize errors to reduce noise for user input errors
     if (typeof message === "string") {
-      if (message.toLowerCase().includes("quota") || message.toLowerCase().includes("insufficient credits")) {
+      const lowerMsg = message.toLowerCase()
+
+      // User input validation errors - don't spam logs
+      if (
+        lowerMsg.includes("is not a valid model id") ||
+        lowerMsg.includes("does not exist") ||
+        lowerMsg.includes("model_not_found") ||
+        lowerMsg.includes("model not found") ||
+        (debug?.statusCode === 400 && (lowerMsg.includes("model") || lowerMsg.includes("invalid")))
+      ) {
+        errorCategory = "validation"
+        severity = "warn"
+        isUserError = true
+        lgg.warn(`⚠️  Invalid gatewayModelId: ${gatewayModelId} - ${message}`)
+      } else if (lowerMsg.includes("quota") || lowerMsg.includes("insufficient credits")) {
         errorCategory = "quota"
         severity = "error"
         lgg.error(`💰 QUOTA ERROR: ${provider} - ${message}`)
-        lgg.error(`   Model: ${modelName}`)
+        lgg.error(`   Model: ${gatewayModelId}`)
         lgg.error("   This usually means your API key has reached its usage limit.")
         lgg.error("   Check your billing settings at your provider's dashboard.")
-      } else if (message.toLowerCase().includes("authentication") || message.toLowerCase().includes("api key")) {
+      } else if (lowerMsg.includes("authentication") || lowerMsg.includes("api key")) {
         errorCategory = "auth"
         severity = "error"
         lgg.error(`🔑 AUTH ERROR: ${provider} - ${message}`)
-        lgg.error("   Model: ${modelName}")
+        lgg.error(`   Model: ${gatewayModelId}`)
         lgg.error("   Check that your API key is set correctly and has the right permissions.")
       } else if (message.includes("Overall timeout") || message.includes("Stall timeout")) {
         errorCategory = "timeout"
         severity = "warn"
-      } else if (message.toLowerCase().includes("rate limit")) {
+      } else if (lowerMsg.includes("rate limit")) {
         errorCategory = "rate_limit"
         severity = "warn"
+      } else {
+        // Unknown errors - log full context for debugging
+        lgg.error("❌ execText failed", JSON.stringify(errorContext, null, 2))
       }
+    } else {
+      // Non-string errors - log full context
+      lgg.error("❌ execText failed", JSON.stringify(errorContext, null, 2))
     }
 
-    // Log to backend for tracking and alerting
-    logException(err, {
-      location: `core/execText/${errorCategory}`,
-      context: {
-        ...errorContext,
-        errorCategory,
-      },
-      severity,
-    }).catch(logErr => {
-      // Never let logging errors disrupt execution
-      console.error("Failed to log error to backend:", logErr)
-    })
+    // Only log to backend for non-user errors
+    if (!isUserError) {
+      logException(err, {
+        location: `core/execText/${errorCategory}`,
+        context: {
+          ...errorContext,
+          errorCategory,
+        },
+        severity,
+      }).catch(logErr => {
+        // Never let logging errors disrupt execution
+        console.error("Failed to log error to backend:", logErr)
+      })
+    }
 
     // TODO: expand timeout detection to include more error patterns
     // TODO: implement model health monitoring beyond timeout tracking
     // track model timeouts to enable temporary fallback if a model times out frequently.
     if (typeof message === "string" && (message.includes("Overall timeout") || message.includes("Stall timeout"))) {
-      trackTimeoutForModel(modelName)
+      trackTimeoutForModel(gatewayModelId)
     }
 
     // TODO: add error context and categorization

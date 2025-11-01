@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AgentStep } from "@core/messages/pipeline/AgentStep.types"
-import { getRuntimeEnabledModels, getRuntimeEnabledProviders } from "@lucky/models/pricing/catalog"
+import { getRuntimeEnabledGateways, getRuntimeEnabledModels } from "@lucky/models"
+import type { LuckyGateway } from "@lucky/shared"
 import { ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION, ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION } from "@lucky/tools"
 import {
   AlertCircle,
@@ -23,8 +24,8 @@ import { useMemo, useRef, useState } from "react"
 
 interface PipelineTestRequest {
   systemPrompt: string
-  provider: string
-  modelName: string
+  gateway: LuckyGateway
+  gatewayModelId: string
   maxSteps?: number
   codeTools: string[]
   mcpTools: string[]
@@ -50,26 +51,28 @@ interface PipelineTestResponse {
   error?: string
 }
 
+const defaultConfig: PipelineTestRequest = {
+  systemPrompt: "You are a helpful assistant. Use the available tools to answer questions accurately.",
+  gateway: "openrouter-api",
+  gatewayModelId: "", // Will be set to first runtime-enabled model by useMemo below
+  maxSteps: 3,
+  codeTools: ["todoRead", "todoWrite"],
+  mcpTools: [],
+  message: "Create a todo list with 3 tasks for building a web app",
+  toolStrategy: "auto",
+  mainGoal: "Test pipeline execution",
+}
+
 // Get available tools from registry
 const AVAILABLE_CODE_TOOLS = Object.keys(ACTIVE_CODE_TOOL_NAMES_WITH_DESCRIPTION)
 const AVAILABLE_MCP_TOOLS = Object.keys(ACTIVE_MCP_TOOL_NAMES_WITH_DESCRIPTION)
 
 export function PipelineTester() {
   // Get active providers and models from catalog (source of truth)
-  const activeProviders = useMemo(() => getRuntimeEnabledProviders(), [])
+  const activeGateways = useMemo(() => getRuntimeEnabledGateways(), [])
   const allActiveModels = useMemo(() => getRuntimeEnabledModels(), [])
 
-  const [config, setConfig] = useState<PipelineTestRequest>({
-    systemPrompt: "You are a helpful assistant. Use the available tools to answer questions accurately.",
-    provider: "openrouter",
-    modelName: "", // Will be set to first runtime-enabled model by useMemo below
-    maxSteps: 3,
-    codeTools: ["todoRead", "todoWrite"],
-    mcpTools: [],
-    message: "Create a todo list with 3 tasks for building a web app",
-    toolStrategy: "auto",
-    mainGoal: "Test pipeline execution",
-  })
+  const [config, setConfig] = useState<PipelineTestRequest>(defaultConfig)
 
   const [isRunning, setIsRunning] = useState(false)
   const [result, setResult] = useState<PipelineTestResponse | null>(null)
@@ -80,25 +83,24 @@ export function PipelineTester() {
 
   // Filter models by selected provider
   const availableModels = useMemo(() => {
-    return allActiveModels.filter(m => m.provider === config.provider)
-  }, [allActiveModels, config.provider])
+    return allActiveModels.filter(m => m.gateway === config.gateway)
+  }, [allActiveModels, config.gateway])
 
   // Set default model when provider changes
-  const handleProviderChange = (provider: string) => {
-    const modelsForProvider = allActiveModels.filter(m => m.provider === provider)
+  const handleProviderChange = (gateway: LuckyGateway) => {
     setConfig({
       ...config,
-      provider,
-      modelName: modelsForProvider[0]?.id || "",
+      gateway,
+      gatewayModelId: availableModels.find(m => m.gateway === gateway)?.gatewayModelId || "",
     })
   }
 
   // Set initial model
   useMemo(() => {
-    if (!config.modelName && availableModels.length > 0) {
-      setConfig(prev => ({ ...prev, modelName: availableModels[0].id }))
+    if (!config.gatewayModelId && availableModels.length > 0) {
+      setConfig(prev => ({ ...prev, gatewayModelId: availableModels[0].gatewayModelId }))
     }
-  }, [availableModels, config.modelName])
+  }, [availableModels, config.gatewayModelId])
 
   const handleRun = async () => {
     setIsRunning(true)
@@ -225,8 +227,11 @@ export function PipelineTester() {
         <div className="p-4 space-y-6">
           {/* System Prompt */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">System Prompt</label>
+            <label htmlFor="system-prompt" className="text-sm font-medium">
+              System Prompt
+            </label>
             <textarea
+              id="system-prompt"
               value={config.systemPrompt}
               onChange={e => setConfig({ ...config, systemPrompt: e.target.value })}
               rows={4}
@@ -236,15 +241,18 @@ export function PipelineTester() {
 
           {/* Provider Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Provider</label>
+            <label htmlFor="provider-select" className="text-sm font-medium">
+              Provider
+            </label>
             <select
-              value={config.provider}
-              onChange={e => handleProviderChange(e.target.value)}
+              id="provider-select"
+              value={config.gateway}
+              onChange={e => handleProviderChange(e.target.value as LuckyGateway)}
               className="w-full px-3 py-2 text-sm border border-border rounded bg-background"
             >
-              {activeProviders.map(provider => (
-                <option key={provider} value={provider}>
-                  {provider === "openai" ? "OpenAI (GATEWAY)" : provider.charAt(0).toUpperCase() + provider.slice(1)}
+              {activeGateways.map(gateway => (
+                <option key={gateway} value={gateway}>
+                  {gateway.charAt(0).toUpperCase() + gateway.slice(1)}
                 </option>
               ))}
             </select>
@@ -252,17 +260,20 @@ export function PipelineTester() {
 
           {/* Model Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Model</label>
+            <label htmlFor="model-select" className="text-sm font-medium">
+              Model
+            </label>
             <select
-              value={config.modelName}
-              onChange={e => setConfig({ ...config, modelName: e.target.value })}
+              id="model-select"
+              value={config.gatewayModelId}
+              onChange={e => setConfig({ ...config, gatewayModelId: e.target.value })}
               className="w-full px-3 py-2 text-sm border border-border rounded bg-background"
               disabled={availableModels.length === 0}
             >
               {availableModels.length === 0 && <option value="">No active models</option>}
               {availableModels.map(model => (
-                <option key={model.id} value={model.id}>
-                  {model.model} (${model.input}/${model.output})
+                <option key={model.gatewayModelId} value={model.gatewayModelId}>
+                  {model.gatewayModelId} (${model.input}/${model.output})
                 </option>
               ))}
             </select>
@@ -273,8 +284,11 @@ export function PipelineTester() {
 
           {/* maxSteps */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Max Steps</label>
+            <label htmlFor="max-steps" className="text-sm font-medium">
+              Max Steps
+            </label>
             <input
+              id="max-steps"
               type="number"
               value={config.maxSteps || ""}
               onChange={e => setConfig({ ...config, maxSteps: e.target.value ? Number(e.target.value) : undefined })}
@@ -288,7 +302,7 @@ export function PipelineTester() {
 
           {/* Tool Strategy */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Tool Strategy</label>
+            <div className="text-sm font-medium">Tool Strategy</div>
             <div className="grid grid-cols-3 gap-2">
               {(["auto", "v2", "v3"] as const).map(strategy => (
                 <button
@@ -310,7 +324,7 @@ export function PipelineTester() {
 
           {/* Code Tools */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Code Tools</label>
+            <div className="text-sm font-medium">Code Tools</div>
             <div className="space-y-1">
               {AVAILABLE_CODE_TOOLS.map(tool => (
                 <label
@@ -337,7 +351,7 @@ export function PipelineTester() {
 
           {/* MCP Tools */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">MCP Tools</label>
+            <div className="text-sm font-medium">MCP Tools</div>
             <div className="space-y-1">
               {AVAILABLE_MCP_TOOLS.map(tool => (
                 <label
@@ -362,8 +376,11 @@ export function PipelineTester() {
 
           {/* Main Goal */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Workflow Goal (optional)</label>
+            <label htmlFor="workflow-goal" className="text-sm font-medium">
+              Workflow Goal (optional)
+            </label>
             <textarea
+              id="workflow-goal"
               value={config.mainGoal || ""}
               onChange={e => setConfig({ ...config, mainGoal: e.target.value })}
               rows={2}
@@ -391,8 +408,11 @@ export function PipelineTester() {
 
         {/* Input Message */}
         <div className="border-b border-border px-8 py-6 bg-muted/30">
-          <label className="text-sm font-medium mb-2 block">User Message</label>
+          <label htmlFor="user-message" className="text-sm font-medium mb-2 block">
+            User Message
+          </label>
           <textarea
+            id="user-message"
             value={config.message}
             onChange={e => setConfig({ ...config, message: e.target.value })}
             rows={3}

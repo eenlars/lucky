@@ -32,12 +32,14 @@
   },
   "scripts": {
     "prepare": "husky",
+    "validate:tsconfigs": "bun run scripts/validate-tsconfigs.ts",
     "gen:env": "bun run scripts/generate-env-artifacts.ts",
     "gen:db": "cd packages/shared && bun run generate",
     "web": "bun --env-file .env --env-file .env.local turbo run dev --filter=together",
     "web:dev:direct": "cd apps/web && bun run dev",
     "dev": "bun --env-file .env --env-file .env.local turbo run dev",
     "build": "bun --env-file .env --env-file .env.local turbo run build",
+    "start": "bun --env-file .env --env-file .env.local turbo run start --filter=together",
     "build:shared": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/shared",
     "build:models": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/models",
     "build:tools": "bun --env-file .env --env-file .env.local turbo run build --filter=@lucky/tools",
@@ -63,11 +65,12 @@
     "install:ci": "bun install --ignore-scripts"
   },
   "dependencies": {
-    "ioredis": "^5.8.1",
-    "ai": "^5.0.68",
-    "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/anthropic": "^2.0.27",
     "@ai-sdk/groq": "^2.0.24",
+    "@ai-sdk/mcp": "^0.0.5",
+    "@ai-sdk/openai": "^2.0.52",
+    "ai": "^5.0.68",
+    "ioredis": "^5.8.1",
     "secure-json-parse": "^2.7.0"
   }
 }

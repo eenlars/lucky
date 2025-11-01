@@ -3,6 +3,11 @@ import type { WorkflowFile } from "./tools"
 import type { WorkflowNodeConfig } from "./workflow"
 
 /**
+ * Agent contracts schema version
+ */
+export const AGENT_CONTRACTS_VERSION = "1.0.0" as const
+
+/**
  * Result returned from a single node invocation
  */
 export interface NodeInvocationResult<TPayload = unknown, TSummary = unknown> {

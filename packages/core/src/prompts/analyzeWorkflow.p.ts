@@ -30,7 +30,7 @@ export const WorkflowAnalysisPrompts = {
           includeToolExplanations: true,
           includeAdjacencyList: true,
           includeAgents: true,
-          easyModelNames: false,
+          tierMappingEnabled: false,
         }),
       )}
       ${SharedWorkflowPrompts.fitnessMetricsSection(fitness)}

@@ -60,6 +60,7 @@ export async function nodeInvocations(workflowInvocationId: string): Promise<Nod
   const nodeInvocations: NodeInvocationExtended[] = (invocations ?? [])
     .map(normalizeNodeInvocation)
     .filter((inv): inv is NodeInvocationExtended => inv !== null)
+
   const groups = groupInvocationsByNode(nodeInvocations)
 
   return {

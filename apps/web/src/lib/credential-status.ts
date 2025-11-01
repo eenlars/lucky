@@ -31,7 +31,7 @@ export function useSystemHealth() {
     async function fetchHealth() {
       try {
         setLoading(true)
-        const response = await fetch("/api/health/credentials")
+        const response = await fetch("/api/status/health/credentials")
 
         if (!response.ok) {
           const errorDetails = await extractFetchError(response)
@@ -70,7 +70,7 @@ export function useCredentialStatus() {
     async function fetchCredentials() {
       try {
         setLoading(true)
-        const response = await fetch("/api/health/credentials/all")
+        const response = await fetch("/api/status/health/credentials/all")
 
         if (!response.ok) {
           const errorDetails = await extractFetchError(response)
@@ -109,7 +109,7 @@ export function useFeatureStatus() {
     async function fetchFeatures() {
       try {
         setLoading(true)
-        const response = await fetch("/api/health/features")
+        const response = await fetch("/api/status/health/features")
 
         if (!response.ok) {
           const errorDetails = await extractFetchError(response)

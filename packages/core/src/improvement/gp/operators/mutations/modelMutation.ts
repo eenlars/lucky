@@ -2,15 +2,15 @@
  * model mutation operations
  */
 
-import { failureTracker } from "@core/improvement/gp/resources/tracker"
+import { failureTracker } from "@core/improvement/gp/rsc/tracker"
 import { lgg } from "@core/utils/logging/Logger"
-import { getActiveModelNames } from "@core/utils/spending/functions"
+import { getActiveGatewayModelIds } from "@core/utils/spending/functions"
 
 import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import type { NodeMutationOperator } from "./mutation.types"
 
 export class ModelMutation implements NodeMutationOperator {
-  private static readonly MODEL_POOL = getActiveModelNames()
+  private static readonly MODEL_POOL = getActiveGatewayModelIds()
 
   async execute(workflow: WorkflowConfig): Promise<void> {
     try {
@@ -31,7 +31,7 @@ export class ModelMutation implements NodeMutationOperator {
       }
 
       // simple random model selection
-      node.modelName = modelsNotInPool[Math.floor(Math.random() * modelsNotInPool.length)]
+      node.gatewayModelId = modelsNotInPool[Math.floor(Math.random() * modelsNotInPool.length)]
     } catch (error) {
       lgg.error("Model mutation failed:", error)
       failureTracker.trackMutationFailure()

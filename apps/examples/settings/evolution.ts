@@ -1,4 +1,4 @@
-import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
+import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
 
 // evolution runtime configuration
 export const EVOLUTION_CONFIG = {

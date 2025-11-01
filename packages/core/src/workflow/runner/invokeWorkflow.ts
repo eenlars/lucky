@@ -19,11 +19,9 @@ import { obs } from "@core/utils/observability/obs"
 import { verifyWorkflowConfigStrict } from "@core/utils/validation/workflow/verifyWorkflow"
 import { Workflow } from "@core/workflow/Workflow"
 import { needsEvaluation } from "@core/workflow/ingestion/ingestion.types"
-import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
+import type { WorkflowConfig, WorkflowNodeConfig } from "@core/workflow/schema/workflow.types"
 import { loadFromDSL, loadFromDatabase, loadFromFile } from "@core/workflow/setup/WorkflowLoader"
-import { JSONN, genShortId } from "@lucky/shared"
-import { R, type RS } from "@lucky/shared"
-import { isNir } from "@lucky/shared"
+import { JSONN, R, type RS, genShortId, isNir } from "@lucky/shared"
 import type { InvocationInput, InvokeWorkflowResult, RunResult } from "./types"
 
 /**
@@ -94,18 +92,39 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
 
     let config: WorkflowConfig
 
-    if ("workflowVersionId" in input && input.workflowVersionId) {
-      config = await loadFromDatabase(input.workflowVersionId)
-    } else if ("filename" in input && input.filename) {
-      config = await loadFromFile(input.filename)
-    } else if ("dslConfig" in input && input.dslConfig) {
-      config = await loadFromDSL(input.dslConfig)
+    // Support both old API (properties directly on input) and new API (source object)
+    const source = input.source
+
+    if (source) {
+      // New API: source object
+      if (source.kind === "version") {
+        config = await loadFromDatabase(source.id)
+      } else if (source.kind === "filename") {
+        config = await loadFromFile(source.path)
+      } else if (source.kind === "dsl") {
+        config = await loadFromDSL({
+          nodes: source.config.nodes as WorkflowNodeConfig[], // todo tools is not typed here
+          entryNodeId: source.config.entryNodeId,
+        })
+      } else {
+        throw new WorkflowConfigurationError("Invalid source kind. Must be 'version', 'filename', or 'dsl'.", {
+          field: "source.kind",
+          expectedFormat: "'version' | 'filename' | 'dsl'",
+        })
+      }
+    } else if ("workflowVersionId" in input && (input as any).workflowVersionId) {
+      // Old API (deprecated): properties directly on input
+      config = await loadFromDatabase((input as any).workflowVersionId)
+    } else if ("filename" in input && (input as any).filename) {
+      config = await loadFromFile((input as any).filename)
+    } else if ("dslConfig" in input && (input as any).dslConfig) {
+      config = await loadFromDSL((input as any).dslConfig)
     } else {
       throw new WorkflowConfigurationError(
-        "No workflow source provided. Must specify one of: workflowVersionId, filename, or dslConfig.",
+        "No workflow source provided. Must specify source: InvocationSource (new API) or workflowVersionId/filename/dslConfig (deprecated).",
         {
-          field: "workflow source",
-          expectedFormat: "{ workflowVersionId: string } | { filename: string } | { dslConfig: WorkflowConfig }",
+          field: "source",
+          expectedFormat: "InvocationSource | { workflowVersionId } | { filename } | { dslConfig }",
         },
       )
     }
@@ -137,6 +156,34 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
 
     const { success, error, data: runResults } = await workflow.run({ onProgress, abortSignal })
 
+    const maybeSaveMemoryUpdates = async () => {
+      const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
+
+      if (!hasMemoryUpdates) {
+        return
+      }
+
+      const legacyFilename = "filename" in input ? (input as any).filename : undefined
+
+      let targetPath: string | undefined
+      if (input.source?.kind === "filename") {
+        targetPath = input.source.path
+      } else if (legacyFilename) {
+        targetPath = legacyFilename
+      }
+
+      if (!targetPath) {
+        return
+      }
+
+      try {
+        await workflow.saveToFile(targetPath)
+        lgg.log(`[invokeWorkflow] Saved memory updates to ${targetPath}`)
+      } catch (saveError) {
+        lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
+      }
+    }
+
     if (!runResults || !success) {
       return R.error(error || "Unknown error", 0)
     }
@@ -163,18 +210,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
       }))
 
       // Save workflow to file if it was loaded from file and has memory updates
-      if ("filename" in input && input.filename) {
-        const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
-
-        if (hasMemoryUpdates) {
-          try {
-            await workflow.saveToFile(input.filename)
-            lgg.log(`[invokeWorkflow] Saved memory updates to ${input.filename}`)
-          } catch (saveError) {
-            lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
-          }
-        }
-      }
+      await maybeSaveMemoryUpdates()
 
       return R.success(resultsWithEvaluation, evaluationResult.totalCost)
     }
@@ -188,18 +224,7 @@ export async function invokeWorkflow(input: InvocationInput): Promise<RS<InvokeW
     }
 
     // Save workflow to file if it was loaded from file and has memory updates
-    if ("filename" in input && input.filename) {
-      const hasMemoryUpdates = workflow.getConfig().nodes.some(n => n.memory && Object.keys(n.memory).length > 0)
-
-      if (hasMemoryUpdates) {
-        try {
-          await workflow.saveToFile(input.filename)
-          lgg.log(`[invokeWorkflow] Saved memory updates to ${input.filename}`)
-        } catch (saveError) {
-          lgg.error(`[invokeWorkflow] Failed to save memory updates: ${saveError}`)
-        }
-      }
-    }
+    await maybeSaveMemoryUpdates()
 
     // If no evaluation needed, return raw run results
     return R.success(

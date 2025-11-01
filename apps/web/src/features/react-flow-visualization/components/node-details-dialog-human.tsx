@@ -1,5 +1,6 @@
 "use client"
 
+import { fetchActiveGatewayModelIds, fetchModelV2 } from "@/features/provider-llm-setup/models/client-utils"
 import type { WorkflowNodeData } from "@/features/react-flow-visualization/components/nodes/nodes"
 import {
   Dialog,
@@ -18,7 +19,6 @@ import {
 import { Switch } from "@/features/react-flow-visualization/components/ui/switch"
 import { Textarea } from "@/features/react-flow-visualization/components/ui/textarea"
 import { useAppStore } from "@/features/react-flow-visualization/store/store"
-import { fetchActiveModelNames, fetchModelV2 } from "@/lib/models/client-utils"
 // Provider detection handled by client-utils with CLIENT_DEFAULT_PROVIDER
 import type { ModelPricing } from "@lucky/shared"
 import {
@@ -200,22 +200,22 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
 
   // Fetch active models on mount
   useEffect(() => {
-    fetchActiveModelNames().then(models => setActiveModels(models.map(m => String(m))))
+    fetchActiveGatewayModelIds().then(models => setActiveModels(models.map(m => String(m))))
   }, [])
 
   // Fetch model pricing when model changes
   useEffect(() => {
-    if (!data?.modelName) {
+    if (!data?.gatewayModelId) {
       setSelectedModelPricing(null)
       return
     }
-    fetchModelV2(data.modelName)
+    fetchModelV2(data.gatewayModelId)
       .then(pricing => setSelectedModelPricing(pricing))
       .catch(() => setSelectedModelPricing(null))
-  }, [data?.modelName])
+  }, [data?.gatewayModelId])
 
   // show raw model id (e.g., gpt-4.1-mini for openai provider)
-  const formatModelDisplayName = (modelName?: string) => modelName || ""
+  const formatModelDisplayName = (gatewayModelId?: string) => gatewayModelId || ""
 
   // Provider is hardcoded to "openai" in client (see client-utils.ts)
   // MUST match BROWSER_DEFAULT_PROVIDER in client-utils.ts
@@ -328,11 +328,11 @@ export function NodeDetailsDialog({ open, onOpenChange, nodeData, onSave }: Node
                 Model
               </label>
               <Select
-                value={data.modelName || ""}
+                value={data.gatewayModelId || ""}
                 onValueChange={value =>
                   setData(prev => ({
                     ...prev,
-                    modelName: value as string,
+                    gatewayModelId: value as string,
                   }))
                 }
               >

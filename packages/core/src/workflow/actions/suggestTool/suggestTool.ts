@@ -17,7 +17,7 @@ export async function suggestNewTool(
   } = await sendAI({
     messages: SuggestToolPrompts.suggestNewTool({
       problemDescription: bottleneck,
-      workflowDescription: workflow.toString({ easyModelNames: true }),
+      workflowDescription: workflow.toString({ tierMappingEnabled: true }),
     }),
     model: getDefaultModels().default,
     mode: "structured",

@@ -8,9 +8,9 @@ import { alrighty, fail, handleBody, isHandleBodyError } from "@/lib/api/server"
 import { logException } from "@/lib/error-logger"
 import { createRLSClient } from "@/lib/supabase/server-rls"
 import { auth } from "@clerk/nextjs/server"
-import { getAllProviders } from "@lucky/models"
-import type { LuckyProvider, ModelId, UserModelPreferences } from "@lucky/shared"
-import { userModelPreferencesSchema } from "@lucky/shared"
+import { getAllGateways } from "@lucky/models"
+import type { LuckyGateway, ModelId, UserGatewayPreferences } from "@lucky/shared"
+import { userGatewayPreferencesSchema } from "@lucky/shared"
 import { type NextRequest, NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -28,10 +28,10 @@ export async function GET(_req: NextRequest) {
   try {
     const { data, error } = await supabase
       .schema("app")
-      .from("provider_settings")
-      .select("provider, enabled_models, is_enabled, updated_at")
+      .from("gateway_settings")
+      .select("gateway, enabled_models, is_enabled, updated_at")
       .eq("clerk_id", userId)
-      .order("provider", { ascending: true })
+      .order("gateway", { ascending: true })
 
     if (error) {
       console.error("[GET /api/user/model-preferences] Supabase error:", error)
@@ -42,41 +42,44 @@ export async function GET(_req: NextRequest) {
     }
 
     // Create map of available providers for validation
-    const validProviders = new Set(getAllProviders())
+    const validGateways = new Set(getAllGateways())
 
     // Filter to valid providers
-    const validData = data.filter(row => validProviders.has(row.provider))
+    const validData = data.filter(
+      (row): row is (typeof data)[number] & { gateway: LuckyGateway } =>
+        row.gateway !== null && validGateways.has(row.gateway),
+    )
 
-    // Check API key status for all providers in parallel
-    const providerNames = validData.map(row => row.provider)
-    const keyStatusMap = await checkMultipleProviderKeys(userId, providerNames)
+    // Check API key status for all gateways in parallel
+    const gatewayNames = validData.map(row => row.gateway)
+    const keyStatusMap = await checkMultipleProviderKeys(userId, gatewayNames)
 
-    // Build provider settings - use model IDs as-is from database
-    const providers = validData.map(row => {
+    // Build gateway settings - use model IDs as-is from database
+    const gateways = validData.map(row => {
       const enabledModels = (row.enabled_models as string[]) || []
 
       // Convert timestamp to ISO format
       const lastUpdated = row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
 
       return {
-        provider: row.provider as LuckyProvider,
+        gateway: row.gateway as any,
         enabledModels,
         isEnabled: row.is_enabled,
         metadata: {
-          apiKeyConfigured: keyStatusMap.get(row.provider) ?? false,
+          apiKeyConfigured: keyStatusMap.get(row.gateway) ?? false,
           lastUpdated,
         },
       }
     })
 
-    // Build UserModelPreferences response
-    const preferences: UserModelPreferences = {
-      providers,
+    // Build UserGatewayPreferences response
+    const preferences: UserGatewayPreferences = {
+      gateways: gateways,
       lastSynced: new Date().toISOString(),
     }
 
     // Validate with Zod
-    const validated = userModelPreferencesSchema.parse(preferences)
+    const validated = userGatewayPreferencesSchema.parse(preferences)
 
     return alrighty("user/model-preferences", validated)
   } catch (e: unknown) {
@@ -104,7 +107,7 @@ export async function PUT(req: NextRequest) {
   if (isHandleBodyError(body)) return body
 
   // Validate with Zod
-  const validation = userModelPreferencesSchema.safeParse(body)
+  const validation = userGatewayPreferencesSchema.safeParse(body)
   if (!validation.success) {
     return fail("user/model-preferences:put", "Invalid preferences format", {
       code: "VALIDATION_ERROR",
@@ -113,73 +116,75 @@ export async function PUT(req: NextRequest) {
   }
 
   const preferences = validation.data
-  const validProviders = new Set(getAllProviders())
+  const validGateways = new Set(getAllGateways())
 
   try {
-    // Validate providers (but not models - provider API is source of truth)
-    for (const providerSettings of preferences.providers) {
-      if (!validProviders.has(providerSettings.provider)) {
-        return fail("user/model-preferences:put", `Invalid provider: ${providerSettings.provider}`, {
-          code: "INVALID_PROVIDER",
+    // Validate gateways (but not models - gateway API is source of truth)
+    for (const gatewaySettings of preferences.gateways) {
+      if (!validGateways.has(gatewaySettings.gateway)) {
+        return fail("user/model-preferences:put", `Invalid gateway: ${gatewaySettings.gateway}`, {
+          code: "INVALID_GATEWAY",
           status: 400,
         })
       }
 
-      // Note: We don't validate models against MODEL_CATALOG because the provider's API
+      // Note: We don't validate models against MODEL_CATALOG because the gateway's API
       // is the source of truth. Our catalog is just for enrichment with pricing/metadata.
     }
 
-    // Update each provider's settings
-    const updatePromises = preferences.providers.map(async providerSettings => {
-      // Check if settings exist
-      const { data: existing } = await supabase
-        .schema("app")
-        .from("provider_settings")
-        .select("provider_setting_id")
-        .eq("clerk_id", userId)
-        .eq("provider", providerSettings.provider)
-        .maybeSingle()
+    // Update each gateway's settings
+    const updatePromises = preferences.gateways.map(
+      async (gatewaySettings: UserGatewayPreferences["gateways"][number]) => {
+        // Check if settings exist
+        const { data: existing } = await supabase
+          .schema("app")
+          .from("gateway_settings")
+          .select("gateway_setting_id")
+          .eq("clerk_id", userId)
+          .eq("gateway", gatewaySettings.gateway)
+          .maybeSingle()
 
-      if (existing) {
-        // Update existing
+        if (existing) {
+          // Update existing
+          return supabase
+            .schema("app")
+            .from("gateway_settings")
+            .update({
+              enabled_models: gatewaySettings.enabledModels as ModelId[],
+              is_enabled: gatewaySettings.isEnabled,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("gateway_setting_id", existing.gateway_setting_id)
+        }
+        // Insert new
         return supabase
           .schema("app")
-          .from("provider_settings")
-          .update({
-            enabled_models: providerSettings.enabledModels as ModelId[],
-            is_enabled: providerSettings.isEnabled,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("provider_setting_id", existing.provider_setting_id)
-      }
-      // Insert new
-      return supabase
-        .schema("app")
-        .from("provider_settings")
-        .insert([
-          {
-            clerk_id: userId,
-            provider: providerSettings.provider,
-            enabled_models: providerSettings.enabledModels as ModelId[],
-            is_enabled: providerSettings.isEnabled,
-          },
-        ])
-    })
+          .from("gateway_settings")
+          .insert([
+            {
+              clerk_id: userId,
+              gateway: gatewaySettings.gateway,
+              enabled_models: gatewaySettings.enabledModels as ModelId[],
+              is_enabled: gatewaySettings.isEnabled,
+            },
+          ])
+      },
+    )
 
     const results = await Promise.all(updatePromises)
 
     // Check for errors
-    const errors = results.filter(r => r.error)
+    const errors = results.filter((r: { error: unknown }) => r.error)
     if (errors.length > 0) {
       console.error("[PUT /api/user/model-preferences] Update errors:", errors)
-      return fail("user/model-preferences:put", "Failed to update some provider settings", {
+      return fail("user/model-preferences:put", "Failed to update some gateway settings", {
         code: "UPDATE_ERROR",
         status: 500,
       })
     }
 
     // Return updated preferences
-    const updatedPreferences: UserModelPreferences = {
+    const updatedPreferences: UserGatewayPreferences = {
       ...preferences,
       lastSynced: new Date().toISOString(),
     }

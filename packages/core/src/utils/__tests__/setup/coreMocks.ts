@@ -1,10 +1,8 @@
 // core test utilities and mocks - consolidated mock file
-import { getDefaultModels } from "@core/core-config/coreConfig"
 import type { FitnessOfWorkflow } from "@core/evaluation/calculate-fitness/fitness.types"
 import type { EvolutionEvaluator } from "@core/evaluation/evaluators/EvolutionEvaluator"
-import type { EvolutionSettings } from "@core/improvement/gp/resources/evolution-types"
-import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/resources/gp.types"
-import type { WorkflowFile } from "@core/tools/context/contextStore.types"
+import type { EvolutionSettings } from "@core/improvement/gp/rsc/evolution-types"
+import type { GenomeEvaluationResults, WorkflowGenome } from "@core/improvement/gp/rsc/gp.types"
 import type { FlowRuntimeConfig } from "@core/types"
 import { Workflow } from "@core/workflow/Workflow"
 import type {
@@ -14,7 +12,7 @@ import type {
   WorkflowIO,
 } from "@core/workflow/ingestion/ingestion.types"
 import type { WorkflowConfig } from "@core/workflow/schema/workflow.types"
-import type { RS } from "@lucky/shared"
+import type { RS, WorkflowFile } from "@lucky/shared"
 import { vi } from "vitest"
 
 // CLI and system-level mocks
@@ -407,7 +405,8 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node1",
       description: "test system prompt",
       systemPrompt: "test system prompt",
-      modelName: getDefaultModels().default,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -417,7 +416,8 @@ export const createMockWorkflowConfig = (): WorkflowConfig => ({
       nodeId: "node2",
       description: "test system prompt 2",
       systemPrompt: "test system prompt 2",
-      modelName: getDefaultModels().default,
+      gatewayModelId: "gpt-4o-mini",
+      gateway: "openai-api",
       mcpTools: [],
       codeTools: [],
       handOffs: [],
@@ -716,14 +716,14 @@ export const createMockFullFlowRuntimeConfig = (toolOverrides: Partial<FlowRunti
 // ====== INDIVIDUAL MOCK HELPERS ======
 
 export const mockRunService = () => {
-  vi.mock("@core/improvement/gp/resources/RunService", () => ({
+  vi.mock("@core/improvement/gp/rsc/RunService", () => ({
     RunService: vi.fn().mockImplementation(() => mockRunServiceInstance),
   }))
   return mockRunServiceInstance
 }
 
 export const mockVerificationCache = () => {
-  vi.mock("@core/improvement/gp/resources/wrappers", () => ({
+  vi.mock("@core/improvement/gp/rsc/wrappers", () => ({
     VerificationCache: vi.fn().mockImplementation(() => mockVerificationCacheInstance),
     workflowConfigToGenome: vi.fn(),
   }))

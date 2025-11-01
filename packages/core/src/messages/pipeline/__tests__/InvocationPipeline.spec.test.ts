@@ -75,7 +75,8 @@ describe("InvocationPipeline Real Integration", () => {
     // await saveNodeVersionToDB({
     //   config: {
     //     nodeId,
-    //     modelName: getDefaultModels().default,
+    //     gatewayModelId: getDefaultModels().default,
+    //     gateway: "openai-api",
     //     systemPrompt: "use todo write first, and then return the output of todo read",
     //     mcpTools: [],
     //     codeTools: ["todoWrite", "todoRead"],
@@ -131,7 +132,8 @@ describe("InvocationPipeline Real Integration", () => {
       toolStrategyOverride: "v3" as const,
       nodeConfig: {
         nodeId,
-        modelName: getDefaultModels().medium,
+        gatewayModelId: "gpt-4o-mini",
+        gateway: "openai-api",
         systemPrompt: systemPrompt,
         mcpTools: [],
         codeTools: ["todoWrite", "todoRead"],
@@ -275,7 +277,8 @@ describe("InvocationPipeline Real Integration", () => {
         workflowId: "real-multi-pipeline-workflow",
         nodeConfig: {
           nodeId,
-          modelName: getDefaultModels().default,
+          gatewayModelId: "gpt-4o-mini",
+          gateway: "openai-api",
           systemPrompt: systemPrompt,
           mcpTools: [],
           codeTools: ["todoWrite", "todoRead"],
@@ -342,18 +345,18 @@ describe("InvocationPipeline Real Integration", () => {
   // TODO: Only testing one model when comment says "Test with medium model"
   // Should either test multiple models or update comment
   // Test with medium model
-  const testModels = [getDefaultModels().medium]
+  const testModels = [getDefaultModels().balanced]
 
-  testModels.forEach(modelName => {
-    it(`should work with model ${modelName}`, async () => {
+  testModels.forEach(gatewayModelId => {
+    it(`should work with model ${gatewayModelId}`, async () => {
       const { WorkflowMessage } = await import("@core/messages/WorkflowMessage")
       const { InvocationPipeline } = await import("../InvocationPipeline")
       const { ToolManager } = await import("@core/node/toolManager")
       const { sendAI } = await import("@core/messages/api/sendAI/sendAI")
 
-      const workflowInvocationId = `model-test-${modelName.replace(/\W/g, "-")}-${Date.now()}`
-      const workflowVersionId = `model-test-${modelName.replace(/\W/g, "-")}-v1`
-      const nodeId = `model-test-${modelName.replace(/\W/g, "-")}-node`
+      const workflowInvocationId = `model-test-${gatewayModelId.replace(/\W/g, "-")}-${Date.now()}`
+      const workflowVersionId = `model-test-${gatewayModelId.replace(/\W/g, "-")}-v1`
+      const nodeId = `model-test-${gatewayModelId.replace(/\W/g, "-")}-node`
 
       // Set up required database records
       await setupTestWorkflow(workflowInvocationId, workflowVersionId, nodeId)
@@ -370,7 +373,7 @@ describe("InvocationPipeline Real Integration", () => {
             berichten: [
               {
                 type: "text",
-                text: `Create a todo for testing ${modelName} and show me the list`,
+                text: `Create a todo for testing ${gatewayModelId} and show me the list`,
               },
             ],
           },
@@ -380,18 +383,19 @@ describe("InvocationPipeline Real Integration", () => {
         workflowInvocationId,
         startTime: new Date().toISOString(),
         workflowVersionId,
-        mainWorkflowGoal: `Test InvocationPipeline with ${modelName}`,
+        mainWorkflowGoal: `Test InvocationPipeline with ${gatewayModelId}`,
         workflowFiles: [],
         expectedOutputType: undefined,
         workflowId: "model-test-workflow",
         toolStrategyOverride: "v3" as const,
         nodeConfig: {
           nodeId,
-          modelName: modelName as string,
+          gatewayModelId: gatewayModelId as string,
+          gateway: "openai-api",
           systemPrompt: systemPrompt,
           mcpTools: [],
           codeTools: ["todoWrite", "todoRead"],
-          description: `Model test node for ${modelName}`,
+          description: `Model test node for ${gatewayModelId}`,
           handOffs: ["end"],
           waitingFor: [],
         },
@@ -401,7 +405,7 @@ describe("InvocationPipeline Real Integration", () => {
       }
 
       const toolManager = new ToolManager(
-        `model-test-${modelName.replace(/\W/g, "-")}`,
+        `model-test-${gatewayModelId.replace(/\W/g, "-")}`,
         [],
         ["todoWrite", "todoRead"],
         workflowVersionId,
@@ -415,7 +419,7 @@ describe("InvocationPipeline Real Integration", () => {
 
       expect(result).toBeDefined()
       if (result.error) {
-        throw new Error(`Model ${modelName} failed: ${result.error.message}`)
+        throw new Error(`Model ${gatewayModelId} failed: ${result.error.message}`)
       }
 
       const testResult = extractTestResult(pipeline, result)
@@ -436,13 +440,13 @@ describe("InvocationPipeline Real Integration", () => {
 
       // Verify response quality
       const verification = await sendAI({
-        model: modelName,
+        model: gatewayModelId,
         mode: "text",
         messages: [
           {
             role: "user",
             content: `
-            Analyze this response from ${modelName}:
+            Analyze this response from ${gatewayModelId}:
             "${testResult.finalResponse}"
             
             Does this response show:
@@ -459,7 +463,7 @@ describe("InvocationPipeline Real Integration", () => {
       expect(verification.success).toBe(true)
       expect(verification.data?.text).toContain("SUCCESS")
 
-      console.log(`✅ ${modelName} Test:`, {
+      console.log(`✅ ${gatewayModelId} Test:`, {
         toolOrder: testResult.toolExecutionOrder.map(t => t.tool),
         correctOrder: todoWriteIndex < todoReadIndex,
         cost: testResult.cost,
