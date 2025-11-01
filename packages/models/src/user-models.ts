@@ -4,7 +4,6 @@
 
 import { createGroq } from "@ai-sdk/groq"
 import { createOpenAI } from "@ai-sdk/openai"
-import type { ProviderOptions } from "@ai-sdk/provider-utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import type { LanguageModel } from "ai"
 
@@ -54,9 +53,9 @@ export class UserModels {
    * 3. Model must be in user's allowed list
    *
    * @param name - Model name/ID to retrieve
-   * @param options - Optional gateway-specific parameters (e.g., { reasoning: { effort: "medium" } })
+   * @param options - Optional provider-specific settings (e.g., for OpenRouter: { reasoning: { effort: "medium" } })
    */
-  model(name: string, options?: ProviderOptions): LanguageModel {
+  model(name: string, options?: Record<string, unknown>): LanguageModel {
     // In BYOK mode, enforce exact string match against allowlist to prevent case/format bypass
     if (this.mode === "byok") {
       const input = typeof name === "string" ? name : String(name)
@@ -114,9 +113,9 @@ export class UserModels {
    * Select model by tier
    * Picks from user's allowed models only
    * @param tierName - Tier name (cheap/fast/smart/balanced)
-   * @param options - Optional gateway-specific parameters
+   * @param options - Optional provider-specific settings
    */
-  tier(tierName: TierName, options?: ProviderOptions): LanguageModel {
+  tier(tierName: TierName, options?: Record<string, unknown>): LanguageModel {
     const selected = selectModelForTier(tierName, this.allowedModels)
     return this.model(selected.gatewayModelId, options)
   }
@@ -151,18 +150,18 @@ export class UserModels {
    */
   resolve(
     nameOrTier: string,
-    options: { outputType: "string"; type?: "tier" | "model"; gatewayOptions?: ProviderOptions },
+    options: { outputType: "string"; type?: "tier" | "model"; gatewayOptions?: Record<string, unknown> },
   ): string
   resolve(
     nameOrTier: string,
-    options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model"; gatewayOptions?: ProviderOptions },
+    options?: { outputType?: "ai-sdk-model-func"; type?: "tier" | "model"; gatewayOptions?: Record<string, unknown> },
   ): LanguageModel
   resolve(
     nameOrTier: string,
     options?: {
       outputType?: "ai-sdk-model-func" | "string"
       type?: "tier" | "model"
-      gatewayOptions?: ProviderOptions
+      gatewayOptions?: Record<string, unknown>
     },
   ): LanguageModel | string {
     const tierOptions = tierNameSchema.options
