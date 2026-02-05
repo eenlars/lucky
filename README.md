@@ -9,7 +9,7 @@ Multi-agent systems require explicit workflow design - developers must manually 
 
 The system discovers effective agent collaboration patterns by treating workflows as evolvable data structures, optimized through genetic programming and iterative improvement algorithms.
 
-![Evolutionary agentic workflows screenshot](docs/example.png)
+![Evolutionary agentic workflows screenshot](docs/evolution-loop.png)
 
 ## Technical Contributions
 
